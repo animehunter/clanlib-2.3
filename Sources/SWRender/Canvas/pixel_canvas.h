@@ -35,6 +35,7 @@
 #include "API/Display/Image/pixel_buffer.h"
 #include "API/Display/Render/frame_buffer.h"
 #include "API/Display/Render/blend_mode.h"
+#include "API/Display/2D/color.h"
 
 class CL_PixelPipeline;
 class CL_PixelCommand;
@@ -55,7 +56,7 @@ public:
 	void set_clip_rect(const CL_Rect &new_clip_rect);
 	void reset_clip_rect();
 
-	void set_blend_function(CL_BlendFunc src, CL_BlendFunc dest, CL_BlendFunc src_alpha, CL_BlendFunc dest_alpha);
+	void set_blend_function(CL_BlendFunc src, CL_BlendFunc dest, CL_BlendFunc src_alpha, CL_BlendFunc dest_alpha, const CL_Colorf &const_color);
 
 	void set_framebuffer(const CL_FrameBuffer &buffer);
 	void reset_framebuffer();
@@ -104,6 +105,7 @@ private:
 	CL_BlendFunc cur_blend_dest;
 	CL_BlendFunc cur_blend_src_alpha;
 	CL_BlendFunc cur_blend_dest_alpha;
+	CL_Colorf cur_blend_color;
 
 	CL_SoftwareProgram *current_program;
 

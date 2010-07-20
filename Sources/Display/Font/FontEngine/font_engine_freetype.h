@@ -40,6 +40,7 @@ extern "C"
 	#include <ft2build.h>
 	#include FT_FREETYPE_H
 	#include FT_GLYPH_H
+	#include FT_LCD_FILTER_H
 }
 
 class CL_GlyphOutline;

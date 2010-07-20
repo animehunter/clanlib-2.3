@@ -33,7 +33,7 @@
 int CL_RenderBatch2D::max_textures = 4;	// For use by the GL1 target, so it can reduce the number of textures
 
 CL_RenderBatch2D::CL_RenderBatch2D()
-: modelview(CL_Mat4f::identity()), origin(0.0f, 0.0f), x_dir(1.0f, 0.0f), y_dir(0.0f, 1.0f), position(0), num_current_textures(0)
+: modelview(CL_Mat4f::identity()), origin(0.0f, 0.0f), x_dir(1.0f, 0.0f), y_dir(0.0f, 1.0f), position(0), num_current_textures(0), use_glyph_program(false)
 {
 }
 
@@ -90,6 +90,33 @@ void CL_RenderBatch2D::draw_image(CL_GraphicContext &gc, const CL_Rectf &src, co
 	position += 6;
 }
 
+void CL_RenderBatch2D::draw_glyph(CL_GraphicContext &gc, const CL_Rectf &src, const CL_Rectf &dest, const CL_Colorf &color, const CL_Texture &texture)
+{
+	int texindex = set_batcher_active(gc, texture, true, color);
+	vertices[position+0].position = to_position(dest.left, dest.top);
+	vertices[position+1].position = to_position(dest.right, dest.top);
+	vertices[position+2].position = to_position(dest.left, dest.bottom);
+	vertices[position+3].position = to_position(dest.right, dest.top);
+	vertices[position+4].position = to_position(dest.right, dest.bottom);
+	vertices[position+5].position = to_position(dest.left, dest.bottom);
+	float src_left = (src.left)/tex_sizes[texindex].width;
+	float src_top = (src.top) / tex_sizes[texindex].height;
+	float src_right = (src.right)/tex_sizes[texindex].width;
+	float src_bottom = (src.bottom) / tex_sizes[texindex].height;
+	vertices[position+0].texcoord = CL_Vec2f(src_left, src_top);
+	vertices[position+1].texcoord = CL_Vec2f(src_right, src_top);
+	vertices[position+2].texcoord = CL_Vec2f(src_left, src_bottom);
+	vertices[position+3].texcoord = CL_Vec2f(src_right, src_top);
+	vertices[position+4].texcoord = CL_Vec2f(src_right, src_bottom);
+	vertices[position+5].texcoord = CL_Vec2f(src_left, src_bottom);
+	for (int i=0; i<6; i++)
+	{
+		vertices[position+i].color = CL_Vec4f(1.0f, 1.0f, 1.0f, 1.0f);
+		vertices[position+i].texindex.x = (float)texindex;
+	}
+	position += 6;
+}
+
 void CL_RenderBatch2D::fill(CL_GraphicContext &gc, float x1, float y1, float x2, float y2, const CL_Colorf &color)
 {
 	int texindex = set_batcher_active(gc);
@@ -116,8 +143,15 @@ inline CL_Vec3f CL_RenderBatch2D::to_position(float x, float y) const
 		1.0f);
 }
 
-int CL_RenderBatch2D::set_batcher_active(CL_GraphicContext &gc, const CL_Texture &texture)
+int CL_RenderBatch2D::set_batcher_active(CL_GraphicContext &gc, const CL_Texture &texture, bool glyph_program, const CL_Colorf &new_constant_color)
 {
+	if (use_glyph_program != glyph_program || constant_color != new_constant_color)
+	{
+		gc.flush_batcher();
+		use_glyph_program = glyph_program;
+		constant_color = new_constant_color;
+	}
+
 	int texindex = -1;
 	for (int i = 0; i < num_current_textures; i++)
 	{
@@ -148,6 +182,12 @@ int CL_RenderBatch2D::set_batcher_active(CL_GraphicContext &gc, const CL_Texture
 
 int CL_RenderBatch2D::set_batcher_active(CL_GraphicContext &gc)
 {
+	if (use_glyph_program != false)
+	{
+		gc.flush_batcher();
+		use_glyph_program = false;
+	}
+
 	if (position == 0 || position+6 > max_vertices)
 		gc.flush_batcher();
 	gc.set_batcher(this);
@@ -159,7 +199,14 @@ void CL_RenderBatch2D::flush(CL_GraphicContext &gc)
 	if (position > 0)
 	{
 		gc.set_modelview(CL_Mat4f::identity());
+		CL_BlendMode blend_mode;
+		blend_mode.set_blend_color(constant_color);
+		if (use_glyph_program)
+			blend_mode.set_blend_function(cl_blend_constant_color, cl_blend_one_minus_src_color, cl_blend_zero, cl_blend_one);
+		else
+			blend_mode.set_blend_function(cl_blend_src_alpha, cl_blend_one_minus_src_alpha, cl_blend_one, cl_blend_one_minus_src_alpha);
 		gc.set_program_object(cl_program_sprite);
+		gc.set_blend_mode(blend_mode);
 		for (int i = 0; i < num_current_textures; i++)
 			gc.set_texture(i, current_textures[i]);
 		CL_PrimitivesArray prim_array(gc);
@@ -171,6 +218,7 @@ void CL_RenderBatch2D::flush(CL_GraphicContext &gc)
 		for (int i = 0; i < num_current_textures; i++)
 			gc.reset_texture(i);
 		gc.reset_program_object();
+		gc.reset_blend_mode();
 		gc.set_modelview(modelview);
 		position = 0;
 		for (int i = 0; i < num_current_textures; i++)

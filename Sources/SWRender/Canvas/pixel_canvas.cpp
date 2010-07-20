@@ -127,15 +127,16 @@ void CL_PixelCanvas::reset_clip_rect()
 	pipeline->queue(new(pipeline.get()) CL_PixelCommandSetClipRect(clip_rect));
 }
 
-void CL_PixelCanvas::set_blend_function(CL_BlendFunc src, CL_BlendFunc dest, CL_BlendFunc src_alpha, CL_BlendFunc dest_alpha)
+void CL_PixelCanvas::set_blend_function(CL_BlendFunc src, CL_BlendFunc dest, CL_BlendFunc src_alpha, CL_BlendFunc dest_alpha, const CL_Colorf &const_color)
 {
-	if (cur_blend_src != src || cur_blend_dest != dest || cur_blend_src_alpha != src_alpha || cur_blend_dest_alpha != dest_alpha)
+	if (cur_blend_src != src || cur_blend_dest != dest || cur_blend_src_alpha != src_alpha || cur_blend_dest_alpha != dest_alpha || cur_blend_color != const_color)
 	{
 		cur_blend_src = src;
 		cur_blend_dest = dest;
 		cur_blend_src_alpha = src_alpha;
 		cur_blend_dest_alpha = dest_alpha;
-		pipeline->queue(new(pipeline.get()) CL_PixelCommandSetBlendFunc(cur_blend_src, cur_blend_dest, cur_blend_src_alpha, cur_blend_dest_alpha));
+		cur_blend_color = const_color;
+		pipeline->queue(new(pipeline.get()) CL_PixelCommandSetBlendFunc(cur_blend_src, cur_blend_dest, cur_blend_src_alpha, cur_blend_dest_alpha, cur_blend_color));
 	}
 }
 

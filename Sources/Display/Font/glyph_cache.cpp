@@ -190,7 +190,7 @@ void CL_GlyphCache::insert_glyph(CL_GraphicContext &gc, CL_FontPixelBuffer &pb)
 			return ;
 	}
 
-	CL_Font_TextureGlyph *font_glyph = new(CL_Font_TextureGlyph);
+	CL_Font_TextureGlyph *font_glyph = new CL_Font_TextureGlyph();
 	
 	glyph_list.push_back(font_glyph);
 	font_glyph->glyph = pb.glyph;
@@ -230,7 +230,7 @@ void CL_GlyphCache::insert_glyph(CL_GraphicContext &gc, CL_Font_System_Position 
 			return;
 	}
 
-	CL_Font_TextureGlyph *font_glyph = new(CL_Font_TextureGlyph);
+	CL_Font_TextureGlyph *font_glyph = new CL_Font_TextureGlyph();
 	
 	glyph_list.push_back(font_glyph);
 	font_glyph->glyph = glyph;
@@ -247,7 +247,6 @@ void CL_GlyphCache::insert_glyph(CL_GraphicContext &gc, CL_Font_System_Position 
 		font_glyph->geometry = CL_Rect(font_glyph->subtexture.get_geometry().left + glyph_border_size, font_glyph->subtexture.get_geometry().top + glyph_border_size, source_rect.get_size() );
 
 		font_glyph->subtexture.get_texture().set_subimage(font_glyph->subtexture.get_geometry().left, font_glyph->subtexture.get_geometry().top, buffer_with_border, buffer_with_border.get_size());
-
 	}
 	else
 	{
@@ -291,7 +290,7 @@ void CL_GlyphCache::draw_text(CL_FontEngine *font_engine, CL_GraphicContext &gc,
 			float yp = ypos + gptr->offset.y;
 
 			CL_Rectf dest_size(xp, yp, CL_Sizef(gptr->geometry.get_size()));
-			batcher->draw_image(gc, gptr->geometry, dest_size, color, gptr->subtexture.get_texture());
+			batcher->draw_glyph(gc, gptr->geometry, dest_size, color, gptr->subtexture.get_texture());
 		}
 		xpos += gptr->increment.x;
 		ypos += gptr->increment.y;

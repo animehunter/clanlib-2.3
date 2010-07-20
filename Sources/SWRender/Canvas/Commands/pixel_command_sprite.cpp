@@ -73,12 +73,24 @@ void CL_PixelCommandSprite::render_sprite(CL_PixelThreadContext *context)
 	{
 		float dx = (texcoords[1].x-texcoords[0].x)/(points[1].x-points[0].x);
 		float dy = (texcoords[2].y-texcoords[0].y)/(points[2].y-points[0].y);
-		if (dx < 0.999f || dx > 1.001f)
-			render_sprite_scale(context, box);
-		else if (primcolor == CL_Vec4f(1.0f, 1.0f, 1.0f, 1.0f))
-			render_sprite_noscale_white(context, box);
+		bool scale = (dx < 0.999f || dx > 1.001f);
+		bool white = (primcolor == CL_Vec4f(1.0f, 1.0f, 1.0f, 1.0f));
+		if (context->cur_blend_src == cl_blend_constant_color)
+		{
+			if (scale)
+				render_glyph_scale(context, box);
+			else
+				render_glyph_noscale(context, box);
+		}
 		else
-			render_sprite_noscale(context, box);
+		{
+			if (scale)
+				render_sprite_scale(context, box);
+			else if (white)
+				render_sprite_noscale_white(context, box);
+			else
+				render_sprite_noscale(context, box);
+		}
 	}
 }
 
@@ -259,6 +271,129 @@ void CL_PixelCommandSprite::render_sprite_noscale(CL_PixelThreadContext *context
 		ty += dty;
 	}
 }
+
+void CL_PixelCommandSprite::render_glyph_scale(CL_PixelThreadContext *context, const CL_Rect &box)
+{
+	float dx = (texcoords[1].x-texcoords[0].x)/(points[1].x-points[0].x);
+	float dy = (texcoords[2].y-texcoords[0].y)/(points[2].y-points[0].y);
+	float tx_left = texcoords[0].x + dx*(box.left+0.5f-points[0].x);
+	float ty_top = texcoords[0].y + dy*(box.top+0.5f-points[0].y);
+	int dtx = (int)(dx*context->samplers[sampler].size.width * 32768);
+	int dty = (int)(dy*context->samplers[sampler].size.height * 32768);
+
+	int start_tx = (int)(tx_left*context->samplers[sampler].size.width * 32768);
+	int ty = (int)(ty_top*context->samplers[sampler].size.height * 32768);
+	int skip_lines = find_first_line_for_core(box.top, context->core, context->num_cores)-box.top;
+	ty += dty * skip_lines;
+	dty *= context->num_cores;
+
+	int width = box.get_width();
+	int height = box.get_height();
+	int sse_width = width / 2 * 2;
+
+	__m128i one, half, color;
+	CL_BlitARGB8SSE::set_one(one);
+	CL_BlitARGB8SSE::set_half(half);
+	CL_BlitARGB8SSE::set_color(
+		color,
+		(int)(context->cur_blend_color.r * 256.0f + 0.5f),
+		(int)(context->cur_blend_color.g * 256.0f + 0.5f),
+		(int)(context->cur_blend_color.b * 256.0f + 0.5f),
+		(int)(context->cur_blend_color.a * 256.0f + 0.5f));
+
+	for (int y = box.top + skip_lines; y < box.bottom; y+=context->num_cores)
+	{
+		int tx = start_tx;
+
+		unsigned int *src_line = context->samplers[sampler].data + (ty>>15) * context->samplers[sampler].size.width;
+		unsigned int *dest = context->colorbuffer0.data + y * context->colorbuffer0.size.width + box.left;
+		int i;
+		for (i = 0; i < sse_width; i+=2)
+		{
+			int tx0, tx1;
+			tx0 = tx;
+			tx += dtx;
+			tx1 = tx;
+			tx += dtx;
+
+			__m128i spixel, dpixel;
+			CL_BlitARGB8SSE::load_pixels(spixel, src_line[tx0>>15], src_line[tx1>>15]);
+			CL_BlitARGB8SSE::load_pixels(dpixel, dest+i);
+			CL_BlitARGB8SSE::blend_lcd(dpixel, spixel, one, half, color);
+			CL_BlitARGB8SSE::store_pixels(dest+i, dpixel);
+		}
+
+		if (i != width)
+		{
+			__m128i spixel, dpixel;
+			CL_BlitARGB8SSE::load_pixel(spixel, src_line[tx>>15]);
+			CL_BlitARGB8SSE::load_pixel(dpixel, dest[i]);
+			CL_BlitARGB8SSE::blend_lcd(dpixel, spixel, one, half, color);
+			CL_BlitARGB8SSE::store_pixel(dest[i], dpixel);
+		}
+
+		ty += dty;
+	}
+}
+
+void CL_PixelCommandSprite::render_glyph_noscale(CL_PixelThreadContext *context, const CL_Rect &box)
+{
+	float dx = (texcoords[1].x-texcoords[0].x)/(points[1].x-points[0].x);
+	float dy = (texcoords[2].y-texcoords[0].y)/(points[2].y-points[0].y);
+	float tx_left = texcoords[0].x + dx*(box.left+0.5f-points[0].x);
+	float ty_top = texcoords[0].y + dy*(box.top+0.5f-points[0].y);
+	int dtx = (int)(dx*context->samplers[sampler].size.width * 32768);
+	int dty = (int)(dy*context->samplers[sampler].size.height * 32768);
+
+	int start_tx = (int)(tx_left*context->samplers[sampler].size.width * 32768);
+	int ty = (int)(ty_top*context->samplers[sampler].size.height * 32768);
+	int skip_lines = find_first_line_for_core(box.top, context->core, context->num_cores)-box.top;
+	ty += dty * skip_lines;
+	dty *= context->num_cores;
+
+	int width = box.get_width();
+	int height = box.get_height();
+	int sse_width = width / 2 * 2;
+
+	__m128i one, half, color;
+	CL_BlitARGB8SSE::set_one(one);
+	CL_BlitARGB8SSE::set_half(half);
+	CL_BlitARGB8SSE::set_color(
+		color,
+		(int)(context->cur_blend_color.r * 256.0f + 0.5f),
+		(int)(context->cur_blend_color.g * 256.0f + 0.5f),
+		(int)(context->cur_blend_color.b * 256.0f + 0.5f),
+		(int)(context->cur_blend_color.a * 256.0f + 0.5f));
+
+	for (int y = box.top + skip_lines; y < box.bottom; y+=context->num_cores)
+	{
+		int tx = start_tx >> 15;
+
+		unsigned int *src_line = context->samplers[sampler].data + (ty>>15) * context->samplers[sampler].size.width + tx;
+		unsigned int *dest = context->colorbuffer0.data + y * context->colorbuffer0.size.width + box.left;
+		int i;
+		for (i = 0; i < sse_width; i+=2)
+		{
+			__m128i spixel, dpixel;
+			CL_BlitARGB8SSE::load_pixels(spixel, src_line+i);
+			CL_BlitARGB8SSE::load_pixels(dpixel, dest+i);
+			CL_BlitARGB8SSE::blend_lcd(dpixel, spixel, one, half, color);
+			CL_BlitARGB8SSE::store_pixels(dest+i, dpixel);
+		}
+
+		if (i != width)
+		{
+			__m128i spixel, dpixel;
+			CL_BlitARGB8SSE::load_pixel(spixel, src_line[i]);
+			CL_BlitARGB8SSE::load_pixel(dpixel, dest[i]);
+			CL_BlitARGB8SSE::blend_lcd(dpixel, spixel, one, half, color);
+			CL_BlitARGB8SSE::store_pixel(dest[i], dpixel);
+		}
+
+		ty += dty;
+	}
+}
+
 
 CL_Rect CL_PixelCommandSprite::get_dest_rect(CL_PixelThreadContext *context) const
 {

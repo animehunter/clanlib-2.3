@@ -98,6 +98,11 @@ void CL_RenderBatch3D::draw_image(CL_GraphicContext &gc, const CL_Rectf &src, co
 	position += 6;
 }
 
+void CL_RenderBatch3D::draw_glyph(CL_GraphicContext &gc, const CL_Rectf &src, const CL_Rectf &dest, const CL_Colorf &color, const CL_Texture &texture)
+{
+	draw_image(gc, src, dest, color, texture);
+}
+
 void CL_RenderBatch3D::fill(CL_GraphicContext &gc, float x1, float y1, float x2, float y2, const CL_Colorf &color)
 {
 	int texindex = set_batcher_active(gc);

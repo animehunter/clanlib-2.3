@@ -59,6 +59,7 @@ public:
 #endif
 	static void blend_normal(__m128i &dest, __m128i &src, __m128i &one, __m128i &half);
 	static void blend_premultiplied(__m128i &dest, __m128i &src, __m128i &one, __m128i &half);
+	static void blend_lcd(__m128i &dest, __m128i &src, __m128i &one, __m128i &half, __m128i &color);
 	static void store_pixel(unsigned int &pixel, __m128i &xmm);
 	static void store_pixels(unsigned int *pixels, __m128i &xmm);
 
@@ -203,6 +204,16 @@ inline void CL_BlitARGB8SSE::blend_premultiplied(__m128i &dest, __m128i &src, __
 	dest = _mm_add_epi16(dest, half); // round up
 	dest = _mm_srli_epi16(dest, 8);
 	dest = _mm_add_epi16(dest, src);
+}
+
+inline void CL_BlitARGB8SSE::blend_lcd(__m128i &dest, __m128i &src, __m128i &one, __m128i &half, __m128i &color)
+{
+	__m128i invsrc;
+	invsrc = _mm_sub_epi16(one, src);
+
+	dest = _mm_add_epi16(_mm_mullo_epi16(src, color), _mm_mullo_epi16(dest, invsrc));
+	dest = _mm_add_epi16(dest, half); // round up
+	dest = _mm_srli_epi16(dest, 8);
 }
 
 inline void CL_BlitARGB8SSE::store_pixel(unsigned int &pixel, __m128i &xmm)

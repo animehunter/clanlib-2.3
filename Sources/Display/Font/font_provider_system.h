@@ -35,8 +35,11 @@
 #include "API/Display/2D/texture_group.h"
 #include <list>
 #include <map>
-
 #include "glyph_cache.h"
+
+//#ifdef WIN32
+//#define USE_MS_FONT_RENDERER
+//endif
 
 class CL_FontEngine_Freetype;
 class CL_FontEngine_Win32;

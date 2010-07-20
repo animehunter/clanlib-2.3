@@ -205,11 +205,12 @@ void CL_SWRenderGraphicContextProvider::set_blend_mode(const CL_BlendMode &blend
 			blendmode.get_blend_function_src(),
 			blendmode.get_blend_function_dest(),
 			blendmode.get_blend_function_src_alpha(),
-			blendmode.get_blend_function_dest_alpha());
+			blendmode.get_blend_function_dest_alpha(),
+			blendmode.get_blend_color());
 	}
 	else
 	{
-		canvas->set_blend_function(cl_blend_one, cl_blend_zero, cl_blend_one, cl_blend_zero);
+		canvas->set_blend_function(cl_blend_one, cl_blend_zero, cl_blend_one, cl_blend_zero, CL_Colorf::black);
 	}
 }
 

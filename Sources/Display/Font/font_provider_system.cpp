@@ -30,7 +30,7 @@
 #include "Display/precomp.h"
 #include "font_provider_system.h"
 
-#ifdef WIN32
+#ifdef USE_MS_FONT_RENDERER
 #include "FontEngine/font_engine_win32.h"
 #endif
 //#else
@@ -152,54 +152,50 @@ void CL_FontProvider_System::load_font( CL_GraphicContext &context, const CL_Fon
 	}
 	else
 	{
-#ifdef WIN32
+#ifdef USE_MS_FONT_RENDERER
 		glyph_cache.anti_alias = abs(desc.get_height()) >= 16;
 #else
 		glyph_cache.anti_alias = true;	// Default, anti_alias enabled (may be modified by WIN32 later)
 #endif
 	}
 
-#ifdef WIN32
-	// Seems the MS implementation does anti-aliasing really poorly (no subpixel rendering support
-	// in GetGlyphOutline), so we use FreeType to render our anti-aliased text. -- mbn 17. April 2010
-/*	if (glyph_cache.anti_alias)
-	{
-		HFONT handle = CreateFont(
-			desc.get_height(), desc.get_average_width(),
-			(int) (desc.get_escapement() * 10 + 0.5),
-			(int) (desc.get_orientation() * 10 + 0.5),
-			desc.get_weight(),
-			desc.get_italic() ? TRUE : FALSE,
-			desc.get_underline() ? TRUE : FALSE,
-			desc.get_strikeout() ? TRUE : FALSE,
-			DEFAULT_CHARSET,
-			OUT_DEFAULT_PRECIS,
-			CLIP_DEFAULT_PRECIS,
-			DEFAULT_QUALITY,
-			(desc.get_fixed_pitch() ? FIXED_PITCH : DEFAULT_PITCH) | FF_DONTCARE,
-			desc.get_typeface_name().c_str());
-		if (handle == 0)
-			throw CL_Exception("CreateFont failed");
+#ifdef USE_MS_FONT_RENDERER
 
-		HDC dc = GetDC(0);
-		HGDIOBJ old_font = SelectObject(dc, handle);
-		DWORD font_file_size = GetFontData(dc, 0, 0, 0, 0);
-		CL_DataBuffer font_file(font_file_size);
-		DWORD result = GetFontData(dc, 0, 0, font_file.get_data(), font_file.get_size());
-		SelectObject(dc, old_font);
-		ReleaseDC(0, dc);
-		DeleteObject(handle);
-		if (result == GDI_ERROR)
-			throw CL_Exception("GetFontData failed");
+	font_engine = new CL_FontEngine_Win32(desc);
+	glyph_cache.font_metrics = font_engine->get_metrics();
 
-		CL_IODevice_Memory font_iodevice(font_file);
-		font_engine = new CL_FontEngine_Freetype(font_iodevice, desc.get_height(), desc.get_average_width());
-	}
-	else*/
-	{
-		font_engine = new CL_FontEngine_Win32(desc);
-	}
+#elif defined(WIN32)
 
+	HFONT handle = CreateFont(
+		desc.get_height(), desc.get_average_width(),
+		(int) (desc.get_escapement() * 10 + 0.5),
+		(int) (desc.get_orientation() * 10 + 0.5),
+		desc.get_weight(),
+		desc.get_italic() ? TRUE : FALSE,
+		desc.get_underline() ? TRUE : FALSE,
+		desc.get_strikeout() ? TRUE : FALSE,
+		DEFAULT_CHARSET,
+		OUT_DEFAULT_PRECIS,
+		CLIP_DEFAULT_PRECIS,
+		DEFAULT_QUALITY,
+		(desc.get_fixed_pitch() ? FIXED_PITCH : DEFAULT_PITCH) | FF_DONTCARE,
+		CL_StringHelp::utf8_to_ucs2(desc.get_typeface_name()).c_str());
+	if (handle == 0)
+		throw CL_Exception("CreateFont failed");
+
+	HDC dc = GetDC(0);
+	HGDIOBJ old_font = SelectObject(dc, handle);
+	DWORD font_file_size = GetFontData(dc, 0, 0, 0, 0);
+	CL_DataBuffer font_file(font_file_size);
+	DWORD result = GetFontData(dc, 0, 0, font_file.get_data(), font_file.get_size());
+	SelectObject(dc, old_font);
+	ReleaseDC(0, dc);
+	DeleteObject(handle);
+	if (result == GDI_ERROR)
+		throw CL_Exception("GetFontData failed");
+
+	CL_IODevice_Memory font_iodevice(font_file);
+	font_engine = new CL_FontEngine_Freetype(font_iodevice, desc.get_height(), desc.get_average_width());
 	glyph_cache.font_metrics = font_engine->get_metrics();
 
 #else

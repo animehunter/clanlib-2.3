@@ -44,6 +44,8 @@ private:
 	void render_sprite_scale(CL_PixelThreadContext *context, const CL_Rect &box);
 	void render_sprite_noscale(CL_PixelThreadContext *context, const CL_Rect &box);
 	void render_sprite_noscale_white(CL_PixelThreadContext *context, const CL_Rect &box);
+	void render_glyph_scale(CL_PixelThreadContext *context, const CL_Rect &box);
+	void render_glyph_noscale(CL_PixelThreadContext *context, const CL_Rect &box);
 	CL_Rect get_dest_rect(CL_PixelThreadContext *context) const;
 
 	CL_Vec2f points[3];
