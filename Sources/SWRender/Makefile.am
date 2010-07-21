@@ -1,6 +1,6 @@
-lib_LTLIBRARIES = libclan22SWRender.la
+lib_LTLIBRARIES = libclan23SWRender.la
 
-libclan22SWRender_la_SOURCES = \
+libclan23SWRender_la_SOURCES = \
 swr_pixel_buffer_provider.h \
 swr_element_array_buffer_provider.h \
 swr_input_device_provider.h \
@@ -69,11 +69,11 @@ Canvas/Commands/pixel_command_pixels.cpp \
 Canvas/Commands/pixel_command_triangle.cpp \
 swr_target.cpp
 
-libclan22SWRender_la_LDFLAGS = \
+libclan23SWRender_la_LDFLAGS = \
   -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) $(LDFLAGS_LT_RELEASE) \
   $(extra_LIBS_SWRender)
 
-libclan22Sound_la_CXXFLAGS=$(SWRender_CXXFLAGS) $(extra_CFLAGS_SWRender)
+libclan23Sound_la_CXXFLAGS=$(SWRender_CXXFLAGS) $(extra_CFLAGS_SWRender)
 
 # EOF #
 

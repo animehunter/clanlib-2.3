@@ -1,11 +1,11 @@
-lib_LTLIBRARIES = libclan22Display.la
+lib_LTLIBRARIES = libclan23Display.la
 
 if WIN32
 else
-libclan22Display_la_LIBADD = -lpng -ljpeg
+libclan23Display_la_LIBADD = -lpng -ljpeg
 endif
 
-libclan22Display_la_SOURCES = \
+libclan23Display_la_SOURCES = \
 	2D/color.cpp \
 	2D/color_hsv.cpp \
 	2D/color_hsl.cpp \
@@ -149,19 +149,19 @@ libclan22Display_la_SOURCES = \
 	X11/input_device_provider_x11keyboard.cpp \
 	X11/input_device_provider_x11keyboard.h
 if LINUX_JOYSTICK
-libclan22Display_la_SOURCES += \
+libclan23Display_la_SOURCES += \
 	X11/input_device_provider_linuxjoystick.cpp \
 	X11/input_device_provider_linuxjoystick.h
 endif
-libclan22Display_la_SOURCES += \
+libclan23Display_la_SOURCES += \
 	X11/font_config.cpp \
 	X11/font_config.h
 
 
-libclan22Display_la_LDFLAGS = \
+libclan23Display_la_LDFLAGS = \
   -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) $(LDFLAGS_LT_RELEASE) \
   $(extra_LIBS_clanDisplay)
 
-libclan22Display_la_CXXFLAGS=$(clanDisplay_CXXFLAGS) $(extra_CFLAGS_clanDisplay)
+libclan23Display_la_CXXFLAGS=$(clanDisplay_CXXFLAGS) $(extra_CFLAGS_clanDisplay)
 # EOF #
 

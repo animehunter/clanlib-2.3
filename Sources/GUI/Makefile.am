@@ -1,6 +1,6 @@
-lib_LTLIBRARIES = libclan22GUI.la
+lib_LTLIBRARIES = libclan23GUI.la
 
-libclan22GUI_la_SOURCES = \
+libclan23GUI_la_SOURCES = \
 setup_gui.h \
 setup_gui.cpp \
 gui_theme_layout_manager.cpp \
@@ -112,10 +112,10 @@ gui_manager_impl.h \
 gui_theme_default_impl.h \
 precomp.h
 
-libclan22GUI_la_LDFLAGS = \
+libclan23GUI_la_LDFLAGS = \
   -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) $(LDFLAGS_LT_RELEASE) \
   $(extra_LIBS_clanGUI)
 
-libclan22GUI_la_CXXFLAGS=$(clanGUI_CXXFLAGS) $(extra_CFLAGS_clanGUI)
+libclan23GUI_la_CXXFLAGS=$(clanGUI_CXXFLAGS) $(extra_CFLAGS_clanGUI)
 
 # EOF #

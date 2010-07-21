@@ -6,7 +6,7 @@ dnl Ensure that a recent enough version of Autoconv is being used
 AC_PREREQ(2.50)
 
 dnl Set the name of the package and its version. (This must be called first)
-AC_INIT(ClanLib, 2.2.0)
+AC_INIT(ClanLib, 2.3.0)
 
 AC_CONFIG_MACRO_DIR(m4)
 
@@ -25,7 +25,7 @@ dnl subdir-objects -> Objects places into the subdirectory of the build director
 AM_INIT_AUTOMAKE( foreign dist-bzip2 dist-zip 1.5b subdir-objects )
 
 CLANLIB_MAJOR_VERSION=2
-CLANLIB_MINOR_VERSION=2
+CLANLIB_MINOR_VERSION=3
 CLANLIB_MICRO_VERSION=0
 
 CLANLIB_VERSION=$CLANLIB_MAJOR_VERSION.$CLANLIB_MINOR_VERSION.$CLANLIB_MICRO_VERSION

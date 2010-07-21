@@ -1,6 +1,6 @@
-lib_LTLIBRARIES = libclan22CSSLayout.la
+lib_LTLIBRARIES = libclan23CSSLayout.la
 
-libclan22CSSLayout_la_SOURCES = \
+libclan23CSSLayout_la_SOURCES = \
 	BoxTree/css_box_element.cpp \
 	BoxTree/css_box_element.h \
 	BoxTree/css_box_length.h \
@@ -380,10 +380,10 @@ libclan22CSSLayout_la_SOURCES = \
 	precomp.cpp \
 	precomp.h
 
-libclan22CSSLayout_la_LDFLAGS = \
+libclan23CSSLayout_la_LDFLAGS = \
   -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) $(LDFLAGS_LT_RELEASE) \
   $(extra_LIBS_clanCSSLayout)
 
-libclan22CSSLayout_la_CXXFLAGS=$(clanCSSLayout_CXXFLAGS) $(extra_CFLAGS_clanCSSLayout)
+libclan23CSSLayout_la_CXXFLAGS=$(clanCSSLayout_CXXFLAGS) $(extra_CFLAGS_clanCSSLayout)
 # EOF #
 
