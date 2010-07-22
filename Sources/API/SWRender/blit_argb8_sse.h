@@ -209,7 +209,7 @@ inline void CL_BlitARGB8SSE::blend_premultiplied(__m128i &dest, __m128i &src, __
 inline void CL_BlitARGB8SSE::blend_lcd(__m128i &dest, __m128i &src, __m128i &one, __m128i &half, __m128i &color)
 {
 	__m128i invsrc;
-	invsrc = _mm_sub_epi16(one, src);
+	invsrc = _mm_sub_epi16(one, _mm_add_epi16(_mm_srli_epi16(src, 7), src));
 
 	dest = _mm_add_epi16(_mm_mullo_epi16(src, color), _mm_mullo_epi16(dest, invsrc));
 	dest = _mm_add_epi16(dest, half); // round up
