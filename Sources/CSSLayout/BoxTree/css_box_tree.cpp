@@ -353,6 +353,9 @@ void CL_CSSBoxTree::set_selection(CL_CSSBoxNode *start, size_t start_text_offset
 
 void CL_CSSBoxTree::apply_selection(CL_CSSBoxNode *node, CL_CSSBoxNode *start, size_t start_offset, CL_CSSBoxNode *end, size_t end_offset, bool clear, bool in_selection)
 {
+	if (!node)
+		return;
+
 	if (node == start)
 		in_selection = true;
 

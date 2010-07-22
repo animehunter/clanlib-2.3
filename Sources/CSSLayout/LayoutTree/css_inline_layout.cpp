@@ -89,15 +89,35 @@ void CL_CSSInlineLayout::render(CL_GraphicContext &gc, CL_CSSResourceCache *reso
 
 					if (sel_start < sel_end)
 					{
+						int width1 = font.get_text_size(gc, text->processed_text.substr(segment.text_start, sel_start-segment.text_start)).width;
+						int width2 = font.get_text_size(gc, text->processed_text.substr(sel_start, sel_end-sel_start)).width;
+						//int width3 = font.get_text_size(gc, text->processed_text.substr(sel_end, segment.text_end-sel_end)).width;
 						CL_Rectf b = line_boxes[i].box;
-						b.translate(pos_x, pos_y);
+						b.translate(pos_x + segment.left, pos_y);
+						b.left += width1;
+						b.right = b.left + width2;
 						CL_Draw::fill(gc, b, CL_Colorf::blueviolet);
+
 						font.draw_text(
 							gc,
 							pos_x+line_boxes[i].box.left + segment.left,
 							pos_y+line_boxes[i].box.top + line_boxes[i].ascent - segment.baseline_offset,
-							text->processed_text.substr(segment.text_start, segment.text_end-segment.text_start),
+							text->processed_text.substr(segment.text_start, sel_start-segment.text_start),
+							properties.color.color);
+
+						font.draw_text(
+							gc,
+							pos_x+line_boxes[i].box.left + segment.left + width1,
+							pos_y+line_boxes[i].box.top + line_boxes[i].ascent - segment.baseline_offset,
+							text->processed_text.substr(sel_start, sel_end-sel_start),
 							CL_Colorf::white);
+
+						font.draw_text(
+							gc,
+							pos_x+line_boxes[i].box.left + segment.left + width1 + width2,
+							pos_y+line_boxes[i].box.top + line_boxes[i].ascent - segment.baseline_offset,
+							text->processed_text.substr(sel_end, segment.text_end-sel_end),
+							properties.color.color);
 					}
 					else
 					{
