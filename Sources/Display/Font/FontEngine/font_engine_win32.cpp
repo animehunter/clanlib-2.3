@@ -98,67 +98,88 @@ CL_FontMetrics CL_FontEngine_Win32::get_metrics()
 CL_FontPixelBuffer CL_FontEngine_Win32::get_font_glyph(int glyph, bool anti_alias, const CL_Colorf &color)
 {
 	if (anti_alias)
-		return get_font_glyph_gray8(glyph, color);
+		return get_font_glyph_lcd(glyph, color);
 	else
 		return get_font_glyph_mono(glyph, color);
 }
 
 CL_FontPixelBuffer CL_FontEngine_Win32::get_font_glyph_lcd(int glyph, const CL_Colorf &color)
 {
-	CL_DataBuffer glyph_bitmap;
+	HBITMAP old_bitmap;
+	HFONT old_font;
 	GLYPHMETRICS glyph_metrics = { 0 };
+	HDC screen_dc = GetDC(0);
+	old_font = (HFONT)SelectObject(screen_dc, handle);
+
+	wchar_t text[2] = { glyph, 0 };
+	WORD indices[2] = {0};
+	GetGlyphIndicesW(screen_dc, text, 1, indices, GGI_MARK_NONEXISTING_GLYPHS);
+
 	MAT2 matrix = { 0 };
-	matrix.eM11.value = 3;
+	matrix.eM11.value = 1;
 	matrix.eM22.value = 1;
-	if (try_load_glyph_bitmap(glyph, GGO_GRAY8_BITMAP, matrix, glyph_bitmap, glyph_metrics))
+	DWORD result = GetGlyphOutline(screen_dc, indices[0], GGO_GRAY8_BITMAP|GGO_GLYPH_INDEX, &glyph_metrics, 0, 0, &matrix);
+	SelectObject(screen_dc, old_font);
+	if (result == GDI_ERROR)
 	{
-		CL_PixelBuffer pixelbuffer((glyph_metrics.gmBlackBoxX+2)/3, glyph_metrics.gmBlackBoxY, cl_rgba8);
-
-		DWORD s_pitch = (glyph_metrics.gmBlackBoxX + 3) / 4 * 4;
-		unsigned char *s = (unsigned char *) glyph_bitmap.get_data();
-
-		DWORD d_width = pixelbuffer.get_width();
-		DWORD *d = (DWORD *) pixelbuffer.get_data();
-		memset(d, 0, d_width*pixelbuffer.get_height()*4);
-
-		CL_Color icolor = color;
-		unsigned int c = (icolor.get_red() << 24) + (icolor.get_green() << 16) + (icolor.get_blue() << 8);
-
-		for (DWORD py = 0; py < glyph_metrics.gmBlackBoxY; py++)
-		{
-			for (DWORD px = 0; px < glyph_metrics.gmBlackBoxX; px++)
-			{
-				DWORD gray = s[px + py*s_pitch];
-				gray = (gray*255+32)/64;
-
-				int offset = px/3 + py*d_width;
-				DWORD component = 3-(px%3);
-				DWORD component_mask = ((DWORD)0xff)<<(component*8);
-				DWORD component_color = ((DWORD)0xff-gray)<<(component*8);
-
-				if (gray > 0)
-					d[offset] |= 0xff;
-
-				d[offset] &= ~component_mask;
-				d[offset] |= component_color;
-			}
-		}
-
-		CL_FontPixelBuffer font_buffer;
-		font_buffer.glyph = glyph;
-		font_buffer.buffer = pixelbuffer;
-		font_buffer.buffer_rect = pixelbuffer.get_size();
-		font_buffer.offset.x = glyph_metrics.gmptGlyphOrigin.x/3;
-		font_buffer.offset.y = -glyph_metrics.gmptGlyphOrigin.y;
-		font_buffer.empty_buffer = false;
-		font_buffer.increment.x = (glyph_metrics.gmCellIncX+2)/3;
-		font_buffer.increment.y = glyph_metrics.gmCellIncY;
-		return font_buffer;
-	}
-	else
-	{
+		ReleaseDC(0, screen_dc);
 		return get_empty_font_glyph(glyph);
 	}
+
+	CL_Size bitmap_size(glyph_metrics.gmBlackBoxX+6, glyph_metrics.gmBlackBoxY);
+	CL_Point cursor(3-glyph_metrics.gmptGlyphOrigin.x, glyph_metrics.gmptGlyphOrigin.y);
+
+	HDC dc = CreateCompatibleDC(screen_dc);
+	HBITMAP bitmap = CreateCompatibleBitmap(screen_dc, bitmap_size.width, bitmap_size.height);
+	old_bitmap = (HBITMAP)SelectObject(dc, bitmap);
+
+	HBRUSH brush = CreateSolidBrush(RGB(0,0,0));
+	RECT rect = { 0, 0, bitmap_size.width, bitmap_size.height };
+	FillRect(dc, &rect, brush);
+	DeleteObject(brush);
+
+	old_font = (HFONT)SelectObject(dc, handle);
+	SetTextColor(dc, RGB(255,255,255));
+	SetBkColor(dc, RGB(0,0,0));
+	SetTextAlign(dc, TA_LEFT|TA_BASELINE|TA_NOUPDATECP);
+	text[0] = indices[0];
+	ExtTextOut(dc, cursor.x, cursor.y, ETO_GLYPH_INDEX, &rect, text, 1, 0);
+	SelectObject(dc, old_font);
+
+	SelectObject(dc, old_bitmap);
+	DeleteDC(dc);
+
+	BITMAPV5HEADER header = { 0 };
+	header.bV5Size = sizeof(BITMAPV5HEADER);
+	header.bV5Width = bitmap_size.width;
+	header.bV5Height = -bitmap_size.height;
+	header.bV5Planes = 1;
+	header.bV5BitCount = 32;
+	header.bV5Compression = BI_BITFIELDS;
+	header.bV5RedMask   = 0xff000000;
+	header.bV5GreenMask = 0x00ff0000;
+	header.bV5BlueMask  = 0x0000ff00;
+	header.bV5AlphaMask = 0x000000ff;
+	header.bV5SizeImage = bitmap_size.height * 4;
+	CL_PixelBuffer pixelbuffer(bitmap_size.width, bitmap_size.height, cl_argb8);
+	int scanlines = GetDIBits(screen_dc, bitmap, 0, bitmap_size.height, pixelbuffer.get_data(), (LPBITMAPINFO)&header, DIB_RGB_COLORS);
+	unsigned char *p = (unsigned char *)pixelbuffer.get_data();
+	for (int i = 0; i < bitmap_size.width*bitmap_size.height; i++)
+		p[i*4+3] = 255;
+
+	DeleteObject(bitmap);
+	ReleaseDC(0, screen_dc);
+
+	CL_FontPixelBuffer font_buffer;
+	font_buffer.glyph = glyph;
+	font_buffer.buffer = pixelbuffer;
+	font_buffer.buffer_rect = pixelbuffer.get_size();
+	font_buffer.offset.x = -cursor.x;
+	font_buffer.offset.y = -cursor.y;
+	font_buffer.empty_buffer = false;
+	font_buffer.increment.x = glyph_metrics.gmCellIncX;
+	font_buffer.increment.y = glyph_metrics.gmCellIncY;
+	return font_buffer;
 }
 
 CL_FontPixelBuffer CL_FontEngine_Win32::get_font_glyph_gray8(int glyph, const CL_Colorf &color)
@@ -178,15 +199,16 @@ CL_FontPixelBuffer CL_FontEngine_Win32::get_font_glyph_gray8(int glyph, const CL
 		DWORD d_width = glyph_metrics.gmBlackBoxX;
 		DWORD *d = (DWORD *) pixelbuffer.get_data();
 
-		CL_Color icolor = color;
-		unsigned int c = (icolor.get_red() << 24) + (icolor.get_green() << 16) + (icolor.get_blue() << 8);
+		// CL_Color icolor = color;
+		// unsigned int c = (icolor.get_red() << 24) + (icolor.get_green() << 16) + (icolor.get_blue() << 8);
 
 		for (DWORD py = 0; py < glyph_metrics.gmBlackBoxY; py++)
 		{
 			for (DWORD px = 0; px < glyph_metrics.gmBlackBoxX; px++)
 			{
 				DWORD gray = s[px + py*s_pitch];
-				d[px + py*d_width] = c + (gray*255+32)/64;
+				// d[px + py*d_width] = c + (gray*255+32)/64;
+				d[px + py*d_width] = (gray << 24) + (gray << 16) + (gray << 8) + 255;
 			}
 		}
 
@@ -224,15 +246,15 @@ CL_FontPixelBuffer CL_FontEngine_Win32::get_font_glyph_mono(int glyph, const CL_
 		DWORD d_width = glyph_metrics.gmBlackBoxX;
 		DWORD *d = (DWORD *) pixelbuffer.get_data();
 
-		CL_Color icolor = color;
-		unsigned int c = (icolor.get_red() << 24) + (icolor.get_green() << 16) + (icolor.get_blue() << 8);
+		// CL_Color icolor = color;
+		// unsigned int c = (icolor.get_red() << 24) + (icolor.get_green() << 16) + (icolor.get_blue() << 8);
 
 		for (DWORD py = 0; py < glyph_metrics.gmBlackBoxY; py++)
 		{
 			for (DWORD px = 0; px < glyph_metrics.gmBlackBoxX; px++)
 			{
-				DWORD gray = c + ((s[px/8 + py*s_pitch] >> (7-px%8)) & 1) * 255;
-				d[px + py*d_width] = gray;
+				DWORD gray = ((s[px/8 + py*s_pitch] >> (7-px%8)) & 1) * 255;
+				d[px + py*d_width] = (gray << 24) + (gray << 16) + (gray << 8) + 255;
 			}
 		}
 

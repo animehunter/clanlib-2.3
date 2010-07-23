@@ -152,11 +152,14 @@ void CL_FontProvider_System::load_font( CL_GraphicContext &context, const CL_Fon
 	}
 	else
 	{
+		glyph_cache.anti_alias = true;
+/*
 #ifdef USE_MS_FONT_RENDERER
 		glyph_cache.anti_alias = abs(desc.get_height()) >= 16;
 #else
 		glyph_cache.anti_alias = true;	// Default, anti_alias enabled (may be modified by WIN32 later)
 #endif
+*/
 	}
 
 #ifdef USE_MS_FONT_RENDERER
