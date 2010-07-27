@@ -30,6 +30,7 @@
 #include "css_box_node_walker.h"
 #include "css_box_element.h"
 #include "css_box_text.h"
+#include "css_box_object.h"
 
 CL_CSSBoxNodeWalker::CL_CSSBoxNodeWalker(CL_CSSBoxNode *node)
 : cur(node), level(0)
@@ -51,6 +52,11 @@ bool CL_CSSBoxNodeWalker::is_text() const
 	return cur != 0 && dynamic_cast<CL_CSSBoxText*>(cur) != 0;
 }
 
+bool CL_CSSBoxNodeWalker::is_object() const
+{
+	return cur != 0 && dynamic_cast<CL_CSSBoxObject*>(cur) != 0;
+}
+
 CL_CSSBoxNode *CL_CSSBoxNodeWalker::get() const
 {
 	return cur;
@@ -64,6 +70,11 @@ CL_CSSBoxElement *CL_CSSBoxNodeWalker::get_element() const
 CL_CSSBoxText *CL_CSSBoxNodeWalker::get_text() const
 {
 	return dynamic_cast<CL_CSSBoxText*>(cur);
+}
+
+CL_CSSBoxObject *CL_CSSBoxNodeWalker::get_object() const
+{
+	return dynamic_cast<CL_CSSBoxObject*>(cur);
 }
 
 bool CL_CSSBoxNodeWalker::next(bool traverse_children)

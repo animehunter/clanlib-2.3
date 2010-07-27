@@ -62,6 +62,6 @@ private:
 	CL_CSSReplacedLayout *create_replaced_level_layout(CL_CSSBoxObject *object);
 	CL_CSSTableLayout *create_table_level_layout(CL_CSSBoxElement *element);
 
-	CL_CSSBlockLayout *root_layout;
+	CL_CSSLayoutTreeNode *root_layout;
 	CL_CSSStackingContext *root_stacking_context;
 };

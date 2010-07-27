@@ -47,6 +47,16 @@ CL_CSSBlockLayout::~CL_CSSBlockLayout()
 		delete children[i];
 }
 
+void CL_CSSBlockLayout::calculate_content_top_down_sizes()
+{
+	for (size_t i = 0; i < children.size(); i++)
+	{
+		children[i]->containing_width = width;
+		children[i]->containing_height = height;
+		children[i]->calculate_top_down_sizes();
+	}
+}
+
 void CL_CSSBlockLayout::render(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache)
 {
 	render_non_content(gc, resource_cache);
@@ -59,29 +69,6 @@ void CL_CSSBlockLayout::render(CL_GraphicContext &gc, CL_CSSResourceCache *resou
 			if (stacking_context == children[i]->get_stacking_context())
 				children[i]->render(gc, resource_cache);
 		}
-	}
-}
-
-void CL_CSSBlockLayout::calculate_top_down_sizes()
-{
-	CL_CSSLayoutTreeNode::calculate_top_down_sizes();
-	for (size_t i = 0; i < children.size(); i++)
-	{
-		children[i]->used.containing.width = used.width;
-		children[i]->used.containing.height = used.height;
-		children[i]->used.containing.undetermined_width = used.undetermined_width;
-		children[i]->used.containing.undetermined_height = used.undetermined_height;
-		children[i]->calculate_top_down_sizes();
-	}
-}
-
-void CL_CSSBlockLayout::set_auto_width(CL_CSSUsedValue width)
-{
-	CL_CSSLayoutTreeNode::set_auto_width(width);
-	for (size_t i = 0; i < children.size(); i++)
-	{
-		CL_CSSUsedValue spacing = children[i]->used.margin.left + children[i]->used.border.left + children[i]->used.padding.left + children[i]->used.padding.right + children[i]->used.border.right + children[i]->used.margin.right;
-		children[i]->set_auto_width(cl_max(0.0f, width-spacing));
 	}
 }
 
@@ -114,6 +101,8 @@ void CL_CSSBlockLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor
 				}
 
 
+				children[i]->containing_width = width;
+				children[i]->containing_height = height;
 				children[i]->layout_formatting_root(gc, cursor, strategy);
 
 				CL_Rect float_box(0, 0, children[i]->get_block_width(), children[i]->get_block_height());
@@ -141,26 +130,28 @@ void CL_CSSBlockLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor
 				{
 					if (children[i]->get_element_node()->computed_properties.float_box.type == CL_CSSBoxFloat::type_left)
 					{
-						float_box = formatting_context->float_left(float_box, cursor.x+used.width, this);
+						float_box = formatting_context->float_left(float_box, cursor.x+width.value, this);
 					}
 					else if (children[i]->get_element_node()->computed_properties.float_box.type == CL_CSSBoxFloat::type_right)
 					{
-						float_box.translate(used.width-float_box.get_width(), 0);
-						float_box = formatting_context->float_right(float_box, cursor.x+used.width, this);
+						float_box.translate(width.value-float_box.get_width(), 0);
+						float_box = formatting_context->float_right(float_box, cursor.x+width.value, this);
 					}
 					else
 					{
 						cursor.apply_margin();
-						float_box = formatting_context->place_left(float_box, cursor.x+used.width);
+						float_box = formatting_context->place_left(float_box, cursor.x+width.value);
 						cursor.y = float_box.bottom;
 					}
 				}
 
 				cursor.apply_written_width(float_box.right);
-				children[i]->set_root_block_position(float_box.left+children[i]->used.offset.x, float_box.top+children[i]->used.offset.y);
+				children[i]->set_root_block_position(float_box.left+children[i]->offset.x, float_box.top+children[i]->offset.y);
 			}
 			else
 			{
+				children[i]->containing_width = width;
+				children[i]->containing_height = height;
 				children[i]->layout_normal(gc, cursor, strategy);
 			}
 		}

@@ -48,8 +48,6 @@ public:
 	CL_CSSBlockLayout(CL_CSSBoxElement *element_node);
 	~CL_CSSBlockLayout();
 
-	void calculate_top_down_sizes();
-	void set_auto_width(CL_CSSUsedValue width);
 	void render(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache);
 	void set_component_geometry();
 	int get_first_line_baseline();
@@ -58,6 +56,8 @@ public:
 
 	CL_CSSInlineLayout *find_inline_layout(CL_CSSBoxText *text_node);
 	CL_CSSLayoutHitTestResult hit_test(const CL_Point &pos) const;
+
+	void calculate_content_top_down_sizes();
 
 	std::vector<CL_CSSLayoutTreeNode *> children;
 

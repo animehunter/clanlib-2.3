@@ -42,6 +42,8 @@ CSSView::CSSView(CL_GUIComponent *parent)
 	scrollbar->set_ranges(0, 30000, 12, 800);
 	scrollbar->func_scroll().set(this, &CSSView::on_scroll);
 
+	image = CL_Image(get_gc(), "clanlib.png");
+
 	//load_html("clanlib.html", "clanlib.css");
 	//load_html("acid1.xml", "acid1.css");
 	//load_html("slashdot.html", "slashdot.css");
@@ -83,6 +85,9 @@ void CSSView::on_render(CL_GraphicContext &gc, const CL_Rect &update_rect)
 	gc.clear(CL_Colorf::white);
 	gc.push_translate(0.0f, (float)-scrollbar->get_position());
 	layout.render(gc);
+	for (size_t i = 0; i < replaced_objs.size(); i++)
+		//CL_Draw::box(gc, replaced_objs[i]->box, CL_Colorf::black);
+		image.draw(gc, replaced_objs[i]->box);
 	gc.pop_modelview();
 	reset_cliprect(gc);
 }
@@ -132,66 +137,50 @@ void CSSView::load_html(const CL_String &html_filename, const CL_String &css_fil
 				CL_Console::write_line("test");
 			}
 
-/*			if (token.name == "img")
+			CL_CSSLayoutElement element;
+			if (token.name == "img")
 			{
-				CL_String filename;
-				CL_String prop;
-				if (dom_element.get_attribute(L"src") == L"gfx/clanlib.png")
-				{
-					filename = L"clanlib.png";
-					prop = L"display: inline-block; width: 323px; height: 86px;";
-				}
-				else
-				{
-					filename = L"overview.png";
-					prop = L"display: inline-block; width: 48px; height: 48px;";
-				}
-				CL_ImageView *imgview = new CL_ImageView(this);
-				imgview->set_image(CL_PixelBuffer(filename));
+				CSSReplaced *replaced = new CSSReplaced();
+				replaced->size = image.get_size();
+				replaced_objs.push_back(replaced);
 				CL_CSSLayoutObject obj = layout.create_object();
-				obj.set_component(imgview);
-
-				CL_DomSelectNode select_node(dom_element);
-				obj.apply_properties(css_document.select(&select_node));
-				obj.apply_properties(dom_element.get_attribute("style"));
-				obj.apply_properties(prop);
-				if (!css_elements.empty())
-					css_elements.back().append_child(obj);
+				obj.set_component(replaced);
+				element = obj;
 			}
-			else*/
+			else
 			{
-				CL_CSSLayoutElement element = layout.create_element();
-				element.set_name(cl_format(L"%1.%2", token.name, dom_element.get_attribute(L"class")));
+				element = layout.create_element();
+			}
+			element.set_name(cl_format(L"%1.%2", token.name, dom_element.get_attribute(L"class")));
 
-				CL_DomSelectNode select_node(dom_element);
-				element.apply_properties(css_document.select(&select_node));
-				element.apply_properties(dom_element.get_attribute("style"));
-				if (!css_elements.empty())
-					css_elements.back().append_child(element);
+			CL_DomSelectNode select_node(dom_element);
+			element.apply_properties(css_document.select(&select_node));
+			element.apply_properties(dom_element.get_attribute("style"));
+			if (!css_elements.empty())
+				css_elements.back().append_child(element);
 
-				if (!css_elements.empty())
-				{
-					CL_CSSLayoutElement pseudo_before = layout.create_element();
-					pseudo_before.set_name(L":before");
-					pseudo_before.apply_properties(css_document.select(&select_node, "before"));
-					css_elements.back().insert_before(pseudo_before, element);
+			if (!css_elements.empty())
+			{
+				CL_CSSLayoutElement pseudo_before = layout.create_element();
+				pseudo_before.set_name(L":before");
+				pseudo_before.apply_properties(css_document.select(&select_node, "before"));
+				css_elements.back().insert_before(pseudo_before, element);
 
-					CL_CSSLayoutElement pseudo_after = layout.create_element();
-					pseudo_after.set_name(L":after");
-					pseudo_after.apply_properties(css_document.select(&select_node, "after"));
-					css_elements.back().insert_before(pseudo_after, element.get_next_sibling());
-				}
+				CL_CSSLayoutElement pseudo_after = layout.create_element();
+				pseudo_after.set_name(L":after");
+				pseudo_after.apply_properties(css_document.select(&select_node, "after"));
+				css_elements.back().insert_before(pseudo_after, element.get_next_sibling());
+			}
 
-				if (is_end_tag_forbidden(token.name))
-				{
-				}
-				else
-				{
-					level++;
-					tags.push_back(token.name);
-					css_elements.push_back(element);
-					dom_elements.push_back(dom_element);
-				}
+			if (is_end_tag_forbidden(token.name))
+			{
+			}
+			else
+			{
+				level++;
+				tags.push_back(token.name);
+				css_elements.push_back(element);
+				dom_elements.push_back(dom_element);
 			}
 		}
 		else if (token.type == HTMLToken::type_tag_end)

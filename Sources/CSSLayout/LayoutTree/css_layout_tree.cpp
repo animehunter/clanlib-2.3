@@ -63,7 +63,7 @@ void CL_CSSLayoutTree::clear()
 void CL_CSSLayoutTree::create(CL_CSSBoxElement *element)
 {
 	clear();
-	root_layout = create_block_level_layout(element);
+	root_layout = create_layout(element);
 }
 
 void CL_CSSLayoutTree::layout(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, const CL_Size &viewport)
@@ -71,10 +71,10 @@ void CL_CSSLayoutTree::layout(CL_GraphicContext &gc, CL_CSSResourceCache *resour
 	delete root_stacking_context;
 	root_stacking_context = new CL_CSSStackingContext(root_layout);
 
-	root_layout->used.containing.width = viewport.width;
-	root_layout->used.containing.height = viewport.height;
-	root_layout->used.containing.undetermined_width = false;
-	root_layout->used.containing.undetermined_height = false;
+	root_layout->containing_width.value = viewport.width;
+	root_layout->containing_height.value = viewport.height;
+	root_layout->containing_width.expanding = false;
+	root_layout->containing_height.use_content = false;
 
 	CL_CSSLayoutCursor cursor;
 	cursor.resources = resource_cache;
@@ -93,7 +93,23 @@ void CL_CSSLayoutTree::render(CL_GraphicContext &gc, CL_CSSResourceCache *resour
 
 CL_CSSInlineLayout *CL_CSSLayoutTree::find_inline_layout(CL_CSSBoxText *text_node)
 {
-	return root_layout->find_inline_layout(text_node);
+	CL_CSSBlockLayout *block_layout = dynamic_cast<CL_CSSBlockLayout*>(root_layout);
+	CL_CSSInlineLayout *inline_layout = dynamic_cast<CL_CSSInlineLayout*>(root_layout);
+	if (inline_layout)
+	{
+		if (inline_layout->contains_node(text_node))
+			return inline_layout;
+		else
+			return 0;
+	}
+	else if (block_layout)
+	{
+		return block_layout->find_inline_layout(text_node);
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 CL_CSSLayoutHitTestResult CL_CSSLayoutTree::hit_test(const CL_Point &pos)
@@ -103,7 +119,7 @@ CL_CSSLayoutHitTestResult CL_CSSLayoutTree::hit_test(const CL_Point &pos)
 
 CL_Rect CL_CSSLayoutTree::get_cursor_box(CL_GraphicContext &gc, CL_CSSResourceCache *resources, CL_CSSBoxText *text_node, CL_String::size_type pos)
 {
-	CL_CSSInlineLayout *inline_layout = root_layout->find_inline_layout(text_node);
+	CL_CSSInlineLayout *inline_layout = find_inline_layout(text_node);
 	if (inline_layout)
 	{
 		return inline_layout->get_cursor_box(gc, resources, text_node, pos);
@@ -199,7 +215,12 @@ CL_CSSInlineLayout *CL_CSSLayoutTree::create_inline_level_layout(CL_CSSBoxElemen
 	CL_CSSBoxNodeWalker cur_node(element->get_first_child());
 	while (cur_node.is_node())
 	{
-		if (cur_node.is_element())
+		if (cur_node.is_object())
+		{
+			inline_layout->push_back(cur_node.get(), create_replaced_level_layout(cur_node.get_object()));
+			cur_node.next(false);
+		}
+		else if (cur_node.is_element())
 		{
 			if (cur_node.get_element()->is_block_level() || cur_node.get_element()->is_inline_block_level())
 			{

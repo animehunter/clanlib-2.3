@@ -52,6 +52,19 @@ CL_CSSInlineLayout::~CL_CSSInlineLayout()
 	objects.clear();
 }
 
+void CL_CSSInlineLayout::calculate_content_top_down_sizes()
+{
+	for (size_t i = 0; i < objects.size(); i++)
+	{
+		if (objects[i].layout)
+		{
+			objects[i].layout->containing_width = width;
+			objects[i].layout->containing_height = height;
+			objects[i].layout->calculate_top_down_sizes();
+		}
+	}
+}
+
 void CL_CSSInlineLayout::render(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
 {
 	render_non_content(gc, resources);
@@ -145,22 +158,6 @@ void CL_CSSInlineLayout::push_back(CL_CSSBoxNode *box_node, CL_CSSLayoutTreeNode
 	object.node = box_node;
 	object.layout = layout_node;
 	objects.push_back(object);
-}
-
-void CL_CSSInlineLayout::calculate_top_down_sizes()
-{
-	CL_CSSLayoutTreeNode::calculate_top_down_sizes();
-	for (size_t i = 0; i < objects.size(); i++)
-	{
-		if (objects[i].layout)
-		{
-			objects[i].layout->used.containing.width = used.width;
-			objects[i].layout->used.containing.height = used.height;
-			objects[i].layout->used.containing.undetermined_width = used.undetermined_width;
-			objects[i].layout->used.containing.undetermined_height = used.undetermined_height;
-			objects[i].layout->calculate_top_down_sizes();
-		}
-	}
 }
 
 void CL_CSSInlineLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor &layout_cursor, LayoutStrategy strategy)
@@ -289,7 +286,7 @@ void CL_CSSInlineLayout::create_line_boxes(CL_GraphicContext &gc, CL_CSSLayoutCu
 
 void CL_CSSInlineLayout::place_line_box(CL_CSSInlineLineBox &line, CL_CSSLayoutCursor &layout_cursor, int y)
 {
-	line.box = formatting_context->find_line_box(layout_cursor.x, layout_cursor.x+used.width, y, 1, 0);
+	line.box = formatting_context->find_line_box(layout_cursor.x, layout_cursor.x+width.value, y, 1, 0);
 	if (line_boxes.empty())
 		apply_text_indent(layout_cursor, line);
 }
@@ -303,7 +300,7 @@ void CL_CSSInlineLayout::apply_text_indent(CL_CSSLayoutCursor &layout_cursor, CL
 	}
 	else if (element_node->computed_properties.text_indent.type == CL_CSSBoxTextIndent::type_percentage)
 	{
-		text_indent = (int)(used.width * element_node->computed_properties.text_indent.percentage / 100.0f + 0.5f);
+		text_indent = (int)(width.value * element_node->computed_properties.text_indent.percentage / 100.0f + 0.5f);
 	}
 
 	if (element_node->computed_properties.direction.type == CL_CSSBoxDirection::type_ltr)
@@ -490,7 +487,7 @@ void CL_CSSInlineLayout::create_block_segment(CL_GraphicContext &gc, CL_CSSLayou
 	CL_CSSInlineLineSegment segment;
 	segment.object_index = object_index;
 	segment.height = objects[object_index].layout->get_block_height();
-	segment.ascent = objects[object_index].layout->used.margin.top + objects[object_index].layout->used.border.top + objects[object_index].layout->used.padding.top;
+	segment.ascent = objects[object_index].layout->margin.top + objects[object_index].layout->border.top + objects[object_index].layout->padding.top;
 	segment.ascent += objects[object_index].layout->get_last_line_baseline();
 	if (segment.ascent == -1)
 	{

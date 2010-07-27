@@ -31,6 +31,7 @@
 class CL_CSSBoxNode;
 class CL_CSSBoxElement;
 class CL_CSSBoxText;
+class CL_CSSBoxObject;
 
 class CL_CSSBoxNodeWalker
 {
@@ -40,10 +41,12 @@ public:
 	bool is_node() const;
 	bool is_element() const;
 	bool is_text() const;
+	bool is_object() const;
 
 	CL_CSSBoxNode *get() const;
 	CL_CSSBoxElement *get_element() const;
 	CL_CSSBoxText *get_text() const;
+	CL_CSSBoxObject *get_object() const;
 
 	bool next(bool traverse_children = true);
 

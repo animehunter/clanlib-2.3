@@ -51,7 +51,6 @@ public:
 	void push_back(CL_CSSBoxNode *box_node, CL_CSSLayoutTreeNode *layout_node = 0);
 	bool is_empty() const;
 
-	void calculate_top_down_sizes();
 	void render(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
 	void set_component_geometry();
 	int get_first_line_baseline();
@@ -87,6 +86,7 @@ private:
 	void apply_line_box_alignment(CL_CSSInlineLineBox &line);
 	int find_baseline_offset(CL_GraphicContext &gc, CL_CSSResourceCache *resources, const CL_CSSBoxElement *element);
 	bool stop_at_block_level(CL_CSSInlineLineBoxCursor &cursor, CL_CSSInlineLineBoxCursor &next_linebreak);
+	void calculate_content_top_down_sizes();
 
 	std::vector<CL_CSSInlineObject> objects;
 	std::vector<CL_CSSInlineLineBreakOpportunity> linebreak_opportunities;

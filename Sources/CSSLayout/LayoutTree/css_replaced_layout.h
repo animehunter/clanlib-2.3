@@ -45,6 +45,7 @@ public:
 	int get_last_line_baseline();
 
 	bool is_replaced() const { return true; }
+	void calculate_top_down_sizes();
 
 private:
 	void prepare_children();
@@ -53,4 +54,5 @@ private:
 	CL_Rect box;
 	CL_Image image;
 	CL_CSSReplacedComponent *component;
+	CL_CSSIntrinsicValues intrinsic;
 };

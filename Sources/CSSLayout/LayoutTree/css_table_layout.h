@@ -49,8 +49,9 @@ public:
 	int get_first_line_baseline();
 	int get_last_line_baseline();
 
+	void calculate_content_top_down_sizes();
+
 private:
-	void calculate_top_down_sizes();
 	void prepare_children();
 	void layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy);
 	void position_cells(CL_CSSLayoutCursor &cursor);

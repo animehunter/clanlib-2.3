@@ -72,20 +72,17 @@ void CL_CSSTableLayout::add_cell(CL_CSSLayoutTreeNode *cell_layout)
 	next_column++;
 }
 
-void CL_CSSTableLayout::calculate_top_down_sizes()
+void CL_CSSTableLayout::calculate_content_top_down_sizes()
 {
-	CL_CSSLayoutTreeNode::calculate_top_down_sizes();
 	for (size_t row = 0; row < rows.size(); row++)
 	{
 		for (size_t cell = 0; cell < columns.size(); cell++)
 		{
 			if (columns[cell].rows.size() > row && columns[cell].rows[row])
 			{
-				columns[cell].rows[row]->used.containing.width = used.width;
-				columns[cell].rows[row]->used.containing.height = used.height;
-				columns[cell].rows[row]->used.containing.undetermined_width = used.undetermined_width;
-				columns[cell].rows[row]->used.containing.undetermined_height = used.undetermined_height;
-				columns[cell].rows[row]->calculate_top_down_sizes();
+				columns[cell].rows[row]->containing_width = width;
+				columns[cell].rows[row]->containing_height = height;
+				columns[cell].rows[row]->calculate_content_top_down_sizes();
 			}
 		}
 	}
@@ -214,7 +211,7 @@ void CL_CSSTableLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor
 	calculate_cell_widths(gc, cursor);
 	layout_cells(gc, cursor);
 	position_cells(cursor);
-	used.height = cl_max(used.height, cursor.y-start_y);
+	height.value = cl_max(height.value, cursor.y-start_y);
 }
 
 void CL_CSSTableLayout::render(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
@@ -355,7 +352,7 @@ void CL_CSSTableLayout::calculate_minimum_cell_widths(CL_GraphicContext & gc, CL
 				if (columns[cell].rows[row])
 				{
 					columns[cell].rows[row]->calc_minimum(gc, cursor);
-					CL_CSSUsedValue cell_width = columns[cell].rows[row]->used.min_width;
+					CL_CSSUsedValue cell_width = columns[cell].rows[row]->min_width;
 					columns[cell].minimum_width = cl_max(columns[cell].minimum_width, cell_width);
 				}
 			}
@@ -380,11 +377,11 @@ void CL_CSSTableLayout::calculate_preferred_cell_widths(CL_GraphicContext & gc, 
 					if (columns[cell].rows[row]->get_element_node()->computed_properties.width.type == CL_CSSBoxWidth::type_auto)
 					{
 						columns[cell].rows[row]->calc_preferred(gc, cursor);
-						cell_width = columns[cell].rows[row]->used.preferred_width;
+						cell_width = columns[cell].rows[row]->preferred_width;
 					}
 					else
 					{
-						cell_width = columns[cell].rows[row]->used.width;
+						cell_width = columns[cell].rows[row]->width.value;
 					}
 
 					columns[cell].maximum_width = cl_max(columns[cell].maximum_width, cell_width);
@@ -404,8 +401,8 @@ void CL_CSSTableLayout::calculate_cell_widths(CL_GraphicContext & gc, CL_CSSLayo
 	for (size_t cell = 0; cell < columns.size(); cell++)
 		content_width += columns[cell].maximum_width;
 
-	CL_CSSUsedValue available_width = used.width;
-	if (used.undetermined_width)
+	CL_CSSUsedValue available_width = width.value;
+	if (width.expanding)
 		available_width = content_width;
 
 	int columns_minimum = 0;
@@ -453,11 +450,12 @@ void CL_CSSTableLayout::layout_cells(CL_GraphicContext & gc, CL_CSSLayoutCursor 
 		default:
 		case CL_CSSBoxHeight::type_auto:
 			rows[row].height = 0.0f;
+			break;
 		case CL_CSSBoxHeight::type_length:
 			rows[row].height = rows[row].element->computed_properties.height.length.value;
 			break;
 		case CL_CSSBoxHeight::type_percentage:
-			rows[row].height = used.undetermined_height ? 0.0f : used.height * rows[row].element->computed_properties.height.percentage / 100.0f;
+			rows[row].height = height.use_content ? 0.0f : height.value * rows[row].element->computed_properties.height.percentage / 100.0f;
 			break;
 		}
 
@@ -468,9 +466,9 @@ void CL_CSSTableLayout::layout_cells(CL_GraphicContext & gc, CL_CSSLayoutCursor 
 				if (columns[cell].rows[row])
 				{
 					columns[cell].rows[row]->calculate_top_down_sizes();
-					columns[cell].rows[row]->set_auto_width(columns[cell].cell_width);
+					columns[cell].rows[row]->width.value = columns[cell].cell_width;
 					columns[cell].rows[row]->layout_formatting_root_helper(gc, cursor, normal_strategy);
-					rows[row].height = cl_max(rows[row].height, columns[cell].rows[row]->used.height);
+					rows[row].height = cl_max(rows[row].height, columns[cell].rows[row]->height.value);
 				}
 			}
 		}
@@ -491,7 +489,7 @@ void CL_CSSTableLayout::position_cells(CL_CSSLayoutCursor &cursor)
 				{
 					if (columns[cell].rows[row]->get_element_node()->computed_properties.vertical_align.type == CL_CSSBoxVerticalAlign::type_middle)
 					{
-						CL_CSSUsedValue offset = rows[row].height/2.0f - columns[cell].rows[row]->used.height/2.0f;
+						CL_CSSUsedValue offset = rows[row].height/2.0f - columns[cell].rows[row]->height.value/2.0f;
 						columns[cell].rows[row]->set_root_block_position(cursor.x + x, cursor.y + y + offset);
 					}
 					else

@@ -37,6 +37,8 @@ class CL_CSSStackingContext;
 class CL_CSSResourceCache;
 class CL_CSSLayoutCursor;
 class CL_CSSLayoutHitTestResult;
+class CL_CSSBoxMarginWidth;
+class CL_CSSBoxPaddingWidth;
 
 class CL_CSSLayoutTreeNode
 {
@@ -62,14 +64,13 @@ public:
 	void set_root_block_position(int x, int y);
 	void layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy);
 
-	// Needed by table
-	virtual void set_auto_width(CL_CSSUsedValue width);
 	void calc_preferred(CL_GraphicContext &gc, CL_CSSLayoutCursor &parent_flow);
 	void calc_minimum(CL_GraphicContext &gc, CL_CSSLayoutCursor &parent_flow);
 	void layout_formatting_root_helper(CL_GraphicContext &gc, CL_CSSLayoutCursor &parent_flow, LayoutStrategy strategy);
 
 
 	virtual void calculate_top_down_sizes();
+	virtual void calculate_content_top_down_sizes() { }
 	bool add_margin_top(CL_CSSLayoutCursor &cursor);
 	int get_block_width() const;
 	int get_block_height() const;
@@ -79,7 +80,25 @@ public:
 	CL_CSSBoxElement *get_element_node() { return element_node; }
 	CL_CSSStackingContext *get_stacking_context() { return stacking_context; }
 
-	CL_CSSUsedValues used;
+	struct LTRB
+	{
+		LTRB() : left(0.0f), right(0.0f), top(0.0f), bottom(0.0f) { }
+		CL_CSSUsedValue left, right, top, bottom;
+	};
+
+	LTRB margin;
+	LTRB border;
+	LTRB padding;
+	CL_CSSUsedWidth width;
+	CL_CSSUsedHeight height;
+	CL_Pointx<CL_CSSUsedValue> offset;
+	CL_CSSUsedWidth containing_width;
+	CL_CSSUsedHeight containing_height;
+	CL_CSSUsedValue preferred_width;
+	CL_CSSUsedValue min_width;
+	bool preferred_width_calculated;
+	bool min_width_calculated;
+
 	CL_Rect content_box;
 
 protected:
@@ -87,6 +106,11 @@ protected:
 	virtual void layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy) = 0;
 	virtual bool margin_collapses();
 	virtual bool add_content_margin_top(CL_CSSLayoutCursor &cursor) { return false; }
+
+	CL_CSSUsedValue get_css_margin_width(const CL_CSSBoxMarginWidth &margin_width, CL_CSSUsedWidth containing_width);
+	CL_CSSUsedValue get_css_margin_height(const CL_CSSBoxMarginWidth &margin_width, CL_CSSUsedHeight containing_height);
+	CL_CSSUsedValue get_css_padding_width(const CL_CSSBoxPaddingWidth &padding_width, CL_CSSUsedWidth containing_width);
+	CL_CSSUsedValue get_css_padding_height(const CL_CSSBoxPaddingWidth &padding_width, CL_CSSUsedHeight containing_height);
 
 	void render_non_content(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache);
 	void render_border(CL_GraphicContext &gc);
