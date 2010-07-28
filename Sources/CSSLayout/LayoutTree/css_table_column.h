@@ -33,10 +33,11 @@ class CL_CSSBlockLayout;
 class CL_CSSTableColumn
 {
 public:
-	CL_CSSTableColumn() : cell_width(0), minimum_width(0), maximum_width(0) { }
+	CL_CSSTableColumn() : cell_width(0), minimum_width(0), maximum_width(0), expanding(false) { }
 
 	std::vector<CL_CSSLayoutTreeNode *> rows;
 	CL_CSSUsedValue cell_width;
 	CL_CSSUsedValue minimum_width;
 	CL_CSSUsedValue maximum_width;
+	bool expanding;
 };

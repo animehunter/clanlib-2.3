@@ -47,6 +47,8 @@ void CL_CSSParserHeight::parse(CL_CSSBoxProperties &properties, const CL_String 
 			properties.height.type = CL_CSSBoxHeight::type_auto;
 		else if (token.value == "inherit")
 			properties.height.type = CL_CSSBoxHeight::type_inherit;
+		else if (token.value == "-clan-expanding")
+			properties.height.type = CL_CSSBoxHeight::type_clan_expanding;
 	}
 	else if (is_length(token) && pos == tokens.size())
 	{

@@ -69,6 +69,8 @@ void CL_CSSTableLayout::add_cell(CL_CSSLayoutTreeNode *cell_layout)
 	if (columns[next_column].rows.size() + 1 < rows.size())
 		columns[next_column].rows.resize(rows.size() - 1);
 	columns[next_column].rows.push_back(cell_layout);
+	if (cell_layout->get_element_node()->computed_properties.width.type == CL_CSSBoxWidth::type_clan_expanding)
+		columns[next_column].expanding = true;
 	next_column++;
 }
 
@@ -88,122 +90,6 @@ void CL_CSSTableLayout::calculate_content_top_down_sizes()
 	}
 }
 
-/*
-void CL_CSSTableLayout::calculate_sizes(CL_GraphicContext &gc, CL_CSSResourceCache *resources, float width, float height)
-{
-	float table_auto_width = 0.0f;
-	if (element_node->computed_properties.width.type == CL_CSSBoxWidth::type_length)
-		table_auto_width = element_node->computed_properties.width.length.value;
-	else
-		table_auto_width = element_node->computed_properties.width.percentage * width / 100.0f;
-
-	if (element_node->computed_properties.table_layout.type == CL_CSSBoxTableLayout::type_fixed)
-	{
-		float x_spacing = 0.0f;
-		if (element_node->computed_properties.border_collapse.type == CL_CSSBoxBorderCollapse::type_separate)
-			x_spacing = element_node->computed_properties.border_spacing.length1.value;
-
-		float table_width = x_spacing;
-		int auto_columns = 0;
-		int column_count = 0;
-		for (size_t cell = 0; cell < columns.size(); cell++)
-		{
-			if (!columns[cell].rows.empty() && columns[cell].rows[0])
-			{
-				CL_CSSBoxElement *cell_element = columns[cell].rows[0]->get_element_node();
-				float cell_width = 0.0f;
-				if (cell_element->computed_properties.width.type == CL_CSSBoxWidth::type_auto)
-				{
-					auto_columns++;
-				}
-				else if (cell_element->computed_properties.width.type == CL_CSSBoxWidth::type_length)
-				{
-					cell_width = cell_element->computed_properties.width.length.value;
-				}
-				else if (cell_element->computed_properties.width.type == CL_CSSBoxWidth::type_percentage)
-				{
-					cell_width = cell_element->computed_properties.width.percentage * width / 100.0f;
-				}
-				columns[cell].block_width = (int)(cell_width+0.5f);
-				table_width += cell_width;
-				column_count++;
-			}
-			table_width += x_spacing;
-		}
-
-		if (table_auto_width > table_width)
-		{
-			if (auto_columns > 0)
-			{
-				float cell_width = (table_auto_width - table_width) / auto_columns;
-				for (size_t cell = 0; cell < columns.size(); cell++)
-				{
-					if (!columns[cell].rows.empty() && columns[cell].rows[0])
-					{
-						CL_CSSBoxElement *cell_element = columns[cell].rows[0]->get_element_node();
-						if (cell_element->computed_properties.width.type == CL_CSSBoxWidth::type_auto)
-						{
-							columns[cell].block_width = (int)(cell_width+0.5f);
-						}
-					}
-				}
-			}
-			else if (column_count > 0)
-			{
-				float cell_width = (table_auto_width - table_width) / column_count;
-				for (size_t cell = 0; cell < columns.size(); cell++)
-					if (!columns[cell].rows.empty() && columns[cell].rows[0])
-						columns[cell].block_width += (int)(cell_width+0.5f);
-			}
-		}
-		else if (table_width > table_auto_width)
-		{
-			table_auto_width = table_width;
-		}
-
-		used.calc_table_block_widths(element_node->computed_properties, table_auto_width, width);
-		used.calc_table_block_heights(element_node->computed_properties, height);
-		used.calc_table_block_offsets(element_node->computed_properties, width, height);
-
-		for (size_t row = 0; row < rows.size(); row++)
-		{
-			for (size_t cell = 0; cell < columns.size(); cell++)
-			{
-				if (columns[cell].rows.size() > row)
-				{
-					if (columns[cell].rows[row])
-					{
-						columns[cell].rows[row]->used.calc_block_widths(columns[cell].rows[row]->get_element_node()->computed_properties, columns[cell].block_width);
-						columns[cell].rows[row]->used.calc_block_heights(columns[cell].rows[row]->get_element_node()->computed_properties, used.height);
-						columns[cell].rows[row]->used.calc_block_offsets(columns[cell].rows[row]->get_element_node()->computed_properties, columns[cell].block_width, used.height);
-						columns[cell].rows[row]->calculate_children_sizes(gc, resources);
-					}
-				}
-			}
-		}
-	}
-	else
-	{
-		used.calc_table_block_widths(element_node->computed_properties, table_auto_width, width);
-		used.calc_table_block_heights(element_node->computed_properties, height);
-		used.calc_table_block_offsets(element_node->computed_properties, width, height);
-		for (size_t row = 0; row < rows.size(); row++)
-		{
-			for (size_t cell = 0; cell < columns.size(); cell++)
-			{
-				if (columns[cell].rows.size() > row)
-				{
-					if (columns[cell].rows[row])
-					{
-						columns[cell].rows[row]->calculate_sizes(gc, resources, width, height);
-						columns[cell].block_width = cl_max(columns[cell].block_width, columns[cell].rows[row]->get_block_width());
-					}
-				}
-			}
-		}
-	}
-}
-*/
 void CL_CSSTableLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy)
 {
 	cursor.apply_margin();
@@ -405,6 +291,23 @@ void CL_CSSTableLayout::calculate_cell_widths(CL_GraphicContext & gc, CL_CSSLayo
 	if (width.expanding)
 		available_width = content_width;
 
+	int columns_expanding = 0;
+	for (size_t col = 0; col < columns.size(); col++)
+	{
+		if (columns[col].expanding)
+			columns_expanding++;
+	}
+	if (columns_expanding > 0)
+	{
+		float extra_width = (available_width-content_width);
+		for (size_t col = 0; col < columns.size(); col++)
+		{
+			if (columns[col].expanding)
+				columns[col].maximum_width = extra_width/columns_expanding;
+		}
+		content_width += extra_width;
+	}
+
 	int columns_minimum = 0;
 	for (size_t cell = 0; cell < columns.size(); cell++)
 	{
@@ -443,33 +346,69 @@ void CL_CSSTableLayout::calculate_cell_widths(CL_GraphicContext & gc, CL_CSSLayo
 
 void CL_CSSTableLayout::layout_cells(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor)
 {
+	int rows_expanding = 0;
 	for (size_t row = 0; row < rows.size(); row++)
 	{
-		switch (rows[row].element->computed_properties.height.type)
-		{
-		default:
-		case CL_CSSBoxHeight::type_auto:
-			rows[row].height = 0.0f;
-			break;
-		case CL_CSSBoxHeight::type_length:
-			rows[row].height = rows[row].element->computed_properties.height.length.value;
-			break;
-		case CL_CSSBoxHeight::type_percentage:
-			rows[row].height = height.use_content ? 0.0f : height.value * rows[row].element->computed_properties.height.percentage / 100.0f;
-			break;
-		}
+		if (rows[row].element->computed_properties.height.type == CL_CSSBoxWidth::type_clan_expanding)
+			rows_expanding++;
+	}
 
-		for (size_t cell = 0; cell < columns.size(); cell++)
+	CL_CSSUsedValue height_used = 0;
+	for (size_t row = 0; row < rows.size(); row++)
+	{
+		if (rows[row].element->computed_properties.height.type != CL_CSSBoxWidth::type_clan_expanding)
 		{
-			if (columns[cell].rows.size() > row)
+			switch (rows[row].element->computed_properties.height.type)
 			{
-				if (columns[cell].rows[row])
+			default:
+			case CL_CSSBoxHeight::type_auto:
+				rows[row].height = 0.0f;
+				break;
+			case CL_CSSBoxHeight::type_length:
+				rows[row].height = rows[row].element->computed_properties.height.length.value;
+				break;
+			case CL_CSSBoxHeight::type_percentage:
+				rows[row].height = height.use_content ? 0.0f : height.value * rows[row].element->computed_properties.height.percentage / 100.0f;
+				break;
+			}
+
+			for (size_t cell = 0; cell < columns.size(); cell++)
+			{
+				if (columns[cell].rows.size() > row)
 				{
-					columns[cell].rows[row]->calculate_top_down_sizes();
-					columns[cell].rows[row]->width.value = columns[cell].cell_width;
-					columns[cell].rows[row]->layout_formatting_root_helper(gc, cursor, normal_strategy);
-					rows[row].height = cl_max(rows[row].height, columns[cell].rows[row]->height.value);
+					if (columns[cell].rows[row])
+					{
+						columns[cell].rows[row]->calculate_top_down_sizes();
+						columns[cell].rows[row]->width.value = columns[cell].cell_width;
+						columns[cell].rows[row]->layout_formatting_root_helper(gc, cursor, normal_strategy);
+						rows[row].height = cl_max(rows[row].height, columns[cell].rows[row]->height.value);
+					}
 				}
+			}
+			height_used += rows[row].height;
+		}
+	}
+
+	if (rows_expanding > 0)
+	{
+		CL_CSSUsedValue extra_height = height.value - height_used;
+		for (size_t row = 0; row < rows.size(); row++)
+		{
+			if (rows[row].element->computed_properties.height.type == CL_CSSBoxWidth::type_clan_expanding)
+			{
+				for (size_t cell = 0; cell < columns.size(); cell++)
+				{
+					if (columns[cell].rows.size() > row)
+					{
+						if (columns[cell].rows[row])
+						{
+							columns[cell].rows[row]->calculate_top_down_sizes();
+							columns[cell].rows[row]->width.value = columns[cell].cell_width;
+							columns[cell].rows[row]->layout_formatting_root_helper(gc, cursor, normal_strategy);
+						}
+					}
+				}
+				rows[row].height = extra_height/rows_expanding;
 			}
 		}
 	}
