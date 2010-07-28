@@ -72,6 +72,7 @@ private:
 	void layout_inline_blocks(CL_GraphicContext &gc, CL_CSSLayoutCursor &layout_cursor, LayoutStrategy strategy);
 	void place_line_box(CL_CSSInlineLineBox &line, CL_CSSLayoutCursor &layout_cursor, int y);
 	void apply_text_indent(CL_CSSLayoutCursor &layout_cursor, CL_CSSInlineLineBox &line);
+	void apply_expanding_width(CL_GraphicContext &gc, CL_CSSLayoutCursor &layout_cursor, CL_CSSInlineLineBox &line);
 	void create_linebreak_opportunities();
 	CL_CSSInlineLineBoxCursor find_next_linebreak_opportunity(CL_CSSInlineLineBoxCursor cursor, bool &out_is_newline);
 	int find_width(CL_GraphicContext &gc, const CL_CSSInlineLineBoxCursor &start, const CL_CSSInlineLineBoxCursor &end, bool start_of_line);

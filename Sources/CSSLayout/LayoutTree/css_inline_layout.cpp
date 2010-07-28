@@ -267,6 +267,7 @@ void CL_CSSInlineLayout::create_line_boxes(CL_GraphicContext &gc, CL_CSSLayoutCu
 					break;
 			} while (cursor.object_index < objects.size());
 
+			apply_expanding_width(gc, layout_cursor, line);
 			apply_line_box_alignment(line);
 			update_line_box_height(gc, cursor.resources, line);
 			if (!line.segments.empty())
@@ -307,6 +308,44 @@ void CL_CSSInlineLayout::apply_text_indent(CL_CSSLayoutCursor &layout_cursor, CL
 		line.box.left += text_indent;
 	else
 		line.box.right -= text_indent;
+}
+
+void CL_CSSInlineLayout::apply_expanding_width(CL_GraphicContext &gc, CL_CSSLayoutCursor &layout_cursor, CL_CSSInlineLineBox &line)
+{
+	int expanding = 0;
+	int used_width = 0.0f;
+	for (size_t i = 0; i < line.segments.size(); i++)
+	{
+		if (objects[line.segments[i].object_index].layout &&
+			objects[line.segments[i].object_index].layout->get_element_node()->computed_properties.width.type == CL_CSSBoxWidth::type_clan_expanding)
+		{
+			expanding++;
+		}
+		used_width = line.segments[i].right;
+	}
+	if (expanding > 0)
+	{
+		int extra = (line.box.right-used_width)/expanding;
+		int added = 0;
+
+		for (size_t i = 0; i < line.segments.size(); i++)
+		{
+			if (objects[line.segments[i].object_index].layout &&
+				objects[line.segments[i].object_index].layout->get_element_node()->computed_properties.width.type == CL_CSSBoxWidth::type_clan_expanding)
+			{
+				objects[line.segments[i].object_index].layout->width.value += extra;
+				objects[line.segments[i].object_index].layout->layout_formatting_root_helper(gc, layout_cursor, CL_CSSLayoutTreeNode::normal_strategy);
+
+				added += extra;
+				line.segments[i].right += added;
+			}
+			else
+			{
+				line.segments[i].left += added;
+				line.segments[i].right += added;
+			}
+		}
+	}
 }
 
 void CL_CSSInlineLayout::apply_line_box_alignment(CL_CSSInlineLineBox &line)

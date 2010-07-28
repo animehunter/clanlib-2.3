@@ -6,7 +6,7 @@
   <body>
     <h1>Hello CSS</h1>
     <p>This is a very simple css test.</p>
-    <p>This is a picture: <img style=""/>, bla bla.</p>
+    <p>This is a picture: <img style="width: -clan-expanding; height: 86px"/>, bla bla.</p>
     <table style="">
       <tr style="">
         <td>1x1 sdfg sfdg sdfg</td>
