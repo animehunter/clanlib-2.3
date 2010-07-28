@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_min_width.h"
+#include "API/CSSLayout/PropertyTypes/css_box_min_width.h"
 #include "../../css_resource_cache.h"
 
 CL_CSSBoxMinWidth::CL_CSSBoxMinWidth()

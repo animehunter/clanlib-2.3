@@ -28,7 +28,7 @@
 
 #include "CSSLayout/precomp.h"
 #include "css_property_parser.h"
-#include "css_box_length.h"
+#include "API/CSSLayout/css_box_length.h"
 
 CL_CSSToken CL_CSSPropertyParser::next_token(size_t &pos, const std::vector<CL_CSSToken> &tokens, bool skip_whitespace)
 {

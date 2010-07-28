@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_outline_color.h"
+#include "API/CSSLayout/PropertyTypes/css_box_outline_color.h"
 
 CL_CSSBoxOutlineColor::CL_CSSBoxOutlineColor()
 : type(type_invert)

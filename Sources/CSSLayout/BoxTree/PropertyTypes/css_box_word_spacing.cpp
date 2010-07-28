@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_word_spacing.h"
+#include "API/CSSLayout/PropertyTypes/css_box_word_spacing.h"
 #include "../../css_resource_cache.h"
 
 CL_CSSBoxWordSpacing::CL_CSSBoxWordSpacing()

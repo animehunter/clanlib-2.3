@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_text_transform.h"
+#include "API/CSSLayout/PropertyTypes/css_box_text_transform.h"
 
 CL_CSSBoxTextTransform::CL_CSSBoxTextTransform()
 : type(type_inherit)

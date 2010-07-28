@@ -40,9 +40,6 @@
 #include "PropertyTypes/css_box_border_width.h"
 #include "PropertyTypes/css_box_bottom.h"
 #include "PropertyTypes/css_box_caption_side.h"
-#include "PropertyTypes/css_box_clan_background_border.h"
-#include "PropertyTypes/css_box_clan_total_width.h"
-#include "PropertyTypes/css_box_clan_total_height.h"
 #include "PropertyTypes/css_box_clear.h"
 #include "PropertyTypes/css_box_clip.h"
 #include "PropertyTypes/css_box_color.h"
@@ -98,6 +95,8 @@
 #include "PropertyTypes/css_box_word_spacing.h"
 #include "PropertyTypes/css_box_z_index.h"
 
+class CL_CSSPropertyList2;
+
 class CL_CSSBoxProperties
 {
 public:
@@ -129,18 +128,12 @@ public:
 	CL_CSSBoxBackgroundImage background_image;
 	CL_CSSBoxBackgroundPosition background_position;
 	CL_CSSBoxBackgroundRepeat background_repeat;
-	CL_CSSBoxClanBackgroundBorder clan_background_border_left;
-	CL_CSSBoxClanBackgroundBorder clan_background_border_top;
-	CL_CSSBoxClanBackgroundBorder clan_background_border_right;
-	CL_CSSBoxClanBackgroundBorder clan_background_border_bottom;
 
 	CL_CSSBoxPaddingWidth padding_width_left;
 	CL_CSSBoxPaddingWidth padding_width_top;
 	CL_CSSBoxPaddingWidth padding_width_right;
 	CL_CSSBoxPaddingWidth padding_width_bottom;
 
-//	CL_CSSBoxClanTotalWidth clan_total_width;
-//	CL_CSSBoxClanTotalHeight clan_total_height;
 	CL_CSSBoxWidth width;
 	CL_CSSBoxHeight height;
 	CL_CSSBoxMaxWidth max_width;
@@ -203,6 +196,9 @@ public:
 	CL_CSSBoxBorderSpacing border_spacing;
 	CL_CSSBoxVerticalAlign vertical_align;
 	CL_CSSBoxEmptyCells empty_cells;
+
+	void apply_properties(const CL_String &style_string);
+	void apply_properties(const CL_CSSPropertyList2 &css_properties);
 
 	void compute(const CL_CSSBoxProperties *parent, CL_CSSResourceCache *layout);
 };

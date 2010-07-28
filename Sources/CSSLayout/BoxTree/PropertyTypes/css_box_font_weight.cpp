@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_font_weight.h"
+#include "API/CSSLayout/PropertyTypes/css_box_font_weight.h"
 
 CL_CSSBoxFontWeight::CL_CSSBoxFontWeight()
 : type(type_inherit)

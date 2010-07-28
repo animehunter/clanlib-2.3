@@ -29,7 +29,7 @@
 #pragma once
 
 #include "css_box_node.h"
-#include "css_box_properties.h"
+#include "API/CSSLayout/css_box_properties.h"
 
 class CL_CSSBoxElement : public CL_CSSBoxNode
 {

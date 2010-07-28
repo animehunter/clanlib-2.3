@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_background_color.h"
+#include "API/CSSLayout/PropertyTypes/css_box_background_color.h"
 
 CL_CSSBoxBackgroundColor::CL_CSSBoxBackgroundColor()
 : type(type_transparent)

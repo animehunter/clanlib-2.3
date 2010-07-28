@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_caption_side.h"
+#include "API/CSSLayout/PropertyTypes/css_box_caption_side.h"
 
 CL_CSSBoxCaptionSide::CL_CSSBoxCaptionSide()
 : type(type_inherit)

@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_page_break_after.h"
+#include "API/CSSLayout/PropertyTypes/css_box_page_break_after.h"
 
 CL_CSSBoxPageBreakAfter::CL_CSSBoxPageBreakAfter()
 : type(type_auto)

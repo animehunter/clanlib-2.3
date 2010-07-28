@@ -94,6 +94,63 @@ void CL_PixelCommandSprite::render_sprite(CL_PixelThreadContext *context)
 	}
 }
 
+void CL_PixelCommandSprite::render_sprite_scale_linear(CL_PixelThreadContext *context, const CL_Rect &box)
+{
+	float dx = (texcoords[1].x-texcoords[0].x)/(points[1].x-points[0].x);
+	float dy = (texcoords[2].y-texcoords[0].y)/(points[2].y-points[0].y);
+	float tx_left = texcoords[0].x + dx*(box.left+0.5f-points[0].x);
+	float ty_top = texcoords[0].y + dy*(box.top+0.5f-points[0].y);
+	int dtx = (int)(dx*context->samplers[sampler].size.width * 32768);
+	int dty = (int)(dy*context->samplers[sampler].size.height * 32768);
+
+	int start_tx = (int)(tx_left*context->samplers[sampler].size.width * 32768);
+	int ty = (int)(ty_top*context->samplers[sampler].size.height * 32768);
+	int skip_lines = find_first_line_for_core(box.top, context->core, context->num_cores)-box.top;
+	ty += dty * skip_lines;
+	dty *= context->num_cores;
+
+	int width = box.get_width();
+	int height = box.get_height();
+
+	__m128i one, half, color;
+	CL_BlitARGB8SSE::set_one(one);
+	CL_BlitARGB8SSE::set_half(half);
+	CL_BlitARGB8SSE::set_color(
+		color,
+		(int)(primcolor.r * 256.0f + 0.5f),
+		(int)(primcolor.g * 256.0f + 0.5f),
+		(int)(primcolor.b * 256.0f + 0.5f),
+		(int)(primcolor.a * 256.0f + 0.5f));
+
+	for (int y = box.top + skip_lines; y < box.bottom; y+=context->num_cores)
+	{
+		int tx = start_tx;
+
+		unsigned int src_width = context->samplers[sampler].size.width;
+		unsigned int *src_line = context->samplers[sampler].data + (ty>>15) * src_width;
+		unsigned int *dest = context->colorbuffer0.data + y * context->colorbuffer0.size.width + box.left;
+		unsigned int ifracy = ((unsigned int)ty>>8)&0x7f;
+
+		int i;
+		for (i = 0; i < width; i++)
+		{
+			int offset = tx>>15;
+			unsigned int ifracx = ((unsigned int)tx>>8)&0x7f;
+
+			__m128i spixel, dpixel;
+			CL_BlitARGB8SSE::load_pixel_linear(spixel, src_line[offset], src_line[offset+1], src_line[offset+src_width], src_line[offset+1+src_width], ifracx, ifracy);
+			CL_BlitARGB8SSE::load_pixel(dpixel, dest[i]);
+			CL_BlitARGB8SSE::multiply_color(spixel, color);
+			CL_BlitARGB8SSE::blend_normal(dpixel, spixel, one, half);
+			CL_BlitARGB8SSE::store_pixel(dest[i], dpixel);
+
+			tx += dtx;
+		}
+
+		ty += dty;
+	}
+}
+
 void CL_PixelCommandSprite::render_sprite_scale(CL_PixelThreadContext *context, const CL_Rect &box)
 {
 	float dx = (texcoords[1].x-texcoords[0].x)/(points[1].x-points[0].x);

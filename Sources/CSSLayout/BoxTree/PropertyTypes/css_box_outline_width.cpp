@@ -27,8 +27,8 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_outline_width.h"
-#include "css_box_outline_style.h"
+#include "API/CSSLayout/PropertyTypes/css_box_outline_width.h"
+#include "API/CSSLayout/PropertyTypes/css_box_outline_style.h"
 #include "../../css_resource_cache.h"
 
 CL_CSSBoxOutlineWidth::CL_CSSBoxOutlineWidth()

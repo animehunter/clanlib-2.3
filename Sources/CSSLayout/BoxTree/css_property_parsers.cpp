@@ -48,9 +48,6 @@
 #include "PropertyParsers/css_parser_border_width.h"
 #include "PropertyParsers/css_parser_bottom.h"
 #include "PropertyParsers/css_parser_caption_side.h"
-#include "PropertyParsers/css_parser_clan_background_border_ltrb.h"
-#include "PropertyParsers/css_parser_clan_total_width.h"
-#include "PropertyParsers/css_parser_clan_total_height.h"
 #include "PropertyParsers/css_parser_clear.h"
 #include "PropertyParsers/css_parser_clip.h"
 #include "PropertyParsers/css_parser_color.h"
@@ -131,9 +128,6 @@ CL_CSSPropertyParsers::CL_CSSPropertyParsers()
 	add(new CL_CSSParserBorderWidth());
 	add(new CL_CSSParserBottom());
 	add(new CL_CSSParserCaptionSide());
-	add(new CL_CSSParserClanBackgroundBorderLTRB());
-	add(new CL_CSSParserClanTotalWidth());
-	add(new CL_CSSParserClanTotalHeight());
 	add(new CL_CSSParserClear());
 	add(new CL_CSSParserClip());
 	add(new CL_CSSParserColor());

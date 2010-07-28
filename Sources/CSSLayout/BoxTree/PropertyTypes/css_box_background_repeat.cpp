@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_background_repeat.h"
+#include "API/CSSLayout/PropertyTypes/css_box_background_repeat.h"
 
 CL_CSSBoxBackgroundRepeat::CL_CSSBoxBackgroundRepeat()
 : type(type_repeat)

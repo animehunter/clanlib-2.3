@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_max_width.h"
+#include "API/CSSLayout/PropertyTypes/css_box_max_width.h"
 #include "../../css_resource_cache.h"
 
 CL_CSSBoxMaxWidth::CL_CSSBoxMaxWidth()

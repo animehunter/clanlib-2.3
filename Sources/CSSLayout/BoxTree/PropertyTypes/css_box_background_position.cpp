@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_background_position.h"
+#include "API/CSSLayout/PropertyTypes/css_box_background_position.h"
 #include "../../css_resource_cache.h"
 
 CL_CSSBoxBackgroundPosition::CL_CSSBoxBackgroundPosition()

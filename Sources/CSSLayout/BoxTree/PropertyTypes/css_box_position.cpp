@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_position.h"
+#include "API/CSSLayout/PropertyTypes/css_box_position.h"
 
 CL_CSSBoxPosition::CL_CSSBoxPosition()
 : type(type_static)

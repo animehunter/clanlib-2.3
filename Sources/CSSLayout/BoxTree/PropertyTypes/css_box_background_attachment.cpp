@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_background_attachment.h"
+#include "API/CSSLayout/PropertyTypes/css_box_background_attachment.h"
 
 CL_CSSBoxBackgroundAttachment::CL_CSSBoxBackgroundAttachment()
 : type(type_scroll)

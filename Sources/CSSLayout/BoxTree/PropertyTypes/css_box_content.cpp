@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_content.h"
+#include "API/CSSLayout/PropertyTypes/css_box_content.h"
 
 CL_CSSBoxContent::CL_CSSBoxContent()
 : type(type_normal)

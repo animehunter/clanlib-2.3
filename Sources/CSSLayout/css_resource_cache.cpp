@@ -28,7 +28,7 @@
 
 #include "CSSLayout/precomp.h"
 #include "css_resource_cache.h"
-#include "BoxTree/css_box_properties.h"
+#include "API/CSSLayout/css_box_properties.h"
 
 CL_CSSResourceCache::CL_CSSResourceCache()
 {

@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_z_index.h"
+#include "API/CSSLayout/PropertyTypes/css_box_z_index.h"
 
 CL_CSSBoxZIndex::CL_CSSBoxZIndex()
 : type(type_auto), value(0)

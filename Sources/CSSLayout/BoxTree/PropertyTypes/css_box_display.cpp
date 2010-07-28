@@ -27,9 +27,9 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_display.h"
-#include "css_box_position.h"
-#include "css_box_float.h"
+#include "API/CSSLayout/PropertyTypes/css_box_display.h"
+#include "API/CSSLayout/PropertyTypes/css_box_position.h"
+#include "API/CSSLayout/PropertyTypes/css_box_float.h"
 
 CL_CSSBoxDisplay::CL_CSSBoxDisplay()
 : type(type_inline)

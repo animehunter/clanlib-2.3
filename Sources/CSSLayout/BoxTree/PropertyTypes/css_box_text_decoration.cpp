@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_text_decoration.h"
+#include "API/CSSLayout/PropertyTypes/css_box_text_decoration.h"
 
 CL_CSSBoxTextDecoration::CL_CSSBoxTextDecoration()
 : type(type_inherit_special), underline(false), overline(false), line_through(false), blink(false)

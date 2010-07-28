@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_unicode_bidi.h"
+#include "API/CSSLayout/PropertyTypes/css_box_unicode_bidi.h"
 
 CL_CSSBoxUnicodeBidi::CL_CSSBoxUnicodeBidi()
 : type(type_normal)

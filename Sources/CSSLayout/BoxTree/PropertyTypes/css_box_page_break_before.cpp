@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_page_break_before.h"
+#include "API/CSSLayout/PropertyTypes/css_box_page_break_before.h"
 
 CL_CSSBoxPageBreakBefore::CL_CSSBoxPageBreakBefore()
 : type(type_auto)

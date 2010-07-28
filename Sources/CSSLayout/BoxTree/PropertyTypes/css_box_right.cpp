@@ -27,9 +27,9 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_right.h"
-#include "css_box_left.h"
-#include "../css_box_properties.h"
+#include "API/CSSLayout/PropertyTypes/css_box_right.h"
+#include "API/CSSLayout/PropertyTypes/css_box_left.h"
+#include "API/CSSLayout/css_box_properties.h"
 #include "../../css_resource_cache.h"
 
 CL_CSSBoxRight::CL_CSSBoxRight()

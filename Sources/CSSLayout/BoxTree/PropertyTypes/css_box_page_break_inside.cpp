@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_page_break_inside.h"
+#include "API/CSSLayout/PropertyTypes/css_box_page_break_inside.h"
 
 CL_CSSBoxPageBreakInside::CL_CSSBoxPageBreakInside()
 : type(type_auto)

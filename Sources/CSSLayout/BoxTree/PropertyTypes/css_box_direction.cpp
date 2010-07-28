@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_direction.h"
+#include "API/CSSLayout/PropertyTypes/css_box_direction.h"
 
 CL_CSSBoxDirection::CL_CSSBoxDirection()
 : type(type_inherit)

@@ -38,7 +38,7 @@
 #include "../css_resource_cache.h"
 #include "../BoxTree/css_box_element.h"
 #include "../BoxTree/css_box_text.h"
-#include "../BoxTree/css_box_properties.h"
+#include "API/CSSLayout/css_box_properties.h"
 
 CL_CSSInlineLayout::CL_CSSInlineLayout(CL_CSSBoxElement *block_element)
 : CL_CSSLayoutTreeNode(block_element)

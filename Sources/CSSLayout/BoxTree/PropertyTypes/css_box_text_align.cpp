@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_text_align.h"
+#include "API/CSSLayout/PropertyTypes/css_box_text_align.h"
 
 CL_CSSBoxTextAlign::CL_CSSBoxTextAlign()
 : type(type_inherit)

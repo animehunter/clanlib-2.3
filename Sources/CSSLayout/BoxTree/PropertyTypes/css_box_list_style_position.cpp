@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_list_style_position.h"
+#include "API/CSSLayout/PropertyTypes/css_box_list_style_position.h"
 
 CL_CSSBoxListStylePosition::CL_CSSBoxListStylePosition()
 : type(type_inherit)

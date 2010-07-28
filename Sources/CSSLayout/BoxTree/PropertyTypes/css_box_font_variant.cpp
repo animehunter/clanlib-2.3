@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_font_variant.h"
+#include "API/CSSLayout/PropertyTypes/css_box_font_variant.h"
 
 CL_CSSBoxFontVariant::CL_CSSBoxFontVariant()
 : type(type_inherit)

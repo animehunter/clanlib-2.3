@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_cursor.h"
+#include "API/CSSLayout/PropertyTypes/css_box_cursor.h"
 
 CL_CSSBoxCursor::CL_CSSBoxCursor()
 : type(type_inherit)

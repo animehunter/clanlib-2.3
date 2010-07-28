@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_left.h"
+#include "API/CSSLayout/PropertyTypes/css_box_left.h"
 
 CL_CSSBoxLeft::CL_CSSBoxLeft()
 : type(type_auto)

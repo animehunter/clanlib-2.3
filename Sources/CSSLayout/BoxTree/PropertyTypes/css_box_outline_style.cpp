@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_outline_style.h"
+#include "API/CSSLayout/PropertyTypes/css_box_outline_style.h"
 
 CL_CSSBoxOutlineStyle::CL_CSSBoxOutlineStyle()
 : type(type_none)

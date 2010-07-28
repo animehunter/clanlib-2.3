@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_visibility.h"
+#include "API/CSSLayout/PropertyTypes/css_box_visibility.h"
 
 CL_CSSBoxVisibility::CL_CSSBoxVisibility()
 : type(type_inherit)

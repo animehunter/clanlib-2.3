@@ -28,7 +28,7 @@
 
 #include "CSSLayout/precomp.h"
 #include "css_used_values.h"
-#include "../BoxTree/css_box_properties.h"
+#include "API/CSSLayout/css_box_properties.h"
 #ifdef REMARKED
 CL_CSSUsedValues::CL_CSSUsedValues()
 : replaced(false), width(0.0f), height(0.0f), undetermined_width(true), undetermined_height(true),

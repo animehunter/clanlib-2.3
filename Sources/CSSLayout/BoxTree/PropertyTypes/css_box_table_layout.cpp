@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_table_layout.h"
+#include "API/CSSLayout/PropertyTypes/css_box_table_layout.h"
 
 CL_CSSBoxTableLayout::CL_CSSBoxTableLayout()
 : type(type_auto)

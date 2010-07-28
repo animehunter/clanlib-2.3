@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_font_style.h"
+#include "API/CSSLayout/PropertyTypes/css_box_font_style.h"
 
 CL_CSSBoxFontStyle::CL_CSSBoxFontStyle()
 : type(type_inherit)

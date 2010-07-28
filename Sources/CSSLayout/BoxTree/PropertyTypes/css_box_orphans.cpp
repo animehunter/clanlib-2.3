@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_orphans.h"
+#include "API/CSSLayout/PropertyTypes/css_box_orphans.h"
 
 CL_CSSBoxOrphans::CL_CSSBoxOrphans()
 : type(type_inherit), value(0)

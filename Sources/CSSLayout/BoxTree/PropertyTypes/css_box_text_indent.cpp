@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_text_indent.h"
+#include "API/CSSLayout/PropertyTypes/css_box_text_indent.h"
 #include "../../css_resource_cache.h"
 
 CL_CSSBoxTextIndent::CL_CSSBoxTextIndent()

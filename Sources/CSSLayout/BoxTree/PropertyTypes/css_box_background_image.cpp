@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_background_image.h"
+#include "API/CSSLayout/PropertyTypes/css_box_background_image.h"
 
 CL_CSSBoxBackgroundImage::CL_CSSBoxBackgroundImage()
 : type(type_none)

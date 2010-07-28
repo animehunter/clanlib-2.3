@@ -534,14 +534,14 @@ void CL_CSSLayoutTreeNode::render_background(CL_GraphicContext &gc, CL_CSSResour
 			{
 				image.draw(gc, border_box);
 			}
-			else if (element_node->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_clan_stretch)
+			/*else if (element_node->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_clan_stretch)
 			{
 				int sizing_left = (int)(element_node->computed_properties.clan_background_border_left.length.value+0.5f);
 				int sizing_top = (int)(element_node->computed_properties.clan_background_border_top.length.value+0.5f);
 				int sizing_right = (int)(element_node->computed_properties.clan_background_border_right.length.value+0.5f);
 				int sizing_bottom = (int)(element_node->computed_properties.clan_background_border_bottom.length.value+0.5f);
 				CL_ClanImageStretch::draw_image(gc, border_box, image, sizing_left, sizing_top, sizing_right, sizing_bottom);
-			}
+			}*/
 		}
 	}
 }

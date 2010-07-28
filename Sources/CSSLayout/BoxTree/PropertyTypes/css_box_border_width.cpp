@@ -27,8 +27,8 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_border_width.h"
-#include "css_box_border_style.h"
+#include "API/CSSLayout/PropertyTypes/css_box_border_width.h"
+#include "API/CSSLayout/PropertyTypes/css_box_border_style.h"
 #include "../../css_resource_cache.h"
 
 CL_CSSBoxBorderWidth::CL_CSSBoxBorderWidth()

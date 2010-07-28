@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_clear.h"
+#include "API/CSSLayout/PropertyTypes/css_box_clear.h"
 
 CL_CSSBoxClear::CL_CSSBoxClear()
 : type(type_none)

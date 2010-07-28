@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_color.h"
+#include "API/CSSLayout/PropertyTypes/css_box_color.h"
 #include "../../css_resource_cache.h"
 
 CL_CSSBoxColor::CL_CSSBoxColor()

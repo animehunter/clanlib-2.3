@@ -27,8 +27,8 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_bottom.h"
-#include "../css_box_properties.h"
+#include "API/CSSLayout/PropertyTypes/css_box_bottom.h"
+#include "API/CSSLayout/css_box_properties.h"
 #include "../../css_resource_cache.h"
 
 CL_CSSBoxBottom::CL_CSSBoxBottom()

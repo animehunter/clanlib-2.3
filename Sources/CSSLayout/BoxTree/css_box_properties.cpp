@@ -27,7 +27,22 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_properties.h"
+#include "API/CSSLayout/css_box_properties.h"
+#include "API/CSSLayout/css_document2.h"
+#include "API/CSSLayout/css_property_list2.h"
+#include "css_property_parsers.h"
+
+void CL_CSSBoxProperties::apply_properties(const CL_String &style_string)
+{
+	apply_properties(CL_CSSDocument2::get_style_properties(style_string));
+}
+
+void CL_CSSBoxProperties::apply_properties(const CL_CSSPropertyList2 &css_properties)
+{
+	CL_CSSPropertyParsers property_parsers;
+	for (size_t i = css_properties.size(); i > 0; i--)
+		property_parsers.parse(*this, css_properties[i-1]);
+}
 
 void CL_CSSBoxProperties::compute(const CL_CSSBoxProperties *parent, CL_CSSResourceCache *layout)
 {
@@ -76,10 +91,6 @@ void CL_CSSBoxProperties::compute(const CL_CSSBoxProperties *parent, CL_CSSResou
 		background_image.compute(&parent->background_image, layout, em_size, ex_size);
 		background_position.compute(&parent->background_position, layout, em_size, ex_size);
 		background_repeat.compute(&parent->background_repeat, layout, em_size, ex_size);
-		clan_background_border_left.compute(&parent->clan_background_border_left, layout, em_size, ex_size);
-		clan_background_border_top.compute(&parent->clan_background_border_top, layout, em_size, ex_size);
-		clan_background_border_right.compute(&parent->clan_background_border_right, layout, em_size, ex_size);
-		clan_background_border_bottom.compute(&parent->clan_background_border_bottom, layout, em_size, ex_size);
 		padding_width_left.compute(&parent->padding_width_left, layout, em_size, ex_size);
 		padding_width_top.compute(&parent->padding_width_top, layout, em_size, ex_size);
 		padding_width_right.compute(&parent->padding_width_right, layout, em_size, ex_size);
@@ -167,10 +178,6 @@ void CL_CSSBoxProperties::compute(const CL_CSSBoxProperties *parent, CL_CSSResou
 		background_image.compute(0, layout, em_size, ex_size);
 		background_position.compute(0, layout, em_size, ex_size);
 		background_repeat.compute(0, layout, em_size, ex_size);
-		clan_background_border_left.compute(0, layout, em_size, ex_size);
-		clan_background_border_top.compute(0, layout, em_size, ex_size);
-		clan_background_border_right.compute(0, layout, em_size, ex_size);
-		clan_background_border_bottom.compute(0, layout, em_size, ex_size);
 		padding_width_left.compute(0, layout, em_size, ex_size);
 		padding_width_top.compute(0, layout, em_size, ex_size);
 		padding_width_right.compute(0, layout, em_size, ex_size);

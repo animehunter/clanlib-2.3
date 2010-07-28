@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_float.h"
+#include "API/CSSLayout/PropertyTypes/css_box_float.h"
 
 CL_CSSBoxFloat::CL_CSSBoxFloat()
 : type(type_none)

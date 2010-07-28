@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_list_style_type.h"
+#include "API/CSSLayout/PropertyTypes/css_box_list_style_type.h"
 
 CL_CSSBoxListStyleType::CL_CSSBoxListStyleType()
 : type(type_inherit)

@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_font_size.h"
+#include "API/CSSLayout/PropertyTypes/css_box_font_size.h"
 #include "../../css_resource_cache.h"
 
 CL_CSSBoxFontSize::CL_CSSBoxFontSize()

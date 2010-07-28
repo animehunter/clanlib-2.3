@@ -28,7 +28,7 @@
 
 #include "CSSLayout/precomp.h"
 #include "css_parser_widows.h"
-#include "../css_box_properties.h"
+#include "API/CSSLayout/css_box_properties.h"
 
 std::vector<CL_String> CL_CSSParserWidows::get_names()
 {

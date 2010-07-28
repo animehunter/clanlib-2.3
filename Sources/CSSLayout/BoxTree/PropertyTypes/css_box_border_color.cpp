@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_border_color.h"
+#include "API/CSSLayout/PropertyTypes/css_box_border_color.h"
 
 CL_CSSBoxBorderColor::CL_CSSBoxBorderColor()
 : type(type_get_from_color_property)

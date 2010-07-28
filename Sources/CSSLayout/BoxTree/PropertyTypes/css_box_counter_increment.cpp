@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_counter_increment.h"
+#include "API/CSSLayout/PropertyTypes/css_box_counter_increment.h"
 
 CL_CSSBoxCounterIncrement::CL_CSSBoxCounterIncrement()
 : type(type_none)

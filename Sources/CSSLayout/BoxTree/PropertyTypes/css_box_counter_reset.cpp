@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_counter_reset.h"
+#include "API/CSSLayout/PropertyTypes/css_box_counter_reset.h"
 
 CL_CSSBoxCounterReset::CL_CSSBoxCounterReset()
 : type(type_none)

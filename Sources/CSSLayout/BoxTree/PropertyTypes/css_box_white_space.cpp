@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_white_space.h"
+#include "API/CSSLayout/PropertyTypes/css_box_white_space.h"
 
 CL_CSSBoxWhiteSpace::CL_CSSBoxWhiteSpace()
 : type(type_inherit)

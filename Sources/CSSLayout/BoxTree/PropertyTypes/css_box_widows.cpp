@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_widows.h"
+#include "API/CSSLayout/PropertyTypes/css_box_widows.h"
 
 CL_CSSBoxWidows::CL_CSSBoxWidows()
 : type(type_inherit), value(0)

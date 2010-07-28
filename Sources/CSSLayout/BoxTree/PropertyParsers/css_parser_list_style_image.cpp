@@ -28,7 +28,7 @@
 
 #include "CSSLayout/precomp.h"
 #include "css_parser_list_style_image.h"
-#include "../css_box_properties.h"
+#include "API/CSSLayout/css_box_properties.h"
 
 std::vector<CL_String> CL_CSSParserListStyleImage::get_names()
 {

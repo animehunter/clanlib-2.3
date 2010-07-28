@@ -146,14 +146,14 @@ void CL_CSSTableLayout::render_cell_non_content(CL_GraphicContext &gc, CL_CSSRes
 			{
 				image.draw(gc, border_box);
 			}
-			else if (cell->get_element_node()->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_clan_stretch)
+/*			else if (cell->get_element_node()->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_clan_stretch)
 			{
 				int sizing_left = (int)(cell->get_element_node()->computed_properties.clan_background_border_left.length.value+0.5f);
 				int sizing_top = (int)(cell->get_element_node()->computed_properties.clan_background_border_top.length.value+0.5f);
 				int sizing_right = (int)(cell->get_element_node()->computed_properties.clan_background_border_right.length.value+0.5f);
 				int sizing_bottom = (int)(cell->get_element_node()->computed_properties.clan_background_border_bottom.length.value+0.5f);
 				CL_ClanImageStretch::draw_image(gc, border_box, image, sizing_left, sizing_top, sizing_right, sizing_bottom);
-			}
+			}*/
 		}
 	}
 }

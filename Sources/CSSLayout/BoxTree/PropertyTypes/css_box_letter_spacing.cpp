@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_letter_spacing.h"
+#include "API/CSSLayout/PropertyTypes/css_box_letter_spacing.h"
 #include "../../css_resource_cache.h"
 
 CL_CSSBoxLetterSpacing::CL_CSSBoxLetterSpacing()

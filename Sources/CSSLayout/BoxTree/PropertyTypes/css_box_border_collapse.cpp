@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_border_collapse.h"
+#include "API/CSSLayout/PropertyTypes/css_box_border_collapse.h"
 
 CL_CSSBoxBorderCollapse::CL_CSSBoxBorderCollapse()
 : type(type_inherit)

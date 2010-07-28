@@ -28,7 +28,7 @@
 
 #include "CSSLayout/precomp.h"
 #include "css_parser_right.h"
-#include "../css_box_properties.h"
+#include "API/CSSLayout/css_box_properties.h"
 
 std::vector<CL_String> CL_CSSParserRight::get_names()
 {

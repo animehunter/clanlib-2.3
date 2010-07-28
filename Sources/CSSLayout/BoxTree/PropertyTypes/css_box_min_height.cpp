@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_min_height.h"
+#include "API/CSSLayout/PropertyTypes/css_box_min_height.h"
 #include "../../css_resource_cache.h"
 
 CL_CSSBoxMinHeight::CL_CSSBoxMinHeight()

@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_padding_width.h"
+#include "API/CSSLayout/PropertyTypes/css_box_padding_width.h"
 #include "../../css_resource_cache.h"
 
 CL_CSSBoxPaddingWidth::CL_CSSBoxPaddingWidth()

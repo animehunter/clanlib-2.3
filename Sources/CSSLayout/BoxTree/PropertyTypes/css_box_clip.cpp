@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_clip.h"
+#include "API/CSSLayout/PropertyTypes/css_box_clip.h"
 #include "../../css_resource_cache.h"
 
 CL_CSSBoxClip::CL_CSSBoxClip()

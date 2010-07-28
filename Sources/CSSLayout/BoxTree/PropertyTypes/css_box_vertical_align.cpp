@@ -27,8 +27,8 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_vertical_align.h"
-#include "css_box_line_height.h"
+#include "API/CSSLayout/PropertyTypes/css_box_vertical_align.h"
+#include "API/CSSLayout/PropertyTypes/css_box_line_height.h"
 #include "../../css_resource_cache.h"
 
 CL_CSSBoxVerticalAlign::CL_CSSBoxVerticalAlign()

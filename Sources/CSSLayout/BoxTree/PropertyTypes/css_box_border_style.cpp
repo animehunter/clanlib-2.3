@@ -27,7 +27,7 @@
 */
 
 #include "CSSLayout/precomp.h"
-#include "css_box_border_style.h"
+#include "API/CSSLayout/PropertyTypes/css_box_border_style.h"
 
 CL_CSSBoxBorderStyle::CL_CSSBoxBorderStyle()
 : type(type_none)
