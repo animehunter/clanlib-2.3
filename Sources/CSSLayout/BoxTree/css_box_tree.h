@@ -61,7 +61,7 @@ private:
 	void create_anonymous_blocks(CL_CSSBoxElement *element, CL_CSSResourceCache *resource_cache);
 	void filter_table(CL_CSSBoxElement * element, CL_CSSResourceCache *resource_cache);
 	void convert_run_in_blocks(CL_CSSBoxElement *element);
-	void apply_selection(CL_CSSBoxNode *node, CL_CSSBoxNode *start, size_t start_offset, CL_CSSBoxNode *end, size_t end_offset, bool clear, bool in_selection = false);
+	void apply_selection(CL_CSSBoxNode *start, size_t start_offset, CL_CSSBoxNode *end, size_t end_offset, bool clear);
 
 	CL_CSSBoxElement *root_element;
 	CL_CSSPropertyParsers property_parsers;

@@ -30,6 +30,7 @@
 #include "css_box_tree.h"
 #include "css_box_element.h"
 #include "css_box_text.h"
+#include "css_box_node_walker.h"
 #include "css_whitespace_eraser.h"
 #include "API/CSSLayout/css_property2.h"
 #include "API/CSSLayout/css_property_list2.h"
@@ -341,61 +342,55 @@ void CL_CSSBoxTree::filter_table(CL_CSSBoxElement *element, CL_CSSResourceCache 
 
 void CL_CSSBoxTree::set_selection(CL_CSSBoxNode *start, size_t start_text_offset, CL_CSSBoxNode *end, size_t end_text_offset)
 {
-	apply_selection(selection_start, selection_start, selection_start_text_offset, selection_end, selection_end_text_offset, true);
+	apply_selection(selection_start, selection_start_text_offset, selection_end, selection_end_text_offset, true);
 
 	selection_start = start;
 	selection_start_text_offset = start_text_offset;
 	selection_end = end;
 	selection_end_text_offset = end_text_offset;
 
-	apply_selection(selection_start, selection_start, selection_start_text_offset, selection_end, selection_end_text_offset, false);
+	apply_selection(selection_start, selection_start_text_offset, selection_end, selection_end_text_offset, false);
 }
 
-void CL_CSSBoxTree::apply_selection(CL_CSSBoxNode *node, CL_CSSBoxNode *start, size_t start_offset, CL_CSSBoxNode *end, size_t end_offset, bool clear, bool in_selection)
+void CL_CSSBoxTree::apply_selection(CL_CSSBoxNode *start, size_t start_offset, CL_CSSBoxNode *end, size_t end_offset, bool clear)
 {
-	if (!node)
-		return;
-
-	if (node == start)
-		in_selection = true;
-
-	CL_CSSBoxText *text = dynamic_cast<CL_CSSBoxText*>(node);
-	if (text)
+	if (start && end)
 	{
-		if (clear)
+		CL_CSSBoxNodeWalker walker(start, true);
+		do
 		{
-			text->selection_start = 0;
-			text->processed_selection_start = 0;
-			text->selection_end = 0;
-			text->processed_selection_end = 0;
-		}
-		else if (in_selection)
-		{
-			text->selection_start = 0;
-			text->processed_selection_start = 0;
-			text->selection_end = text->text.length();
-			text->processed_selection_end = text->processed_text.length();
-
-			if (text == start)
+			if (walker.is_text())
 			{
-				text->selection_start = start_offset;
-				text->processed_selection_start = start_offset;
-			}
-			else if (text == end)
-			{
-				text->selection_end = end_offset;
-				text->processed_selection_end = end_offset;
-			}
-		}
-	}
+				CL_CSSBoxText *text = walker.get_text();
+				if (clear)
+				{
+					text->selection_start = 0;
+					text->processed_selection_start = 0;
+					text->selection_end = 0;
+					text->processed_selection_end = 0;
+				}
+				else
+				{
+					text->selection_start = 0;
+					text->processed_selection_start = 0;
+					text->selection_end = text->text.length();
+					text->processed_selection_end = text->processed_text.length();
 
-	CL_CSSBoxNode *cur = node->get_first_child();
-	while (cur)
-	{
-		apply_selection(cur, start, start_offset, end, end_offset, clear, in_selection);
-		cur = cur->get_next_sibling();
-	}
+					if (text == start)
+					{
+						text->selection_start = start_offset;
+						text->processed_selection_start = start_offset;
+					}
+					if (text == end)
+					{
+						text->selection_end = end_offset;
+						text->processed_selection_end = end_offset;
+					}
+				}
+			}
 
-	if (node == end)
-		in_selection = false;
+			if (walker.get() == end)
+				break;
+		} while (walker.next());
+	}
 }

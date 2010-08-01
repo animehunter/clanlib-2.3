@@ -32,8 +32,8 @@
 #include "css_box_text.h"
 #include "css_box_object.h"
 
-CL_CSSBoxNodeWalker::CL_CSSBoxNodeWalker(CL_CSSBoxNode *node)
-: cur(node), level(0)
+CL_CSSBoxNodeWalker::CL_CSSBoxNodeWalker(CL_CSSBoxNode *node, bool allow_upwards_walking)
+: cur(node), level(allow_upwards_walking ? 4096 : 0)
 {
 }
 

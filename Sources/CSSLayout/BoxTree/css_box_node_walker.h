@@ -36,7 +36,7 @@ class CL_CSSBoxObject;
 class CL_CSSBoxNodeWalker
 {
 public:
-	CL_CSSBoxNodeWalker(CL_CSSBoxNode *node);
+	CL_CSSBoxNodeWalker(CL_CSSBoxNode *node, bool allow_upwards_walking = false);
 
 	bool is_node() const;
 	bool is_element() const;
