@@ -75,7 +75,7 @@ public:
 	int get_block_width() const;
 	int get_block_height() const;
 	virtual bool is_replaced() const { return false; }
-	virtual CL_CSSLayoutHitTestResult hit_test(const CL_Point &pos) const { return CL_CSSLayoutHitTestResult(); }
+	virtual CL_CSSLayoutHitTestResult hit_test(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, const CL_Point &pos) const { return CL_CSSLayoutHitTestResult(); }
 
 	CL_CSSBoxElement *get_element_node() { return element_node; }
 	CL_CSSStackingContext *get_stacking_context() { return stacking_context; }

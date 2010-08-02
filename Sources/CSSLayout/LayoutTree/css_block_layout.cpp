@@ -227,11 +227,11 @@ CL_CSSInlineLayout *CL_CSSBlockLayout::find_inline_layout(CL_CSSBoxText *text_no
 	return 0;
 }
 
-CL_CSSLayoutHitTestResult CL_CSSBlockLayout::hit_test(const CL_Point &pos) const
+CL_CSSLayoutHitTestResult CL_CSSBlockLayout::hit_test(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, const CL_Point &pos) const
 {
 	for (size_t i = 0; i < children.size(); i++)
 	{
-		CL_CSSLayoutHitTestResult result = children[i]->hit_test(pos);
+		CL_CSSLayoutHitTestResult result = children[i]->hit_test(gc, resource_cache, pos);
 		if (result.node)
 			return result;
 	}

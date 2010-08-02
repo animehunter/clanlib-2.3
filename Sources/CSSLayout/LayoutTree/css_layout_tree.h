@@ -50,7 +50,7 @@ public:
 	void create(CL_CSSBoxElement *element);
 	void layout(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, const CL_Size &viewport);
 	void render(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache);
-	CL_CSSLayoutHitTestResult hit_test(const CL_Point &pos);
+	CL_CSSLayoutHitTestResult hit_test(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, const CL_Point &pos);
 	CL_CSSInlineLayout *find_inline_layout(CL_CSSBoxText *text_node);
 	CL_Rect get_cursor_box(CL_GraphicContext &gc, CL_CSSResourceCache *resources, CL_CSSBoxText *text_node, CL_String::size_type pos);
 	CL_Rect get_content_box(CL_CSSBoxElement *element);

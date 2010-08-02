@@ -112,9 +112,9 @@ CL_CSSInlineLayout *CL_CSSLayoutTree::find_inline_layout(CL_CSSBoxText *text_nod
 	}
 }
 
-CL_CSSLayoutHitTestResult CL_CSSLayoutTree::hit_test(const CL_Point &pos)
+CL_CSSLayoutHitTestResult CL_CSSLayoutTree::hit_test(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, const CL_Point &pos)
 {
-	return root_layout->hit_test(pos);
+	return root_layout->hit_test(gc, resource_cache, pos);
 }
 
 CL_Rect CL_CSSLayoutTree::get_cursor_box(CL_GraphicContext &gc, CL_CSSResourceCache *resources, CL_CSSBoxText *text_node, CL_String::size_type pos)

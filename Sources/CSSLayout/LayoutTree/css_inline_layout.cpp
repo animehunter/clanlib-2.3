@@ -778,17 +778,61 @@ CL_Rect CL_CSSInlineLayout::get_cursor_box(CL_GraphicContext &gc, CL_CSSResource
 	return CL_Rect();
 }
 
-CL_CSSLayoutHitTestResult CL_CSSInlineLayout::hit_test(const CL_Point &pos) const
+CL_CSSLayoutHitTestResult CL_CSSInlineLayout::hit_test(CL_GraphicContext &gc, CL_CSSResourceCache *resources, const CL_Point &pos) const
 {
-	CL_CSSLayoutHitTestResult result;
-/*	for (size_t i = 0; i < line_boxes.size(); i++)
+	int pos_x = formatting_context->get_x();
+	int pos_y = formatting_context->get_y();
+	for (size_t i = 0; i < line_boxes.size(); i++)
 	{
-		for (size_t j = 0; j < line_boxes[i].segments.size(); j++)
+		CL_Rect box = line_boxes[i].box;
+		box.translate(pos_x, pos_y);
+		if (box.contains(pos))
 		{
-			const CL_CSSInlineLineSegment &segment = line_boxes[i].segments[j];
+			for (size_t j = 0; j < line_boxes[i].segments.size(); j++)
+			{
+				const CL_CSSInlineLineSegment &segment = line_boxes[i].segments[j];
+				CL_Rect box2(box.left + segment.left, box.top, box.left + segment.right, box.bottom);
+				if (box2.contains(pos))
+				{
+					CL_CSSLayoutHitTestResult result;
+					result.type = CL_CSSLayoutHitTestResult::inside;
+					result.node = objects[segment.object_index].node;
+					result.text_offset = segment.text_start;
+
+					CL_CSSBoxText *text = dynamic_cast<CL_CSSBoxText*>(result.node);
+					if (text)
+					{
+						const CL_CSSBoxProperties &properties = text->get_properties();
+						CL_Font &font = resources->get_font(gc, properties);
+						CL_String str = text->processed_text.substr(segment.text_start, segment.text_end-segment.text_start);
+						CL_Point p(pos.x - box2.left, pos.y - box2.top);
+						result.text_offset = segment.text_start + font.get_character_index(gc, str, p);
+					}
+					return result;
+				}
+			}
 		}
-	}*/
-	return result;
+		else if (box.top <= pos.y && box.bottom > pos.y && !line_boxes[i].segments.empty())
+		{
+			if (pos.x < box.left)
+			{
+				CL_CSSLayoutHitTestResult result;
+				result.type = CL_CSSLayoutHitTestResult::outside_left;
+				result.node = objects[line_boxes[i].segments.front().object_index].node;
+				result.text_offset = line_boxes[i].segments.front().text_start;
+				return result;
+			}
+			else if (pos.x >= box.right)
+			{
+				CL_CSSLayoutHitTestResult result;
+				result.type = CL_CSSLayoutHitTestResult::outside_right;
+				result.node = objects[line_boxes[i].segments.front().object_index].node;
+				result.text_offset = line_boxes[i].segments.front().text_end;
+				return result;
+			}
+		}
+	}
+	return CL_CSSLayoutHitTestResult();
 }
 
 void CL_CSSInlineLayout::prepare_children()

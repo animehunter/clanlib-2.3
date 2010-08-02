@@ -59,7 +59,7 @@ public:
 
 	bool contains_node(const CL_CSSBoxNode *node) const;
 	CL_Rect get_cursor_box(CL_GraphicContext &gc, CL_CSSResourceCache *resources, CL_CSSBoxText *text_node, CL_String::size_type pos) const;
-	CL_CSSLayoutHitTestResult hit_test(const CL_Point &pos) const;
+	CL_CSSLayoutHitTestResult hit_test(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, const CL_Point &pos) const;
 
 	const std::vector<CL_CSSInlineObject> &get_objects() const { return objects; }
 	const std::vector<CL_CSSInlineLineBox> &get_line_boxes() const { return line_boxes; }

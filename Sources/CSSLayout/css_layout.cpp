@@ -86,7 +86,7 @@ void CL_CSSLayout::set_selection(CL_CSSLayoutNode start, size_t start_text_offse
 CL_CSSHitTestResult CL_CSSLayout::hit_test(CL_GraphicContext &gc, const CL_Point &pos)
 {
 	impl->throw_if_disposed();
-	CL_CSSLayoutHitTestResult result = impl->layout_tree.hit_test(pos);
+	CL_CSSLayoutHitTestResult result = impl->layout_tree.hit_test(gc, &impl->resource_cache, pos);
 	if (result.node)
 	{
 		CL_CSSHitTestResult result2;
