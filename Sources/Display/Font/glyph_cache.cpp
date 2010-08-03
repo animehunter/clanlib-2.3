@@ -157,6 +157,7 @@ int CL_GlyphCache::get_character_index(CL_FontEngine *font_engine, CL_GraphicCon
 		while(!reader.is_end())
 		{
 			unsigned int glyph = reader.get_char();
+			CL_String::size_type glyph_pos = reader.get_position();
 			reader.next();
 
 			CL_Font_TextureGlyph *gptr = get_glyph(font_engine, gc, glyph);
@@ -165,7 +166,7 @@ int CL_GlyphCache::get_character_index(CL_FontEngine *font_engine, CL_GraphicCon
 			CL_Rect position(xpos, ypos - font_height, CL_Size(gptr->increment.x, gptr->increment.y + font_height + font_external_leading));
 			if (position.contains(point))
 			{
-				return (reader.get_position()) + character_counter;
+				return glyph_pos + character_counter;
 			}
 		
 			xpos += gptr->increment.x;
