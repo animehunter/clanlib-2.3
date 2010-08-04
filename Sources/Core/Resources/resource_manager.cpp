@@ -281,6 +281,17 @@ int CL_ResourceManager::get_integer_resource(
 	return CL_StringHelp::text_to_int(resource.get_element().get_attribute("value"));
 }
 
+CL_String CL_ResourceManager::get_string_resource(
+	const CL_String &resource_id,
+	const CL_StringRef &default_value)
+{
+	if (!resource_exists(resource_id))
+		return default_value;
+
+	CL_Resource resource = get_resource(resource_id);
+	return resource.get_element().get_attribute("value");
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // CL_ResourceManager Operations:
 
