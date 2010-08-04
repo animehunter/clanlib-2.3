@@ -43,8 +43,6 @@ int Program::main(const std::vector<CL_String> &args)
 
 		CL_SetupGL setup_gl;
 
-		CL_SetupGUI setup_gui;
-
 		// Start the Application
 		App app;
 		int retval = app.start(args);

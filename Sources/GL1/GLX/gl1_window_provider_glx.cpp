@@ -321,10 +321,7 @@ void CL_GL1WindowProvider_GLX::create(CL_DisplayWindowSite *new_site, const CL_D
 
 	}
 
-	int screen_bpp = 0;
-	glx.glXGetConfig(disp, opengl_visual_info, GLX_BUFFER_SIZE, &screen_bpp);
-
-	x11_window.create(opengl_visual_info, screen_bpp, site, desc);
+	x11_window.create(opengl_visual_info, site, desc);
 
 	if (create_provider_flag)
 	{
