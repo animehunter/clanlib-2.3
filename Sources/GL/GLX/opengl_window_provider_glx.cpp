@@ -276,6 +276,7 @@ void CL_OpenGLWindowProvider_GLX::create(CL_DisplayWindowSite *new_site, const C
 		int gl_attribs_single[] =
 		{
 			GLX_X_RENDERABLE, True,
+			GLX_RENDER_TYPE, GLX_RGBA_BIT,
 			GLX_DEPTH_SIZE, 16,
 			GLX_STENCIL_SIZE, 8,
 			GLX_BUFFER_SIZE, 24,
