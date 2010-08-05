@@ -179,6 +179,7 @@ CL_OpenGLWindowProvider_GLX::CL_OpenGLWindowProvider_GLX()
 		(glx.glXQueryExtensionsString == NULL) ||
 		(glx.glXQueryVersion == NULL) ||
 		(glx.glXGetVisualFromFBConfig == NULL) ||
+		(glx.glXCreateNewContext == NULL) ||
 		(glx.glXCreateContext == NULL) )
 	{
 		throw CL_Exception("Cannot obtain required OpenGL GLX functions");
@@ -404,9 +405,31 @@ bool CL_OpenGLWindowProvider_GLX::is_glx_extension_supported(const char *ext_nam
 	const char *ext_string = glx.glXQueryExtensionsString(x11_window.get_display(), opengl_visual_info->screen);
 	if (ext_string)
 	{
-		if (strstr(ext_string, ext_name))
+		const char *start;
+		const char *where, *terminator;
+		
+		// Extension names should not have spaces.
+		where = strchr(ext_name, ' ');
+		if ( where || *ext_name == '\0' )
+			return false;
+
+		int ext_len = strlen(ext_name);
+		
+		// It takes a bit of care to be fool-proof about parsing the OpenGL extensions string. Don't be fooled by sub-strings, etc.
+		for ( start = ext_string; ; )
 		{
-			return true;
+			where = strstr( start, ext_name );
+
+			if ( !where )
+				break;
+
+			terminator = where + ext_len;
+
+			if ( where == start || *(where - 1) == ' ' )
+				if ( *terminator == ' ' || *terminator == '\0' )
+					return true;
+
+			start = terminator;
 		}
 	}
 	return false;
@@ -433,6 +456,13 @@ void CL_OpenGLWindowProvider_GLX::setup_swap_interval_pointers()
 
 }
 
+static bool cl_ctxErrorOccurred = false;
+static int cl_ctxErrorHandler( Display *dpy, XErrorEvent *ev )
+{
+    cl_ctxErrorOccurred = true;
+    return 0;
+}
+
 GLXContext CL_OpenGLWindowProvider_GLX::create_context()
 {
 	GLXContext shared_context = NULL;
@@ -451,29 +481,54 @@ GLXContext CL_OpenGLWindowProvider_GLX::create_context()
 	}
 
 	GLXContext context;
-	context = glx.glXCreateContext(x11_window.get_display(), opengl_visual_info, shared_context, GL_TRUE);
+	context = glx.glXCreateNewContext(x11_window.get_display(), fbconfig, GLX_RGBA_TYPE, shared_context, True);
 	if(context == NULL)
 		throw CL_Exception("glXCreateContext failed");
-
+	
 	int attribs[] = {
-		GLX_CONTEXT_MAJOR_VERSION_ARB,
+		0x2091, //GLX_CONTEXT_MAJOR_VERSION_ARB,
 		3,
-		GLX_CONTEXT_MINOR_VERSION_ARB,
+		0x2092, //GLX_CONTEXT_MINOR_VERSION_ARB,
 		0,
-		0
+		None
 	};
 
 	ptr_glXCreateContextAttribs glXCreateContextAttribs = NULL;
 
-	if (glx.glXGetProcAddressARB)
-		glXCreateContextAttribs = (ptr_glXCreateContextAttribs) glx.glXGetProcAddressARB((GLubyte*) "glXCreateContextAttribsARB");
-	if (glx.glXGetProcAddress)
-		glXCreateContextAttribs = (ptr_glXCreateContextAttribs) glx.glXGetProcAddress((GLubyte*) "glXCreateContextAttribsARB");
-
-	if (glXCreateContextAttribs && glx.glXChooseFBConfig)
+	if (is_glx_extension_supported("GLX_ARB_create_context"))
 	{
+		if (glx.glXGetProcAddressARB)
+			glXCreateContextAttribs = (ptr_glXCreateContextAttribs) glx.glXGetProcAddressARB((GLubyte*) "glXCreateContextAttribsARB");
+		if (glx.glXGetProcAddress)
+			glXCreateContextAttribs = (ptr_glXCreateContextAttribs) glx.glXGetProcAddress((GLubyte*) "glXCreateContextAttribsARB");
+	}
+
+
+	if (glXCreateContextAttribs)
+	{
+		// Install an X error handler so the application won't exit if GL 3.0 context allocation fails.
+  		//
+		// Note this error handler is global.  All display connections in all threads
+		// of a process use the same error handler, so be sure to guard against other
+		// threads issuing X commands while this code is running.
+		cl_ctxErrorOccurred = false;
+		int (*oldHandler)(Display*, XErrorEvent*) = XSetErrorHandler(&cl_ctxErrorHandler);
+	  
 		GLXContext context_gl3;
-		context_gl3 = glXCreateContextAttribs(x11_window.get_display(), fbconfig, shared_context, GL_TRUE, attribs);
+		context_gl3 = glXCreateContextAttribs(x11_window.get_display(), fbconfig, shared_context, True, attribs);
+		
+  		// Restore the original error handler
+  		XSetErrorHandler( oldHandler );		
+		
+		if (cl_ctxErrorOccurred)
+		{
+			if (context_gl3)
+			{
+				glx.glXDestroyContext(x11_window.get_display(), context_gl3);
+				context_gl3 = 0;
+			}
+		}
+		
 		if (context_gl3)
 		{
 			glx.glXDestroyContext(x11_window.get_display(), context);

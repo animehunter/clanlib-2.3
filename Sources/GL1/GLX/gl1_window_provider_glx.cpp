@@ -342,9 +342,31 @@ bool CL_GL1WindowProvider_GLX::is_glx_extension_supported(const char *ext_name)
 	const char *ext_string = glx.glXQueryExtensionsString(x11_window.get_display(), opengl_visual_info->screen);
 	if (ext_string)
 	{
-		if (strstr(ext_string, ext_name))
+		const char *start;
+		const char *where, *terminator;
+		
+		// Extension names should not have spaces.
+		where = strchr(ext_name, ' ');
+		if ( where || *ext_name == '\0' )
+			return false;
+
+		int ext_len = strlen(ext_name);
+		
+		// It takes a bit of care to be fool-proof about parsing the OpenGL extensions string. Don't be fooled by sub-strings, etc.
+		for ( start = ext_string; ; )
 		{
-			return true;
+			where = strstr( start, ext_name );
+
+			if ( !where )
+				break;
+
+			terminator = where + ext_len;
+
+			if ( where == start || *(where - 1) == ' ' )
+				if ( *terminator == ' ' || *terminator == '\0' )
+					return true;
+
+			start = terminator;
 		}
 	}
 	return false;
