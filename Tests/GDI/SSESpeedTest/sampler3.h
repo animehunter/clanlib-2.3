@@ -1,24 +1,18 @@
 
-inline unsigned int sampleLinearRepeat2(__m128 &xx, __m128 &yy, int texwidth, int texheight, unsigned int *texdata)
+inline unsigned int sampleLinearRepeat3(int xx, int yy, int texwidth, int texheight, unsigned int *texdata)
 {
-//	unsigned int old_rounding_mode = _MM_GET_ROUNDING_MODE();
+	int tx = xx>>15;
+	int ty = yy>>15;
+	int a = xx & 0x7fff;
+	int b = yy & 0x7fff;
+	int inv_a = 0x8000-a;
+	int inv_b = 0x8000-b;
 
-	__m128 one = _mm_set_ss(128.0f);
-	//_MM_SET_ROUNDING_MODE(_MM_ROUND_DOWN);
-	int tx = _mm_cvtss_si32(xx);
-	int ty = _mm_cvtss_si32(yy);
-	//_MM_SET_ROUNDING_MODE(_MM_ROUND_NEAREST);
-	int a = _mm_cvtss_si32(_mm_mul_ss(_mm_sub_ss(xx, _mm_cvtsi32_ss(xx, tx)), one));
-	int b = _mm_cvtss_si32(_mm_mul_ss(_mm_sub_ss(yy, _mm_cvtsi32_ss(yy, ty)), one));
-	int inv_a = 128-a;
-	int inv_b = 128-b;
+	int c0 = (inv_a*inv_b+64)>>(15+8);
+	int c1 = (a*inv_b+64)>>(15+8);
+	int c2 = (inv_a*b)>>(15+8);
+	int c3 = (a*b)>>(15+8);
 
-	int c0 = (inv_a*inv_b+64)>>7;
-	int c1 = (a*inv_b+64)>>7;
-	int c2 = (inv_a*b)>>7;
-	int c3 = (a*b)>>7;
-
-//	_MM_SET_ROUNDING_MODE(old_rounding_mode);
 /*
 	// wrapRepeat any size:
 	int tx0 = tx%texwidth;//wrapRepeat(tx, texwidth);
@@ -26,12 +20,38 @@ inline unsigned int sampleLinearRepeat2(__m128 &xx, __m128 &yy, int texwidth, in
 	int tx1 = (tx+1)%texwidth;//wrapRepeat(tx+1, texwidth);
 	int ty1 = (ty+1)%texheight;//wrapRepeat(ty+1, texheight);
 */
+/*
 	// wrapRepeat power of two:
 	int tx0 = tx&511;//wrapRepeat(tx, texwidth);
 	int ty0 = ty&511;//wrapRepeat(ty, texheight);
 	int tx1 = (tx+1)&511;//wrapRepeat(tx+1, texwidth);
 	int ty1 = (ty+1)&511;//wrapRepeat(ty+1, texheight);
+*/
 
+	// wrapClampToEdge:
+	__m128i clampquad = _mm_set_epi32(tx, ty, tx+1, ty+1);
+	clampquad = _mm_max_epi16(clampquad, _mm_setzero_si128());
+	clampquad = _mm_min_epi16(clampquad, _mm_set_epi32(texwidth-1, texheight-1, texwidth-1, texheight-1));
+	int clampedquad[4];
+	_mm_storeu_si128((__m128i*)clampedquad, clampquad);
+	int tx0 = clampedquad[3];
+	int ty0 = clampedquad[2];
+	int tx1 = clampedquad[1];
+	int ty1 = clampedquad[0];
+/*
+	int tx0 = tx;
+	int ty0 = ty;
+	int tx1 = tx+1;
+	int ty1 = ty+1;
+	tx0 = tx0 >= 0 ? tx0 : 0;
+	tx0 = tx0 < (texwidth-1) ? tx0 : (texwidth-1);
+	tx1 = tx1 >= 0 ? tx1 : 0;
+	tx1 = tx1 < (texwidth-1) ? tx1 : (texwidth-1);
+	ty0 = ty0 >= 0 ? ty0 : 0;
+	ty0 = ty0 < (texheight-1) ? ty0 : (texheight-1);
+	ty1 = ty1 >= 0 ? ty1 : 0;
+	ty1 = ty1 < (texheight-1) ? ty1 : (texheight-1);
+*/
 	int lineoffset1 = ty0*texwidth;
 	int lineoffset2 = ty1*texwidth;
 //	int sampleoffset = tx+ty*texwidth;

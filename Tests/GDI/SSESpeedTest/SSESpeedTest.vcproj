@@ -188,6 +188,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\linear3.h"
+			>
+		</File>
+		<File
+			RelativePath=".\linear4.h"
+			>
+		</File>
+		<File
 			RelativePath=".\nearest1.h"
 			>
 		</File>
@@ -197,6 +205,14 @@
 		</File>
 		<File
 			RelativePath=".\sampler2.h"
+			>
+		</File>
+		<File
+			RelativePath=".\sampler3.h"
+			>
+		</File>
+		<File
+			RelativePath=".\sampler4.h"
 			>
 		</File>
 		<File
