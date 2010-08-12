@@ -11,10 +11,15 @@ void linear4(Scanline *d)
 	float deltatx = d->tx2-d->tx1;
 	float deltaty = d->ty2-d->ty1;
 
-	int dtx = (int)(deltatx/deltax*texwidth*32768);
-	int dty = (int)(deltaty/deltax*texheight*32768);
-	int tx = (int)(d->tx1*texwidth*32768+startoffset*dtx);
-	int ty = (int)(d->ty1*texheight*32768+startoffset*dty);
+	int dtx = (int)(deltatx/deltax*32768);
+	int dty = (int)(deltaty/deltax*32768);
+	int tx = (int)(d->tx1*32768+startoffset*dtx);
+	int ty = (int)(d->ty1*32768+startoffset*dty);
+
+	tx *= texwidth;
+	dtx *= texwidth;
+	ty *= texheight;
+	dty *= texheight;
 
 	__m128i one, half, zero;
 	one = _mm_set1_epi16(0x0100);

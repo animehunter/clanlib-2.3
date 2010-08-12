@@ -8,10 +8,10 @@ inline unsigned int sampleLinearRepeat3(int xx, int yy, int texwidth, int texhei
 	int inv_a = 0x8000-a;
 	int inv_b = 0x8000-b;
 
-	int c0 = (inv_a*inv_b+64)>>(15+8);
 	int c1 = (a*inv_b+64)>>(15+8);
-	int c2 = (inv_a*b)>>(15+8);
-	int c3 = (a*b)>>(15+8);
+	int c2 = (inv_a*b+64)>>(15+8);
+	int c3 = (a*b+64)>>(15+8);
+	int c0 = 128-c1-c2-c3; //(inv_a*inv_b+64)>>(15+8);
 
 /*
 	// wrapRepeat any size:
@@ -52,32 +52,31 @@ inline unsigned int sampleLinearRepeat3(int xx, int yy, int texwidth, int texhei
 	ty1 = ty1 >= 0 ? ty1 : 0;
 	ty1 = ty1 < (texheight-1) ? ty1 : (texheight-1);
 */
-	int lineoffset1 = ty0*texwidth;
-	int lineoffset2 = ty1*texwidth;
-//	int sampleoffset = tx+ty*texwidth;
 
-	__m128i zero, half, p01, c01, p23, c23, result;
+	__m128i zero, half, p0, p1, p2, p3, tmp0, tmp1, result;
 	zero = _mm_setzero_si128();
 	half = _mm_set1_epi16(0x003f);
+	p0 = _mm_cvtsi32_si128(texdata[tx0+ty0*texwidth]);
 
-	c01 = _mm_set_epi32(0, c1, 0, c0);
-	c01 = _mm_shufflehi_epi16(c01, _MM_SHUFFLE(0,0,0,0));
-	c01 = _mm_shufflelo_epi16(c01, _MM_SHUFFLE(0,0,0,0));
-	p01 = _mm_set_epi32(0, 0, texdata[tx1+lineoffset1], texdata[tx0+lineoffset1]);
-//	p01 = _mm_loadl_epi64((__m128i*)(texdata+sampleoffset));
-	p01 = _mm_unpacklo_epi8(p01, zero);
-	p01 = _mm_mullo_epi16(p01, c01);
+	tmp0 = _mm_unpacklo_epi8(p0, zero);
+	tmp1 = _mm_set1_epi16(c0);
+	result = _mm_mullo_epi16(tmp0, tmp1);
 
-	c23 = _mm_set_epi32(0, c3, 0, c2);
-	c23 = _mm_shufflehi_epi16(c23, _MM_SHUFFLE(0,0,0,0));
-	c23 = _mm_shufflelo_epi16(c23, _MM_SHUFFLE(0,0,0,0));
-	p23 = _mm_set_epi32(0, 0, texdata[tx1+lineoffset2], texdata[tx0+lineoffset2]);
-//	p23 = _mm_loadl_epi64((__m128i*)(texdata+sampleoffset+texwidth));
-	p23 = _mm_unpacklo_epi8(p23, zero);
-	p23 = _mm_mullo_epi16(p23, c23);
+	p1 = _mm_cvtsi32_si128(texdata[tx1+ty0*texwidth]);
+	tmp0 = _mm_unpacklo_epi8(p1, zero);
+	tmp1 = _mm_set1_epi16(c1);
+	result = _mm_add_epi16(result, _mm_mullo_epi16(tmp0, tmp1));
 
-	result = _mm_add_epi16(p01, p23);
-	result = _mm_add_epi16(result, _mm_srli_epi16(result, 8));
+	p2 = _mm_cvtsi32_si128(texdata[tx0+ty1*texwidth]);
+	tmp0 = _mm_unpacklo_epi8(p2, zero);
+	tmp1 = _mm_set1_epi16(c2);
+	result = _mm_add_epi16(result, _mm_mullo_epi16(tmp0, tmp1));
+
+	p3 = _mm_cvtsi32_si128(texdata[tx1+ty1*texwidth]);
+	tmp0 = _mm_unpacklo_epi8(p3, zero);
+	tmp1 = _mm_set1_epi16(c3);
+	result = _mm_add_epi16(result, _mm_mullo_epi16(tmp0, tmp1));
+	
 	result = _mm_add_epi16(result, half);
 	result = _mm_srli_epi16(result, 7);
 	result = _mm_packus_epi16(result, zero);

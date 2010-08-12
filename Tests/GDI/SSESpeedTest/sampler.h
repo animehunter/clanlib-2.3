@@ -48,10 +48,10 @@ unsigned int sampleLinearRepeat(float x, float y, int texwidth, int texheight, u
 	int tx1 = (tx+1)&511;//wrapRepeat(tx+1, texwidth);
 	int ty1 = (ty+1)&511;//wrapRepeat(ty+1, texheight);
 
-	int c0 = (int)(inv_a*inv_b*128+0.5f);
 	int c1 = (int)(a*inv_b*128+0.5f);
 	int c2 = (int)(inv_a*b*128);
 	int c3 = (int)(a*b*128);
+	int c0 = 128-c1-c2-c3; //(int)(inv_a*inv_b*128+0.5f);
 
 	__m128i zero, half, p0, p1, p2, p3, tmp0, tmp1, result;
 	zero = _mm_setzero_si128();

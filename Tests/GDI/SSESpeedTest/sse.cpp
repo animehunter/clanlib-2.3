@@ -37,7 +37,7 @@ void time_algorithm(const CL_String &name, void(*func)(Scanline *), CL_DisplayWi
 	d.x1 = 0.0f;
 	d.x2 = 1600.0f;
 	d.tx1 = 0.0f;
-	d.tx2 = 1600.0f/256.0f;
+	d.tx2 = 1600.0f/1024.0f;
 	d.ty1 = 0.0f;
 	d.ty2 = 0.0f;
 
@@ -47,8 +47,8 @@ void time_algorithm(const CL_String &name, void(*func)(Scanline *), CL_DisplayWi
 		for (int y = 0; y < 1200; y++)
 		{
 			d.dest = colorbuffer0 + y*1600;
-			d.ty1 = (y+0.5f)/256.0f;
-			d.ty2 = (y+0.5f)/256.0f;
+			d.ty1 = (y+0.5f)/1024.0f;
+			d.ty2 = (y+0.5f)/1024.0f;
 			clipScanline(&d, 0, 1600);
 			func(&d);
 		}
@@ -75,11 +75,13 @@ int main(int, char **)
 	CL_SetupCore setup_core;
 	CL_SetupDisplay setup_display;
 	CL_SetupSWRender setup_swrender;
+	time_algorithm("nearest1", nearest1, 0);
+	time_algorithm("linear1", linear1, 0);
+	//time_algorithm("linear2", linear2, 0);
+	time_algorithm("linear3", linear3, 0);
+	time_algorithm("linear4", linear4, 0);
+
 	CL_DisplayWindow window("SSE Speed Test", 1600, 1200);
-	//time_algorithm("nearest1", nearest1, &window);
-	//time_algorithm("linear1", linear1, &window);
-	//time_algorithm("linear2", linear2, &window);
-	//time_algorithm("linear3", linear3, &window);
-	time_algorithm("linear4", linear4, &window);
+	time_algorithm("linear3", linear3, &window);
 	return 0;
 }

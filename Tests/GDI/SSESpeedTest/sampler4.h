@@ -38,37 +38,72 @@ inline void sampleLinearRepeat4(int xx0, int yy0, int xx1, int yy1, int texwidth
 	short texpos[8]; // x0, y0, x1, y1, x0+1, y0+1, x1+1, y1+1
 	_mm_storeu_si128((__m128i*)texpos, pos);
 
-	int lineoffset1 = texpos[1]*texwidth;
-	int lineoffset2 = texpos[5]*texwidth;
-	int lineoffset3 = texpos[3]*texwidth;
-	int lineoffset4 = texpos[7]*texwidth;
+	int tx0 = texpos[0];
+	int ty0 = texpos[1];
+	int tx2 = texpos[2];
+	int ty2 = texpos[3];
+	int tx1 = texpos[4];
+	int ty1 = texpos[5];
+	int tx3 = texpos[6];
+	int ty3 = texpos[7];
+/*
+	short constants[8];
+	_mm_storeu_si128((__m128i*)constants, c0213);
 
-	tmp0 = _mm_set_epi32(0, 0, texdata[texpos[4]+lineoffset3], texdata[texpos[0]+lineoffset1]);
+	__m128i zero, half, p0, p1, p2, p3, result;
+	zero = _mm_setzero_si128();
+	half = _mm_set1_epi16(0x003f);
+	p0 = _mm_set_epi32(0, 0, texdata[tx2+ty2*texwidth], texdata[tx0+ty0*texwidth]);
+
+	tmp0 = _mm_unpacklo_epi8(p0, zero);
+	tmp1 = _mm_set_epi16(constants[0], constants[0], constants[0], constants[0], constants[4], constants[4], constants[4], constants[4]);
+	result = _mm_mullo_epi16(tmp0, tmp1);
+
+	p1 = _mm_set_epi32(0, 0, texdata[tx3+ty2*texwidth], texdata[tx1+ty0*texwidth]);
+	tmp0 = _mm_unpacklo_epi8(p1, zero);
+	tmp1 = _mm_set_epi16(constants[2], constants[2], constants[2], constants[2], constants[6], constants[6], constants[6], constants[6]);
+	result = _mm_add_epi16(result, _mm_mullo_epi16(tmp0, tmp1));
+
+	p2 = _mm_set_epi32(0, 0, texdata[tx2+ty3*texwidth], texdata[tx0+ty1*texwidth]);
+	tmp0 = _mm_unpacklo_epi8(p2, zero);
+	tmp1 = _mm_set_epi16(constants[1], constants[1], constants[1], constants[1], constants[5], constants[5], constants[5], constants[5]);
+	result = _mm_add_epi16(result, _mm_mullo_epi16(tmp0, tmp1));
+
+	p3 = _mm_set_epi32(0, 0, texdata[tx3+ty3*texwidth], texdata[tx1+ty1*texwidth]);
+	tmp0 = _mm_unpacklo_epi8(p3, zero);
+	tmp1 = _mm_set_epi16(constants[3], constants[3], constants[3], constants[3], constants[7], constants[7], constants[7], constants[7]);
+	result = _mm_add_epi16(result, _mm_mullo_epi16(tmp0, tmp1));
+	
+	result = _mm_add_epi16(result, half);
+	result = _mm_srli_epi16(result, 7);
+	pixel = _mm_packus_epi16(result, zero);
+*/
+
+	tmp0 = _mm_set_epi32(0, 0, texdata[tx2+ty2*texwidth], texdata[tx0+ty0*texwidth]);
 	tmp0 = _mm_unpacklo_epi8(tmp0, _mm_setzero_si128());
 	tmp1 = _mm_shufflehi_epi16(c0213, _MM_SHUFFLE(0,0,0,0));
 	tmp1 = _mm_shufflelo_epi16(tmp1, _MM_SHUFFLE(0,0,0,0));
 	pixel = _mm_mullo_epi16(tmp0, tmp1);
 
-	tmp0 = _mm_set_epi32(0, 0, texdata[texpos[6]+lineoffset3], texdata[texpos[2]+lineoffset1]);
+	tmp0 = _mm_set_epi32(0, 0, texdata[tx3+ty2*texwidth], texdata[tx1+ty0*texwidth]);
 	tmp0 = _mm_unpacklo_epi8(tmp0, _mm_setzero_si128());
 	tmp1 = _mm_shufflehi_epi16(c0213, _MM_SHUFFLE(2,2,2,2));
 	tmp1 = _mm_shufflelo_epi16(tmp1, _MM_SHUFFLE(2,2,2,2));
 	pixel = _mm_add_epi16(pixel, _mm_mullo_epi16(tmp0, tmp1));
 
-	tmp0 = _mm_set_epi32(0, 0, texdata[texpos[4]+lineoffset4], texdata[texpos[0]+lineoffset2]);
+	tmp0 = _mm_set_epi32(0, 0, texdata[tx2+ty3*texwidth], texdata[tx0+ty1*texwidth]);
 	tmp0 = _mm_unpacklo_epi8(tmp0, _mm_setzero_si128());
 	tmp1 = _mm_shufflehi_epi16(c0213, _MM_SHUFFLE(1,1,1,1));
 	tmp1 = _mm_shufflelo_epi16(tmp1, _MM_SHUFFLE(1,1,1,1));
 	pixel = _mm_add_epi16(pixel, _mm_mullo_epi16(tmp0, tmp1));
 
-	tmp0 = _mm_set_epi32(0, 0, texdata[texpos[6]+lineoffset4], texdata[texpos[2]+lineoffset2]);
+	tmp0 = _mm_set_epi32(0, 0, texdata[tx3+ty3*texwidth], texdata[tx1+ty1*texwidth]);
 	tmp0 = _mm_unpacklo_epi8(tmp0, _mm_setzero_si128());
 	tmp1 = _mm_shufflehi_epi16(c0213, _MM_SHUFFLE(3,3,3,3));
 	tmp1 = _mm_shufflelo_epi16(tmp1, _MM_SHUFFLE(3,3,3,3));
 	pixel = _mm_add_epi16(pixel, _mm_mullo_epi16(tmp0, tmp1));
 
-	pixel = _mm_add_epi16(pixel, _mm_srli_epi16(pixel, 8));
-	pixel = _mm_add_epi16(pixel, _mm_set1_epi16(0x003f));
+	pixel = _mm_add_epi16(pixel, _mm_set1_epi16(0x0040));
 	pixel = _mm_srli_epi16(pixel, 7);
 	pixel = _mm_packus_epi16(pixel, _mm_setzero_si128());
 }
