@@ -112,6 +112,7 @@ CL_CSSHitTestResult CL_CSSLayout::hit_test(CL_GraphicContext &gc, const CL_Point
 			break;
 		}
 		result2.node = impl->get_node(result.node);
+		result2.text_offset = result.text_offset;
 		return result2;
 	}
 	else

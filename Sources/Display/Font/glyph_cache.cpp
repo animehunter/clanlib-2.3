@@ -140,6 +140,7 @@ int CL_GlyphCache::get_character_index(CL_FontEngine *font_engine, CL_GraphicCon
 
 	CL_FontMetrics fm = get_font_metrics(gc);
 	int font_height = fm.get_height();
+	int font_ascent = fm.get_ascent();
 	int font_external_leading = fm.get_external_leading();
 
 	std::vector<CL_String> lines = CL_StringHelp::split_text(text, "\n", false);
@@ -163,7 +164,7 @@ int CL_GlyphCache::get_character_index(CL_FontEngine *font_engine, CL_GraphicCon
 			CL_Font_TextureGlyph *gptr = get_glyph(font_engine, gc, glyph);
 			if (gptr == NULL) continue;
 
-			CL_Rect position(xpos, ypos - font_height, CL_Size(gptr->increment.x, gptr->increment.y + font_height + font_external_leading));
+			CL_Rect position(xpos, ypos - font_ascent, CL_Size(gptr->increment.x, gptr->increment.y + font_height + font_external_leading));
 			if (position.contains(point))
 			{
 				return glyph_pos + character_counter;

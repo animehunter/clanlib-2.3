@@ -805,7 +805,7 @@ CL_CSSLayoutHitTestResult CL_CSSInlineLayout::hit_test(CL_GraphicContext &gc, CL
 						const CL_CSSBoxProperties &properties = text->get_properties();
 						CL_Font &font = resources->get_font(gc, properties);
 						CL_String str = text->processed_text.substr(segment.text_start, segment.text_end-segment.text_start);
-						CL_Point p(pos.x - box2.left, pos.y - box2.top);
+						CL_Point p(pos.x - box2.left, 0);
 						result.text_offset = segment.text_start + font.get_character_index(gc, str, p);
 					}
 					return result;
