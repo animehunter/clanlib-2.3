@@ -41,7 +41,7 @@ void time_algorithm(const CL_String &name, void(*func)(Scanline *), CL_DisplayWi
 	d.x1 = 0.0f;
 	d.x2 = 1600.0f;
 	d.tx1 = 0.0f;
-	d.tx2 = 1600.0f/1024.0f;
+	d.tx2 = 1600.0f/512.0f;
 	d.ty1 = 0.0f;
 	d.ty2 = 0.0f;
 
@@ -51,8 +51,8 @@ void time_algorithm(const CL_String &name, void(*func)(Scanline *), CL_DisplayWi
 		for (int y = 0; y < 1200; y++)
 		{
 			d.dest = colorbuffer0 + y*1600;
-			d.ty1 = (y+0.5f)/1024.0f;
-			d.ty2 = (y+0.5f)/1024.0f;
+			d.ty1 = (y+0.5f)/512.0f;
+			d.ty2 = (y+0.5f)/512.0f;
 			clipScanline(&d, 0, 1600);
 			func(&d);
 		}

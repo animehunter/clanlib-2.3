@@ -21,6 +21,9 @@ void linear8(Scanline *d)
 	yy *= texheight;
 	dyy *= texheight;
 
+	xx -= 16384;
+	yy -= 16384;
+
 	__m128i zero = _mm_setzero_si128();
 	__m128i half = _mm_set1_epi16(0x0040);
 	__m128i texwidthmax = _mm_set1_epi32(texwidth-1);
