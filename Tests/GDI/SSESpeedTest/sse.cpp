@@ -16,6 +16,10 @@
 #include "linear2.h"
 #include "linear3.h"
 #include "linear4.h"
+#include "linear5.h"
+#include "linear6.h"
+#include "linear7.h"
+#include "linear8.h"
 
 void time_algorithm(const CL_String &name, void(*func)(Scanline *), CL_DisplayWindow *window)
 {
@@ -75,13 +79,15 @@ int main(int, char **)
 	CL_SetupCore setup_core;
 	CL_SetupDisplay setup_display;
 	CL_SetupSWRender setup_swrender;
+	/*
 	time_algorithm("nearest1", nearest1, 0);
 	time_algorithm("linear1", linear1, 0);
 	//time_algorithm("linear2", linear2, 0);
 	time_algorithm("linear3", linear3, 0);
 	time_algorithm("linear4", linear4, 0);
+	*/
 
 	CL_DisplayWindow window("SSE Speed Test", 1600, 1200);
-	time_algorithm("linear3", linear3, &window);
+	time_algorithm("linear8", linear8, &window);
 	return 0;
 }

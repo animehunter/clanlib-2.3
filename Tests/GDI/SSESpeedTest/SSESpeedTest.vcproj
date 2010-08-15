@@ -196,6 +196,22 @@
 			>
 		</File>
 		<File
+			RelativePath=".\linear5.h"
+			>
+		</File>
+		<File
+			RelativePath=".\linear6.h"
+			>
+		</File>
+		<File
+			RelativePath=".\linear7.h"
+			>
+		</File>
+		<File
+			RelativePath=".\linear8.h"
+			>
+		</File>
+		<File
 			RelativePath=".\nearest1.h"
 			>
 		</File>
