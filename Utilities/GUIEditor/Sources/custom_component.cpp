@@ -43,9 +43,6 @@ public:
 	CustomComponent *component;
 };
 
-/////////////////////////////////////////////////////////////////////////////
-// CustomComponent Construction:
-
 CustomComponent::CustomComponent(CL_GUIComponent *parent)
 : CL_GUIComponent(parent), impl(new CustomComponent_Impl())
 {
@@ -56,16 +53,6 @@ CustomComponent::CustomComponent(CL_GUIComponent *parent)
 
 	impl->component = this;
 }
-
-/////////////////////////////////////////////////////////////////////////////
-// CustomComponent Attributes:
-
-
-/////////////////////////////////////////////////////////////////////////////
-// CustomComponent Operations:
-
-/////////////////////////////////////////////////////////////////////////////
-// CustomComponent Implementation:
 
 void CustomComponent_Impl::on_process_message(CL_GUIMessage &msg)
 {

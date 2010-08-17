@@ -32,9 +32,6 @@
 #include "component_type.h"
 #include "custom_component.h"
 
-/////////////////////////////////////////////////////////////////////////////
-// ComponentTypes
-
 void ComponentTypes::initialize()
 {
 	int next_id = 1;

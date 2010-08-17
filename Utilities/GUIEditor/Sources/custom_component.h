@@ -32,22 +32,10 @@ class CustomComponent_Impl;
 
 class CustomComponent : public CL_GUIComponent
 {
-//! Construction:
 public:
 	CustomComponent(CL_GUIComponent *parent);
-	
 	virtual ~CustomComponent() {}
 
-//! Attributes:
-public:
-
-//! Operations:
-public:
-
-//! Events:
-public:
-
-//! Implementation:
 private:
 	CL_SharedPtr<CustomComponent_Impl> impl;
 };

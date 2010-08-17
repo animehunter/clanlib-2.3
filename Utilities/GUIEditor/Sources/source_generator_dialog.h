@@ -30,21 +30,10 @@
 
 class SourceGeneratorDialog : public CL_Window
 {
-//! Construction:
 public:
 	SourceGeneratorDialog(CL_GUIManager *gui_manager);
 	virtual ~SourceGeneratorDialog() { }
 
-//! Attributes:
-public:
-
-//! Operations:
-public:
-
-//! Events:
-public:
-
-//! Implementation:
 private:
 	void on_btn_generate();
 	void on_btn_browse_cpp();
@@ -53,7 +42,6 @@ private:
 	CL_GUITopLevelDescription get_startup_description();
 
 	CL_GUILayoutCorners layout;
-
 	CL_PushButton *btn_generate;
 	CL_PushButton *btn_browse_h;
 	CL_PushButton *btn_browse_cpp;

@@ -29,9 +29,6 @@
 #include "precomp.h"
 #include "source_generator_dialog.h"
 
-/////////////////////////////////////////////////////////////////////////////
-// SourceGenerator Construction:
-
 SourceGeneratorDialog::SourceGeneratorDialog(CL_GUIManager *gui_manager)
 : CL_Window(gui_manager, get_startup_description())
 {
@@ -49,17 +46,6 @@ SourceGeneratorDialog::SourceGeneratorDialog(CL_GUIManager *gui_manager)
 	btn_browse_h->func_clicked().set(this, &SourceGeneratorDialog::on_btn_browse_h);
 	btn_browse_cpp->func_clicked().set(this, &SourceGeneratorDialog::on_btn_browse_cpp);
 }
-
-/////////////////////////////////////////////////////////////////////////////
-// SourceGenerator Attributes:
-
-
-/////////////////////////////////////////////////////////////////////////////
-// SourceGenerator Operations:
-
-
-/////////////////////////////////////////////////////////////////////////////
-// SourceGenerator Implementation:
 
 CL_GUITopLevelDescription SourceGeneratorDialog::get_startup_description()
 {

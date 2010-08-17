@@ -36,9 +36,6 @@
 #include "selection.h"
 #include "snapline.h"
 
-/////////////////////////////////////////////////////////////////////////////
-// GridComponent Construction:
-
 GridComponent::GridComponent(CL_GUIComponent *parent, MainWindow *main_window)
 : CL_GUIComponent(parent), main_window(main_window), component_container(0),
   component_overlay(0), boundary(320,200)
@@ -59,9 +56,6 @@ GridComponent::GridComponent(CL_GUIComponent *parent, MainWindow *main_window)
 	component_overlay->func_render().set(this, &GridComponent::on_render_overlay);
 }
 
-/////////////////////////////////////////////////////////////////////////////
-// GridComponent Attributes:
-
 CL_Size GridComponent::get_dialog_size()
 {
 	return boundary;
@@ -71,9 +65,6 @@ const std::vector<HolderComponent*> &GridComponent::get_holders() const
 {
 	return holders;
 }
-
-/////////////////////////////////////////////////////////////////////////////
-// GridComponent Operations:
 
 HolderComponent *GridComponent::on_add_component(int id, const CL_Vec2i &pos)
 {
@@ -329,9 +320,6 @@ CL_DomElement GridComponent::to_element(CL_DomDocument &doc)
 	de.set_attribute("height", CL_StringHelp::int_to_text(boundary.height));
 	return de;
 }
-
-/////////////////////////////////////////////////////////////////////////////
-// GridComponent Implementation:
 
 CL_Rect GridComponent::get_boundary_grabber_se() const
 {

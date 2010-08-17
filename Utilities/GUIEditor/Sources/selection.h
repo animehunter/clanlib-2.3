@@ -28,34 +28,24 @@
 
 #pragma once
 
-#include "selected_object.h"
-
 class DialogComponent;
 class HolderComponent;
 
 class Selection
 {
-//! Construction:
 public:
 	Selection();
 	
-//! Attributes:
-public:
 	bool empty();
 	std::vector<HolderComponent*> get_selection();
 	bool is_selected(HolderComponent *holder) const;
 
-//! Operations:
-public:
 	void add_holder(HolderComponent *holder);
 	void clear();
 	void remove_holder(HolderComponent *holder);
 
-//! Events:
-public:
 	CL_Signal_v0 &sig_selection_changed();
 
-//! Implementation:
 private:
 	std::vector<HolderComponent*> selected_holders;
 	CL_Signal_v0 signal_selection_changed;

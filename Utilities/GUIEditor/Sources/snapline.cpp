@@ -31,16 +31,10 @@
 #include <cstdlib>
 #include <climits>
 
-/////////////////////////////////////////////////////////////////////////////
-// SnapLine Construction:
-
 SnapLine::SnapLine(SnapLineType type, int offset, SnapLinePriority priority)
 : type(type), offset(offset), priority(priority)
 {
 }
-
-/////////////////////////////////////////////////////////////////////////////
-// SnapLine Attributes:
 
 bool SnapLine::is_horizontal() const
 {
@@ -76,9 +70,6 @@ bool SnapLine::should_snap(SnapLine line1, SnapLine line2)
 	return true;
 }
 
-/////////////////////////////////////////////////////////////////////////////
-// SnapLine Operations:
-
 CL_Vec2i SnapLine::snap(
 	const CL_Rect &source_rect, 
 	const std::vector<SnapLine> &source_snaplines, 
@@ -110,9 +101,6 @@ CL_Vec2i SnapLine::snap(
 
 	return delta;
 }
-
-/////////////////////////////////////////////////////////////////////////////
-// SnapLine Implementation:
 
 int SnapLine::find_closest_snapdistance(const SnapLine &source_snapline, int source_position, const std::vector<SnapLineTarget> &targets)
 {

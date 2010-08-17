@@ -29,7 +29,6 @@
 #include "precomp.h"
 #include "callback_data.h"
 
-
 class CallbackData_Impl
 {
 public:
@@ -45,9 +44,6 @@ public:
 	CL_String handler_function_name;
 };
 
-//////////////////////////////////////////////////////////////////////////
-// CallbackData Construction:
-
 CallbackData::CallbackData(
 	const CL_StringRef &comp_type, 
 	const CL_StringRef &cb_name,
@@ -60,10 +56,6 @@ CallbackData::CallbackData(
 	impl->param1 = param1;
 	impl->param2 = param2;
 }
-
-//////////////////////////////////////////////////////////////////////////
-// CallbackData Attributes:
-
 
 CL_StringRef CallbackData::get_component_type() const
 {
@@ -96,9 +88,6 @@ CL_StringRef CallbackData::get_handler_function_name() const
 	return impl->handler_function_name;
 }
 
-//////////////////////////////////////////////////////////////////////////
-// CallbackData Operations:
-
 void CallbackData::set_component_type(const CL_StringRef &str)
 {
 	impl->component_type = str;
@@ -128,6 +117,3 @@ void CallbackData::set_handler_function_name(const CL_StringRef &str)
 {
 	impl->handler_function_name = str;
 }
-
-//////////////////////////////////////////////////////////////////////////
-// CallbackData Implementation:

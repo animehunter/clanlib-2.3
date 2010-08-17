@@ -30,15 +30,9 @@
 #include "selection.h"
 #include "holder_component.h"
 
-/////////////////////////////////////////////////////////////////////////////
-// Selection Construction:
-
 Selection::Selection()
 {
 }
-
-/////////////////////////////////////////////////////////////////////////////
-// Selection Attributes:
 
 bool Selection::empty()
 {
@@ -57,9 +51,6 @@ bool Selection::is_selected(HolderComponent *holder) const
 			return true;
 	return false;
 }
-
-/////////////////////////////////////////////////////////////////////////////
-// Selection Operations:
 
 void Selection::add_holder(HolderComponent *holder)
 {
@@ -87,15 +78,7 @@ void Selection::remove_holder(HolderComponent *holder)
 	}
 }
 
-/////////////////////////////////////////////////////////////////////////////
-// Selection Events:
-
 CL_Signal_v0 & Selection::sig_selection_changed()
 {
 	return signal_selection_changed;
 }
-
-/////////////////////////////////////////////////////////////////////////////
-// Selection Implementation:
-
-

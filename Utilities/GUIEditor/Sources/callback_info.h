@@ -32,19 +32,11 @@
 
 class CallbackInfo
 {
-//! Construction:
 public:
 	CallbackInfo();
 	
-//! Attributes:
-public:
 	std::vector<CallbackData> get_callbacks(const CL_StringRef &comp_type); 
 
-//! Operations:
-public:
-
-
-//! Implementation:
 private:
 	void populate();
 

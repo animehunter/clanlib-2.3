@@ -32,9 +32,6 @@
 #include "grid_component.h"
 #include "custom_component.h"
 
-/////////////////////////////////////////////////////////////////////////////
-// HolderComponent Construction:
-
 HolderComponent::HolderComponent(CL_GUIComponent *parent)
 : CL_GUIComponent(parent), parent_grid(0), anchor_tl(cl_anchor_top_left), anchor_br(cl_anchor_top_left)
 {
@@ -46,9 +43,6 @@ HolderComponent::HolderComponent(CL_GUIComponent *parent)
 
 	parent_grid = static_cast<GridComponent*>(parent);
 }
-
-/////////////////////////////////////////////////////////////////////////////
-// HolderComponent Attributes:
 
 CL_GUIComponent *HolderComponent::get_container()
 {
@@ -84,9 +78,6 @@ CL_String HolderComponent::get_position_equation_y2() const
 {
 	return pos_equation_y2;
 }
-
-/////////////////////////////////////////////////////////////////////////////
-// HolderComponent Operations:
 
 void HolderComponent::set_anchor_tl(CL_ComponentAnchorPoint ap)
 {
@@ -259,9 +250,6 @@ void HolderComponent::set_position_equations2( const CL_String &str_x, const CL_
 	pos_equation_x2 = str_x;
 	pos_equation_y2 = str_y;
 }
-
-/////////////////////////////////////////////////////////////////////////////
-// HolderComponent Implementation:
 
 CL_Rect HolderComponent::get_grabber_w() const
 {

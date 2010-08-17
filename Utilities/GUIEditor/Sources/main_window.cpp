@@ -34,7 +34,6 @@
 #include "view_border.h"
 #include "component_types.h"
 #include "component_type.h"
-#include "dialog_document.h"
 #include "source_generator_dialog.h"
 #include "holder_component.h"
 
@@ -49,7 +48,6 @@ MainWindow::MainWindow(Application *application)
 	func_resized().set(this, &MainWindow::on_resized);
 	func_process_message().set(this, &MainWindow::on_process_messages);
 
-	document = new DialogDocument;
 	create_components();
 //	populate_menubar();
 	populate_main_toolbar();
@@ -63,8 +61,6 @@ MainWindow::~MainWindow()
 {
 	// We do not have to free the GUI components here because the CL_GUIComponent
 	// destructor deletes all child components.
-
-	delete document;
 }
 
 CL_GUITopLevelDescription MainWindow::get_startup_description()
@@ -182,9 +178,6 @@ void MainWindow::create_new_document()
 {
 	selection.clear();
 	property_component->clear();
-
-	delete document;
-	document = new DialogDocument;
 
 	delete grid_component;
 	grid_component = new GridComponent(view_border, this);
