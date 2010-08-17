@@ -87,4 +87,6 @@ private:
 	GridComponent *grid_component;
 	PropertyComponent *property_component;
 	int selected_tool;
+
+	CL_String loaded_filename;
 };

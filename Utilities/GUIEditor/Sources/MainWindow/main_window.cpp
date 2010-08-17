@@ -36,7 +36,7 @@
 #include "ComponentTypes/component_type.h"
 #include "GridComponent/holder_component.h"
 
-enum MainToolbarID { main_toolbar_new, main_toolbar_open, main_toolbar_save };
+enum MainToolbarID { main_toolbar_new, main_toolbar_open, main_toolbar_saveas, main_toolbar_save };
 
 MainWindow::MainWindow(Application *application)
 : CL_Window(application->get_gui(), get_startup_description()),
@@ -140,7 +140,8 @@ void MainWindow::populate_main_toolbar()
 	toolbar_main->func_item_clicked().set(this, &MainWindow::on_main_toolbar_clicked);
 	toolbar_main->insert_item(CL_Sprite(get_gc(), "new_16x16.png"), 0, "New", main_toolbar_new);
 	toolbar_main->insert_item(CL_Sprite(get_gc(), "open_16x16.png"), 0, "Open", main_toolbar_open);
-	toolbar_main->insert_item(CL_Sprite(get_gc(), "save_16x16.png"), 0, "Save As", main_toolbar_save);
+	toolbar_main->insert_item(CL_Sprite(get_gc(), "save_16x16.png"), 0, "Save As", main_toolbar_saveas);
+	toolbar_main->insert_item(CL_Sprite(get_gc(), "save_16x16.png"), 0, "Save", main_toolbar_save);
 }
 
 bool MainWindow::on_close()
@@ -188,30 +189,44 @@ void MainWindow::create_new_document()
 
 void MainWindow::on_main_toolbar_clicked(CL_ToolBarItem item)
 {
-	CL_String filename;
-
 	switch(item.get_id())
 	{
-	case main_toolbar_new:
-		create_new_document();
-		update_child_positions();
-		break;
-
-	case main_toolbar_open:
-		filename = show_open_file_dialog();
-		if (!filename.empty())
+		case main_toolbar_new:
 		{
-	//		document->load(filename);
-			load(filename);
+			create_new_document();
+			update_child_positions();
+			break;
 		}
-		break;
-
-	case main_toolbar_save:
-		filename = show_save_file_dialog();
-		if (!filename.empty())
+		case main_toolbar_open:
 		{
-	//		document->save(filename);
-			grid_component->save(filename);
+			CL_String filename = show_open_file_dialog();
+			if (!filename.empty())
+			{
+				load(filename);
+			}
+			break;
+		}
+		case main_toolbar_saveas:
+		{
+			CL_String filename = show_save_file_dialog();
+			if (!filename.empty())
+			{
+				grid_component->save(filename);
+			}
+			break;
+		}
+		case main_toolbar_save:
+		{
+			CL_String filename;
+
+			if(loaded_filename.length() == 0)
+				filename = show_save_file_dialog();
+			if (!filename.empty())
+			{
+				grid_component->save(filename);
+				loaded_filename = filename;
+			}
+			break;
 		}
 	}
 }
@@ -248,6 +263,7 @@ void MainWindow::load(const CL_StringRef &filename)
 {
 	create_new_document();
 	grid_component->load(filename);
+	loaded_filename = filename;
 	property_component->set_dialog_size(grid_component->get_dialog_size());
 	update_child_positions();
 }
