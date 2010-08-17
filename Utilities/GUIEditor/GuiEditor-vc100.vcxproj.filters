@@ -32,15 +32,6 @@
     <ClCompile Include="Sources\custom_component.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\dialog_component.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\dialog_container.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\dialog_document.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Sources\grid_component.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -128,15 +119,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Sources\custom_component.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\dialog_component.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\dialog_container.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\dialog_document.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Sources\grid_component.h">

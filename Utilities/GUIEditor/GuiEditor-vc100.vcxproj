@@ -98,9 +98,6 @@
     <ClCompile Include="Sources\callback_info.cpp" />
     <ClCompile Include="Sources\component_types.cpp" />
     <ClCompile Include="Sources\custom_component.cpp" />
-    <ClCompile Include="Sources\dialog_component.cpp" />
-    <ClCompile Include="Sources\dialog_container.cpp" />
-    <ClCompile Include="Sources\dialog_document.cpp" />
     <ClCompile Include="Sources\grid_component.cpp" />
     <ClCompile Include="Sources\grid_edit_state.cpp" />
     <ClCompile Include="Sources\grid_edit_state_boundary_sizing.cpp" />
@@ -135,9 +132,6 @@
     <ClInclude Include="Sources\component_type.h" />
     <ClInclude Include="Sources\component_types.h" />
     <ClInclude Include="Sources\custom_component.h" />
-    <ClInclude Include="Sources\dialog_component.h" />
-    <ClInclude Include="Sources\dialog_container.h" />
-    <ClInclude Include="Sources\dialog_document.h" />
     <ClInclude Include="Sources\grid_component.h" />
     <ClInclude Include="Sources\grid_edit_state.h" />
     <ClInclude Include="Sources\grid_edit_state_boundary_sizing.h" />
