@@ -287,7 +287,8 @@ void MainWindow::on_process_messages(CL_GUIMessage &msg)
 				if (selection.empty() && grid_component->get_first_child())
 				{
 					HolderComponent *holder = dynamic_cast<HolderComponent*>(grid_component->get_first_child());
-					selection.add_holder(holder);
+					if (holder)
+						selection.add_holder(holder);
 				}
 				else
 				{
@@ -298,6 +299,7 @@ void MainWindow::on_process_messages(CL_GUIMessage &msg)
 						HolderComponent *sibling = dynamic_cast<HolderComponent*>(holder->get_previous_sibling());
 						if (sibling == 0)
 							sibling = dynamic_cast<HolderComponent*>(grid_component->get_last_child());
+						if (sibling)
 						selection.add_holder(sibling);
 					}
 				}
@@ -308,7 +310,8 @@ void MainWindow::on_process_messages(CL_GUIMessage &msg)
 				if (selection.empty() && grid_component->get_first_child())
 				{
 					HolderComponent *holder = dynamic_cast<HolderComponent*>(grid_component->get_first_child());
-					selection.add_holder(holder);
+					if (holder)
+						selection.add_holder(holder);
 				}
 				else
 				{
@@ -319,7 +322,8 @@ void MainWindow::on_process_messages(CL_GUIMessage &msg)
 						HolderComponent *sibling = dynamic_cast<HolderComponent*>(holder->get_next_sibling());
 						if (sibling == 0)
 							sibling = dynamic_cast<HolderComponent*>(grid_component->get_first_child());
-						selection.add_holder(sibling);
+						if (sibling)
+							selection.add_holder(sibling);
 					}
 				}
 				grid_component->request_repaint();
