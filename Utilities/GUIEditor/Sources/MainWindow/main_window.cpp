@@ -209,6 +209,7 @@ void MainWindow::on_main_toolbar_clicked(CL_ToolBarItem item)
 		case main_toolbar_saveas:
 		{
 			CL_String filename = show_save_file_dialog();
+
 			if (!filename.empty())
 			{
 				grid_component->save(filename);
@@ -217,10 +218,11 @@ void MainWindow::on_main_toolbar_clicked(CL_ToolBarItem item)
 		}
 		case main_toolbar_save:
 		{
-			CL_String filename;
+			CL_String filename = loaded_filename;
 
-			if(loaded_filename.length() == 0)
+			if(filename.length() == 0)
 				filename = show_save_file_dialog();
+
 			if (!filename.empty())
 			{
 				grid_component->save(filename);

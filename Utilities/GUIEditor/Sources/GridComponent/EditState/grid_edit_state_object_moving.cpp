@@ -95,8 +95,6 @@ bool GridEditStateObjectMoving::on_input_released(const CL_InputEvent &e)
 {
 	if (e.id == CL_MOUSE_LEFT && holder)
 	{
-		bool perform_snap = e.alt == false;
-		move_to(e.mouse_pos, perform_snap);
 		holder = 0;
 		grid->capture_mouse(false);
 		grid->edit_state.set_state(GridEditState::state_none);
@@ -107,6 +105,8 @@ bool GridEditStateObjectMoving::on_input_released(const CL_InputEvent &e)
 	{
 		grid->edit_state.set_state(GridEditState::state_none);
 		grid->main_window->get_selection()->sig_selection_changed().invoke();
+
+		return true;
 	}
 	else
 	{
