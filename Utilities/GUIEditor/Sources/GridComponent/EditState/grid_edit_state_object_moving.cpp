@@ -63,7 +63,26 @@ bool GridEditStateObjectMoving::on_input_pressed(const CL_InputEvent &e)
 	}
 	else if(e.id == CL_KEY_LEFT || e.id == CL_KEY_RIGHT || e.id == CL_KEY_UP || e.id == CL_KEY_DOWN)
 	{
-		// TODO: Move stuffz
+		CL_Point delta;
+
+		if(e.id == CL_KEY_LEFT)
+			delta.x = -1;
+		else if(e.id == CL_KEY_RIGHT)
+			delta.x = 1;
+		else if(e.id == CL_KEY_UP)
+			delta.y = -1;
+		else if(e.id == CL_KEY_DOWN)
+			delta.y = 1;
+
+		std::vector<HolderComponent*> selection = grid->main_window->get_selection()->get_selection();
+		for (size_t i = 0; i < selection.size(); i++)
+		{
+			CL_Rect geometry = selection[i]->get_geometry().translate(delta);
+			selection[i]->set_geometry(geometry);
+		}
+
+		grid->request_repaint();
+
 		return true;
 	}
 	else 
@@ -74,7 +93,7 @@ bool GridEditStateObjectMoving::on_input_pressed(const CL_InputEvent &e)
 
 bool GridEditStateObjectMoving::on_input_released(const CL_InputEvent &e)
 {
-	if (e.id == CL_MOUSE_LEFT)
+	if (e.id == CL_MOUSE_LEFT && holder)
 	{
 		bool perform_snap = e.alt == false;
 		move_to(e.mouse_pos, perform_snap);
@@ -97,9 +116,16 @@ bool GridEditStateObjectMoving::on_input_doubleclick(const CL_InputEvent &e)
 
 bool GridEditStateObjectMoving::on_input_pointer_moved(const CL_InputEvent &e)
 {
-	bool perform_snap = e.alt == false;
-	move_to(e.mouse_pos, perform_snap);
-	return true;
+	if(holder)
+	{
+		bool perform_snap = e.alt == false;
+		move_to(e.mouse_pos, perform_snap);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 void GridEditStateObjectMoving::move_to(const CL_Point &mouse_pos, bool perform_snap)

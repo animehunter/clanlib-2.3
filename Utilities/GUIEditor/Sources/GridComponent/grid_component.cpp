@@ -520,13 +520,21 @@ CL_Point GridComponent::grid_to_holder_coords(HolderComponent *holder, const CL_
 
 std::vector<SnapLine> GridComponent::get_snaplines() const
 {
-	CL_Size size = get_size();
 	std::vector<SnapLine> snaplines;
+
+	// Add edge snaplines
+	snaplines.push_back(SnapLine(SnapLine::Top, 0, SnapLine::Low));
+	snaplines.push_back(SnapLine(SnapLine::Bottom, boundary.height, SnapLine::Low));
+	snaplines.push_back(SnapLine(SnapLine::Left, 0, SnapLine::Low));
+	snaplines.push_back(SnapLine(SnapLine::Right, boundary.width, SnapLine::Low));
+
+	// Add edge with margin snaplines
 	int margin = 11;
 	snaplines.push_back(SnapLine(SnapLine::Top, margin, SnapLine::Low));
 	snaplines.push_back(SnapLine(SnapLine::Bottom, boundary.height-margin, SnapLine::Low));
 	snaplines.push_back(SnapLine(SnapLine::Left, margin, SnapLine::Low));
 	snaplines.push_back(SnapLine(SnapLine::Right, boundary.width-margin, SnapLine::Low));
+
 	return snaplines;
 }
 

@@ -35,8 +35,8 @@ GridEditState::GridEditState()
 	edit_state_handlers[state_none] = &edit_state_none;
 	edit_state_handlers[state_net_select] = &edit_state_net_select;
 	edit_state_handlers[state_boundary_size] = &edit_state_boundary_size;
-	edit_state_handlers[state_object_move] = &edit_state_object_move;
 	edit_state_handlers[state_object_size] = &edit_state_object_size;
+	edit_state_handlers[state_object_move] = &edit_state_object_move;
 	edit_state_handlers[state_create_tool] = &edit_state_create_tool;
 }
 
