@@ -235,6 +235,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Sources\ComponentTypes\PropertyItems\line_edit_popup.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Sources\ComponentTypes\PropertyItems\line_edit_popup.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Sources\ComponentTypes\PropertyItems\property_item_class_name.h"
 						>
 					</File>
@@ -429,6 +437,14 @@
 				</File>
 				<File
 					RelativePath=".\Sources\PropertyComponent\property_item.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Sources\PropertyComponent\property_item_popup.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Sources\PropertyComponent\property_item_popup.h"
 					>
 				</File>
 				<Filter

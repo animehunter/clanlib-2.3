@@ -33,6 +33,7 @@
 #include "MainWindow/main_window.h"
 #include "Selection/selection.h"
 #include "ComponentTypes/PropertyItems/anchor_popup.h"
+#include "ComponentTypes/PropertyItems/line_edit_popup.h"
 #include "GridComponent/grid_object.h"
 
 class GridObject;
@@ -45,12 +46,7 @@ public:
 
 	PropertyComponent *property_component;
 	CL_String name;
-/*
-	std::vector<GridObject*> get_selection()
-	{
-		return property_component->get_main_window()->get_selection()->get_selection();
-	}
-*/
+
 	virtual void selection_changed(const std::vector<GridObject *> &selection) { }
 
 	virtual CL_GUIComponent *activate() = 0;
@@ -81,15 +77,15 @@ public:
 
 	CL_GUIComponent *activate()
 	{
-		CL_LineEdit *c = new CL_LineEdit(property_component);
-		c->func_enter_pressed().set(this, &PropertyItemLineEdit::on_enter_pressed);
-		c->set_text(value);
+		LineEditPopup *c = new LineEditPopup(property_component);
+		c->get_lineedit()->func_enter_pressed().set(this, &PropertyItemLineEdit::on_enter_pressed);
+		c->get_lineedit()->set_text(value);
 		return c;
 	}
 
 	void deactivate(CL_GUIComponent *component)
 	{
-		value = static_cast<CL_LineEdit *>(component)->get_text();
+		value = static_cast<LineEditPopup *>(component)->get_lineedit()->get_text();
 		delete component;
 	}
 

@@ -523,17 +523,17 @@ std::vector<SnapLine> GridComponent::get_snaplines() const
 	std::vector<SnapLine> snaplines;
 
 	// Add edge snaplines
-	snaplines.push_back(SnapLine(SnapLine::Top, 0, SnapLine::Low));
-	snaplines.push_back(SnapLine(SnapLine::Bottom, boundary.height, SnapLine::Low));
-	snaplines.push_back(SnapLine(SnapLine::Left, 0, SnapLine::Low));
-	snaplines.push_back(SnapLine(SnapLine::Right, boundary.width, SnapLine::Low));
+	snaplines.push_back(SnapLine(SnapLine::type_top, 0, SnapLine::priority_low));
+	snaplines.push_back(SnapLine(SnapLine::type_bottom, boundary.height, SnapLine::priority_low));
+	snaplines.push_back(SnapLine(SnapLine::type_left, 0, SnapLine::priority_low));
+	snaplines.push_back(SnapLine(SnapLine::type_right, boundary.width, SnapLine::priority_low));
 
 	// Add edge with margin snaplines
 	int margin = 11;
-	snaplines.push_back(SnapLine(SnapLine::Top, margin, SnapLine::Low));
-	snaplines.push_back(SnapLine(SnapLine::Bottom, boundary.height-margin, SnapLine::Low));
-	snaplines.push_back(SnapLine(SnapLine::Left, margin, SnapLine::Low));
-	snaplines.push_back(SnapLine(SnapLine::Right, boundary.width-margin, SnapLine::Low));
+	snaplines.push_back(SnapLine(SnapLine::type_top, margin, SnapLine::priority_low));
+	snaplines.push_back(SnapLine(SnapLine::type_bottom, boundary.height-margin, SnapLine::priority_low));
+	snaplines.push_back(SnapLine(SnapLine::type_left, margin, SnapLine::priority_low));
+	snaplines.push_back(SnapLine(SnapLine::type_right, boundary.width-margin, SnapLine::priority_low));
 
 	return snaplines;
 }

@@ -38,8 +38,6 @@ GridObject::GridObject(CL_GUIComponent *parent)
 	func_render().set(this, &GridObject::on_render);
 	func_resized().set(this, &GridObject::on_resized);
 
-//	font = CL_Font(get_gc(), "Tahoma", -11);
-
 	parent_grid = static_cast<GridComponent*>(parent);
 }
 
@@ -443,16 +441,16 @@ std::vector<SnapLine> GridObject::get_snaplines() const
 	std::vector<SnapLine> snaplines;
 
 	// Edges
-	snaplines.push_back(SnapLine(SnapLine::Top, 0, SnapLine::Medium));
-	snaplines.push_back(SnapLine(SnapLine::Bottom, size.height, SnapLine::Medium));
-	snaplines.push_back(SnapLine(SnapLine::Left, 0, SnapLine::Medium));
-	snaplines.push_back(SnapLine(SnapLine::Right, size.width, SnapLine::Medium));
+	snaplines.push_back(SnapLine(SnapLine::type_top, 0, SnapLine::priority_medium));
+	snaplines.push_back(SnapLine(SnapLine::type_bottom, size.height, SnapLine::priority_medium));
+	snaplines.push_back(SnapLine(SnapLine::type_left, 0, SnapLine::priority_medium));
+	snaplines.push_back(SnapLine(SnapLine::type_right, size.width, SnapLine::priority_medium));
 
 	// Margins
-	snaplines.push_back(SnapLine(SnapLine::Left, size.width + 5, SnapLine::Low));
-	snaplines.push_back(SnapLine(SnapLine::Top, size.height + 5, SnapLine::Low));
-	snaplines.push_back(SnapLine(SnapLine::Right, -5, SnapLine::Low));
-	snaplines.push_back(SnapLine(SnapLine::Bottom, -5, SnapLine::Low));
+	snaplines.push_back(SnapLine(SnapLine::type_left, size.width + 5, SnapLine::priority_low));
+	snaplines.push_back(SnapLine(SnapLine::type_top, size.height + 5, SnapLine::priority_low));
+	snaplines.push_back(SnapLine(SnapLine::type_right, -5, SnapLine::priority_low));
+	snaplines.push_back(SnapLine(SnapLine::type_bottom, -5, SnapLine::priority_low));
 
 	return snaplines;
 }

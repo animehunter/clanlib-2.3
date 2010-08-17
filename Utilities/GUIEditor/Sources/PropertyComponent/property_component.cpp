@@ -355,8 +355,8 @@ void PropertyComponent::on_render(CL_GraphicContext &gc, const CL_Rect &update_r
 
 		if (items[i] != active_item || active_component == 0)
 			items[i]->render_inactive(gc, part_item_value, value_box, update_rect);
-		else
-			active_component->set_geometry(value_box);
+		//else
+		//	active_component->set_geometry(value_box);
 		y = row.bottom;
 	}
 }
@@ -403,8 +403,13 @@ void PropertyComponent::activate_item(int index)
 		deactivate();
 		active_item = items[index];
 		active_component = items[index]->activate();
-		if(active_component)
+		if (active_component)
+		{
+			CL_Point pos = component_to_screen_coords(value_boxes[index].get_top_left());
+			active_component->set_geometry(CL_Rect(pos, value_boxes[index].get_size()));
+			active_component->set_visible(true);
 			active_component->set_focus();
+		}
 		request_repaint();
 	}
 }

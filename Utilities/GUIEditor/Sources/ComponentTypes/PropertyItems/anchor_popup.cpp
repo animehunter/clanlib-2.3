@@ -30,9 +30,8 @@
 #include "anchor_popup.h"
 
 AnchorPopup::AnchorPopup(CL_ComponentAnchorPoint cap_tl, CL_ComponentAnchorPoint cap_br, CL_GUIComponent *parent)
-: CL_GUIComponent(parent/*, get_toplevel_description()*/), cap_tl(cap_tl), cap_br(cap_br)
+: PropertyItemPopup(parent), cap_tl(cap_tl), cap_br(cap_br)
 {
-	set_type_name("tooltip");
 	func_resized().set(this, &AnchorPopup::on_resized);
 
 	label_tl = new CL_Label(this);
@@ -47,13 +46,6 @@ AnchorPopup::AnchorPopup(CL_ComponentAnchorPoint cap_tl, CL_ComponentAnchorPoint
 	br_bl = new CL_RadioButton(this);
 	br_br = new CL_RadioButton(this);
 	br_scale = new CL_RadioButton(this);
-}
-
-CL_GUITopLevelDescription AnchorPopup::get_toplevel_description()
-{
-	CL_GUITopLevelDescription desc;
-	desc.set_decorations(false);
-	return desc;
 }
 
 AnchorPopup::~AnchorPopup()

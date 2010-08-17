@@ -26,10 +26,11 @@
 **    Magnus Norddahl
 */
 
-
 #pragma once
 
-class AnchorPopup : public CL_GUIComponent
+#include "PropertyComponent/property_item_popup.h"
+
+class AnchorPopup : public PropertyItemPopup
 {
 public:
 	AnchorPopup(CL_ComponentAnchorPoint tl, CL_ComponentAnchorPoint br, CL_GUIComponent *parent);
@@ -39,7 +40,6 @@ public:
 	CL_ComponentAnchorPoint get_anchor_br() const { return cap_br; }
 
 private:
-	static CL_GUITopLevelDescription get_toplevel_description();
 	void on_resized();
 	void on_anchoring_changed(CL_RadioButton *rb);
 

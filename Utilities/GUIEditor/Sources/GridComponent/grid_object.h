@@ -68,18 +68,7 @@ public:
 	void set_anchor_br(CL_ComponentAnchorPoint);
 	void set_position_equations(const CL_String &str_x, const CL_String &str_y);
 	void set_position_equations2(const CL_String &str_x, const CL_String &str_y);
-/*
-	void set_geometry(const CL_Rect &g) { CL_GUIComponent::set_geometry(g); }
-	CL_Rect get_geometry() const { return CL_GUIComponent::get_geometry(); }
-	CL_Size get_size() const { return CL_GUIComponent::get_size(); }
-	int get_width() const { return CL_GUIComponent::get_width(); }
-	int get_height() const { return CL_GUIComponent::get_height(); }
 
-	CL_Point window_to_component_coords(const CL_Point &window_point) const { return CL_GUIComponent::window_to_component_coords(window_point); }
-	CL_Rect window_to_component_coords(const CL_Rect &window_rect) const { return CL_GUIComponent::window_to_component_coords(window_rect); }
-	CL_Point component_to_window_coords(const CL_Point &component_point) const { return CL_GUIComponent::component_to_window_coords(component_point); }
-	CL_Rect component_to_window_coords(const CL_Rect &component_rect) const { return CL_GUIComponent::component_to_window_coords(component_rect); }
-*/
 	static GridObject *find_object_at(CL_GUIComponent *container, const CL_Point &pos);
 
 private:
@@ -95,7 +84,6 @@ private:
 	CL_GUIComponent *get_toplevel_component();
 	CL_GUIComponent *get_tab_or_frame_parent(CL_GUIComponent *comp);
 
-	// CL_Font font;
 	CL_String pos_equation_x;
 	CL_String pos_equation_y;
 	CL_String pos_equation_x2;

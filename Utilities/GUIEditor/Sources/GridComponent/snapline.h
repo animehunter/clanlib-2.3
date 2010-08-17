@@ -36,21 +36,21 @@ class SnapLine
 public:
 	enum SnapLineType
 	{
-		Top,		// A horizontal snapline aligned to the top edge of a control.
-		Bottom,		// A horizontal snapline aligned to the bottom edge of a control.
-		Left,		// A vertical snapline aligned to the left edge of a control.
-		Right,		// A vertical snapline aligned to the right edge of a control.
-		Horizontal,	// A horizontal snapline not associated with an edge of a control.
-		Vertical,	// A vertical snapline not associated with an edge of a control.
-		Baseline	// A horizontal snapline associated with a feature of a control; for example, the base of the text string in Label component.
+		type_top,		// A horizontal snapline aligned to the top edge of a control.
+		type_bottom,		// A horizontal snapline aligned to the bottom edge of a control.
+		type_left,		// A vertical snapline aligned to the left edge of a control.
+		type_right,		// A vertical snapline aligned to the right edge of a control.
+		type_horizontal,	// A horizontal snapline not associated with an edge of a control.
+		type_vertical,	// A vertical snapline not associated with an edge of a control.
+		type_baseline	// A horizontal snapline associated with a feature of a control; for example, the base of the text string in Label component.
 	};
 
 	enum SnapLinePriority
 	{
-		Low,
-		Medium,
-		High,
-		Always
+		priority_low,
+		priority_medium,
+		priority_high,
+		priority_always
 	};
 
 	struct SnapLineTarget
@@ -63,7 +63,7 @@ public:
 
 // Construction:
 public:
-	SnapLine(SnapLineType type, int offset, SnapLinePriority priority = Low);
+	SnapLine(SnapLineType type, int offset, SnapLinePriority priority = priority_low);
 	
 // Attributes:
 public:

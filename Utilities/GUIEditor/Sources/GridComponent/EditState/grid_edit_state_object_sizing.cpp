@@ -191,12 +191,12 @@ std::vector<SnapLine> GridEditStateObjectSizing::get_filtered_snaplines(const st
 
 	for(size_t i = 0; i < original_snaplines.size(); ++i)
 	{
-		if(original_snaplines[i].get_priority() == SnapLine::Medium)
+		if(original_snaplines[i].get_priority() == SnapLine::priority_medium)
 		{
-			if(original_snaplines[i].get_type() == SnapLine::Left && dir.x < 0 ||
-				original_snaplines[i].get_type() == SnapLine::Right && dir.x > 0 ||
-				original_snaplines[i].get_type() == SnapLine::Top && dir.y < 0 ||
-				original_snaplines[i].get_type() == SnapLine::Bottom && dir.y > 0)
+			if(original_snaplines[i].get_type() == SnapLine::type_left && dir.x < 0 ||
+				original_snaplines[i].get_type() == SnapLine::type_right && dir.x > 0 ||
+				original_snaplines[i].get_type() == SnapLine::type_top && dir.y < 0 ||
+				original_snaplines[i].get_type() == SnapLine::type_bottom && dir.y > 0)
 				snaplines.push_back(original_snaplines[i]);
 		}
 	}

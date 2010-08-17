@@ -38,12 +38,12 @@ SnapLine::SnapLine(SnapLineType type, int offset, SnapLinePriority priority)
 
 bool SnapLine::is_horizontal() const
 {
-	return (type == Top || type == Bottom || type == Horizontal || type == Baseline);
+	return (type == type_top || type == type_bottom || type == type_horizontal || type == type_baseline);
 }
 
 bool SnapLine::is_vertical() const
 {
-	return (type == Left || type == Right || type == Vertical);
+	return (type == type_left || type == type_right || type == type_vertical);
 }
 
 int SnapLine::get_offset() const
