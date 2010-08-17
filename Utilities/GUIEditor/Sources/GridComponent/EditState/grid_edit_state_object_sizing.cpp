@@ -28,10 +28,10 @@
 
 #include "precomp.h"
 #include "grid_edit_state_object_sizing.h"
-#include "grid_component.h"
-#include "main_window.h"
-#include "selection.h"
-#include "holder_component.h"
+#include "GridComponent/grid_component.h"
+#include "MainWindow/main_window.h"
+#include "Selection/selection.h"
+#include "GridComponent/holder_component.h"
 
 GridEditStateObjectSizing::GridEditStateObjectSizing()
 {

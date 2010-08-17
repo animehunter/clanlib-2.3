@@ -23,36 +23,30 @@
 **
 **  File Author(s):
 **
-**    Harry Storbacka
+**    Magnus Norddahl
+**    Kenneth Gangstoe
 */
 
 #pragma once
 
-class CallbackData_Impl;
+#include "grid_edit_state_handler.h"
 
-class CallbackData
+class HolderComponent;
+
+class GridEditStateObjectMoving : public GridEditStateHandler
 {
 public:
-	CallbackData(
-		const CL_StringRef &comp_type, 
-		const CL_StringRef &cb_name,
-		const CL_StringRef &param1,
-		const CL_StringRef &param2);
+	GridEditStateObjectMoving();
 
-	CL_StringRef get_component_type() const;
-	CL_StringRef get_callback_name() const;
-	CL_StringRef get_param1() const;
-	CL_StringRef get_param2() const;
-	CL_StringRef get_return_type() const;
-	CL_StringRef get_handler_function_name() const;
-	
-	void set_component_type(const CL_StringRef &str);
-	void set_callback_name(const CL_StringRef &str);
-	void set_param1(const CL_StringRef &str);
-	void set_param2(const CL_StringRef &str);
-	void set_return_type(const CL_StringRef &str);
-	void set_handler_function_name(const CL_StringRef &str);
-	
+	bool on_input_pressed(const CL_InputEvent &input_event);
+	bool on_input_released(const CL_InputEvent &input_event);
+	bool on_input_doubleclick(const CL_InputEvent &input_event);
+	bool on_input_pointer_moved(const CL_InputEvent &input_event);
+
 private:
-	CL_SharedPtr<CallbackData_Impl> impl;
+	void move_to(const CL_Point &mouse_pos, bool perform_snap);
+
+	HolderComponent *holder;
+	CL_Point start;
+	CL_Rect start_geometry;
 };

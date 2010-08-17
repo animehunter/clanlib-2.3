@@ -26,19 +26,48 @@
 **    Harry Storbacka
 */
 
-#pragma once
+#include "precomp.h"
+#include "application.h"
+//#include <ClanLib/gl.h>
+#include <ClanLib/swrender.h>
 
-#include "callback_data.h"
+#if _MSC_VER >= 1300
+#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#endif
 
-class CallbackInfo
+// This is the Program class that is called by CL_ClanApplication
+class Program
 {
 public:
-	CallbackInfo();
-	
-	std::vector<CallbackData> get_callbacks(const CL_StringRef &comp_type); 
+	static int main(const std::vector<CL_String> &args)
+	{
+		CL_SetupCore setup_core;
+		CL_SetupDisplay setup_display;
+//		CL_SetupGL setup_gl;
+		CL_SetupSWRender setup_swrender;
 
-private:
-	void populate();
+		try
+		{
+			Application app;
 
-	std::vector<CallbackData> callbacks;
+			if(args.size() > 1)
+				app.run(args[1]);
+			else
+				app.run();
+		}
+		catch (CL_Exception e)
+		{
+#ifdef WIN32
+			MessageBoxA(0, e.get_message_and_stack_trace().c_str(), "Unhandled Exception", MB_OK|MB_ICONERROR);
+#else
+			CL_Console::write_line("Unhandled exception: %1", e.get_message_and_stack_trace());
+#endif
+			return 0;
+		}
+
+		return 1;
+	}
 };
+
+// Instantiate CL_ClanApplication, informing it where the Program is located
+CL_ClanApplication app(&Program::main);

@@ -27,23 +27,27 @@
 */
 
 #include "precomp.h"
-#include "property_component_edit_state_header_sizing.h"
-#include "property_component.h"
+#include "grid_edit_state_create_tool.h"
+#include "GridComponent/grid_component.h"
+#include "MainWindow/main_window.h"
 
-PropertyComponentEditStateHeaderSizing::PropertyComponentEditStateHeaderSizing()
-: start_column_width(0)
+GridEditStateCreateTool::GridEditStateCreateTool()
 {
 }
 
-bool PropertyComponentEditStateHeaderSizing::on_input_pressed(const CL_InputEvent &e)
+bool GridEditStateCreateTool::on_input_pressed(const CL_InputEvent &e)
 {
 	if (e.id == CL_MOUSE_LEFT)
 	{
-		start = e.mouse_pos;
-		start_column_width = property_component->name_column_width;
-		if (property_component->get_header_resize_grabber().contains(e.mouse_pos))
+		int selected_tool = grid->main_window->get_selected_tool();
+		if (selected_tool != 1337) // OK, maybe pick a less silly value for select tool?
 		{
-			property_component->capture_mouse(true);
+			grid->capture_mouse(true);
+			grid->main_window->get_selection()->clear();
+			HolderComponent *holder = grid->on_add_component(selected_tool, e.mouse_pos);
+			grid->main_window->get_selection()->add_holder(holder);
+			grid->main_window->use_select_tool();
+			grid->request_repaint();
 			return true;
 		}
 		else
@@ -57,12 +61,12 @@ bool PropertyComponentEditStateHeaderSizing::on_input_pressed(const CL_InputEven
 	}
 }
 
-bool PropertyComponentEditStateHeaderSizing::on_input_released(const CL_InputEvent &e)
+bool GridEditStateCreateTool::on_input_released(const CL_InputEvent &e)
 {
 	if (e.id == CL_MOUSE_LEFT)
 	{
-		property_component->capture_mouse(false);
-		property_component->edit_state.set_state(PropertyComponentEditState::state_none);
+		grid->capture_mouse(false);
+		grid->edit_state.set_state(GridEditState::state_none);
 		return true;
 	}
 	else
@@ -71,19 +75,12 @@ bool PropertyComponentEditStateHeaderSizing::on_input_released(const CL_InputEve
 	}
 }
 
-bool PropertyComponentEditStateHeaderSizing::on_input_doubleclick(const CL_InputEvent &e)
+bool GridEditStateCreateTool::on_input_doubleclick(const CL_InputEvent &e)
 {
 	return false;
 }
 
-bool PropertyComponentEditStateHeaderSizing::on_input_pointer_moved(const CL_InputEvent &e)
+bool GridEditStateCreateTool::on_input_pointer_moved(const CL_InputEvent &e)
 {
-	int delta = e.mouse_pos.x - start.x;
-
-	int name_column_width = start_column_width + delta;
-	if(name_column_width < 55)
-		name_column_width = 55; // Should prolly be configurable or calculated :)
-	property_component->name_column_width = name_column_width;
-	property_component->request_repaint();
 	return true;
 }

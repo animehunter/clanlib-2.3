@@ -26,42 +26,28 @@
 **    Magnus Norddahl
 */
 
-#include "precomp.h"
-#include "property_component_edit_state_none.h"
-#include "property_component.h"
+#pragma once
 
-PropertyComponentEditStateNone::PropertyComponentEditStateNone()
+#include "grid_edit_state_handler.h"
+#include "GridComponent/snapline.h"
+
+class GridEditStateObjectSizing : public GridEditStateHandler
 {
-}
+public:
+	GridEditStateObjectSizing();
 
-bool PropertyComponentEditStateNone::on_input_pressed(const CL_InputEvent &e)
-{
-	if (e.type == CL_InputEvent::pressed && e.id == CL_MOUSE_LEFT)
-	{
-		int item = property_component->hit_test(e.mouse_pos);
-		if (item != -1)
-			property_component->activate_item(item);
-		return true;
-	}
-	return false;
-}
+	bool on_input_pressed(const CL_InputEvent &input_event);
+	bool on_input_released(const CL_InputEvent &input_event);
+	bool on_input_doubleclick(const CL_InputEvent &input_event);
+	bool on_input_pointer_moved(const CL_InputEvent &input_event);
 
-bool PropertyComponentEditStateNone::on_input_released(const CL_InputEvent &e)
-{
-	return false;
-}
+private:
+	void resize_to(const CL_Point &mouse_pos, bool perform_snap);
+	CL_Rect resize_rect(CL_Rect geometry, CL_Vec2i delta) const;
+	std::vector<SnapLine> get_filtered_snaplines(const std::vector<SnapLine> &original_snaplines);
 
-bool PropertyComponentEditStateNone::on_input_doubleclick(const CL_InputEvent &e)
-{
-	return false;
-}
-
-bool PropertyComponentEditStateNone::on_input_pointer_moved(const CL_InputEvent &e)
-{
-	CL_StandardCursor cursor = cl_cursor_arrow;
-	if (property_component->get_header_resize_grabber().contains(e.mouse_pos))
-		cursor = cl_cursor_size_we;
-
-	property_component->set_cursor(cursor);
-	return true;
-}
+	size_t primary_holder_index;
+	CL_Point start;
+	std::vector<CL_Rect> start_geometry;
+	CL_Vec2i dir;
+};

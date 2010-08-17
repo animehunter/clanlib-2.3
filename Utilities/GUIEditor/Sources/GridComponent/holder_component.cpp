@@ -30,7 +30,6 @@
 #include "precomp.h"
 #include "holder_component.h"
 #include "grid_component.h"
-#include "custom_component.h"
 
 HolderComponent::HolderComponent(CL_GUIComponent *parent)
 : CL_GUIComponent(parent), parent_grid(0), anchor_tl(cl_anchor_top_left), anchor_br(cl_anchor_top_left)
@@ -232,11 +231,6 @@ CL_DomElement HolderComponent::to_element(CL_DomDocument &doc)
 	save_geometry(e,comp); // write geom="..." attribute
 
 	return e;
-}
-
-CallbackInfo HolderComponent::get_callback_info()
-{
-	return callback_info; 
 }
 
 void HolderComponent::set_position_equations(const CL_String &str_x, const CL_String &str_y)

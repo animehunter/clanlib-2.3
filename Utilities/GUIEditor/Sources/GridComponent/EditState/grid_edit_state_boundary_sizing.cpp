@@ -28,7 +28,7 @@
 
 #include "precomp.h"
 #include "grid_edit_state_boundary_sizing.h"
-#include "grid_component.h"
+#include "GridComponent/grid_component.h"
 
 GridEditStateBoundarySizing::GridEditStateBoundarySizing()
 : dir(0, 0)

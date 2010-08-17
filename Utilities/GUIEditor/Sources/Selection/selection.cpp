@@ -23,31 +23,62 @@
 **
 **  File Author(s):
 **
-**    Magnus Norddahl
-**    Kenneth Gangstoe
+**    Harry Storbacka
 */
 
-#pragma once
+#include "precomp.h"
+#include "Selection/selection.h"
+#include "GridComponent/holder_component.h"
 
-#include "grid_edit_state_handler.h"
-#include "snapline.h"
-
-class HolderComponent;
-
-class GridEditStateObjectMoving : public GridEditStateHandler
+Selection::Selection()
 {
-public:
-	GridEditStateObjectMoving();
+}
 
-	bool on_input_pressed(const CL_InputEvent &input_event);
-	bool on_input_released(const CL_InputEvent &input_event);
-	bool on_input_doubleclick(const CL_InputEvent &input_event);
-	bool on_input_pointer_moved(const CL_InputEvent &input_event);
+bool Selection::empty()
+{
+	return selected_holders.empty();
+}
 
-private:
-	void move_to(const CL_Point &mouse_pos, bool perform_snap);
+std::vector<HolderComponent*> Selection::get_selection()
+{
+	return selected_holders;
+}
 
-	HolderComponent *holder;
-	CL_Point start;
-	CL_Rect start_geometry;
-};
+bool Selection::is_selected(HolderComponent *holder) const
+{
+	for (size_t i = 0; i < selected_holders.size(); i++)
+		if (selected_holders[i] == holder)
+			return true;
+	return false;
+}
+
+void Selection::add_holder(HolderComponent *holder)
+{
+	selected_holders.push_back(holder);
+	signal_selection_changed.invoke();
+}
+
+void Selection::clear()
+{
+	selected_holders.clear();
+	signal_selection_changed.invoke();
+}
+
+void Selection::remove_holder(HolderComponent *holder)
+{
+	std::vector<HolderComponent*>::iterator it;
+	for (it=selected_holders.begin(); it != selected_holders.end(); ++it)
+	{
+		if ((*it) == holder)
+		{
+			it = selected_holders.erase(it);
+			signal_selection_changed.invoke();
+			break;
+		}
+	}
+}
+
+CL_Signal_v0 & Selection::sig_selection_changed()
+{
+	return signal_selection_changed;
+}

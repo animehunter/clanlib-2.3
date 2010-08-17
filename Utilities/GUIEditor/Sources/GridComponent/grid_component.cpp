@@ -29,12 +29,12 @@
 
 #include "precomp.h"
 #include "grid_component.h"
-#include "custom_component.h"
 #include "holder_component.h"
-#include "component_types.h"
-#include "main_window.h"
-#include "selection.h"
 #include "snapline.h"
+#include "ComponentTypes/custom_component.h"
+#include "ComponentTypes/component_types.h"
+#include "MainWindow/main_window.h"
+#include "Selection/selection.h"
 
 GridComponent::GridComponent(CL_GUIComponent *parent, MainWindow *main_window)
 : CL_GUIComponent(parent), main_window(main_window), component_container(0),

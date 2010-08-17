@@ -28,9 +28,9 @@
 
 #include "precomp.h"
 #include "grid_edit_state_none.h"
-#include "grid_component.h"
-#include "main_window.h"
-#include "holder_component.h"
+#include "GridComponent/grid_component.h"
+#include "MainWindow/main_window.h"
+#include "GridComponent/holder_component.h"
 
 GridEditStateNone::GridEditStateNone()
 {

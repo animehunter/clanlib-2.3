@@ -28,9 +28,9 @@
 
 #include "precomp.h"
 #include "grid_edit_state_net_selecting.h"
-#include "grid_component.h"
-#include "main_window.h"
-#include "selection.h"
+#include "GridComponent/grid_component.h"
+#include "MainWindow/main_window.h"
+#include "Selection/selection.h"
 
 GridEditStateNetSelecting::GridEditStateNetSelecting()
 {

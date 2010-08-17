@@ -27,9 +27,9 @@
 */
 
 #include "precomp.h"
-#include "application.h"
-#include "main_window.h"
-#include "component_types.h"
+#include "MainWindow/application.h"
+#include "MainWindow/main_window.h"
+#include "ComponentTypes/component_types.h"
 
 Application::Application()
 {

@@ -29,10 +29,9 @@
 
 #pragma once
 
-#include "selection.h"
+#include "Selection/selection.h"
 
 class Application;
-class DialogDocument;
 class ViewBorder;
 class GridComponent;
 class PropertyComponent;
@@ -47,7 +46,6 @@ public:
 // Attributes:
 public:
 	Application *get_app() { return application; }
-	DialogDocument *get_document() { return document; }
 	Selection *get_selection() { return &selection; }
 	GridComponent *get_grid_component() { return grid_component; }
 
@@ -80,7 +78,6 @@ private:
 	CL_String show_save_file_dialog();
 
 	Application *application;
-	DialogDocument *document;
 	Selection selection;
 	CL_MenuBar *menubar;
 	CL_ToolBar *toolbar_main;

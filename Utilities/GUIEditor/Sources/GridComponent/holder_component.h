@@ -29,10 +29,8 @@
 
 #pragma once
 
-#include "callback_info.h"
 #include "snapline.h"
 
-class CallbackInfo;
 class GridComponent;
 
 class HolderComponent : public CL_GUIComponent
@@ -42,7 +40,6 @@ public:
 
 	CL_ComponentAnchorPoint get_anchor_tl();
 	CL_ComponentAnchorPoint get_anchor_br();
-	CallbackInfo get_callback_info();
 	CL_String get_position_equation_x() const;
 	CL_String get_position_equation_y() const;
 	CL_String get_position_equation_x2() const;
@@ -108,6 +105,4 @@ private:
 	CL_ComponentAnchorPoint anchor_br;
 
 	GridComponent *parent_grid;
-
-	CallbackInfo callback_info;
 };

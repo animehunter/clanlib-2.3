@@ -30,10 +30,10 @@
 #pragma once
 
 #include "property_component.h"
-#include "main_window.h"
-#include "selection.h"
-#include "anchor_popup.h"
-#include "holder_component.h"
+#include "MainWindow/main_window.h"
+#include "Selection/selection.h"
+#include "ComponentTypes/PropertyItems/anchor_popup.h"
+#include "GridComponent/holder_component.h"
 
 class HolderComponent;
 

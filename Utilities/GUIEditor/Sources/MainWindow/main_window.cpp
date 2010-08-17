@@ -29,19 +29,18 @@
 #include "precomp.h"
 #include "main_window.h"
 #include "application.h"
-#include "grid_component.h"
-#include "property_component.h"
+#include "GridComponent/grid_component.h"
+#include "PropertyComponent/property_component.h"
 #include "view_border.h"
-#include "component_types.h"
-#include "component_type.h"
-#include "source_generator_dialog.h"
-#include "holder_component.h"
+#include "ComponentTypes/component_types.h"
+#include "ComponentTypes/component_type.h"
+#include "GridComponent/holder_component.h"
 
 enum MainToolbarID { main_toolbar_new, main_toolbar_open, main_toolbar_save };
 
 MainWindow::MainWindow(Application *application)
 : CL_Window(application->get_gui(), get_startup_description()),
-  application(application), document(0), grid_component(0), property_component(0), selected_tool(1337)
+  application(application), grid_component(0), property_component(0), selected_tool(1337)
 {
 	set_id_name("editor");
 	func_close().set(this, &MainWindow::on_close);
@@ -243,11 +242,6 @@ CL_String MainWindow::show_save_file_dialog()
 
 void MainWindow::on_menu_source_generator()
 {
-	CL_GUIManager mgr = get_gui_manager();
-
-	SourceGeneratorDialog srcgen(&mgr);
-
-	int retval = srcgen.exec();
 }
 
 void MainWindow::load(const CL_StringRef &filename)

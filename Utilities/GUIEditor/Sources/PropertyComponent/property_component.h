@@ -29,7 +29,7 @@
 
 #pragma once
 
-#include "property_component_edit_state.h"
+#include "EditState/property_component_edit_state.h"
 
 class MainWindow;
 class PropertyItem;

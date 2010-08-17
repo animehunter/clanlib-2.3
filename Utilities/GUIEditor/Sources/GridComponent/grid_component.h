@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "grid_edit_state.h"
+#include "EditState/grid_edit_state.h"
 
 class MainWindow;
 class PropertyComponent;
