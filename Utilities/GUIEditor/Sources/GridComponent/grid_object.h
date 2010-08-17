@@ -33,10 +33,10 @@
 
 class GridComponent;
 
-class HolderComponent : public CL_GUIComponent
+class GridObject : public CL_GUIComponent
 {
 public:
-	HolderComponent(CL_GUIComponent *parent);
+	GridObject(CL_GUIComponent *parent);
 
 	CL_ComponentAnchorPoint get_anchor_tl();
 	CL_ComponentAnchorPoint get_anchor_br();
@@ -48,8 +48,8 @@ public:
 	CL_GUIComponent *get_container();
 	CL_GUIComponent *get_component() { return get_first_child(); }
 
-	HolderComponent *get_next_sibling() { return dynamic_cast<HolderComponent*>(CL_GUIComponent::get_next_sibling()); }
-	HolderComponent *get_previous_sibling() { return dynamic_cast<HolderComponent*>(CL_GUIComponent::get_previous_sibling()); }
+	GridObject *get_next_sibling() { return dynamic_cast<GridObject*>(CL_GUIComponent::get_next_sibling()); }
+	GridObject *get_previous_sibling() { return dynamic_cast<GridObject*>(CL_GUIComponent::get_previous_sibling()); }
 
 	CL_Rect get_grabber_w() const;
 	CL_Rect get_grabber_nw() const;
@@ -80,7 +80,7 @@ public:
 	CL_Point component_to_window_coords(const CL_Point &component_point) const { return CL_GUIComponent::component_to_window_coords(component_point); }
 	CL_Rect component_to_window_coords(const CL_Rect &component_rect) const { return CL_GUIComponent::component_to_window_coords(component_rect); }
 */
-	static HolderComponent *find_holder_at(CL_GUIComponent *container, const CL_Point &pos);
+	static GridObject *find_object_at(CL_GUIComponent *container, const CL_Point &pos);
 
 private:
 	void on_render(CL_GraphicContext &gc, const CL_Rect &update_rect);

@@ -29,7 +29,7 @@
 
 #include "precomp.h"
 #include "grid_component.h"
-#include "holder_component.h"
+#include "grid_object.h"
 #include "snapline.h"
 #include "ComponentTypes/custom_component.h"
 #include "ComponentTypes/component_types.h"
@@ -61,34 +61,34 @@ CL_Size GridComponent::get_dialog_size()
 	return boundary;
 }
 
-const std::vector<HolderComponent*> &GridComponent::get_holders() const
+const std::vector<GridObject*> &GridComponent::get_objects() const
 {
-	return holders;
+	return objects;
 }
 
-HolderComponent *GridComponent::on_add_component(int id, const CL_Vec2i &pos)
+GridObject *GridComponent::on_add_component(int id, const CL_Vec2i &pos)
 {
-	HolderComponent *holder = new HolderComponent(component_container);
+	GridObject *object = new GridObject(component_container);
 
-	CL_GUIComponent *new_component = ComponentTypes::create_component(id, holder->get_container());
+	CL_GUIComponent *new_component = ComponentTypes::create_component(id, object->get_container());
 
-	holder->set_geometry(CL_Rect(pos, new_component->get_size()));
-	holders.push_back(holder);
+	object->set_geometry(CL_Rect(pos, new_component->get_size()));
+	objects.push_back(object);
 
-	return holder;
+	return object;
 }
 
-void GridComponent::remove_holder(HolderComponent *holder)
+void GridComponent::remove_object(GridObject *object)
 {
-	std::vector<HolderComponent*>::iterator it;
-	for (it = holders.begin(); it != holders.end(); ++it)
+	std::vector<GridObject*>::iterator it;
+	for (it = objects.begin(); it != objects.end(); ++it)
 	{
-		if ((*it) == holder)
+		if ((*it) == object)
 		{
-			main_window->get_selection()->remove_holder(holder);
-			it = holders.erase(it);
+			main_window->get_selection()->remove_object(object);
+			it = objects.erase(it);
 
-			delete holder;
+			delete object;
 
 			break;
 		}
@@ -114,55 +114,55 @@ void GridComponent::load(CL_DomElement &element, CL_GUIComponent *parent)
 
 	while (e.is_element())
 	{
-		HolderComponent *holder = new HolderComponent(parent);
+		GridObject *object = new GridObject(parent);
 		
 		CL_String tag = e.get_tag_name();
 		CL_GUIComponent *new_comp = 0;
 
 		if (tag == "button")
 		{
-			CL_PushButton *co = new CL_PushButton(holder->get_container());
+			CL_PushButton *co = new CL_PushButton(object->get_container());
 			co->set_text(e.get_attribute("text"));
 			new_comp = co;
 		}
 		else if (tag == "checkbox")
 		{
-			CL_CheckBox *co = new CL_CheckBox(holder->get_container());
+			CL_CheckBox *co = new CL_CheckBox(object->get_container());
 			co->set_text(e.get_attribute("text"));
 			new_comp = co;
 		}
 		else if (tag == "radiobutton")
 		{
-			CL_RadioButton *co = new CL_RadioButton(holder->get_container());
+			CL_RadioButton *co = new CL_RadioButton(object->get_container());
 			co->set_text(e.get_attribute("text"));
 			co->set_group_name(e.get_attribute("group"));
 			new_comp = co;
 		}
 		else if (tag == "label")
 		{
-			CL_Label *co = new CL_Label(holder->get_container());
+			CL_Label *co = new CL_Label(object->get_container());
 			co->set_text(e.get_attribute("text"));
 			new_comp = co;
 		}
 		else if (tag == "statusbar")
 		{
-			CL_StatusBar *co = new CL_StatusBar(holder->get_container());
+			CL_StatusBar *co = new CL_StatusBar(object->get_container());
 			new_comp = co;
 		}
 		else if (tag == "lineedit")
 		{
-			CL_LineEdit *co = new CL_LineEdit(holder->get_container());
+			CL_LineEdit *co = new CL_LineEdit(object->get_container());
 			co->set_text(e.get_attribute("text"));
 			new_comp = co;
 		}
 		else if (tag == "imageview")
 		{
-			CL_ImageView *co = new CL_ImageView(holder->get_container());
+			CL_ImageView *co = new CL_ImageView(object->get_container());
 			new_comp = co;
 		}
 		else if (tag == "slider")
 		{
-			CL_Slider *co = new CL_Slider(holder->get_container());
+			CL_Slider *co = new CL_Slider(object->get_container());
 			co->set_min(CL_StringHelp::text_to_int(e.get_attribute("min")));
 			co->set_max(CL_StringHelp::text_to_int(e.get_attribute("max")));
 			co->set_tick_count(CL_StringHelp::text_to_int(e.get_attribute("ticks")));
@@ -171,13 +171,13 @@ void GridComponent::load(CL_DomElement &element, CL_GUIComponent *parent)
 		}
 		else if (tag == "listview")
 		{
-			CL_ListView *co = new CL_ListView(holder->get_container());
+			CL_ListView *co = new CL_ListView(object->get_container());
 //			load_listview(e, co);
 			new_comp = co;
 		}
 		else if (tag == "tab")
 		{
-			CL_Tab *co = new CL_Tab(holder->get_container());
+			CL_Tab *co = new CL_Tab(object->get_container());
 			new_comp = co;
 
 			CL_DomElement tab_child = e.get_first_child().to_element();
@@ -197,12 +197,12 @@ void GridComponent::load(CL_DomElement &element, CL_GUIComponent *parent)
 		}
 		else if (tag == "menubar")
 		{
-			CL_MenuBar *co = new CL_MenuBar(holder->get_container());
+			CL_MenuBar *co = new CL_MenuBar(object->get_container());
 			new_comp = co;
 		}
 		else if (tag == "frame")
 		{
-			CL_Frame *co = new CL_Frame(holder->get_container());
+			CL_Frame *co = new CL_Frame(object->get_container());
 			co->set_header_text(e.get_attribute("text"));
 			new_comp = co;
 
@@ -211,17 +211,17 @@ void GridComponent::load(CL_DomElement &element, CL_GUIComponent *parent)
 		}
 		else if (tag == "spin")
 		{
-			CL_Spin *co = new CL_Spin(holder->get_container());
+			CL_Spin *co = new CL_Spin(object->get_container());
 			new_comp = co;
 		}
 		else if (tag == "combobox")
 		{
-			CL_ComboBox *co = new CL_ComboBox(holder->get_container());
+			CL_ComboBox *co = new CL_ComboBox(object->get_container());
 			new_comp = co;
 		}
 		else if (tag == "toolbar")
 		{
-			CL_ToolBar *co = new CL_ToolBar(holder->get_container());
+			CL_ToolBar *co = new CL_ToolBar(object->get_container());
 			new_comp = co;
 		}
 		else if (tag == "dialog")
@@ -233,14 +233,14 @@ void GridComponent::load(CL_DomElement &element, CL_GUIComponent *parent)
 		}
 		else // unknown component... create CustomComponent.
 		{
-			CustomComponent *co = new CustomComponent(holder->get_container());
+			CustomComponent *co = new CustomComponent(object->get_container());
 			co->set_type_name(tag);
 			new_comp = co;
 		}
 		
 		if (new_comp == 0)
 		{
-			delete holder;
+			delete object;
 		}
 		else
 		{
@@ -252,22 +252,22 @@ void GridComponent::load(CL_DomElement &element, CL_GUIComponent *parent)
 			CL_String pos_equation_y = e.get_attribute("eq-y", "");
 			CL_String pos_equation_x2 = e.get_attribute("eq-x2", "");
 			CL_String pos_equation_y2 = e.get_attribute("eq-y2", "");
-			holder->set_position_equations(pos_equation_x, pos_equation_y);
-			holder->set_position_equations2(pos_equation_x2, pos_equation_y2);
+			object->set_position_equations(pos_equation_x, pos_equation_y);
+			object->set_position_equations2(pos_equation_x2, pos_equation_y2);
 			CL_ComponentAnchorPoint ap_tl = (CL_ComponentAnchorPoint)CL_StringHelp::text_to_int(e.get_attribute("anchor_tl"));
 			CL_ComponentAnchorPoint ap_br = (CL_ComponentAnchorPoint)CL_StringHelp::text_to_int(e.get_attribute("anchor_br"));
 
-			holder->set_anchor_tl(ap_tl);
-			holder->set_anchor_br(ap_br);
+			object->set_anchor_tl(ap_tl);
+			object->set_anchor_br(ap_br);
 
-			holders.push_back(holder);
+			objects.push_back(object);
 			new_comp->set_id_name(e.get_attribute("id"));
 			new_comp->set_class_name(e.get_attribute("class"));
 
-			CL_Rect holder_g = load_geometry(e);
-			CL_Size comp_size = holder_g.get_size();
+			CL_Rect object_g = load_geometry(e);
+			CL_Size comp_size = object_g.get_size();
 
-			holder->set_geometry(holder_g);
+			object->set_geometry(object_g);
 			new_comp->set_geometry(comp_size);
 		}
 
@@ -287,12 +287,12 @@ void GridComponent::save(const CL_StringRef &fullname)
 	CL_GUIComponent *comp = component_container->get_first_child();
 	while (comp != 0)
 	{
-		if (comp->get_type_name() == "holder")
+		if (comp->get_type_name() == "object")
 		{
-			HolderComponent *holder = dynamic_cast<HolderComponent*>(comp);
-			if (holder)
+			GridObject *object = dynamic_cast<GridObject*>(comp);
+			if (object)
 			{
-				CL_DomElement element = holder->to_element(doc);
+				CL_DomElement element = object->to_element(doc);
 				element_gui.append_child(element);
 			}
 		}
@@ -339,9 +339,9 @@ CL_Rect GridComponent::get_boundary_grabber_e() const
 	return CL_Rect(CL_Point(boundary.width, 0), CL_Size(8, get_boundary_grabber_se().top));
 }
 
-HolderComponent *GridComponent::find_holder_at(const CL_Point &pos)
+GridObject *GridComponent::find_object_at(const CL_Point &pos)
 {
-	return HolderComponent::find_holder_at(component_container, pos);
+	return GridObject::find_object_at(component_container, pos);
 }
 
 bool GridComponent::deliver_input_to_tab(const CL_InputEvent &e)
@@ -433,7 +433,7 @@ void GridComponent::on_render(CL_GraphicContext &gc, const CL_Rect &update_rect)
 void GridComponent::on_render_overlay(CL_GraphicContext &gc, const CL_Rect &update_rect)
 {
 	set_cliprect(gc, get_size());
-	std::vector<HolderComponent *> selection = main_window->get_selection()->get_selection();
+	std::vector<GridObject *> selection = main_window->get_selection()->get_selection();
 	for (size_t i = 0; i < selection.size(); i++)
 	{
 		CL_Rect grabbers[8] =
@@ -498,24 +498,24 @@ CL_Rect GridComponent::load_geometry(CL_DomElement &e)
 	return r;
 }
 
-CL_Rect GridComponent::holder_to_grid_coords(HolderComponent *holder, const CL_Rect &rect)
+CL_Rect GridComponent::object_to_grid_coords(GridObject *object, const CL_Rect &rect)
 {
-	return component_container->window_to_component_coords(holder->component_to_window_coords(rect));
+	return component_container->window_to_component_coords(object->component_to_window_coords(rect));
 }
 
-CL_Point GridComponent::holder_to_grid_coords(HolderComponent *holder, const CL_Point &point)
+CL_Point GridComponent::object_to_grid_coords(GridObject *object, const CL_Point &point)
 {
-	return component_container->window_to_component_coords(holder->component_to_window_coords(point));
+	return component_container->window_to_component_coords(object->component_to_window_coords(point));
 }
 
-CL_Rect GridComponent::grid_to_holder_coords(HolderComponent *holder, const CL_Rect &rect)
+CL_Rect GridComponent::grid_to_object_coords(GridObject *object, const CL_Rect &rect)
 {
-	return component_container->component_to_window_coords(holder->window_to_component_coords(rect));
+	return component_container->component_to_window_coords(object->window_to_component_coords(rect));
 }
 
-CL_Point GridComponent::grid_to_holder_coords(HolderComponent *holder, const CL_Point &point)
+CL_Point GridComponent::grid_to_object_coords(GridObject *object, const CL_Point &point)
 {
-	return component_container->component_to_window_coords(holder->window_to_component_coords(point));
+	return component_container->component_to_window_coords(object->window_to_component_coords(point));
 }
 
 std::vector<SnapLine> GridComponent::get_snaplines() const
@@ -538,18 +538,18 @@ std::vector<SnapLine> GridComponent::get_snaplines() const
 	return snaplines;
 }
 
-CL_Vec2i GridComponent::snap(HolderComponent *holder, const std::vector<SnapLine> &source_snaplines, const CL_Rect &source_rect)
+CL_Vec2i GridComponent::snap(GridObject *object, const std::vector<SnapLine> &source_snaplines, const CL_Rect &source_rect)
 {
 	std::vector<SnapLine::SnapLineTarget> targets;
 
 	// Add all other components
-	std::vector<HolderComponent*> holders = get_holders();
-	for (size_t holder_index = 0; holder_index < holders.size(); holder_index++)
+	std::vector<GridObject*> objects = get_objects();
+	for (size_t object_index = 0; object_index < objects.size(); object_index++)
 	{
-		HolderComponent *target_holder = holders[holder_index];
+		GridObject *target_object = objects[object_index];
 
-		if(target_holder != holder)
-			targets.push_back(SnapLine::SnapLineTarget(target_holder->get_geometry(), target_holder->get_snaplines()));
+		if(target_object != object)
+			targets.push_back(SnapLine::SnapLineTarget(target_object->get_geometry(), target_object->get_snaplines()));
 	}
 
 	// Add GridComponent itself
@@ -569,13 +569,13 @@ void GridComponent::set_netselect_box(CL_Rect new_netselect_box)
 
 void GridComponent::select_objects(const CL_Rect &box)
 {
-	for (size_t i = 0; i < holders.size(); i++)
+	for (size_t i = 0; i < objects.size(); i++)
 	{
-		CL_Rect holder_box = holders[i]->get_geometry();
-		holder_box.overlap(box);
-		if (holder_box.right > holder_box.left && holder_box.bottom > holder_box.top)
+		CL_Rect object_box = objects[i]->get_geometry();
+		object_box.overlap(box);
+		if (object_box.right > object_box.left && object_box.bottom > object_box.top)
 		{
-			main_window->get_selection()->add_holder(holders[i]);
+			main_window->get_selection()->add_object(objects[i]);
 		}
 	}
 	main_window->get_selection()->sig_selection_changed().invoke();

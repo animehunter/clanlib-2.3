@@ -34,7 +34,7 @@
 #include "view_border.h"
 #include "ComponentTypes/component_types.h"
 #include "ComponentTypes/component_type.h"
-#include "GridComponent/holder_component.h"
+#include "GridComponent/grid_object.h"
 
 enum MainToolbarID { main_toolbar_new, main_toolbar_open, main_toolbar_saveas, main_toolbar_save };
 
@@ -288,21 +288,21 @@ void MainWindow::on_process_messages(CL_GUIMessage &msg)
 			{
 				if (selection.empty() && grid_component->get_first_child())
 				{
-					HolderComponent *holder = dynamic_cast<HolderComponent*>(grid_component->get_first_child());
-					if (holder)
-						selection.add_holder(holder);
+					GridObject *object = dynamic_cast<GridObject*>(grid_component->get_first_child());
+					if (object)
+						selection.add_object(object);
 				}
 				else
 				{
-					HolderComponent *holder = selection.get_selection().front();
-					if (holder->get_previous_sibling() || grid_component->get_last_child())
+					GridObject *object = selection.get_selection().front();
+					if (object->get_previous_sibling() || grid_component->get_last_child())
 					{
 						selection.clear();
-						HolderComponent *sibling = dynamic_cast<HolderComponent*>(holder->get_previous_sibling());
+						GridObject *sibling = dynamic_cast<GridObject*>(object->get_previous_sibling());
 						if (sibling == 0)
-							sibling = dynamic_cast<HolderComponent*>(grid_component->get_last_child());
+							sibling = dynamic_cast<GridObject*>(grid_component->get_last_child());
 						if (sibling)
-						selection.add_holder(sibling);
+						selection.add_object(sibling);
 					}
 				}
 				grid_component->request_repaint();
@@ -311,21 +311,21 @@ void MainWindow::on_process_messages(CL_GUIMessage &msg)
 			{
 				if (selection.empty() && grid_component->get_first_child())
 				{
-					HolderComponent *holder = dynamic_cast<HolderComponent*>(grid_component->get_first_child());
-					if (holder)
-						selection.add_holder(holder);
+					GridObject *object = dynamic_cast<GridObject*>(grid_component->get_first_child());
+					if (object)
+						selection.add_object(object);
 				}
 				else
 				{
-					HolderComponent *holder = selection.get_selection().front();
-					if (holder->get_next_sibling() || grid_component->get_first_child())
+					GridObject *object = selection.get_selection().front();
+					if (object->get_next_sibling() || grid_component->get_first_child())
 					{
 						selection.clear();
-						HolderComponent *sibling = dynamic_cast<HolderComponent*>(holder->get_next_sibling());
+						GridObject *sibling = dynamic_cast<GridObject*>(object->get_next_sibling());
 						if (sibling == 0)
-							sibling = dynamic_cast<HolderComponent*>(grid_component->get_first_child());
+							sibling = dynamic_cast<GridObject*>(grid_component->get_first_child());
 						if (sibling)
-							selection.add_holder(sibling);
+							selection.add_object(sibling);
 					}
 				}
 				grid_component->request_repaint();

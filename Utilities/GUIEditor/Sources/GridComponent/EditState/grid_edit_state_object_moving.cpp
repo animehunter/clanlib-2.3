@@ -30,11 +30,11 @@
 #include "precomp.h"
 #include "grid_edit_state_object_moving.h"
 #include "GridComponent/grid_component.h"
-#include "GridComponent/holder_component.h"
+#include "GridComponent/grid_object.h"
 #include "MainWindow/main_window.h"
 
 GridEditStateObjectMoving::GridEditStateObjectMoving()
-: holder(0)
+: object(0)
 {
 }
 
@@ -42,15 +42,15 @@ bool GridEditStateObjectMoving::on_input_pressed(const CL_InputEvent &e)
 {
 	if (e.id == CL_MOUSE_LEFT)
 	{
-		holder = grid->find_holder_at(e.mouse_pos);
-		if (holder)
+		object = grid->find_object_at(e.mouse_pos);
+		if (object)
 		{
 			start = e.mouse_pos;
-			start_geometry = holder->get_geometry();
-			if (!grid->main_window->get_selection()->is_selected(holder))
+			start_geometry = object->get_geometry();
+			if (!grid->main_window->get_selection()->is_selected(object))
 			{
 				grid->main_window->get_selection()->clear();
-				grid->main_window->get_selection()->add_holder(holder);
+				grid->main_window->get_selection()->add_object(object);
 			}
 			grid->capture_mouse(true);
 			grid->request_repaint();
@@ -74,7 +74,7 @@ bool GridEditStateObjectMoving::on_input_pressed(const CL_InputEvent &e)
 		else if(e.id == CL_KEY_DOWN)
 			delta.y = 1;
 
-		std::vector<HolderComponent*> selection = grid->main_window->get_selection()->get_selection();
+		std::vector<GridObject*> selection = grid->main_window->get_selection()->get_selection();
 		for (size_t i = 0; i < selection.size(); i++)
 		{
 			CL_Rect geometry = selection[i]->get_geometry().translate(delta);
@@ -93,9 +93,9 @@ bool GridEditStateObjectMoving::on_input_pressed(const CL_InputEvent &e)
 
 bool GridEditStateObjectMoving::on_input_released(const CL_InputEvent &e)
 {
-	if (e.id == CL_MOUSE_LEFT && holder)
+	if (e.id == CL_MOUSE_LEFT && object)
 	{
-		holder = 0;
+		object = 0;
 		grid->capture_mouse(false);
 		grid->edit_state.set_state(GridEditState::state_none);
 		grid->main_window->get_selection()->sig_selection_changed().invoke();
@@ -121,7 +121,7 @@ bool GridEditStateObjectMoving::on_input_doubleclick(const CL_InputEvent &e)
 
 bool GridEditStateObjectMoving::on_input_pointer_moved(const CL_InputEvent &e)
 {
-	if(holder)
+	if(object)
 	{
 		bool perform_snap = e.alt == false;
 		move_to(e.mouse_pos, perform_snap);
@@ -141,12 +141,12 @@ void GridEditStateObjectMoving::move_to(const CL_Point &mouse_pos, bool perform_
 	source_rect.translate(delta);
 
 	if(perform_snap)
-		source_rect.translate(grid->snap(holder, holder->get_snaplines(), source_rect));
+		source_rect.translate(grid->snap(object, object->get_snaplines(), source_rect));
 
-	delta.x = source_rect.left - holder->get_geometry().left;
-	delta.y = source_rect.top - holder->get_geometry().top;
+	delta.x = source_rect.left - object->get_geometry().left;
+	delta.y = source_rect.top - object->get_geometry().top;
 
-	std::vector<HolderComponent *> selection = grid->main_window->get_selection()->get_selection();
+	std::vector<GridObject *> selection = grid->main_window->get_selection()->get_selection();
 	for (size_t i = 0; i < selection.size(); i++)
 	{
 		CL_Rect geometry = selection[i]->get_geometry();

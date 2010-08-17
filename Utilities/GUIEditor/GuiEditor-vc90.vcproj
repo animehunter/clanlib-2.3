@@ -292,11 +292,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Sources\GridComponent\holder_component.cpp"
+					RelativePath=".\Sources\GridComponent\grid_object.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Sources\GridComponent\holder_component.h"
+					RelativePath=".\Sources\GridComponent\grid_object.h"
 					>
 				</File>
 				<File
@@ -583,6 +583,10 @@
 				</File>
 			</Filter>
 		</Filter>
+		<File
+			RelativePath=".\todo.txt"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

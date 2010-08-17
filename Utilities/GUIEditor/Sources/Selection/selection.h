@@ -29,7 +29,7 @@
 #pragma once
 
 class DialogComponent;
-class HolderComponent;
+class GridObject;
 
 class Selection
 {
@@ -37,16 +37,16 @@ public:
 	Selection();
 	
 	bool empty();
-	std::vector<HolderComponent*> get_selection();
-	bool is_selected(HolderComponent *holder) const;
+	std::vector<GridObject*> get_selection();
+	bool is_selected(GridObject *object) const;
 
-	void add_holder(HolderComponent *holder);
+	void add_object(GridObject *object);
 	void clear();
-	void remove_holder(HolderComponent *holder);
+	void remove_object(GridObject *object);
 
 	CL_Signal_v0 &sig_selection_changed();
 
 private:
-	std::vector<HolderComponent*> selected_holders;
+	std::vector<GridObject*> selected_objects;
 	CL_Signal_v0 signal_selection_changed;
 };

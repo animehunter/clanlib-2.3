@@ -28,67 +28,67 @@
 */
 
 #include "precomp.h"
-#include "holder_component.h"
+#include "grid_object.h"
 #include "grid_component.h"
 
-HolderComponent::HolderComponent(CL_GUIComponent *parent)
+GridObject::GridObject(CL_GUIComponent *parent)
 : CL_GUIComponent(parent), parent_grid(0), anchor_tl(cl_anchor_top_left), anchor_br(cl_anchor_top_left)
 {
-	set_type_name("holder");
-	func_render().set(this, &HolderComponent::on_render);
-	func_resized().set(this, &HolderComponent::on_resized);
+	set_type_name("object");
+	func_render().set(this, &GridObject::on_render);
+	func_resized().set(this, &GridObject::on_resized);
 
 //	font = CL_Font(get_gc(), "Tahoma", -11);
 
 	parent_grid = static_cast<GridComponent*>(parent);
 }
 
-CL_GUIComponent *HolderComponent::get_container()
+CL_GUIComponent *GridObject::get_container()
 {
 	return this;
 }
 
-CL_ComponentAnchorPoint HolderComponent::get_anchor_tl()
+CL_ComponentAnchorPoint GridObject::get_anchor_tl()
 {
 	return anchor_tl;
 }
 
-CL_ComponentAnchorPoint HolderComponent::get_anchor_br()
+CL_ComponentAnchorPoint GridObject::get_anchor_br()
 {
 	return anchor_br;
 }
 
-CL_String HolderComponent::get_position_equation_x() const
+CL_String GridObject::get_position_equation_x() const
 {
 	return pos_equation_x;
 }
 
-CL_String HolderComponent::get_position_equation_y() const
+CL_String GridObject::get_position_equation_y() const
 {
 	return pos_equation_y;
 }
 
-CL_String HolderComponent::get_position_equation_x2() const
+CL_String GridObject::get_position_equation_x2() const
 {
 	return pos_equation_x2;
 }
 
-CL_String HolderComponent::get_position_equation_y2() const
+CL_String GridObject::get_position_equation_y2() const
 {
 	return pos_equation_y2;
 }
 
-void HolderComponent::set_anchor_tl(CL_ComponentAnchorPoint ap)
+void GridObject::set_anchor_tl(CL_ComponentAnchorPoint ap)
 {
 	anchor_tl = ap;
 }
 
-void HolderComponent::set_anchor_br(CL_ComponentAnchorPoint ap)
+void GridObject::set_anchor_br(CL_ComponentAnchorPoint ap)
 {
 	anchor_br = ap;
 }
 
-CL_DomElement HolderComponent::to_element(CL_DomDocument &doc)
+CL_DomElement GridObject::to_element(CL_DomDocument &doc)
 {
 	CL_GUIComponent *comp = get_first_child();
 
@@ -178,10 +178,10 @@ CL_DomElement HolderComponent::to_element(CL_DomDocument &doc)
 				CL_GUIComponent *tabpage_child = child->get_first_child();
 				while (tabpage_child != 0)
 				{
-					if (tabpage_child->get_type_name() == "holder")
+					if (tabpage_child->get_type_name() == "object")
 					{
-						HolderComponent *holder_comp = dynamic_cast<HolderComponent*>(tabpage_child);
-						CL_DomElement tabpage_child_element = holder_comp->to_element(doc);
+						GridObject *object_comp = dynamic_cast<GridObject*>(tabpage_child);
+						CL_DomElement tabpage_child_element = object_comp->to_element(doc);
 						tabpage_element.append_child(tabpage_child_element);
 					}
 
@@ -203,10 +203,10 @@ CL_DomElement HolderComponent::to_element(CL_DomDocument &doc)
 		CL_GUIComponent *child = co->get_first_child();
 		while (child != 0)
 		{
-			if (child->get_type_name() == "holder")
+			if (child->get_type_name() == "object")
 			{
-				HolderComponent *holder_comp = dynamic_cast<HolderComponent*>(child);
-				CL_DomElement frame_child_element = holder_comp->to_element(doc);
+				GridObject *object_comp = dynamic_cast<GridObject*>(child);
+				CL_DomElement frame_child_element = object_comp->to_element(doc);
 				e.append_child(frame_child_element);
 			}
 
@@ -233,67 +233,67 @@ CL_DomElement HolderComponent::to_element(CL_DomDocument &doc)
 	return e;
 }
 
-void HolderComponent::set_position_equations(const CL_String &str_x, const CL_String &str_y)
+void GridObject::set_position_equations(const CL_String &str_x, const CL_String &str_y)
 {
 	pos_equation_x = str_x;
 	pos_equation_y = str_y;
 }
 
-void HolderComponent::set_position_equations2( const CL_String &str_x, const CL_String &str_y )
+void GridObject::set_position_equations2( const CL_String &str_x, const CL_String &str_y )
 {
 	pos_equation_x2 = str_x;
 	pos_equation_y2 = str_y;
 }
 
-CL_Rect HolderComponent::get_grabber_w() const
+CL_Rect GridObject::get_grabber_w() const
 {
 	CL_Rect box = get_size();
 	return CL_Rect(CL_Point(box.left-7, (box.top+box.bottom)/2-3), CL_Size(6, 6));
 }
 
-CL_Rect HolderComponent::get_grabber_nw() const
+CL_Rect GridObject::get_grabber_nw() const
 {
 	CL_Rect box = get_size();
 	return CL_Rect(CL_Point(box.left-7, box.top-7), CL_Size(6, 6));
 }
 
-CL_Rect HolderComponent::get_grabber_n() const
+CL_Rect GridObject::get_grabber_n() const
 {
 	CL_Rect box = get_size();
 	return CL_Rect(CL_Point((box.left+box.right)/2-3, box.top-7), CL_Size(6, 6));
 }
 
-CL_Rect HolderComponent::get_grabber_ne() const
+CL_Rect GridObject::get_grabber_ne() const
 {
 	CL_Rect box = get_size();
 	return CL_Rect(CL_Point(box.right, box.top-7), CL_Size(6, 6));
 }
 
-CL_Rect HolderComponent::get_grabber_e() const
+CL_Rect GridObject::get_grabber_e() const
 {
 	CL_Rect box = get_size();
 	return CL_Rect(CL_Point(box.right, (box.top+box.bottom)/2-3), CL_Size(6, 6));
 }
 
-CL_Rect HolderComponent::get_grabber_se() const
+CL_Rect GridObject::get_grabber_se() const
 {
 	CL_Rect box = get_size();
 	return CL_Rect(CL_Point(box.right, box.bottom), CL_Size(6, 6));
 }
 
-CL_Rect HolderComponent::get_grabber_s() const
+CL_Rect GridObject::get_grabber_s() const
 {
 	CL_Rect box = get_size();
 	return CL_Rect(CL_Point((box.left+box.right)/2-3, box.bottom), CL_Size(6, 6));
 }
 
-CL_Rect HolderComponent::get_grabber_sw() const
+CL_Rect GridObject::get_grabber_sw() const
 {
 	CL_Rect box = get_size();
 	return CL_Rect(CL_Point(box.left-7, box.bottom), CL_Size(6, 6));
 }
 
-void HolderComponent::on_render(CL_GraphicContext &gc, const CL_Rect &update_rect)
+void GridObject::on_render(CL_GraphicContext &gc, const CL_Rect &update_rect)
 {
 	// Do a fill rect for otherwise transparent components:
 	CL_String type = get_first_child()->get_type_name();
@@ -312,16 +312,16 @@ void HolderComponent::on_render(CL_GraphicContext &gc, const CL_Rect &update_rec
 	*/
  }
 
-void HolderComponent::on_resized()
+void GridObject::on_resized()
 {
 	CL_GUIComponent *child = get_first_child();
 	if (child)
 		child->set_geometry(get_size());
 }
 
-void HolderComponent::save_geometry(CL_DomElement &e, CL_GUIComponent *comp)
+void GridObject::save_geometry(CL_DomElement &e, CL_GUIComponent *comp)
 {
-	CL_Rect holder_g = comp->get_parent_component()->get_geometry();
+	CL_Rect object_g = comp->get_parent_component()->get_geometry();
 	CL_Rect g = get_geometry();
 
 	CL_String left = CL_StringHelp::int_to_text(g.left);
@@ -332,7 +332,7 @@ void HolderComponent::save_geometry(CL_DomElement &e, CL_GUIComponent *comp)
 	e.set_attribute("geom", left + "," + top + "," + right + "," + bottom);
 }
 
-void HolderComponent::save_anchors(CL_DomElement &e, CL_GUIComponent *comp)
+void GridObject::save_anchors(CL_DomElement &e, CL_GUIComponent *comp)
 {
 	CL_Rect boundary = parent_grid->get_dialog_size();
 
@@ -358,7 +358,7 @@ void HolderComponent::save_anchors(CL_DomElement &e, CL_GUIComponent *comp)
 	e.set_attribute("dist_br_y", CL_StringHelp::int_to_text(dist_br.y));
 }
 
-CL_Point HolderComponent::get_dist(CL_ComponentAnchorPoint ap, CL_Point p, CL_Rect boundary)
+CL_Point GridObject::get_dist(CL_ComponentAnchorPoint ap, CL_Point p, CL_Rect boundary)
 {
 	int bw = boundary.get_width(), bh = boundary.get_height(); 
 	if (ap == cl_anchor_top_left)
@@ -381,7 +381,7 @@ CL_Point HolderComponent::get_dist(CL_ComponentAnchorPoint ap, CL_Point p, CL_Re
 	return CL_Point(0,0);
 }
 
-void HolderComponent::save_listview(CL_DomElement &e, CL_ListView *lv)
+void GridObject::save_listview(CL_DomElement &e, CL_ListView *lv)
 {
 	CL_ListViewHeader *header = lv->get_header();
 	
@@ -402,7 +402,7 @@ void HolderComponent::save_listview(CL_DomElement &e, CL_ListView *lv)
 	}
 }
 
-CL_Rect HolderComponent::convert_coordinates(CL_GUIComponent *move_comp, CL_GUIComponent *new_parent)
+CL_Rect GridObject::convert_coordinates(CL_GUIComponent *move_comp, CL_GUIComponent *new_parent)
 {
 	CL_Point from_tl = move_comp->component_to_window_coords(CL_Point(0,0));
 	CL_Point to_tl = new_parent->component_to_window_coords(CL_Point(0,0));
@@ -410,7 +410,7 @@ CL_Rect HolderComponent::convert_coordinates(CL_GUIComponent *move_comp, CL_GUIC
 	return CL_Rect(translated, move_comp->get_geometry().get_size());
 }
 
-CL_GUIComponent *HolderComponent::get_toplevel_component()
+CL_GUIComponent *GridObject::get_toplevel_component()
 {
 	CL_GUIComponent *test = get_parent_component();
 	while (true)
@@ -423,7 +423,7 @@ CL_GUIComponent *HolderComponent::get_toplevel_component()
 	return test;
 }
 
-CL_GUIComponent *HolderComponent::get_tab_or_frame_parent(CL_GUIComponent *comp)
+CL_GUIComponent *GridObject::get_tab_or_frame_parent(CL_GUIComponent *comp)
 {
 	CL_GUIComponent *test = comp->get_parent_component();
 	while (test != 0)
@@ -436,7 +436,7 @@ CL_GUIComponent *HolderComponent::get_tab_or_frame_parent(CL_GUIComponent *comp)
 	return 0;
 }
 
-std::vector<SnapLine> HolderComponent::get_snaplines() const
+std::vector<SnapLine> GridObject::get_snaplines() const
 {
 	CL_Size size = get_size();
 
@@ -457,14 +457,14 @@ std::vector<SnapLine> HolderComponent::get_snaplines() const
 	return snaplines;
 }
 
-HolderComponent *HolderComponent::find_holder_at(CL_GUIComponent *container, const CL_Point &pos)
+GridObject *GridObject::find_object_at(CL_GUIComponent *container, const CL_Point &pos)
 {
 	CL_GUIComponent *child = container->get_component_at(pos);
 	if (child && child != container)
 	{
-		while (child && !dynamic_cast<HolderComponent*>(child))
+		while (child && !dynamic_cast<GridObject*>(child))
 			child = child->get_parent_component();
-		return child ? dynamic_cast<HolderComponent*>(child) : 0;
+		return child ? dynamic_cast<GridObject*>(child) : 0;
 	}
 	else
 	{

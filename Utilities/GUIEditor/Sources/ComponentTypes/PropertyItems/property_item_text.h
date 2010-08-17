@@ -39,15 +39,15 @@ public:
 	{
 	}
 
-	void selection_changed(const std::vector<HolderComponent *> &selection)
+	void selection_changed(const std::vector<GridObject *> &selection)
 	{
 		if (!selection.empty())
 			value = get_item_value(selection[0]);
 	}
 
-	void apply_changes(HolderComponent *holder)
+	void apply_changes(GridObject *object)
 	{
-		CL_GUIComponent *comp = holder->get_component();
+		CL_GUIComponent *comp = object->get_component();
 
 		CL_PushButton *button = dynamic_cast<CL_PushButton*>(comp);
 		CL_LineEdit *lineedit = dynamic_cast<CL_LineEdit*>(comp);
@@ -70,9 +70,9 @@ public:
 			frame->set_header_text(value);
 	}
 
-	CL_String get_item_value(HolderComponent *holder)
+	CL_String get_item_value(GridObject *object)
 	{
-		CL_GUIComponent *comp = holder->get_component();
+		CL_GUIComponent *comp = object->get_component();
 
 		CL_PushButton *button = dynamic_cast<CL_PushButton*>(comp);
 		CL_LineEdit *lineedit = dynamic_cast<CL_LineEdit*>(comp);

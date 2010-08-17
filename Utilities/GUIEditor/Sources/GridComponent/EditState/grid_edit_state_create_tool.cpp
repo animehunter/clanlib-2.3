@@ -44,8 +44,8 @@ bool GridEditStateCreateTool::on_input_pressed(const CL_InputEvent &e)
 		{
 			grid->capture_mouse(true);
 			grid->main_window->get_selection()->clear();
-			HolderComponent *holder = grid->on_add_component(selected_tool, e.mouse_pos);
-			grid->main_window->get_selection()->add_holder(holder);
+			GridObject *object = grid->on_add_component(selected_tool, e.mouse_pos);
+			grid->main_window->get_selection()->add_object(object);
 			grid->main_window->use_select_tool();
 			grid->request_repaint();
 			return true;

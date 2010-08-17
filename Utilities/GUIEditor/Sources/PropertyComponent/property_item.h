@@ -33,9 +33,9 @@
 #include "MainWindow/main_window.h"
 #include "Selection/selection.h"
 #include "ComponentTypes/PropertyItems/anchor_popup.h"
-#include "GridComponent/holder_component.h"
+#include "GridComponent/grid_object.h"
 
-class HolderComponent;
+class GridObject;
 
 class PropertyItem
 {
@@ -46,16 +46,16 @@ public:
 	PropertyComponent *property_component;
 	CL_String name;
 /*
-	std::vector<HolderComponent*> get_selection()
+	std::vector<GridObject*> get_selection()
 	{
 		return property_component->get_main_window()->get_selection()->get_selection();
 	}
 */
-	virtual void selection_changed(const std::vector<HolderComponent *> &selection) { }
+	virtual void selection_changed(const std::vector<GridObject *> &selection) { }
 
 	virtual CL_GUIComponent *activate() = 0;
 	virtual void deactivate(CL_GUIComponent *component) = 0;
-	virtual void apply_changes(HolderComponent *component) = 0;
+	virtual void apply_changes(GridObject *component) = 0;
 
 	virtual int get_inactive_height(CL_GraphicContext &gc, CL_GUIThemePart &part, int width) = 0;
 	virtual void render_inactive(CL_GraphicContext &gc, CL_GUIThemePart &part, const CL_Rect &rect, const CL_Rect &clip_rect) = 0;
@@ -165,17 +165,17 @@ public:
 		part.render_text(gc, get_value(), rect, clip_rect);
 	}
 
-	void selection_changed(const std::vector<HolderComponent *> &selection)
+	void selection_changed(const std::vector<GridObject *> &selection)
 	{
 		if (!selection.empty())
 		{
-			HolderComponent *component = selection[0];
+			GridObject *component = selection[0];
 			cap_tl = component->get_anchor_tl();
 			cap_br = component->get_anchor_br();
 		}
 	}
 
-	void apply_changes(HolderComponent *component)
+	void apply_changes(GridObject *component)
 	{
 		component->set_anchor_tl(cap_tl);
 		component->set_anchor_br(cap_br);

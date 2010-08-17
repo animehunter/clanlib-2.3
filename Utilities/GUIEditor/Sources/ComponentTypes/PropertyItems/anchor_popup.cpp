@@ -118,8 +118,8 @@ void AnchorPopup::on_resized()
 		scale->func_group_selection_changed().set(this, &AnchorPopup::on_anchoring_changed);
 		br_scale->func_group_selection_changed().set(this, &AnchorPopup::on_anchoring_changed);
 
-//		CL_ComponentAnchorPoint cap_tl = selected_holder->get_anchor_tl();
-//		CL_ComponentAnchorPoint cap_br = selected_holder->get_anchor_br();
+//		CL_ComponentAnchorPoint cap_tl = selected_object->get_anchor_tl();
+//		CL_ComponentAnchorPoint cap_br = selected_object->get_anchor_br();
 
 		switch (cap_tl)
 		{

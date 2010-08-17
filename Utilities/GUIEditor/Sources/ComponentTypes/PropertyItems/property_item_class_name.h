@@ -39,7 +39,7 @@ public:
 	{
 	}
 
-	void selection_changed(const std::vector<HolderComponent *> &selection)
+	void selection_changed(const std::vector<GridObject *> &selection)
 	{
 		if (!selection.empty())
 		{
@@ -48,9 +48,9 @@ public:
 		}
 	}
 
-	void apply_changes(HolderComponent *holder)
+	void apply_changes(GridObject *object)
 	{
-		CL_GUIComponent *comp = holder->get_component();
+		CL_GUIComponent *comp = object->get_component();
 		comp->set_class_name(value);
 	}
 };

@@ -32,7 +32,7 @@
 
 class MainWindow;
 class PropertyComponent;
-class HolderComponent;
+class GridObject;
 class SnapLine;
 
 class GridComponent : public CL_GUIComponent
@@ -43,13 +43,13 @@ public:
 
 	CL_Size get_dialog_size();
 
-	const std::vector<HolderComponent*> &get_holders() const;
+	const std::vector<GridObject*> &get_objects() const;
 	std::vector<SnapLine> get_snaplines() const;
 
-	CL_Vec2i snap(HolderComponent *holder, const std::vector<SnapLine> &source_snaplines, const CL_Rect &source_rect);
+	CL_Vec2i snap(GridObject *object, const std::vector<SnapLine> &source_snaplines, const CL_Rect &source_rect);
 
-	HolderComponent *on_add_component(int id, const CL_Vec2i &pos);
-	void remove_holder(HolderComponent *holder);
+	GridObject *on_add_component(int id, const CL_Vec2i &pos);
+	void remove_object(GridObject *object);
 
 	void load(const CL_StringRef &str);
 	void save(const CL_StringRef &str);
@@ -70,10 +70,10 @@ private:
 	void on_resized();
 
 	CL_InputEvent offset_event(CL_InputEvent e);
-	CL_Rect holder_to_grid_coords(HolderComponent *holder, const CL_Rect &rect);
-	CL_Point holder_to_grid_coords(HolderComponent *holder, const CL_Point &point);
-	CL_Rect grid_to_holder_coords(HolderComponent *holder, const CL_Rect &rect);
-	CL_Point grid_to_holder_coords(HolderComponent *holder, const CL_Point &point);
+	CL_Rect object_to_grid_coords(GridObject *object, const CL_Rect &rect);
+	CL_Point object_to_grid_coords(GridObject *object, const CL_Point &point);
+	CL_Rect grid_to_object_coords(GridObject *object, const CL_Rect &rect);
+	CL_Point grid_to_object_coords(GridObject *object, const CL_Point &point);
 
 	CL_Rect get_boundary_grabber_se() const;
 	CL_Rect get_boundary_grabber_s() const;
@@ -82,7 +82,7 @@ private:
 	CL_Rect load_geometry(CL_DomElement &e);
 
 	CL_DomElement to_element(CL_DomDocument &doc);
-	HolderComponent *find_holder_at(const CL_Point &pos);
+	GridObject *find_object_at(const CL_Point &pos);
 	bool deliver_input_to_tab(const CL_InputEvent &e);
 
 	void load(CL_DomElement &element, CL_GUIComponent *parent);
@@ -90,7 +90,7 @@ private:
 	MainWindow *main_window;
 	CL_GUIComponent *component_container;
 	CL_GUIComponent *component_overlay;
-	std::vector<HolderComponent*> holders;
+	std::vector<GridObject*> objects;
 
 	CL_Size boundary;
 	GridEditState edit_state;

@@ -30,7 +30,7 @@
 #include "grid_edit_state_none.h"
 #include "GridComponent/grid_component.h"
 #include "MainWindow/main_window.h"
-#include "GridComponent/holder_component.h"
+#include "GridComponent/grid_object.h"
 
 GridEditStateNone::GridEditStateNone()
 {
@@ -40,12 +40,12 @@ bool GridEditStateNone::on_input_pressed(const CL_InputEvent &e)
 {
 	if(e.id == CL_KEY_DELETE)
 	{
-		std::vector<HolderComponent*> selection = grid->main_window->get_selection()->get_selection();
+		std::vector<GridObject*> selection = grid->main_window->get_selection()->get_selection();
 		for (size_t i = 0; i < selection.size(); i++)
 		{
-			HolderComponent *h = selection[i];
+			GridObject *h = selection[i];
 
-			grid->remove_holder(h);
+			grid->remove_object(h);
 
 			grid->request_repaint();
 		}
@@ -74,15 +74,15 @@ bool GridEditStateNone::on_input_pointer_moved(const CL_InputEvent &e)
 	else if (grid->get_boundary_grabber_e().contains(e.mouse_pos))
 		cursor = cl_cursor_size_we;
 
-	HolderComponent *holder = grid->find_holder_at(e.mouse_pos);
-	if (holder)
+	GridObject *object = grid->find_object_at(e.mouse_pos);
+	if (object)
 		cursor = cl_cursor_size_all;
 
-	std::vector<HolderComponent*> selection = grid->main_window->get_selection()->get_selection();
+	std::vector<GridObject*> selection = grid->main_window->get_selection()->get_selection();
 	for (size_t i = 0; i < selection.size(); i++)
 	{
-		HolderComponent *h = selection[i];
-		CL_Point h_mouse_pos = grid->grid_to_holder_coords(h, e.mouse_pos);
+		GridObject *h = selection[i];
+		CL_Point h_mouse_pos = grid->grid_to_object_coords(h, e.mouse_pos);
 
 		if (h->get_grabber_e().contains(h_mouse_pos))
 			cursor = cl_cursor_size_we;

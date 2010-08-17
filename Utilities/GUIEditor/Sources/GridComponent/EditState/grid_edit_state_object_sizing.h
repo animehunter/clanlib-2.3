@@ -46,7 +46,7 @@ private:
 	CL_Rect resize_rect(CL_Rect geometry, CL_Vec2i delta) const;
 	std::vector<SnapLine> get_filtered_snaplines(const std::vector<SnapLine> &original_snaplines);
 
-	size_t primary_holder_index;
+	size_t primary_object_index;
 	CL_Point start;
 	std::vector<CL_Rect> start_geometry;
 	CL_Vec2i dir;

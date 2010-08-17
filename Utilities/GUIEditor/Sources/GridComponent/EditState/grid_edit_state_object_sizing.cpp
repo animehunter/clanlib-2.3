@@ -31,7 +31,7 @@
 #include "GridComponent/grid_component.h"
 #include "MainWindow/main_window.h"
 #include "Selection/selection.h"
-#include "GridComponent/holder_component.h"
+#include "GridComponent/grid_object.h"
 
 GridEditStateObjectSizing::GridEditStateObjectSizing()
 {
@@ -50,11 +50,11 @@ bool GridEditStateObjectSizing::on_input_pressed(const CL_InputEvent &e)
 		else if(e.id == CL_KEY_DOWN)
 			dir = CL_Vec2i(0, -1);
 
-		std::vector<HolderComponent*> selection = grid->main_window->get_selection()->get_selection();
+		std::vector<GridObject*> selection = grid->main_window->get_selection()->get_selection();
 		if(selection.size())
 		{
 			start = CL_Point();
-			primary_holder_index = 0;
+			primary_object_index = 0;
 			start_geometry.clear();
 			for (size_t j = 0; j < selection.size(); j++)
 				start_geometry.push_back(selection[j]->get_geometry());
@@ -69,11 +69,11 @@ bool GridEditStateObjectSizing::on_input_pressed(const CL_InputEvent &e)
 	else if (e.id == CL_MOUSE_LEFT)
 	{
 		dir = CL_Vec2i(0,0);
-		std::vector<HolderComponent*> selection = grid->main_window->get_selection()->get_selection();
+		std::vector<GridObject*> selection = grid->main_window->get_selection()->get_selection();
 		for (size_t i = 0; i < selection.size(); i++)
 		{
-			HolderComponent *h = selection[i];
-			CL_Point h_mouse_pos = grid->grid_to_holder_coords(h, e.mouse_pos);
+			GridObject *h = selection[i];
+			CL_Point h_mouse_pos = grid->grid_to_object_coords(h, e.mouse_pos);
 
 			if (h->get_grabber_e().contains(h_mouse_pos))
 				dir = CL_Vec2i(1,0);
@@ -95,7 +95,7 @@ bool GridEditStateObjectSizing::on_input_pressed(const CL_InputEvent &e)
 			if (dir != CL_Vec2i(0,0))
 			{
 				start = e.mouse_pos;
-				primary_holder_index = i;
+				primary_object_index = i;
 				start_geometry.clear();
 				for (size_t j = 0; j < selection.size(); j++)
 					start_geometry.push_back(selection[j]->get_geometry());
@@ -145,17 +145,17 @@ void GridEditStateObjectSizing::resize_to(const CL_Point &mouse_pos, bool perfor
 {
 	CL_Vec2i delta = mouse_pos - start;
 
-	std::vector<HolderComponent*> selection = grid->main_window->get_selection()->get_selection();
-	HolderComponent *holder = selection[primary_holder_index];
+	std::vector<GridObject*> selection = grid->main_window->get_selection()->get_selection();
+	GridObject *object = selection[primary_object_index];
 
-	CL_Rect source_rect = resize_rect(start_geometry[primary_holder_index], delta);
+	CL_Rect source_rect = resize_rect(start_geometry[primary_object_index], delta);
 
 	if(perform_snap)
 	{
-		holder->set_geometry(source_rect);	// Needed for snaplines to use original position and not snapped
-		std::vector<SnapLine> source_snaplines = get_filtered_snaplines(holder->get_snaplines());
+		object->set_geometry(source_rect);	// Needed for snaplines to use original position and not snapped
+		std::vector<SnapLine> source_snaplines = get_filtered_snaplines(object->get_snaplines());
 
-		delta += grid->snap(holder, source_snaplines, resize_rect(start_geometry[primary_holder_index], delta));
+		delta += grid->snap(object, source_snaplines, resize_rect(start_geometry[primary_object_index], delta));
 	}
 
 	if (selection.size() == start_geometry.size())

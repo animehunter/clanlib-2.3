@@ -31,7 +31,7 @@
 
 #include "grid_edit_state_handler.h"
 
-class HolderComponent;
+class GridObject;
 
 class GridEditStateObjectMoving : public GridEditStateHandler
 {
@@ -46,7 +46,7 @@ public:
 private:
 	void move_to(const CL_Point &mouse_pos, bool perform_snap);
 
-	HolderComponent *holder;
+	GridObject *object;
 	CL_Point start;
 	CL_Rect start_geometry;
 };

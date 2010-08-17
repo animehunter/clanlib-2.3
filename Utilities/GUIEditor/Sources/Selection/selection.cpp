@@ -28,7 +28,7 @@
 
 #include "precomp.h"
 #include "Selection/selection.h"
-#include "GridComponent/holder_component.h"
+#include "GridComponent/grid_object.h"
 
 Selection::Selection()
 {
@@ -36,42 +36,42 @@ Selection::Selection()
 
 bool Selection::empty()
 {
-	return selected_holders.empty();
+	return selected_objects.empty();
 }
 
-std::vector<HolderComponent*> Selection::get_selection()
+std::vector<GridObject*> Selection::get_selection()
 {
-	return selected_holders;
+	return selected_objects;
 }
 
-bool Selection::is_selected(HolderComponent *holder) const
+bool Selection::is_selected(GridObject *object) const
 {
-	for (size_t i = 0; i < selected_holders.size(); i++)
-		if (selected_holders[i] == holder)
+	for (size_t i = 0; i < selected_objects.size(); i++)
+		if (selected_objects[i] == object)
 			return true;
 	return false;
 }
 
-void Selection::add_holder(HolderComponent *holder)
+void Selection::add_object(GridObject *object)
 {
-	selected_holders.push_back(holder);
+	selected_objects.push_back(object);
 	signal_selection_changed.invoke();
 }
 
 void Selection::clear()
 {
-	selected_holders.clear();
+	selected_objects.clear();
 	signal_selection_changed.invoke();
 }
 
-void Selection::remove_holder(HolderComponent *holder)
+void Selection::remove_object(GridObject *object)
 {
-	std::vector<HolderComponent*>::iterator it;
-	for (it=selected_holders.begin(); it != selected_holders.end(); ++it)
+	std::vector<GridObject*>::iterator it;
+	for (it=selected_objects.begin(); it != selected_objects.end(); ++it)
 	{
-		if ((*it) == holder)
+		if ((*it) == object)
 		{
-			it = selected_holders.erase(it);
+			it = selected_objects.erase(it);
 			signal_selection_changed.invoke();
 			break;
 		}

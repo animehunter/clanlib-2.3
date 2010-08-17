@@ -39,7 +39,7 @@ public:
 	{
 	}
 
-	void selection_changed(const std::vector<HolderComponent *> &selection)
+	void selection_changed(const std::vector<GridObject *> &selection)
 	{
 		if (!selection.empty())
 		{
@@ -50,9 +50,9 @@ public:
 		}
 	}
 
-	void apply_changes(HolderComponent *holder)
+	void apply_changes(GridObject *object)
 	{
-		CL_GUIComponent *comp = holder->get_component();
+		CL_GUIComponent *comp = object->get_component();
 		CL_Slider *slider = dynamic_cast<CL_Slider*>(comp);
 		if (slider)
 			slider->set_min(CL_StringHelp::text_to_int(value));

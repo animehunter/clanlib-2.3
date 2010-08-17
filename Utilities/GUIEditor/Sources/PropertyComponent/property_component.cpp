@@ -30,7 +30,7 @@
 #include "precomp.h"
 #include "property_component.h"
 #include "property_item.h"
-#include "GridComponent/holder_component.h"
+#include "GridComponent/grid_object.h"
 #include "GridComponent/grid_component.h"
 #include "ComponentTypes/custom_component.h"
 #include "Selection/selection.h"
@@ -102,10 +102,10 @@ void PropertyComponent::add_property(PropertyItem *item)
 void PropertyComponent::on_selection_changed()
 {
 	clear();
-	std::vector<HolderComponent *> selection = main_window->get_selection()->get_selection();
+	std::vector<GridObject *> selection = main_window->get_selection()->get_selection();
 	if (!selection.empty())
 	{
-		HolderComponent *item = selection[0];
+		GridObject *item = selection[0];
 		CL_GUIComponent *comp = item->get_component();
 
 		// add_property(new PropertyItemHeader("Properties"));
@@ -118,30 +118,30 @@ void PropertyComponent::on_selection_changed()
 			bool enable_width = true;
 			bool enable_height = true;
 
-			HolderComponent *holder = dynamic_cast<HolderComponent*>(comp->get_parent_component());
-			if (holder)
+			GridObject *object = dynamic_cast<GridObject*>(comp->get_parent_component());
+			if (object)
 			{
 				add_property(new PropertyItemPosition(PropertyItemPosition::type_x1));
 				add_property(new PropertyItemPosition(PropertyItemPosition::type_y1));
 				add_property(new PropertyItemPosition(PropertyItemPosition::type_x2));
 				add_property(new PropertyItemPosition(PropertyItemPosition::type_y2));
 /*
-				CL_String equ_x = holder->get_position_equation_x();
-				CL_String equ_y = holder->get_position_equation_y();
+				CL_String equ_x = object->get_position_equation_x();
+				CL_String equ_y = object->get_position_equation_y();
 
 				if (equ_x.empty())
-					add_property(new PropertyItemPosition("x1", CL_StringHelp::int_to_text(holder->get_geometry().left)));
+					add_property(new PropertyItemPosition("x1", CL_StringHelp::int_to_text(object->get_geometry().left)));
 				else
 					add_property(new PropertyItemPosition("x1", equ_x));
 
 				if (equ_y.empty())
-					add_property(new PropertyItemPosition("y1", CL_StringHelp::int_to_text(holder->get_geometry().top)));
+					add_property(new PropertyItemPosition("y1", CL_StringHelp::int_to_text(object->get_geometry().top)));
 				else
 					add_property(new PropertyItemPosition("y1", equ_y));
 
 
-				CL_String equ_x2 = holder->get_position_equation_x2();
-				CL_String equ_y2 = holder->get_position_equation_y2();
+				CL_String equ_x2 = object->get_position_equation_x2();
+				CL_String equ_y2 = object->get_position_equation_y2();
 
 				add_property(new PropertyItemLineEdit("x2", equ_x2));
 				add_property(new PropertyItemLineEdit("y2", equ_y2));
@@ -366,7 +366,7 @@ void PropertyComponent::deactivate()
 	if (active_item)
 	{
 		active_item->deactivate(active_component);
-		std::vector<HolderComponent *> selection = main_window->get_selection()->get_selection();
+		std::vector<GridObject *> selection = main_window->get_selection()->get_selection();
 		for (size_t i = 0; i < selection.size(); i++)
 		{
 			try

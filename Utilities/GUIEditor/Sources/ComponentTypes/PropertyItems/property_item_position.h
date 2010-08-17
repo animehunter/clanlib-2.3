@@ -49,40 +49,40 @@ public:
 	{
 	}
 
-	void selection_changed(const std::vector<HolderComponent *> &selection)
+	void selection_changed(const std::vector<GridObject *> &selection)
 	{
 		if (!selection.empty())
 		{
-			HolderComponent *holder = selection[0];
+			GridObject *object = selection[0];
 			switch (type)
 			{
 			case type_x1:
-				value = CL_StringHelp::int_to_text(holder->get_geometry().left);
+				value = CL_StringHelp::int_to_text(object->get_geometry().left);
 				break;
 			case type_y1:
-				value = CL_StringHelp::int_to_text(holder->get_geometry().top);
+				value = CL_StringHelp::int_to_text(object->get_geometry().top);
 				break;
 			case type_x2:
-				value = CL_StringHelp::int_to_text(holder->get_geometry().right);
+				value = CL_StringHelp::int_to_text(object->get_geometry().right);
 				break;
 			case type_y2:
-				value = CL_StringHelp::int_to_text(holder->get_geometry().bottom);
+				value = CL_StringHelp::int_to_text(object->get_geometry().bottom);
 				break;
 			case type_width:
-				value = CL_StringHelp::int_to_text(holder->get_width());
+				value = CL_StringHelp::int_to_text(object->get_width());
 				break;
 			case type_height:
-				value = CL_StringHelp::int_to_text(holder->get_height());
+				value = CL_StringHelp::int_to_text(object->get_height());
 				break;
 			}
 		}
 	}
 
-	void apply_changes(HolderComponent *holder)
+	void apply_changes(GridObject *object)
 	{
 		int new_value = CL_StringHelp::text_to_int(value);
 
-		CL_Rect geometry = holder->get_geometry();
+		CL_Rect geometry = object->get_geometry();
 		switch (type)
 		{
 		case type_x1:
@@ -105,7 +105,7 @@ public:
 			break;
 		}
 		if (geometry.left < geometry.right && geometry.top < geometry.bottom)
-			holder->set_geometry(geometry);
+			object->set_geometry(geometry);
 	}
 
 private:
