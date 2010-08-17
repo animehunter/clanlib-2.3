@@ -1,0 +1,206 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>GuiEditor</ProjectName>
+    <ProjectGuid>{5C1AAF8C-7FF0-447E-B01D-AED0A0B2849F}</ProjectGuid>
+    <RootNamespace>GuiEditor-vc90</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>precomp.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <OutputFile>$(OutDir)GuiEditor.exe</OutputFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)Button1.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>precomp.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <OutputFile>$(OutDir)GuiEditor.exe</OutputFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Sources\anchor_popup.cpp" />
+    <ClCompile Include="Sources\application.cpp" />
+    <ClCompile Include="Sources\callback_data.cpp" />
+    <ClCompile Include="Sources\callback_info.cpp" />
+    <ClCompile Include="Sources\component_types.cpp" />
+    <ClCompile Include="Sources\custom_component.cpp" />
+    <ClCompile Include="Sources\dialog_component.cpp" />
+    <ClCompile Include="Sources\dialog_container.cpp" />
+    <ClCompile Include="Sources\dialog_document.cpp" />
+    <ClCompile Include="Sources\grid_component.cpp" />
+    <ClCompile Include="Sources\grid_edit_state.cpp" />
+    <ClCompile Include="Sources\grid_edit_state_boundary_sizing.cpp" />
+    <ClCompile Include="Sources\grid_edit_state_create_tool.cpp" />
+    <ClCompile Include="Sources\grid_edit_state_net_selecting.cpp" />
+    <ClCompile Include="Sources\grid_edit_state_none.cpp" />
+    <ClCompile Include="Sources\grid_edit_state_object_moving.cpp" />
+    <ClCompile Include="Sources\grid_edit_state_object_sizing.cpp" />
+    <ClCompile Include="Sources\holder_component.cpp" />
+    <ClCompile Include="Sources\main.cpp" />
+    <ClCompile Include="Sources\main_window.cpp" />
+    <ClCompile Include="Sources\precomp.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Sources\property_component.cpp" />
+    <ClCompile Include="Sources\property_component_edit_state.cpp" />
+    <ClCompile Include="Sources\property_component_edit_state_header_sizing.cpp" />
+    <ClCompile Include="Sources\property_component_edit_state_node_opener.cpp" />
+    <ClCompile Include="Sources\property_component_edit_state_none.cpp" />
+    <ClCompile Include="Sources\property_component_edit_state_revert_button.cpp" />
+    <ClCompile Include="Sources\selection.cpp" />
+    <ClCompile Include="Sources\snapline.cpp" />
+    <ClCompile Include="Sources\source_generator_dialog.cpp" />
+    <ClCompile Include="Sources\view_border.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Sources\anchor_popup.h" />
+    <ClInclude Include="Sources\application.h" />
+    <ClInclude Include="Sources\callback_data.h" />
+    <ClInclude Include="Sources\callback_info.h" />
+    <ClInclude Include="Sources\component_type.h" />
+    <ClInclude Include="Sources\component_types.h" />
+    <ClInclude Include="Sources\custom_component.h" />
+    <ClInclude Include="Sources\dialog_component.h" />
+    <ClInclude Include="Sources\dialog_container.h" />
+    <ClInclude Include="Sources\dialog_document.h" />
+    <ClInclude Include="Sources\grid_component.h" />
+    <ClInclude Include="Sources\grid_edit_state.h" />
+    <ClInclude Include="Sources\grid_edit_state_boundary_sizing.h" />
+    <ClInclude Include="Sources\grid_edit_state_create_tool.h" />
+    <ClInclude Include="Sources\grid_edit_state_handler.h" />
+    <ClInclude Include="Sources\grid_edit_state_net_selecting.h" />
+    <ClInclude Include="Sources\grid_edit_state_none.h" />
+    <ClInclude Include="Sources\grid_edit_state_object_moving.h" />
+    <ClInclude Include="Sources\grid_edit_state_object_sizing.h" />
+    <ClInclude Include="Sources\holder_component.h" />
+    <ClInclude Include="Sources\main_window.h" />
+    <ClInclude Include="Sources\precomp.h" />
+    <ClInclude Include="Sources\property_component.h" />
+    <ClInclude Include="Sources\property_component_edit_state.h" />
+    <ClInclude Include="Sources\property_component_edit_state_handler.h" />
+    <ClInclude Include="Sources\property_component_edit_state_header_sizing.h" />
+    <ClInclude Include="Sources\property_component_edit_state_node_opener.h" />
+    <ClInclude Include="Sources\property_component_edit_state_none.h" />
+    <ClInclude Include="Sources\property_component_edit_state_revert_button.h" />
+    <ClInclude Include="Sources\property_item.h" />
+    <ClInclude Include="Sources\property_item_class_name.h" />
+    <ClInclude Include="Sources\property_item_group_name.h" />
+    <ClInclude Include="Sources\property_item_id_name.h" />
+    <ClInclude Include="Sources\property_item_max.h" />
+    <ClInclude Include="Sources\property_item_min.h" />
+    <ClInclude Include="Sources\property_item_page_label.h" />
+    <ClInclude Include="Sources\property_item_position.h" />
+    <ClInclude Include="Sources\property_item_step_size.h" />
+    <ClInclude Include="Sources\property_item_text.h" />
+    <ClInclude Include="Sources\property_item_tick_count.h" />
+    <ClInclude Include="Sources\property_item_type_name.h" />
+    <ClInclude Include="Sources\selected_object.h" />
+    <ClInclude Include="Sources\selection.h" />
+    <ClInclude Include="Sources\snapline.h" />
+    <ClInclude Include="Sources\source_generator_dialog.h" />
+    <ClInclude Include="Sources\view_border.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Dialogs\options.xml" />
+    <None Include="resources.xml" />
+    <None Include="Dialogs\source_generator.xml" />
+    <None Include="theme.css" />
+    <None Include="..\..\Resources\GUIThemeDefault\checkbox.css" />
+    <None Include="..\..\Resources\GUIThemeDefault\combobox.css" />
+    <None Include="..\..\Resources\GUIThemeDefault\frame.css" />
+    <None Include="..\..\Resources\GUIThemeDefault\label.css" />
+    <None Include="..\..\Resources\GUIThemeDefault\lineedit.css" />
+    <None Include="..\..\Resources\GUIThemeDefault\listview.css" />
+    <None Include="..\..\Resources\GUIThemeDefault\menubar.css" />
+    <None Include="..\..\Resources\GUIThemeDefault\popupmenu.css" />
+    <None Include="..\..\Resources\GUIThemeDefault\pushbutton.css" />
+    <None Include="..\..\Resources\GUIThemeDefault\radiobutton.css" />
+    <None Include="..\..\Resources\GUIThemeDefault\resources.xml" />
+    <None Include="..\..\Resources\GUIThemeDefault\scrollbar.css" />
+    <None Include="..\..\Resources\GUIThemeDefault\slider.css" />
+    <None Include="..\..\Resources\GUIThemeDefault\statusbar.css" />
+    <None Include="..\..\Resources\GUIThemeDefault\tab.css" />
+    <None Include="..\..\Resources\GUIThemeDefault\tabpage.css" />
+    <None Include="..\..\Resources\GUIThemeDefault\theme.css" />
+    <None Include="..\..\Resources\GUIThemeDefault\toolbar.css" />
+    <None Include="..\..\Resources\GUIThemeDefault\window.css" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

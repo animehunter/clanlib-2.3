@@ -38,6 +38,19 @@ GridEditStateNone::GridEditStateNone()
 
 bool GridEditStateNone::on_input_pressed(const CL_InputEvent &e)
 {
+	if(e.id == CL_KEY_DELETE)
+	{
+		std::vector<HolderComponent*> selection = grid->main_window->get_selection()->get_selection();
+		for (size_t i = 0; i < selection.size(); i++)
+		{
+			HolderComponent *h = selection[i];
+
+			grid->remove_holder(h);
+
+			grid->request_repaint();
+		}
+		return true;
+	}
 	return false;
 }
 

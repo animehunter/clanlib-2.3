@@ -78,6 +78,23 @@ HolderComponent *GridComponent::on_add_component(int id, const CL_Vec2i &pos)
 	return holder;
 }
 
+void GridComponent::remove_holder(HolderComponent *holder)
+{
+	std::vector<HolderComponent*>::iterator it;
+	for (it = holders.begin(); it != holders.end(); ++it)
+	{
+		if ((*it) == holder)
+		{
+			main_window->get_selection()->remove_holder(holder);
+			it = holders.erase(it);
+
+			delete holder;
+
+			break;
+		}
+	}
+}
+
 void GridComponent::load(const CL_StringRef &fullname)
 {
 	CL_DomDocument doc;
@@ -291,20 +308,6 @@ void GridComponent::save(const CL_StringRef &fullname)
 	doc.save(file);
 }
 
-void GridComponent::remove_holder(HolderComponent *holder)
-{
-	std::vector<HolderComponent*>::iterator it;
-	for (it = holders.begin(); it != holders.end(); ++it)
-	{
-		if ((*it) == holder)
-		{
-			main_window->get_selection()->remove_holder(holder);
-			it = holders.erase(it);
-			break;
-		}
-	}
-}
-
 void GridComponent::set_boundary_size(const CL_Size &size)
 {
 	boundary.width = size.width;
@@ -362,6 +365,8 @@ bool GridComponent::deliver_input_to_tab(const CL_InputEvent &e)
 
 bool GridComponent::on_input_pressed(const CL_InputEvent &e)
 {
+	set_focus();
+
 	if (e.id == CL_MOUSE_LEFT && deliver_input_to_tab(e))
 		return true;
 	return edit_state.on_input_pressed(offset_event(e));
