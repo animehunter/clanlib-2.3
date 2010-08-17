@@ -103,6 +103,11 @@ bool GridEditStateObjectMoving::on_input_released(const CL_InputEvent &e)
 		grid->main_window->get_selection()->sig_selection_changed().invoke();
 		return true;
 	}
+	else if(e.id == CL_KEY_LEFT || e.id == CL_KEY_RIGHT || e.id == CL_KEY_UP || e.id == CL_KEY_DOWN)
+	{
+		grid->edit_state.set_state(GridEditState::state_none);
+		grid->main_window->get_selection()->sig_selection_changed().invoke();
+	}
 	else
 	{
 		return false;
