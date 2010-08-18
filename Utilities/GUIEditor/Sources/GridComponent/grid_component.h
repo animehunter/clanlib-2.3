@@ -41,6 +41,8 @@ public:
 	GridComponent(CL_GUIComponent *parent, MainWindow *main_window);
 	virtual ~GridComponent() { }
 
+	MainWindow *get_main_window() { return main_window; }
+
 	CL_Size get_dialog_size();
 
 	const std::vector<GridObject*> &get_objects() const;

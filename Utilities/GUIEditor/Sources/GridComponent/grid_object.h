@@ -50,6 +50,8 @@ public:
 	CL_GUIComponent *get_component() { return get_first_child(); }
 	ComponentType *get_component_type() { return component_type; }
 
+	GridComponent *get_grid_component() { return parent_grid; }
+
 	GridObject *get_next_sibling() { return dynamic_cast<GridObject*>(CL_GUIComponent::get_next_sibling()); }
 	GridObject *get_previous_sibling() { return dynamic_cast<GridObject*>(CL_GUIComponent::get_previous_sibling()); }
 

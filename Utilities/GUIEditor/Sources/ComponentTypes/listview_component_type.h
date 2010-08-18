@@ -29,7 +29,10 @@
 #pragma once
 
 #include "component_type.h"
+#include "../MainWindow/main_window.h"
 #include "../MainWindow/edit_columns_window.h"
+#include "../GridComponent/grid_component.h"
+#include "../GridComponent/grid_object.h"
 
 class ListViewComponentType : public ComponentType
 {
@@ -47,12 +50,15 @@ public:
 	virtual void on_show_context_menu(CL_PopupMenu &menu, GridObject *grid_object)
 	{ 
 		CL_PopupMenuItem item = menu.insert_item("Edit columns...");
-		item.func_clicked().set(this, &ListViewComponentType::on_edit_columns_clicked);
+		item.func_clicked().set(this, &ListViewComponentType::on_edit_columns_clicked, grid_object);
 	}
 
-	void on_edit_columns_clicked()
+	void on_edit_columns_clicked(GridObject *grid_object)
 	{
-//		EditColumnsWindow edit_columns_window(0);
-//		edit_columns_window.exec();
+		GridComponent *grid_component = grid_object->get_grid_component();
+		MainWindow *main_window = grid_component->get_main_window();
+
+		EditColumnsWindow edit_columns_window(main_window);
+		edit_columns_window.exec();
 	}
 };
