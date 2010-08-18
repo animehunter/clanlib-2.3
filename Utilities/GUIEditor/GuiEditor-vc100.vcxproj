@@ -96,6 +96,7 @@
     <ClCompile Include="Sources\ComponentTypes\component_types.cpp" />
     <ClCompile Include="Sources\ComponentTypes\custom_component.cpp" />
     <ClCompile Include="Sources\ComponentTypes\PropertyItems\anchor_popup.cpp" />
+    <ClCompile Include="Sources\ComponentTypes\PropertyItems\line_edit_popup.cpp" />
     <ClCompile Include="Sources\GridComponent\EditState\grid_edit_state.cpp" />
     <ClCompile Include="Sources\GridComponent\EditState\grid_edit_state_boundary_sizing.cpp" />
     <ClCompile Include="Sources\GridComponent\EditState\grid_edit_state_create_tool.cpp" />
@@ -104,7 +105,7 @@
     <ClCompile Include="Sources\GridComponent\EditState\grid_edit_state_object_moving.cpp" />
     <ClCompile Include="Sources\GridComponent\EditState\grid_edit_state_object_sizing.cpp" />
     <ClCompile Include="Sources\GridComponent\grid_component.cpp" />
-    <ClCompile Include="Sources\GridComponent\holder_component.cpp" />
+    <ClCompile Include="Sources\GridComponent\grid_object.cpp" />
     <ClCompile Include="Sources\GridComponent\snapline.cpp" />
     <ClCompile Include="Sources\MainWindow\application.cpp" />
     <ClCompile Include="Sources\MainWindow\main.cpp" />
@@ -120,6 +121,7 @@
     <ClCompile Include="Sources\PropertyComponent\EditState\property_component_edit_state_none.cpp" />
     <ClCompile Include="Sources\PropertyComponent\EditState\property_component_edit_state_revert_button.cpp" />
     <ClCompile Include="Sources\PropertyComponent\property_component.cpp" />
+    <ClCompile Include="Sources\PropertyComponent\property_item_popup.cpp" />
     <ClCompile Include="Sources\Selection\selection.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -127,6 +129,7 @@
     <ClInclude Include="Sources\ComponentTypes\component_types.h" />
     <ClInclude Include="Sources\ComponentTypes\custom_component.h" />
     <ClInclude Include="Sources\ComponentTypes\PropertyItems\anchor_popup.h" />
+    <ClInclude Include="Sources\ComponentTypes\PropertyItems\line_edit_popup.h" />
     <ClInclude Include="Sources\ComponentTypes\PropertyItems\property_item_class_name.h" />
     <ClInclude Include="Sources\ComponentTypes\PropertyItems\property_item_group_name.h" />
     <ClInclude Include="Sources\ComponentTypes\PropertyItems\property_item_id_name.h" />
@@ -147,7 +150,7 @@
     <ClInclude Include="Sources\GridComponent\EditState\grid_edit_state_object_moving.h" />
     <ClInclude Include="Sources\GridComponent\EditState\grid_edit_state_object_sizing.h" />
     <ClInclude Include="Sources\GridComponent\grid_component.h" />
-    <ClInclude Include="Sources\GridComponent\holder_component.h" />
+    <ClInclude Include="Sources\GridComponent\grid_object.h" />
     <ClInclude Include="Sources\GridComponent\snapline.h" />
     <ClInclude Include="Sources\MainWindow\application.h" />
     <ClInclude Include="Sources\MainWindow\main_window.h" />
@@ -161,6 +164,7 @@
     <ClInclude Include="Sources\PropertyComponent\EditState\property_component_edit_state_revert_button.h" />
     <ClInclude Include="Sources\PropertyComponent\property_component.h" />
     <ClInclude Include="Sources\PropertyComponent\property_item.h" />
+    <ClInclude Include="Sources\PropertyComponent\property_item_popup.h" />
     <ClInclude Include="Sources\Selection\selection.h" />
   </ItemGroup>
   <ItemGroup>
