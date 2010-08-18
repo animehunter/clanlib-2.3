@@ -43,7 +43,7 @@ public:
 	virtual CL_GUIComponent *create_component(CL_GUIComponent *parent) const
 	{
 		CL_ListView *component = new CL_ListView(parent);
-		component->set_geometry(CL_Rect(0, 0, 75, 23));
+		component->set_geometry(CL_Rect(0, 0, 200, 100));
 		return component;
 	}
 
