@@ -432,6 +432,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Sources\MainWindow\edit_columns_window.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Sources\MainWindow\edit_columns_window.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Sources\MainWindow\main.cpp"
 					>
 				</File>
@@ -634,11 +642,15 @@
 				Name="Dialogs"
 				>
 				<File
-					RelativePath=".\Dialogs\options.xml"
+					RelativePath=".\Dialogs\edit_columns.gui"
 					>
 				</File>
 				<File
-					RelativePath=".\Dialogs\source_generator.xml"
+					RelativePath=".\Dialogs\options.gui"
+					>
+				</File>
+				<File
+					RelativePath=".\Dialogs\source_generator.gui"
 					>
 				</File>
 			</Filter>
