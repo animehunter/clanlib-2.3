@@ -543,15 +543,7 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\Dialogs\options.xml"
-				>
-			</File>
-			<File
 				RelativePath=".\resources.xml"
-				>
-			</File>
-			<File
-				RelativePath=".\Dialogs\source_generator.xml"
 				>
 			</File>
 			<File
@@ -635,6 +627,18 @@
 				</File>
 				<File
 					RelativePath="..\..\Resources\GUIThemeDefault\window.css"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Dialogs"
+				>
+				<File
+					RelativePath=".\Dialogs\options.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\Dialogs\source_generator.xml"
 					>
 				</File>
 			</Filter>
