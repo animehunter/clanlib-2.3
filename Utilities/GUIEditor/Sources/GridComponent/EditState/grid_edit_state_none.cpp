@@ -68,10 +68,12 @@ bool GridEditStateNone::on_input_released(const CL_InputEvent &e)
 			pos.y += grid->component_container->get_geometry().top;
 
 			CL_PopupMenu menu;
-			menu.insert_item("I hate this editor!");
-			object->get_component_type()->on_show_context_menu(menu);
-			current_menu = menu;
-			current_menu.start(grid, grid->component_to_screen_coords(pos));
+			object->get_component_type()->on_show_context_menu(menu, object);
+			if(menu.get_item_count() > 0)
+			{
+				current_menu = menu;
+				current_menu.start(grid, grid->component_to_screen_coords(pos));
+			}
 		}
 		return true;
 	}

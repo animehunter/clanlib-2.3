@@ -29,6 +29,8 @@
 
 #pragma once
 
+class GridObject;
+
 class ComponentType
 {
 public:
@@ -38,7 +40,7 @@ public:
 	}
 
 	virtual CL_GUIComponent *create_component(CL_GUIComponent *parent) const = 0;
-	virtual void on_show_context_menu(CL_PopupMenu &menu) { }
+	virtual void on_show_context_menu(CL_PopupMenu &menu, GridObject *grid_object) { }
 
 	CL_String xmlname;
 	CL_String name;

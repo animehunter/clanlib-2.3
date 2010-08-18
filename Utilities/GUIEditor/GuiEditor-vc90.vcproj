@@ -244,6 +244,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Sources\ComponentTypes\listview_component_type.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Sources\ComponentTypes\radio_button_component_type.h"
 					>
 				</File>

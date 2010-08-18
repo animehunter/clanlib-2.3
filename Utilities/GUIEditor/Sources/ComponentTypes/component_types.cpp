@@ -36,6 +36,7 @@
 #include "checkbox_component_type.h"
 #include "frame_component_type.h"
 #include "label_component_type.h"
+#include "listview_component_type.h"
 #include "radio_button_component_type.h"
 #include "scrollbar_horz_component_type.h"
 #include "scrollbar_vert_component_type.h"
@@ -50,7 +51,7 @@ void ComponentTypes::initialize()
 	types.push_back(new LabelComponentType("label", "Label", next_id++, "gfx/label.png"));
 	types.push_back(new ComponentTypeTemplate<CL_LineEdit>("lineedit", "LineEdit", next_id++, "gfx/lineedit.png"));
 	types.push_back(new ComponentTypeTemplate<CL_ComboBox>("combobox", "ComboBox", next_id++, "gfx/combobox.png"));
-	types.push_back(new ComponentTypeTemplate<CL_ListView>("listview", "ListView", next_id++, "gfx/listview.png"));
+	types.push_back(new ListViewComponentType("listview", "ListView", next_id++, "gfx/listview.png"));
 	types.push_back(new ComponentTypeTemplate<CL_MenuBar>("menubar", "MenuBar", next_id++, "gfx/menu.png"));
 	types.push_back(new ButtonComponentType("button", "PushButton", next_id++, "gfx/pushbutton.png"));
 	types.push_back(new SliderComponentType("slider", "Slider", next_id++, "gfx/slider.png"));
