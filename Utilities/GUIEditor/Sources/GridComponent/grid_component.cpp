@@ -69,7 +69,7 @@ const std::vector<GridObject*> &GridComponent::get_objects() const
 
 GridObject *GridComponent::on_add_component(int id, const CL_Vec2i &pos)
 {
-	GridObject *object = new GridObject(component_container, id, pos);
+	GridObject *object = new GridObject(this, component_container, id, pos);
 	ComponentTypes::set_id_name(object->get_component(), id);
 	objects.push_back(object);
 
@@ -125,7 +125,7 @@ void GridComponent::load(CL_DomElement &element, CL_GUIComponent *parent)
 			ComponentType *component_type = ComponentTypes::find_from_xml(tag);
 			CL_Rect object_g = load_geometry(e);
 
-			GridObject *object = new GridObject(parent, component_type->id, object_g.get_top_left());
+			GridObject *object = new GridObject(this, parent, component_type->id, object_g.get_top_left());
 			object->set_geometry(object_g);
 
 			CL_GUIComponent *new_comp = object->get_component();

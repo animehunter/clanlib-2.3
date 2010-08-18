@@ -33,14 +33,12 @@
 #include "ComponentTypes/component_types.h"
 #include "ComponentTypes/component_type.h"
 
-GridObject::GridObject(CL_GUIComponent *parent, int id, const CL_Vec2i &pos)
-: CL_GUIComponent(parent), parent_grid(0), anchor_tl(cl_anchor_top_left), anchor_br(cl_anchor_top_left), component_type(0)
+GridObject::GridObject(GridComponent *grid_component, CL_GUIComponent *parent, int id, const CL_Vec2i &pos)
+: CL_GUIComponent(parent), grid_component(grid_component), anchor_tl(cl_anchor_top_left), anchor_br(cl_anchor_top_left), component_type(0)
 {
 	set_type_name("object");
 	func_render().set(this, &GridObject::on_render);
 	func_resized().set(this, &GridObject::on_resized);
-
-	parent_grid = static_cast<GridComponent*>(parent);
 
 	component_type = ComponentTypes::find_component(id);
 	CL_GUIComponent *new_component = component_type->create_component(get_container());
@@ -338,7 +336,7 @@ void GridObject::save_geometry(CL_DomElement &e, CL_GUIComponent *comp)
 
 void GridObject::save_anchors(CL_DomElement &e, CL_GUIComponent *comp)
 {
-	CL_Rect boundary = parent_grid->get_dialog_size();
+	CL_Rect boundary = grid_component->get_dialog_size();
 
 	CL_GUIComponent *tab_or_frame_parent = get_tab_or_frame_parent(comp);
 	if (tab_or_frame_parent)

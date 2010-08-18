@@ -37,7 +37,7 @@ class ComponentType;
 class GridObject : public CL_GUIComponent
 {
 public:
-	GridObject(CL_GUIComponent *parent, int id, const CL_Vec2i &pos);
+	GridObject(GridComponent *grid_component, CL_GUIComponent *parent, int id, const CL_Vec2i &pos);
 
 	CL_ComponentAnchorPoint get_anchor_tl();
 	CL_ComponentAnchorPoint get_anchor_br();
@@ -50,7 +50,7 @@ public:
 	CL_GUIComponent *get_component() { return get_first_child(); }
 	ComponentType *get_component_type() { return component_type; }
 
-	GridComponent *get_grid_component() { return parent_grid; }
+	GridComponent *get_grid_component() { return grid_component; }
 
 	GridObject *get_next_sibling() { return dynamic_cast<GridObject*>(CL_GUIComponent::get_next_sibling()); }
 	GridObject *get_previous_sibling() { return dynamic_cast<GridObject*>(CL_GUIComponent::get_previous_sibling()); }
@@ -96,6 +96,6 @@ private:
 	CL_ComponentAnchorPoint anchor_tl;
 	CL_ComponentAnchorPoint anchor_br;
 
-	GridComponent *parent_grid;
+	GridComponent *grid_component;
 	ComponentType *component_type;
 };
