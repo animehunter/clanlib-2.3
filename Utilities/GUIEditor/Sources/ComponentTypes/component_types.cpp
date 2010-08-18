@@ -30,7 +30,17 @@
 #include "precomp.h"
 #include "component_types.h"
 #include "component_type.h"
+#include "component_type_template.h"
 #include "custom_component.h"
+#include "button_component_type.h"
+#include "checkbox_component_type.h"
+#include "frame_component_type.h"
+#include "label_component_type.h"
+#include "radio_button_component_type.h"
+#include "scrollbar_horz_component_type.h"
+#include "scrollbar_vert_component_type.h"
+#include "slider_component_type.h"
+#include "tab_component_type.h"
 
 void ComponentTypes::initialize()
 {

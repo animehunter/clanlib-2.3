@@ -204,7 +204,19 @@
 				Name="ComponentTypes"
 				>
 				<File
+					RelativePath=".\Sources\ComponentTypes\button_component_type.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Sources\ComponentTypes\checkbox_component_type.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Sources\ComponentTypes\component_type.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Sources\ComponentTypes\component_type_template.h"
 					>
 				</File>
 				<File
@@ -221,6 +233,34 @@
 				</File>
 				<File
 					RelativePath=".\Sources\ComponentTypes\custom_component.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Sources\ComponentTypes\frame_component_type.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Sources\ComponentTypes\label_component_type.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Sources\ComponentTypes\radio_button_component_type.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Sources\ComponentTypes\scrollbar_horz_component_type.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Sources\ComponentTypes\scrollbar_vert_component_type.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Sources\ComponentTypes\slider_component_type.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Sources\ComponentTypes\tab_component_type.h"
 					>
 				</File>
 				<Filter
