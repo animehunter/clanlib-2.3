@@ -34,8 +34,8 @@
 class TabComponentType : public ComponentType
 {
 public:
-	TabComponentType(const CL_StringRef &name, int id, const CL_StringRef &icon)	
-	: ComponentType(name, id, icon) {}
+	TabComponentType(const CL_String &xmlname, const CL_StringRef &name, int id, const CL_StringRef &icon)	
+	: ComponentType(xmlname, name, id, icon) {}
 
 	virtual CL_GUIComponent *create_component(CL_GUIComponent *parent) const
 	{

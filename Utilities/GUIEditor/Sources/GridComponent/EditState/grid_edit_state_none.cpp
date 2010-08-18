@@ -29,8 +29,9 @@
 #include "precomp.h"
 #include "grid_edit_state_none.h"
 #include "GridComponent/grid_component.h"
-#include "MainWindow/main_window.h"
 #include "GridComponent/grid_object.h"
+#include "ComponentTypes/component_type.h"
+#include "MainWindow/main_window.h"
 
 GridEditStateNone::GridEditStateNone()
 {
@@ -56,6 +57,24 @@ bool GridEditStateNone::on_input_pressed(const CL_InputEvent &e)
 
 bool GridEditStateNone::on_input_released(const CL_InputEvent &e)
 {
+	if (e.id == CL_MOUSE_RIGHT)
+	{
+		GridObject *object = grid->find_object_at(e.mouse_pos);
+		if (object)
+		{
+			grid->set_cursor(cl_cursor_arrow);
+			CL_Point pos = e.mouse_pos;
+			pos.x += grid->component_container->get_geometry().left;
+			pos.y += grid->component_container->get_geometry().top;
+
+			CL_PopupMenu menu;
+			menu.insert_item("I hate this editor!");
+			object->get_component_type()->on_show_context_menu(menu);
+			current_menu = menu;
+			current_menu.start(grid, grid->component_to_screen_coords(pos));
+		}
+		return true;
+	}
 	return false;
 }
 

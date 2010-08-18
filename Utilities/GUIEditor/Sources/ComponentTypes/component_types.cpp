@@ -45,24 +45,24 @@
 void ComponentTypes::initialize()
 {
 	int next_id = 1;
-	types.push_back(new CheckBoxComponentType("CheckBox", next_id++, "gfx/check.png"));
-	types.push_back(new RadioButtonComponentType("RadioButton", next_id++, "gfx/radio.png"));
-	types.push_back(new LabelComponentType("Label", next_id++, "gfx/label.png"));
-	types.push_back(new ComponentTypeTemplate<CL_LineEdit>("LineEdit", next_id++, "gfx/lineedit.png"));
-	types.push_back(new ComponentTypeTemplate<CL_ComboBox>("ComboBox", next_id++, "gfx/combobox.png"));
-	types.push_back(new ComponentTypeTemplate<CL_ListView>("ListView", next_id++, "gfx/listview.png"));
-	types.push_back(new ComponentTypeTemplate<CL_MenuBar>("MenuBar", next_id++, "gfx/menu.png"));
-	types.push_back(new ButtonComponentType("PushButton", next_id++, "gfx/pushbutton.png"));
-	types.push_back(new SliderComponentType("Slider", next_id++, "gfx/slider.png"));
-	types.push_back(new ComponentTypeTemplate<CL_Spin>("Spin", next_id++, "gfx/spin.png"));
-	types.push_back(new ComponentTypeTemplate<CL_ImageView>("ImageView", next_id++, "gfx/image.png"));
-	types.push_back(new ScrollBarHorizontalComponentType("H Scroll Bar", next_id++, "gfx/scroll_horizontal.png"));
-	types.push_back(new ScrollBarVerticalComponentType("V Scroll Bar", next_id++, "gfx/scroll_vertical.png"));
-	types.push_back(new TabComponentType("Tab", next_id++, "gfx/tab.png"));
-	types.push_back(new FrameComponentType("Frame", next_id++, "gfx/frame.png"));
-	types.push_back(new ComponentTypeTemplate<CL_StatusBar>("StatusBar", next_id++, "gfx/statusbar.png"));
-	types.push_back(new ComponentTypeTemplate<CL_ToolBar>("ToolBar", next_id++, "gfx/toolbar.png"));
-	types.push_back(new ComponentTypeTemplate<CustomComponent>("Custom", next_id++, "gfx/custom.png"));
+	types.push_back(new CheckBoxComponentType("checkbox", "CheckBox", next_id++, "gfx/check.png"));
+	types.push_back(new RadioButtonComponentType("radiobutton", "RadioButton", next_id++, "gfx/radio.png"));
+	types.push_back(new LabelComponentType("label", "Label", next_id++, "gfx/label.png"));
+	types.push_back(new ComponentTypeTemplate<CL_LineEdit>("lineedit", "LineEdit", next_id++, "gfx/lineedit.png"));
+	types.push_back(new ComponentTypeTemplate<CL_ComboBox>("combobox", "ComboBox", next_id++, "gfx/combobox.png"));
+	types.push_back(new ComponentTypeTemplate<CL_ListView>("listview", "ListView", next_id++, "gfx/listview.png"));
+	types.push_back(new ComponentTypeTemplate<CL_MenuBar>("menubar", "MenuBar", next_id++, "gfx/menu.png"));
+	types.push_back(new ButtonComponentType("button", "PushButton", next_id++, "gfx/pushbutton.png"));
+	types.push_back(new SliderComponentType("slider", "Slider", next_id++, "gfx/slider.png"));
+	types.push_back(new ComponentTypeTemplate<CL_Spin>("spin", "Spin", next_id++, "gfx/spin.png"));
+	types.push_back(new ComponentTypeTemplate<CL_ImageView>("imageview", "ImageView", next_id++, "gfx/image.png"));
+	types.push_back(new ScrollBarHorizontalComponentType("hscrollbar", "H Scroll Bar", next_id++, "gfx/scroll_horizontal.png"));
+	types.push_back(new ScrollBarVerticalComponentType("vscrollbar", "V Scroll Bar", next_id++, "gfx/scroll_vertical.png"));
+	types.push_back(new TabComponentType("tab", "Tab", next_id++, "gfx/tab.png"));
+	types.push_back(new FrameComponentType("frame", "Frame", next_id++, "gfx/frame.png"));
+	types.push_back(new ComponentTypeTemplate<CL_StatusBar>("statusbar", "StatusBar", next_id++, "gfx/statusbar.png"));
+	types.push_back(new ComponentTypeTemplate<CL_ToolBar>("toolbar", "ToolBar", next_id++, "gfx/toolbar.png"));
+	types.push_back(new ComponentTypeTemplate<CustomComponent>("custom", "Custom", next_id++, "gfx/custom.png"));
 }
 
 void ComponentTypes::deinitialize()
@@ -72,7 +72,7 @@ void ComponentTypes::deinitialize()
 	types.clear();
 }
 
-CL_GUIComponent *ComponentTypes::create_component(int id, CL_GUIComponent *parent)
+ComponentType *ComponentTypes::find_component(int id)
 {
 	std::vector< CL_SharedPtr<ComponentType> >::size_type index, size;
 	size = types.size();
@@ -80,12 +80,24 @@ CL_GUIComponent *ComponentTypes::create_component(int id, CL_GUIComponent *paren
 	{
 		if (types[index]->id == id)
 		{
-			CL_GUIComponent *new_component = types[index]->create_component(parent);
-			set_id_name(new_component, id);
-			return new_component;
+			return types[index];
 		}
 	}
-	throw CL_Exception(cl_format("Unable to create component, unknown id: %1", id));
+	throw CL_Exception(cl_format("Unable to find component type, unknown id: %1", id));
+}
+
+ComponentType *ComponentTypes::find_from_xml(const CL_String &tag)
+{
+	std::vector< CL_SharedPtr<ComponentType> >::size_type index, size;
+	size = types.size();
+	for (index = 0; index < size; index++)
+	{
+		if (types[index]->xmlname == tag)
+		{
+			return types[index];
+		}
+	}
+	return 0;
 }
 
 void ComponentTypes::set_id_name(CL_GUIComponent *new_component, int id)

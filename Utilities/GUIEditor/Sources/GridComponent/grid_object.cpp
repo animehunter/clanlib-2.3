@@ -30,15 +30,21 @@
 #include "precomp.h"
 #include "grid_object.h"
 #include "grid_component.h"
+#include "ComponentTypes/component_types.h"
+#include "ComponentTypes/component_type.h"
 
-GridObject::GridObject(CL_GUIComponent *parent)
-: CL_GUIComponent(parent), parent_grid(0), anchor_tl(cl_anchor_top_left), anchor_br(cl_anchor_top_left)
+GridObject::GridObject(CL_GUIComponent *parent, int id, const CL_Vec2i &pos)
+: CL_GUIComponent(parent), parent_grid(0), anchor_tl(cl_anchor_top_left), anchor_br(cl_anchor_top_left), component_type(0)
 {
 	set_type_name("object");
 	func_render().set(this, &GridObject::on_render);
 	func_resized().set(this, &GridObject::on_resized);
 
 	parent_grid = static_cast<GridComponent*>(parent);
+
+	component_type = ComponentTypes::find_component(id);
+	CL_GUIComponent *new_component = component_type->create_component(get_container());
+	set_geometry(CL_Rect(pos, new_component->get_size()));
 }
 
 CL_GUIComponent *GridObject::get_container()

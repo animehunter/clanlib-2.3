@@ -36,11 +36,12 @@ class ComponentTypes
 public:
 	static void initialize();
 	static void deinitialize();
-	static CL_GUIComponent *create_component(int id, CL_GUIComponent *parent);
+	static ComponentType *find_component(int id);
+	static ComponentType *find_from_xml(const CL_String &tag);
+	static void set_id_name(CL_GUIComponent *new_component, int id);
 	static const std::vector<ComponentType *> &get_types();
 
 private:
-	static void set_id_name(CL_GUIComponent *new_component, int id);
 
 	static std::vector<ComponentType *> types;
 	static std::map<int, int> component_count;

@@ -35,8 +35,8 @@ template<typename Type>
 class ComponentTypeTemplate : public ComponentType
 {
 public:
-	ComponentTypeTemplate(const CL_StringRef &name, int id, const CL_StringRef &icon)
-	: ComponentType(name, id, icon)
+	ComponentTypeTemplate(const CL_String &xmlname, const CL_String &name, int id, const CL_StringRef &icon)
+	: ComponentType(xmlname, name, id, icon)
 	{
 	}
 

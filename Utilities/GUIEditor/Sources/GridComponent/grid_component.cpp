@@ -33,6 +33,7 @@
 #include "snapline.h"
 #include "ComponentTypes/custom_component.h"
 #include "ComponentTypes/component_types.h"
+#include "ComponentTypes/component_type.h"
 #include "MainWindow/main_window.h"
 #include "Selection/selection.h"
 
@@ -68,11 +69,8 @@ const std::vector<GridObject*> &GridComponent::get_objects() const
 
 GridObject *GridComponent::on_add_component(int id, const CL_Vec2i &pos)
 {
-	GridObject *object = new GridObject(component_container);
-
-	CL_GUIComponent *new_component = ComponentTypes::create_component(id, object->get_container());
-
-	object->set_geometry(CL_Rect(pos, new_component->get_size()));
+	GridObject *object = new GridObject(component_container, id, pos);
+	ComponentTypes::set_id_name(object->get_component(), id);
 	objects.push_back(object);
 
 	return object;
@@ -114,71 +112,65 @@ void GridComponent::load(CL_DomElement &element, CL_GUIComponent *parent)
 
 	while (e.is_element())
 	{
-		GridObject *object = new GridObject(parent);
-		
 		CL_String tag = e.get_tag_name();
-		CL_GUIComponent *new_comp = 0;
+		ComponentType *component_type = ComponentTypes::find_from_xml(tag);
+		CL_Rect object_g = load_geometry(e);
+
+		GridObject *object = new GridObject(parent, component_type->id, object_g.get_top_left());
+		object->set_geometry(object_g);
+
+		CL_GUIComponent *new_comp = object->get_component();
 
 		if (tag == "button")
 		{
-			CL_PushButton *co = new CL_PushButton(object->get_container());
+			CL_PushButton *co = dynamic_cast<CL_PushButton*>(new_comp);
 			co->set_text(e.get_attribute("text"));
-			new_comp = co;
 		}
 		else if (tag == "checkbox")
 		{
-			CL_CheckBox *co = new CL_CheckBox(object->get_container());
+			CL_CheckBox *co = dynamic_cast<CL_CheckBox*>(new_comp);
 			co->set_text(e.get_attribute("text"));
-			new_comp = co;
 		}
 		else if (tag == "radiobutton")
 		{
-			CL_RadioButton *co = new CL_RadioButton(object->get_container());
+			CL_RadioButton *co = dynamic_cast<CL_RadioButton*>(new_comp);
 			co->set_text(e.get_attribute("text"));
 			co->set_group_name(e.get_attribute("group"));
-			new_comp = co;
 		}
 		else if (tag == "label")
 		{
-			CL_Label *co = new CL_Label(object->get_container());
+			CL_Label *co = dynamic_cast<CL_Label*>(new_comp);
 			co->set_text(e.get_attribute("text"));
-			new_comp = co;
 		}
 		else if (tag == "statusbar")
 		{
-			CL_StatusBar *co = new CL_StatusBar(object->get_container());
-			new_comp = co;
+			CL_StatusBar *co = dynamic_cast<CL_StatusBar*>(new_comp);
 		}
 		else if (tag == "lineedit")
 		{
-			CL_LineEdit *co = new CL_LineEdit(object->get_container());
+			CL_LineEdit *co = dynamic_cast<CL_LineEdit*>(new_comp);
 			co->set_text(e.get_attribute("text"));
-			new_comp = co;
 		}
 		else if (tag == "imageview")
 		{
-			CL_ImageView *co = new CL_ImageView(object->get_container());
-			new_comp = co;
+			CL_ImageView *co = dynamic_cast<CL_ImageView*>(new_comp);
 		}
 		else if (tag == "slider")
 		{
-			CL_Slider *co = new CL_Slider(object->get_container());
+			CL_Slider *co = dynamic_cast<CL_Slider*>(new_comp);
 			co->set_min(CL_StringHelp::text_to_int(e.get_attribute("min")));
 			co->set_max(CL_StringHelp::text_to_int(e.get_attribute("max")));
 			co->set_tick_count(CL_StringHelp::text_to_int(e.get_attribute("ticks")));
 			co->set_page_step(CL_StringHelp::text_to_int(e.get_attribute("page_step")));
-			new_comp = co;
 		}
 		else if (tag == "listview")
 		{
-			CL_ListView *co = new CL_ListView(object->get_container());
+			CL_ListView *co = dynamic_cast<CL_ListView*>(new_comp);
 //			load_listview(e, co);
-			new_comp = co;
 		}
 		else if (tag == "tab")
 		{
-			CL_Tab *co = new CL_Tab(object->get_container());
-			new_comp = co;
+			CL_Tab *co = dynamic_cast<CL_Tab*>(new_comp);
 
 			CL_DomElement tab_child = e.get_first_child().to_element();
 			while (tab_child.is_element())
@@ -195,34 +187,13 @@ void GridComponent::load(CL_DomElement &element, CL_GUIComponent *parent)
 			}
 
 		}
-		else if (tag == "menubar")
-		{
-			CL_MenuBar *co = new CL_MenuBar(object->get_container());
-			new_comp = co;
-		}
 		else if (tag == "frame")
 		{
-			CL_Frame *co = new CL_Frame(object->get_container());
+			CL_Frame *co = dynamic_cast<CL_Frame*>(new_comp);
 			co->set_header_text(e.get_attribute("text"));
-			new_comp = co;
 
 			CL_DomElement frame_child = e.get_first_child().to_element();
 			load(e, co);
-		}
-		else if (tag == "spin")
-		{
-			CL_Spin *co = new CL_Spin(object->get_container());
-			new_comp = co;
-		}
-		else if (tag == "combobox")
-		{
-			CL_ComboBox *co = new CL_ComboBox(object->get_container());
-			new_comp = co;
-		}
-		else if (tag == "toolbar")
-		{
-			CL_ToolBar *co = new CL_ToolBar(object->get_container());
-			new_comp = co;
 		}
 		else if (tag == "dialog")
 		{
@@ -231,45 +202,29 @@ void GridComponent::load(CL_DomElement &element, CL_GUIComponent *parent)
 			boundary.width = w;
 			boundary.height = h;
 		}
-		else // unknown component... create CustomComponent.
-		{
-			CustomComponent *co = new CustomComponent(object->get_container());
-			co->set_type_name(tag);
-			new_comp = co;
-		}
+
+		// CustomComponent *co = dynamic_cast<CL_CheckBox*>(new_comp);
+		// co->set_type_name(tag);
 		
-		if (new_comp == 0)
-		{
-			delete object;
-		}
-		else
-		{
-			int dist_tl_x = CL_StringHelp::text_to_int(e.get_attribute("dist_tl_x"));
-			int dist_tl_y = CL_StringHelp::text_to_int(e.get_attribute("dist_tl_y"));
-			int dist_rb_x = CL_StringHelp::text_to_int(e.get_attribute("dist_br_x"));
-			int dist_rb_y = CL_StringHelp::text_to_int(e.get_attribute("dist_br_y"));
-			CL_String pos_equation_x = e.get_attribute("eq-x", "");
-			CL_String pos_equation_y = e.get_attribute("eq-y", "");
-			CL_String pos_equation_x2 = e.get_attribute("eq-x2", "");
-			CL_String pos_equation_y2 = e.get_attribute("eq-y2", "");
-			object->set_position_equations(pos_equation_x, pos_equation_y);
-			object->set_position_equations2(pos_equation_x2, pos_equation_y2);
-			CL_ComponentAnchorPoint ap_tl = (CL_ComponentAnchorPoint)CL_StringHelp::text_to_int(e.get_attribute("anchor_tl"));
-			CL_ComponentAnchorPoint ap_br = (CL_ComponentAnchorPoint)CL_StringHelp::text_to_int(e.get_attribute("anchor_br"));
+		int dist_tl_x = CL_StringHelp::text_to_int(e.get_attribute("dist_tl_x"));
+		int dist_tl_y = CL_StringHelp::text_to_int(e.get_attribute("dist_tl_y"));
+		int dist_rb_x = CL_StringHelp::text_to_int(e.get_attribute("dist_br_x"));
+		int dist_rb_y = CL_StringHelp::text_to_int(e.get_attribute("dist_br_y"));
+		CL_String pos_equation_x = e.get_attribute("eq-x", "");
+		CL_String pos_equation_y = e.get_attribute("eq-y", "");
+		CL_String pos_equation_x2 = e.get_attribute("eq-x2", "");
+		CL_String pos_equation_y2 = e.get_attribute("eq-y2", "");
+		object->set_position_equations(pos_equation_x, pos_equation_y);
+		object->set_position_equations2(pos_equation_x2, pos_equation_y2);
+		CL_ComponentAnchorPoint ap_tl = (CL_ComponentAnchorPoint)CL_StringHelp::text_to_int(e.get_attribute("anchor_tl"));
+		CL_ComponentAnchorPoint ap_br = (CL_ComponentAnchorPoint)CL_StringHelp::text_to_int(e.get_attribute("anchor_br"));
 
-			object->set_anchor_tl(ap_tl);
-			object->set_anchor_br(ap_br);
+		object->set_anchor_tl(ap_tl);
+		object->set_anchor_br(ap_br);
 
-			objects.push_back(object);
-			new_comp->set_id_name(e.get_attribute("id"));
-			new_comp->set_class_name(e.get_attribute("class"));
-
-			CL_Rect object_g = load_geometry(e);
-			CL_Size comp_size = object_g.get_size();
-
-			object->set_geometry(object_g);
-			new_comp->set_geometry(comp_size);
-		}
+		objects.push_back(object);
+		new_comp->set_id_name(e.get_attribute("id"));
+		new_comp->set_class_name(e.get_attribute("class"));
 
 		e = e.get_next_sibling().to_element();
 	}

@@ -39,4 +39,7 @@ public:
 	bool on_input_released(const CL_InputEvent &input_event);
 	bool on_input_doubleclick(const CL_InputEvent &input_event);
 	bool on_input_pointer_moved(const CL_InputEvent &input_event);
+
+private:
+	CL_PopupMenu current_menu;
 };

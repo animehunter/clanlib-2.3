@@ -32,13 +32,15 @@
 class ComponentType
 {
 public:
-	ComponentType(const CL_StringRef &name, int id, const CL_StringRef &icon)
-	: name(name), id(id), icon(icon)
+	ComponentType(const CL_String &xmlname, const CL_String &name, int id, const CL_StringRef &icon)
+	: xmlname(xmlname), name(name), id(id), icon(icon)
 	{
 	}
 
 	virtual CL_GUIComponent *create_component(CL_GUIComponent *parent) const = 0;
+	virtual void on_show_context_menu(CL_PopupMenu &menu) { }
 
+	CL_String xmlname;
 	CL_String name;
 	int id;
 	CL_String icon;
