@@ -175,7 +175,21 @@ void GridComponent::load(CL_DomElement &element, CL_GUIComponent *parent)
 			else if (tag == "listview")
 			{
 				CL_ListView *co = dynamic_cast<CL_ListView*>(new_comp);
-	//			load_listview(e, co);
+
+				CL_ListViewHeader *header = co->get_header();
+
+				std::vector<CL_DomNode> columns_nodes = e.select_nodes("listview_header/listview_column");
+				for(size_t i = 0; i < columns_nodes.size(); ++i)
+				{
+					CL_DomElement column_element = columns_nodes[i].to_element();
+					CL_String id = column_element.get_attribute("col_id");
+					CL_String caption = column_element.get_attribute("caption");
+					int width = column_element.get_attribute_int("width");
+
+					CL_ListViewColumnHeader column = header->create_column(id, caption);
+					column.set_width(width);
+					header->append(column);
+				}
 			}
 			else if (tag == "tab")
 			{
@@ -194,7 +208,6 @@ void GridComponent::load(CL_DomElement &element, CL_GUIComponent *parent)
 
 					tab_child = tab_child.get_next_sibling().to_element();
 				}
-
 			}
 			else if (tag == "frame")
 			{

@@ -401,6 +401,8 @@ void GridObject::save_listview(CL_DomElement &e, CL_ListView *lv)
 		e_col.set_attribute("width", CL_StringHelp::int_to_text(col.get_width()));
 
 		col = col.get_next_sibling();
+
+		e_header.append_child(e_col);
 	}
 }
 

@@ -1,7 +1,11 @@
 <gui xmlns="http://clanlib.org/xmlns/gui-1.0">
 	<label class="" id="label_columns" text="Columns:" anchor_tl="0" anchor_br="0" dist_tl_x="11" dist_tl_y="11" dist_br_x="86" dist_br_y="24" geom="11,11,86,24"/>
 	<listview class="" id="listview_columns" anchor_tl="0" anchor_br="0" dist_tl_x="11" dist_tl_y="29" dist_br_x="322" dist_br_y="381" geom="11,29,322,381">
-		<listview_header/>
+		<listview_header>
+			<listview_column col_id="text" caption="Text" width="150"/>
+			<listview_column col_id="id" caption="Id" width="100"/>
+			<listview_column col_id="width" caption="Width" width="40"/>
+		</listview_header>
 	</listview>
 	<button class="" id="button_add_column" text="Add" anchor_tl="0" anchor_br="0" dist_tl_x="11" dist_tl_y="386" dist_br_x="86" dist_br_y="409" geom="11,386,86,409"/>
 	<button class="" id="button_remove_column" text="Remove" anchor_tl="0" anchor_br="0" dist_tl_x="91" dist_tl_y="386" dist_br_x="166" dist_br_y="409" geom="91,386,166,409"/>

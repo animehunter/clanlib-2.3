@@ -81,18 +81,6 @@ void EditColumnsWindow::load_components()
 	listview_columns = CL_ListView::get_named_item(this, "listview_columns");
 	listview_columns->func_selection_changed().set(this, &EditColumnsWindow::on_listview_selection_changed);
 
-	CL_ListViewColumnHeader column_header_text = listview_columns->get_header()->create_column("text", "Text");
-	column_header_text.set_width(150);
-	listview_columns->get_header()->append(column_header_text);
-
-	CL_ListViewColumnHeader column_header_id = listview_columns->get_header()->create_column("id", "Id");
-	column_header_id.set_width(100);
-	listview_columns->get_header()->append(column_header_id);
-
-	CL_ListViewColumnHeader column_header_width = listview_columns->get_header()->create_column("width", "Width");
-	column_header_width.set_width(45);
-	listview_columns->get_header()->append(column_header_width);
-
 	lineedit_text = CL_LineEdit::get_named_item(this, "lineedit_text");
 	lineedit_text->func_after_edit_changed().set(this, &EditColumnsWindow::on_lineedit_text_changed);
 	lineedit_text->set_enabled(false);
