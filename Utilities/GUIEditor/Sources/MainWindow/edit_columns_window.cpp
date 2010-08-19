@@ -48,6 +48,7 @@ CL_GUITopLevelDescription EditColumnsWindow::get_startup_description()
 	CL_GUITopLevelDescription desc;
 	desc.set_title("Edit columns");
 	desc.set_allow_resize(false);
+	desc.set_visible(false);
 	return desc;
 }
 
@@ -103,6 +104,8 @@ void EditColumnsWindow::load_components()
 	lineedit_width = CL_LineEdit::get_named_item(this, "lineedit_width");
 	lineedit_width->func_after_edit_changed().set(this, &EditColumnsWindow::on_lineedit_width_changed);
 	lineedit_width->set_enabled(false);
+
+	set_visible(true);
 }
 
 void EditColumnsWindow::on_lineedit_text_changed(CL_InputEvent &event)
