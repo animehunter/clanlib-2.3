@@ -28,42 +28,32 @@
 
 #pragma once
 
-#include "ComponentTypes/PropertyItems/line_edit_popup.h"
+#include "PropertyComponent/property_item_popup.h"
 
-class PropertyItemLineEdit : public PropertyItem
+class AnchorPopup : public PropertyItemPopup
 {
 public:
-	PropertyItemLineEdit(const CL_String &name) { this->name = name; }
-	PropertyItemLineEdit(const CL_String &name, const CL_String &value) { this->name = name; this->value = value; }
+	AnchorPopup(CL_ComponentAnchorPoint tl, CL_ComponentAnchorPoint br, CL_GUIComponent *parent);
+	~AnchorPopup();
 
-	CL_GUIComponent *activate()
-	{
-		LineEditPopup *c = new LineEditPopup(property_component);
-		c->get_lineedit()->func_enter_pressed().set(this, &PropertyItemLineEdit::on_enter_pressed);
-		c->get_lineedit()->set_text(value);
-		return c;
-	}
+	CL_ComponentAnchorPoint get_anchor_tl() const { return cap_tl; }
+	CL_ComponentAnchorPoint get_anchor_br() const { return cap_br; }
 
-	void deactivate(CL_GUIComponent *component)
-	{
-		value = static_cast<LineEditPopup *>(component)->get_lineedit()->get_text();
-		delete component;
-	}
+private:
+	void on_resized();
+	void on_anchoring_changed(CL_RadioButton *rb);
 
-	int get_inactive_height(CL_GraphicContext &gc, CL_GUIThemePart &part, int width)
-	{
-		return part.get_font().get_text_size(gc, value).height;
-	}
-
-	void render_inactive(CL_GraphicContext &gc, CL_GUIThemePart &part, const CL_Rect &rect, const CL_Rect &clip_rect)
-	{
-		part.render_text(gc, value, rect, clip_rect);
-	}
-
-	void on_enter_pressed()
-	{
-		property_component->deactivate();
-	}
-
-	CL_String value;
+	CL_ComponentAnchorPoint cap_tl, cap_br;
+	CL_Label *label_tl;
+	CL_Label *label_br;
+	CL_RadioButton *tl;
+	CL_RadioButton *tr;
+	CL_RadioButton *bl;
+	CL_RadioButton *br;
+	CL_RadioButton *scale;
+	CL_RadioButton *br_tl;
+	CL_RadioButton *br_tr;
+	CL_RadioButton *br_bl;
+	CL_RadioButton *br_br;
+	CL_RadioButton *br_scale;
 };

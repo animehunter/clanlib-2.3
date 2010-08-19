@@ -30,7 +30,6 @@
 #include "precomp.h"
 #include "property_component.h"
 #include "property_item.h"
-#include "property_item_anchor.h"
 #include "GridComponent/grid_object.h"
 #include "GridComponent/grid_component.h"
 #include "ComponentTypes/custom_component.h"
@@ -47,6 +46,8 @@
 #include "ComponentTypes/PropertyItems/property_item_step_size.h"
 #include "ComponentTypes/PropertyItems/property_item_page_label.h"
 #include "ComponentTypes/PropertyItems/property_item_type_name.h"
+#include "ComponentTypes/PropertyItems/property_item_anchor.h"
+#include "ComponentTypes/PropertyItems/property_item_enabled.h"
 
 PropertyComponent::PropertyComponent(MainWindow *main_window)
 : CL_GUIComponent(main_window), main_window(main_window), name_column_width(75), active_item(0), active_component(0), scrollbar(0)
@@ -248,6 +249,7 @@ void PropertyComponent::on_selection_changed()
 			//add_property(new PropertyItemLineEdit("Type", comp->get_type_name()));
 		}
 
+		add_property(new PropertyItemEnabled());
 		add_property(new PropertyItemIdName());
 		add_property(new PropertyItemClassName());
 		//add_property(new PropertyItemLineEdit("#id", comp->get_id_name()));

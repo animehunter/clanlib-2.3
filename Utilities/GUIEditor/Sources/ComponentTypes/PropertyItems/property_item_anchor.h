@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "ComponentTypes/PropertyItems/anchor_popup.h"
+#include "Popups/anchor_popup.h"
 #include "GridComponent/grid_object.h"
 
 class PropertyItemAnchor : public PropertyItem

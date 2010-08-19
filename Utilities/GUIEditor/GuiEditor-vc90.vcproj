@@ -271,19 +271,11 @@
 					Name="PropertyItems"
 					>
 					<File
-						RelativePath=".\Sources\ComponentTypes\PropertyItems\anchor_popup.cpp"
+						RelativePath=".\Sources\ComponentTypes\PropertyItems\property_item_anchor.h"
 						>
 					</File>
 					<File
-						RelativePath=".\Sources\ComponentTypes\PropertyItems\anchor_popup.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Sources\ComponentTypes\PropertyItems\line_edit_popup.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Sources\ComponentTypes\PropertyItems\line_edit_popup.h"
+						RelativePath=".\Sources\ComponentTypes\PropertyItems\property_item_checkbox.h"
 						>
 					</File>
 					<File
@@ -291,11 +283,23 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Sources\ComponentTypes\PropertyItems\property_item_enabled.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Sources\ComponentTypes\PropertyItems\property_item_group_name.h"
 						>
 					</File>
 					<File
+						RelativePath=".\Sources\ComponentTypes\PropertyItems\property_item_header.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Sources\ComponentTypes\PropertyItems\property_item_id_name.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Sources\ComponentTypes\PropertyItems\property_item_line_edit.h"
 						>
 					</File>
 					<File
@@ -330,6 +334,26 @@
 						RelativePath=".\Sources\ComponentTypes\PropertyItems\property_item_type_name.h"
 						>
 					</File>
+					<Filter
+						Name="Popups"
+						>
+						<File
+							RelativePath=".\Sources\ComponentTypes\PropertyItems\Popups\anchor_popup.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Sources\ComponentTypes\PropertyItems\Popups\anchor_popup.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Sources\ComponentTypes\PropertyItems\Popups\line_edit_popup.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Sources\ComponentTypes\PropertyItems\Popups\line_edit_popup.h"
+							>
+						</File>
+					</Filter>
 				</Filter>
 			</Filter>
 			<Filter
@@ -489,18 +513,6 @@
 				</File>
 				<File
 					RelativePath=".\Sources\PropertyComponent\property_item.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Sources\PropertyComponent\property_item_anchor.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Sources\PropertyComponent\property_item_header.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Sources\PropertyComponent\property_item_line_edit.h"
 					>
 				</File>
 				<File
