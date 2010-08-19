@@ -37,7 +37,7 @@ public:
 	CL_GUIComponent *activate()
 	{
 		value = !value;
-
+		property_component->deactivate();
 		return 0;
 	}
 
