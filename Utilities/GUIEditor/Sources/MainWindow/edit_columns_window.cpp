@@ -64,33 +64,84 @@ void EditColumnsWindow::load_components()
 
 	button_move_column_up = CL_PushButton::get_named_item(this, "button_move_column_up");
 	button_move_column_up->func_clicked().set(this, &EditColumnsWindow::on_button_move_column_up_clicked);
+	button_move_column_up->set_enabled(false);
 
 	button_move_column_down = CL_PushButton::get_named_item(this, "button_move_column_down");
 	button_move_column_down->func_clicked().set(this, &EditColumnsWindow::on_button_move_column_down_clicked);
+	button_move_column_down->set_enabled(false);
 
 	button_add_column = CL_PushButton::get_named_item(this, "button_add_column");
 	button_add_column->func_clicked().set(this, &EditColumnsWindow::on_button_add_column_clicked);
 
 	button_remove_column = CL_PushButton::get_named_item(this, "button_remove_column");
 	button_remove_column->func_clicked().set(this, &EditColumnsWindow::on_button_remove_column_clicked);
+	button_remove_column->set_enabled(false);
 
 	listview_columns = CL_ListView::get_named_item(this, "listview_columns");
+	listview_columns->func_selection_changed().set(this, &EditColumnsWindow::on_listview_selection_changed);
+
+	CL_ListViewColumnHeader column_header_text = listview_columns->get_header()->create_column("text", "Text");
+	column_header_text.set_width(150);
+	listview_columns->get_header()->append(column_header_text);
+
+	CL_ListViewColumnHeader column_header_id = listview_columns->get_header()->create_column("id", "Id");
+	column_header_id.set_width(100);
+	listview_columns->get_header()->append(column_header_id);
+
+	CL_ListViewColumnHeader column_header_width = listview_columns->get_header()->create_column("width", "Width");
+	column_header_width.set_width(45);
+	listview_columns->get_header()->append(column_header_width);
 
 	lineedit_text = CL_LineEdit::get_named_item(this, "lineedit_text");
-
+	lineedit_text->func_after_edit_changed().set(this, &EditColumnsWindow::on_lineedit_text_changed);
+		
 	lineedit_id = CL_LineEdit::get_named_item(this, "lineedit_id");
+	lineedit_id->func_after_edit_changed().set(this, &EditColumnsWindow::on_lineedit_id_changed);
 
 	lineedit_width = CL_LineEdit::get_named_item(this, "lineedit_width");
+	lineedit_width->func_after_edit_changed().set(this, &EditColumnsWindow::on_lineedit_width_changed);
+}
+
+void EditColumnsWindow::on_lineedit_text_changed(CL_InputEvent &event)
+{
+	CL_ListViewItem item = listview_columns->get_selected_item();
+	item.set_column_text("text", lineedit_text->get_text());
+}
+
+void EditColumnsWindow::on_lineedit_id_changed(CL_InputEvent &event)
+{
+	CL_ListViewItem item = listview_columns->get_selected_item();
+	item.set_column_text("id", lineedit_id->get_text());
+}
+
+void EditColumnsWindow::on_lineedit_width_changed(CL_InputEvent &event)
+{
+	CL_ListViewItem item = listview_columns->get_selected_item();
+	item.set_column_text("width", lineedit_width->get_text());
+}
+
+void EditColumnsWindow::on_listview_selection_changed(CL_ListViewSelection selection)
+{
+	CL_ListViewSelectedItem selection_item = selection.get_first();
+	CL_ListViewItem item = selection_item.get_item();
+
+	show_item(item);
 }
 
 void EditColumnsWindow::on_button_ok_clicked()
 {
-	exit_with_code(0);
+	exit_with_code(1);
 }
 
 void EditColumnsWindow::on_button_cancel_clicked()
 {
 	exit_with_code(0);
+}
+
+bool EditColumnsWindow::on_close()
+{
+	exit_with_code(0);
+	return true;
 }
 
 void EditColumnsWindow::on_button_move_column_up_clicked()
@@ -103,14 +154,73 @@ void EditColumnsWindow::on_button_move_column_down_clicked()
 
 void EditColumnsWindow::on_button_add_column_clicked()
 {
+	static int count = 1;
+
+	CL_String name = cl_format("New Column %1", count++);
+
+	Column column(name, CL_String(), 100);
+	CL_ListViewItem item = add_column(column);
+	show_item(item);
 }
 
 void EditColumnsWindow::on_button_remove_column_clicked()
 {
 }
 
-bool EditColumnsWindow::on_close()
+std::vector<EditColumnsWindow::Column> EditColumnsWindow::get_columns() const
 {
-	exit_with_code(0);
-	return true;
+	CL_ListViewItem item = listview_columns->get_document_item().get_first_child();
+
+	std::vector<Column> columns;
+	while(!item.is_null())
+	{
+		CL_ListViewColumnData column_data_text = item.get_column("text");
+		CL_ListViewColumnData column_data_id = item.get_column("id");
+		CL_ListViewColumnData column_data_width = item.get_column("width");
+
+		CL_String text = column_data_text.get_text();
+		CL_String id = column_data_id.get_text();
+		int width = CL_StringHelp::text_to_int(column_data_width.get_text());
+
+		columns.push_back(Column(text, id, width));
+
+		item = item.get_next_sibling();
+	}
+
+	return columns;
+}
+
+void EditColumnsWindow::show_item(CL_ListViewItem &item)
+{
+	CL_ListViewColumnData column_data_text = item.get_column("text");
+	lineedit_text->set_text(column_data_text.get_text());
+
+	CL_ListViewColumnData column_data_id = item.get_column("id");
+	lineedit_id->set_text(column_data_id.get_text());
+
+	CL_ListViewColumnData column_data_width = item.get_column("width");
+	lineedit_width->set_text(column_data_width.get_text());
+
+	lineedit_text->set_focus();
+}
+
+void EditColumnsWindow::set_columns(const std::vector<Column> &columns)
+{
+	for(size_t i = 0; i < columns.size(); ++i)
+	{
+		add_column(columns[i]);
+	}
+}
+
+CL_ListViewItem EditColumnsWindow::add_column(Column column)
+{
+	CL_ListViewItem item = listview_columns->create_item();
+
+	item.set_column_text("text", column.text);
+	item.set_column_text("id", column.id);
+	item.set_column_text("width", CL_StringHelp::int_to_text(column.width));
+
+	listview_columns->get_document_item().append_child(item);
+
+	return item;
 }

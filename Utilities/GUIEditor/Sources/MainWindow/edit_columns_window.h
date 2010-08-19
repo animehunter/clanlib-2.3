@@ -31,20 +31,34 @@
 class EditColumnsWindow : public CL_Window
 {
 public:
+	struct Column
+	{
+		Column(const CL_String &text, const CL_String &id, int width) : text(text), id(id), width(width) {}
+
+		CL_String text;
+		CL_String id;
+		int width;
+	};
+
+public:
 	EditColumnsWindow(CL_GUIComponent *owner);
 	~EditColumnsWindow();
 
 // Attributes:
 public:
+	std::vector<Column> get_columns() const;
 
 // Operations:
 public:
+	void set_columns(const std::vector<Column> &columns);
 
 // Implementation:
 private:
 	CL_GUITopLevelDescription get_startup_description();
 
 	void load_components();
+	CL_ListViewItem add_column(Column column);
+	void show_item(CL_ListViewItem &item);
 
 	void on_button_ok_clicked();
 	void on_button_cancel_clicked();
@@ -52,7 +66,11 @@ private:
 	void on_button_move_column_down_clicked();
 	void on_button_add_column_clicked();
 	void on_button_remove_column_clicked();
+	void on_listview_selection_changed(CL_ListViewSelection selection);
 	bool on_close();
+	void on_lineedit_text_changed(CL_InputEvent &event);
+	void on_lineedit_id_changed(CL_InputEvent &event);
+	void on_lineedit_width_changed(CL_InputEvent &event);
 
 	CL_PushButton *button_ok;
 	CL_PushButton *button_cancel;

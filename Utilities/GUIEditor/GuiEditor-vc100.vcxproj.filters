@@ -119,6 +119,9 @@
     <ClCompile Include="Sources\PropertyComponent\property_item_popup.cpp">
       <Filter>Source Files\PropertyComponent</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\MainWindow\edit_columns_window.cpp">
+      <Filter>Source Files\MainWindow</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\precomp.h">
@@ -243,6 +246,42 @@
     </ClInclude>
     <ClInclude Include="Sources\PropertyComponent\property_item_popup.h">
       <Filter>Source Files\PropertyComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\MainWindow\edit_columns_window.h">
+      <Filter>Source Files\MainWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\ComponentTypes\button_component_type.h">
+      <Filter>Source Files\ComponentTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\ComponentTypes\checkbox_component_type.h">
+      <Filter>Source Files\ComponentTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\ComponentTypes\component_type_template.h">
+      <Filter>Source Files\ComponentTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\ComponentTypes\frame_component_type.h">
+      <Filter>Source Files\ComponentTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\ComponentTypes\label_component_type.h">
+      <Filter>Source Files\ComponentTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\ComponentTypes\listview_component_type.h">
+      <Filter>Source Files\ComponentTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\ComponentTypes\radio_button_component_type.h">
+      <Filter>Source Files\ComponentTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\ComponentTypes\scrollbar_horz_component_type.h">
+      <Filter>Source Files\ComponentTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\ComponentTypes\scrollbar_vert_component_type.h">
+      <Filter>Source Files\ComponentTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\ComponentTypes\slider_component_type.h">
+      <Filter>Source Files\ComponentTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\ComponentTypes\tab_component_type.h">
+      <Filter>Source Files\ComponentTypes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

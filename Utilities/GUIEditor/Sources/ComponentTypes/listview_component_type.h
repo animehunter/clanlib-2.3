@@ -55,10 +55,63 @@ public:
 
 	void on_edit_columns_clicked(GridObject *grid_object)
 	{
+		CL_ListView *list_view = dynamic_cast<CL_ListView*>(grid_object->get_component());
+		if(list_view == 0)
+			throw CL_Exception("Can't get listview object");
+
 		GridComponent *grid_component = grid_object->get_grid_component();
 		MainWindow *main_window = grid_component->get_main_window();
-
 		EditColumnsWindow edit_columns_window(main_window);
-		edit_columns_window.exec();
+
+		edit_columns_window.set_columns(get_columns(list_view));
+		if(edit_columns_window.exec() == 1)
+		{
+			remove_columns(list_view);
+			create_columns(list_view, edit_columns_window.get_columns());
+		}
+	}
+
+	std::vector<EditColumnsWindow::Column> get_columns(CL_ListView *list_view) 
+	{
+		std::vector<EditColumnsWindow::Column> columns;
+
+		CL_ListViewHeader *header = list_view->get_header();
+		CL_ListViewColumnHeader column = header->get_first_column();
+		while (!column.is_null())
+		{
+			int width = column.get_width();
+			CL_String caption = column.get_caption();
+			CL_String id = column.get_column_id();
+
+			columns.push_back(EditColumnsWindow::Column(caption, id, width));
+
+			column = column.get_next_sibling();
+		}
+
+		return columns;
+	}
+
+	void remove_columns(CL_ListView *list_view) 
+	{
+		CL_ListViewHeader *header = list_view->get_header();
+
+		CL_ListViewColumnHeader column = header->get_first_column();
+		while(!column.is_null())
+		{
+			header->remove(column.get_column_id());
+			column = header->get_first_column();
+		}
+	}
+
+	void create_columns(CL_ListView *list_view, std::vector<EditColumnsWindow::Column> &columns) 
+	{
+		CL_ListViewHeader *header = list_view->get_header();
+
+		for(size_t i = 0; i < columns.size(); ++i)
+		{
+			CL_ListViewColumnHeader column = header->create_column(columns[i].id, columns[i].text);
+			column.set_width(columns[i].width);
+			header->append(column);
+		}
 	}
 };
