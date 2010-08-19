@@ -180,6 +180,11 @@ CL_ListViewColumnHeader CL_ListViewHeader::remove(const CL_StringRef &column_id)
 				cur->prev_sibling->next_sibling = cur->next_sibling;
 			if (!cur->next_sibling.is_null())
 				cur->next_sibling->prev_sibling = cur->prev_sibling;
+			if (impl->first_column == cur)
+				impl->first_column = cur->next_sibling;
+			if (impl->last_column == cur)
+				impl->last_column = cur->prev_sibling;
+
 			return column;
 		}
 		cur = cur->next_sibling;
