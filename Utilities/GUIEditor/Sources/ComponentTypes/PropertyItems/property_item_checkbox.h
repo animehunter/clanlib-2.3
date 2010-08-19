@@ -37,27 +37,19 @@ public:
 	CL_GUIComponent *activate()
 	{
 		return 0;
-/*		LineEditPopup *c = new LineEditPopup(property_component);
-		c->get_lineedit()->func_enter_pressed().set(this, &PropertyItemCheckbox::on_enter_pressed);
-		c->get_lineedit()->set_text(value);
-		return c;
-*/	}
+	}
 
 	void deactivate(CL_GUIComponent *component)
 	{
-//		value = static_cast<LineEditPopup *>(component)->get_lineedit()->get_text();
-//		delete component;
 	}
 
 	int get_inactive_height(CL_GraphicContext &gc, CL_GUIThemePart &part, int width)
 	{
 		return 0;
-//		return part.get_font().get_text_size(gc, value).height;
 	}
 
 	void render_inactive(CL_GraphicContext &gc, CL_GUIThemePart &part, const CL_Rect &rect, const CL_Rect &clip_rect)
 	{
-//		part.render_text(gc, value, rect, clip_rect);
 	}
 
 	void on_enter_pressed()

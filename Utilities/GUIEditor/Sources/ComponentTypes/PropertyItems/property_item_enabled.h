@@ -44,13 +44,14 @@ public:
 		if (!selection.empty())
 		{
 			CL_GUIComponent *comp = selection[0]->get_component();
-//			value = comp->get_id_name();
+
+			value = comp->is_enabled();
 		}
 	}
 
 	void apply_changes(GridObject *object)
 	{
 		CL_GUIComponent *comp = object->get_component();
-//		comp->set_id_name(value);
+		comp->set_enabled(value);
 	}
 };
