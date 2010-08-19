@@ -94,12 +94,15 @@ void EditColumnsWindow::load_components()
 
 	lineedit_text = CL_LineEdit::get_named_item(this, "lineedit_text");
 	lineedit_text->func_after_edit_changed().set(this, &EditColumnsWindow::on_lineedit_text_changed);
-		
+	lineedit_text->set_enabled(false);
+
 	lineedit_id = CL_LineEdit::get_named_item(this, "lineedit_id");
 	lineedit_id->func_after_edit_changed().set(this, &EditColumnsWindow::on_lineedit_id_changed);
+	lineedit_id->set_enabled(false);
 
 	lineedit_width = CL_LineEdit::get_named_item(this, "lineedit_width");
 	lineedit_width->func_after_edit_changed().set(this, &EditColumnsWindow::on_lineedit_width_changed);
+	lineedit_width->set_enabled(false);
 }
 
 void EditColumnsWindow::on_lineedit_text_changed(CL_InputEvent &event)
@@ -202,6 +205,10 @@ void EditColumnsWindow::show_item(CL_ListViewItem &item)
 	lineedit_width->set_text(column_data_width.get_text());
 
 	lineedit_text->set_focus();
+
+	lineedit_text->set_enabled(true);
+	lineedit_id->set_enabled(true);
+	lineedit_width->set_enabled(true);
 }
 
 void EditColumnsWindow::set_columns(const std::vector<Column> &columns)
@@ -221,6 +228,7 @@ CL_ListViewItem EditColumnsWindow::add_column(Column column)
 	item.set_column_text("width", CL_StringHelp::int_to_text(column.width));
 
 	listview_columns->get_document_item().append_child(item);
+	listview_columns->set_selected(item);
 
 	return item;
 }
