@@ -99,6 +99,7 @@ CL_DomElement GridObject::to_element(CL_DomDocument &doc)
 	CL_DomElement e = doc.create_element(comp->get_type_name());
 	e.set_attribute("class", comp->get_class_name());
 	e.set_attribute("id", comp->get_id_name());
+	e.set_attribute_bool("enabled", comp->is_enabled());
 
 	if (!pos_equation_x.empty())
 		e.set_attribute("eq-x", pos_equation_x);

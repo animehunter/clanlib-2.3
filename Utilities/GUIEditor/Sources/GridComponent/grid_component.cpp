@@ -239,7 +239,7 @@ void GridComponent::load(CL_DomElement &element, CL_GUIComponent *parent)
 
 			objects.push_back(object);
 
-			new_comp->set_enabled(e.get_attribute_bool("enabled"));
+			new_comp->set_enabled(e.get_attribute_bool("enabled", true));
 			new_comp->set_id_name(e.get_attribute("id"));
 			new_comp->set_class_name(e.get_attribute("class"));
 		}

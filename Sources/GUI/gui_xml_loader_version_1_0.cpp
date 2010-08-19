@@ -265,6 +265,7 @@ void CL_GUIXMLLoaderVersion_1_0::load(CL_DomElement &element, CL_GUIComponent *p
 		{
 			new_comp->set_id_name(e.get_attribute("id"));
 			new_comp->set_class_name(e.get_attribute("class"));
+			new_comp->set_enabled(e.get_attribute_bool("enabled", true));
 
 			CL_String str = e.get_attribute("geom");
 			std::vector<CL_String> split = CL_StringHelp::split_text(str, ",");

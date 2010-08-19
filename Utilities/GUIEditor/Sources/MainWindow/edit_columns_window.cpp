@@ -65,33 +65,27 @@ void EditColumnsWindow::load_components()
 
 	button_move_column_up = CL_PushButton::get_named_item(this, "button_move_column_up");
 	button_move_column_up->func_clicked().set(this, &EditColumnsWindow::on_button_move_column_up_clicked);
-	button_move_column_up->set_enabled(false);
 
 	button_move_column_down = CL_PushButton::get_named_item(this, "button_move_column_down");
 	button_move_column_down->func_clicked().set(this, &EditColumnsWindow::on_button_move_column_down_clicked);
-	button_move_column_down->set_enabled(false);
 
 	button_add_column = CL_PushButton::get_named_item(this, "button_add_column");
 	button_add_column->func_clicked().set(this, &EditColumnsWindow::on_button_add_column_clicked);
 
 	button_remove_column = CL_PushButton::get_named_item(this, "button_remove_column");
 	button_remove_column->func_clicked().set(this, &EditColumnsWindow::on_button_remove_column_clicked);
-	button_remove_column->set_enabled(false);
 
 	listview_columns = CL_ListView::get_named_item(this, "listview_columns");
 	listview_columns->func_selection_changed().set(this, &EditColumnsWindow::on_listview_selection_changed);
 
 	lineedit_text = CL_LineEdit::get_named_item(this, "lineedit_text");
 	lineedit_text->func_after_edit_changed().set(this, &EditColumnsWindow::on_lineedit_text_changed);
-	lineedit_text->set_enabled(false);
 
 	lineedit_id = CL_LineEdit::get_named_item(this, "lineedit_id");
 	lineedit_id->func_after_edit_changed().set(this, &EditColumnsWindow::on_lineedit_id_changed);
-	lineedit_id->set_enabled(false);
 
 	lineedit_width = CL_LineEdit::get_named_item(this, "lineedit_width");
 	lineedit_width->func_after_edit_changed().set(this, &EditColumnsWindow::on_lineedit_width_changed);
-	lineedit_width->set_enabled(false);
 
 	set_visible(true);
 }
