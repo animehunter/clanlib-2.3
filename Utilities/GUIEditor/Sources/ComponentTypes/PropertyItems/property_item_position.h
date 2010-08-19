@@ -29,7 +29,7 @@
 
 #pragma once
 
-#include "property_item.h"
+#include "property_item_line_edit.h"
 
 class PropertyItemPosition : public PropertyItemLineEdit
 {

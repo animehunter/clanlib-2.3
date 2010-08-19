@@ -492,6 +492,18 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Sources\PropertyComponent\property_item_anchor.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Sources\PropertyComponent\property_item_header.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Sources\PropertyComponent\property_item_line_edit.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Sources\PropertyComponent\property_item_popup.cpp"
 					>
 				</File>

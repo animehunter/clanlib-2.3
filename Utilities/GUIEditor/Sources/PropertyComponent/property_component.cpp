@@ -30,6 +30,7 @@
 #include "precomp.h"
 #include "property_component.h"
 #include "property_item.h"
+#include "property_item_anchor.h"
 #include "GridComponent/grid_object.h"
 #include "GridComponent/grid_component.h"
 #include "ComponentTypes/custom_component.h"
