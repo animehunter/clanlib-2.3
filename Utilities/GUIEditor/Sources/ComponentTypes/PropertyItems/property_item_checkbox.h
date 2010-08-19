@@ -36,6 +36,8 @@ public:
 
 	CL_GUIComponent *activate()
 	{
+		value = !value;
+
 		return 0;
 	}
 
@@ -50,11 +52,12 @@ public:
 
 	void render_inactive(CL_GraphicContext &gc, CL_GUIThemePart &part, const CL_Rect &rect, const CL_Rect &clip_rect)
 	{
-	}
-
-	void on_enter_pressed()
-	{
-		property_component->deactivate();
+		CL_String text;
+		if(value == true)
+			text = "true";
+		else
+			text = "false";
+		part.render_text(gc, text, rect, clip_rect);
 	}
 
 	bool value;
