@@ -123,125 +123,128 @@ void GridComponent::load(CL_DomElement &element, CL_GUIComponent *parent)
 		else
 		{
 			ComponentType *component_type = ComponentTypes::find_from_xml(tag);
-			CL_Rect object_g = load_geometry(e);
+			if(component_type)
+			{
+				CL_Rect object_g = load_geometry(e);
 
-			GridObject *object = new GridObject(this, parent, component_type->id, object_g.get_top_left());
-			object->set_geometry(object_g);
+				GridObject *object = new GridObject(this, parent, component_type->id, object_g.get_top_left());
+				object->set_geometry(object_g);
 
-			CL_GUIComponent *new_comp = object->get_component();
+				CL_GUIComponent *new_comp = object->get_component();
 
-			if (tag == "button")
-			{
-				CL_PushButton *co = dynamic_cast<CL_PushButton*>(new_comp);
-				co->set_text(e.get_attribute("text"));
-			}
-			else if (tag == "checkbox")
-			{
-				CL_CheckBox *co = dynamic_cast<CL_CheckBox*>(new_comp);
-				co->set_text(e.get_attribute("text"));
-			}
-			else if (tag == "radiobutton")
-			{
-				CL_RadioButton *co = dynamic_cast<CL_RadioButton*>(new_comp);
-				co->set_text(e.get_attribute("text"));
-				co->set_group_name(e.get_attribute("group"));
-			}
-			else if (tag == "label")
-			{
-				CL_Label *co = dynamic_cast<CL_Label*>(new_comp);
-				co->set_text(e.get_attribute("text"));
-			}
-			else if (tag == "statusbar")
-			{
-				CL_StatusBar *co = dynamic_cast<CL_StatusBar*>(new_comp);
-			}
-			else if (tag == "lineedit")
-			{
-				CL_LineEdit *co = dynamic_cast<CL_LineEdit*>(new_comp);
-				co->set_text(e.get_attribute("text"));
-			}
-			else if (tag == "imageview")
-			{
-				CL_ImageView *co = dynamic_cast<CL_ImageView*>(new_comp);
-			}
-			else if (tag == "slider")
-			{
-				CL_Slider *co = dynamic_cast<CL_Slider*>(new_comp);
-				co->set_min(CL_StringHelp::text_to_int(e.get_attribute("min")));
-				co->set_max(CL_StringHelp::text_to_int(e.get_attribute("max")));
-				co->set_tick_count(CL_StringHelp::text_to_int(e.get_attribute("ticks")));
-				co->set_page_step(CL_StringHelp::text_to_int(e.get_attribute("page_step")));
-			}
-			else if (tag == "listview")
-			{
-				CL_ListView *co = dynamic_cast<CL_ListView*>(new_comp);
-
-				CL_ListViewHeader *header = co->get_header();
-
-				std::vector<CL_DomNode> columns_nodes = e.select_nodes("listview_header/listview_column");
-				for(size_t i = 0; i < columns_nodes.size(); ++i)
+				if (tag == "button")
 				{
-					CL_DomElement column_element = columns_nodes[i].to_element();
-					CL_String id = column_element.get_attribute("col_id");
-					CL_String caption = column_element.get_attribute("caption");
-					int width = column_element.get_attribute_int("width");
-
-					CL_ListViewColumnHeader column = header->create_column(id, caption);
-					column.set_width(width);
-					header->append(column);
+					CL_PushButton *co = dynamic_cast<CL_PushButton*>(new_comp);
+					co->set_text(e.get_attribute("text"));
 				}
-			}
-			else if (tag == "tab")
-			{
-				CL_Tab *co = dynamic_cast<CL_Tab*>(new_comp);
-
-				CL_DomElement tab_child = e.get_first_child().to_element();
-				while (tab_child.is_element())
+				else if (tag == "checkbox")
 				{
-					if (tab_child.get_tag_name() == "tabpage")
+					CL_CheckBox *co = dynamic_cast<CL_CheckBox*>(new_comp);
+					co->set_text(e.get_attribute("text"));
+				}
+				else if (tag == "radiobutton")
+				{
+					CL_RadioButton *co = dynamic_cast<CL_RadioButton*>(new_comp);
+					co->set_text(e.get_attribute("text"));
+					co->set_group_name(e.get_attribute("group"));
+				}
+				else if (tag == "label")
+				{
+					CL_Label *co = dynamic_cast<CL_Label*>(new_comp);
+					co->set_text(e.get_attribute("text"));
+				}
+				else if (tag == "statusbar")
+				{
+					CL_StatusBar *co = dynamic_cast<CL_StatusBar*>(new_comp);
+				}
+				else if (tag == "lineedit")
+				{
+					CL_LineEdit *co = dynamic_cast<CL_LineEdit*>(new_comp);
+					co->set_text(e.get_attribute("text"));
+				}
+				else if (tag == "imageview")
+				{
+					CL_ImageView *co = dynamic_cast<CL_ImageView*>(new_comp);
+				}
+				else if (tag == "slider")
+				{
+					CL_Slider *co = dynamic_cast<CL_Slider*>(new_comp);
+					co->set_min(CL_StringHelp::text_to_int(e.get_attribute("min")));
+					co->set_max(CL_StringHelp::text_to_int(e.get_attribute("max")));
+					co->set_tick_count(CL_StringHelp::text_to_int(e.get_attribute("ticks")));
+					co->set_page_step(CL_StringHelp::text_to_int(e.get_attribute("page_step")));
+				}
+				else if (tag == "listview")
+				{
+					CL_ListView *co = dynamic_cast<CL_ListView*>(new_comp);
+
+					CL_ListViewHeader *header = co->get_header();
+
+					std::vector<CL_DomNode> columns_nodes = e.select_nodes("listview_header/listview_column");
+					for(size_t i = 0; i < columns_nodes.size(); ++i)
 					{
-						CL_String label = tab_child.get_attribute("label", "Error: NO LABEL!");
-						int id = CL_StringHelp::text_to_int(tab_child.get_attribute("id", "0"));
-						CL_TabPage *tab_page = co->add_page(label, id);
-						load(tab_child, tab_page);
+						CL_DomElement column_element = columns_nodes[i].to_element();
+						CL_String id = column_element.get_attribute("col_id");
+						CL_String caption = column_element.get_attribute("caption");
+						int width = column_element.get_attribute_int("width");
+
+						CL_ListViewColumnHeader column = header->create_column(id, caption);
+						column.set_width(width);
+						header->append(column);
 					}
-
-					tab_child = tab_child.get_next_sibling().to_element();
 				}
-			}
-			else if (tag == "frame")
-			{
-				CL_Frame *co = dynamic_cast<CL_Frame*>(new_comp);
-				co->set_header_text(e.get_attribute("text"));
+				else if (tag == "tab")
+				{
+					CL_Tab *co = dynamic_cast<CL_Tab*>(new_comp);
 
-				CL_DomElement frame_child = e.get_first_child().to_element();
-				load(e, co);
-			}
+					CL_DomElement tab_child = e.get_first_child().to_element();
+					while (tab_child.is_element())
+					{
+						if (tab_child.get_tag_name() == "tabpage")
+						{
+							CL_String label = tab_child.get_attribute("label", "Error: NO LABEL!");
+							int id = CL_StringHelp::text_to_int(tab_child.get_attribute("id", "0"));
+							CL_TabPage *tab_page = co->add_page(label, id);
+							load(tab_child, tab_page);
+						}
 
-			// CustomComponent *co = dynamic_cast<CL_CheckBox*>(new_comp);
-			// co->set_type_name(tag);
+						tab_child = tab_child.get_next_sibling().to_element();
+					}
+				}
+				else if (tag == "frame")
+				{
+					CL_Frame *co = dynamic_cast<CL_Frame*>(new_comp);
+					co->set_header_text(e.get_attribute("text"));
+
+					CL_DomElement frame_child = e.get_first_child().to_element();
+					load(e, co);
+				}
+
+				// CustomComponent *co = dynamic_cast<CL_CheckBox*>(new_comp);
+				// co->set_type_name(tag);
 			
-			int dist_tl_x = CL_StringHelp::text_to_int(e.get_attribute("dist_tl_x"));
-			int dist_tl_y = CL_StringHelp::text_to_int(e.get_attribute("dist_tl_y"));
-			int dist_rb_x = CL_StringHelp::text_to_int(e.get_attribute("dist_br_x"));
-			int dist_rb_y = CL_StringHelp::text_to_int(e.get_attribute("dist_br_y"));
-			CL_String pos_equation_x = e.get_attribute("eq-x", "");
-			CL_String pos_equation_y = e.get_attribute("eq-y", "");
-			CL_String pos_equation_x2 = e.get_attribute("eq-x2", "");
-			CL_String pos_equation_y2 = e.get_attribute("eq-y2", "");
-			object->set_position_equations(pos_equation_x, pos_equation_y);
-			object->set_position_equations2(pos_equation_x2, pos_equation_y2);
-			CL_ComponentAnchorPoint ap_tl = (CL_ComponentAnchorPoint)CL_StringHelp::text_to_int(e.get_attribute("anchor_tl"));
-			CL_ComponentAnchorPoint ap_br = (CL_ComponentAnchorPoint)CL_StringHelp::text_to_int(e.get_attribute("anchor_br"));
+				int dist_tl_x = CL_StringHelp::text_to_int(e.get_attribute("dist_tl_x"));
+				int dist_tl_y = CL_StringHelp::text_to_int(e.get_attribute("dist_tl_y"));
+				int dist_rb_x = CL_StringHelp::text_to_int(e.get_attribute("dist_br_x"));
+				int dist_rb_y = CL_StringHelp::text_to_int(e.get_attribute("dist_br_y"));
+				CL_String pos_equation_x = e.get_attribute("eq-x", "");
+				CL_String pos_equation_y = e.get_attribute("eq-y", "");
+				CL_String pos_equation_x2 = e.get_attribute("eq-x2", "");
+				CL_String pos_equation_y2 = e.get_attribute("eq-y2", "");
+				object->set_position_equations(pos_equation_x, pos_equation_y);
+				object->set_position_equations2(pos_equation_x2, pos_equation_y2);
+				CL_ComponentAnchorPoint ap_tl = (CL_ComponentAnchorPoint)CL_StringHelp::text_to_int(e.get_attribute("anchor_tl"));
+				CL_ComponentAnchorPoint ap_br = (CL_ComponentAnchorPoint)CL_StringHelp::text_to_int(e.get_attribute("anchor_br"));
 
-			object->set_anchor_tl(ap_tl);
-			object->set_anchor_br(ap_br);
+				object->set_anchor_tl(ap_tl);
+				object->set_anchor_br(ap_br);
 
-			objects.push_back(object);
+				objects.push_back(object);
 
-			new_comp->set_enabled(e.get_attribute_bool("enabled", true));
-			new_comp->set_id_name(e.get_attribute("id"));
-			new_comp->set_class_name(e.get_attribute("class"));
+				new_comp->set_enabled(e.get_attribute_bool("enabled", true));
+				new_comp->set_id_name(e.get_attribute("id"));
+				new_comp->set_class_name(e.get_attribute("class"));
+			}
 		}
 
 		e = e.get_next_sibling().to_element();

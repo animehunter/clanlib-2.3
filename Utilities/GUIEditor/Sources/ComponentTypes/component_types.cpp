@@ -64,7 +64,7 @@ void ComponentTypes::initialize()
 	types.push_back(new FrameComponentType("frame", "Frame", next_id++, "gfx/frame.png"));
 	types.push_back(new ComponentTypeTemplate<CL_StatusBar>("statusbar", "StatusBar", next_id++, "gfx/statusbar.png"));
 	types.push_back(new ComponentTypeTemplate<CL_ToolBar>("toolbar", "ToolBar", next_id++, "gfx/toolbar.png"));
-	types.push_back(new ComponentTypeTemplate<CustomComponent>("custom", "Custom", next_id++, "gfx/custom.png"));
+	types.push_back(new ComponentTypeTemplate<CustomComponent>("customcomponent", "Custom", next_id++, "gfx/custom.png"));
 }
 
 void ComponentTypes::deinitialize()
