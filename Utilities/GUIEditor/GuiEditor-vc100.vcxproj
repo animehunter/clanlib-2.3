@@ -95,8 +95,8 @@
   <ItemGroup>
     <ClCompile Include="Sources\ComponentTypes\component_types.cpp" />
     <ClCompile Include="Sources\ComponentTypes\custom_component.cpp" />
-    <ClCompile Include="Sources\ComponentTypes\PropertyItems\anchor_popup.cpp" />
-    <ClCompile Include="Sources\ComponentTypes\PropertyItems\line_edit_popup.cpp" />
+    <ClCompile Include="Sources\ComponentTypes\PropertyItems\Popups\anchor_popup.cpp" />
+    <ClCompile Include="Sources\ComponentTypes\PropertyItems\Popups\line_edit_popup.cpp" />
     <ClCompile Include="Sources\GridComponent\EditState\grid_edit_state.cpp" />
     <ClCompile Include="Sources\GridComponent\EditState\grid_edit_state_boundary_sizing.cpp" />
     <ClCompile Include="Sources\GridComponent\EditState\grid_edit_state_create_tool.cpp" />
@@ -135,11 +135,16 @@
     <ClInclude Include="Sources\ComponentTypes\frame_component_type.h" />
     <ClInclude Include="Sources\ComponentTypes\label_component_type.h" />
     <ClInclude Include="Sources\ComponentTypes\listview_component_type.h" />
-    <ClInclude Include="Sources\ComponentTypes\PropertyItems\anchor_popup.h" />
-    <ClInclude Include="Sources\ComponentTypes\PropertyItems\line_edit_popup.h" />
+    <ClInclude Include="Sources\ComponentTypes\PropertyItems\Popups\anchor_popup.h" />
+    <ClInclude Include="Sources\ComponentTypes\PropertyItems\Popups\line_edit_popup.h" />
+    <ClInclude Include="Sources\ComponentTypes\PropertyItems\property_item_anchor.h" />
+    <ClInclude Include="Sources\ComponentTypes\PropertyItems\property_item_checkbox.h" />
     <ClInclude Include="Sources\ComponentTypes\PropertyItems\property_item_class_name.h" />
+    <ClInclude Include="Sources\ComponentTypes\PropertyItems\property_item_enabled.h" />
     <ClInclude Include="Sources\ComponentTypes\PropertyItems\property_item_group_name.h" />
+    <ClInclude Include="Sources\ComponentTypes\PropertyItems\property_item_header.h" />
     <ClInclude Include="Sources\ComponentTypes\PropertyItems\property_item_id_name.h" />
+    <ClInclude Include="Sources\ComponentTypes\PropertyItems\property_item_line_edit.h" />
     <ClInclude Include="Sources\ComponentTypes\PropertyItems\property_item_max.h" />
     <ClInclude Include="Sources\ComponentTypes\PropertyItems\property_item_min.h" />
     <ClInclude Include="Sources\ComponentTypes\PropertyItems\property_item_page_label.h" />
@@ -181,6 +186,7 @@
     <ClInclude Include="Sources\Selection\selection.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Dialogs\edit_columns.gui" />
     <None Include="Dialogs\options.xml" />
     <None Include="resources.xml" />
     <None Include="Dialogs\source_generator.xml" />

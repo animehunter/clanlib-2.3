@@ -36,13 +36,16 @@
     <Filter Include="Source Files\PropertyComponent\EditState">
       <UniqueIdentifier>{1ecfb53a-7034-4bb4-8f21-54dea562976f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Dialogs">
+      <UniqueIdentifier>{0d34c17b-081d-49ec-a8dd-4b864d70f413}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ComponentTypes\PropertyItems\Popups">
+      <UniqueIdentifier>{e6eabe45-db83-418f-b145-3f9f3a3a5884}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sources\precomp.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\ComponentTypes\PropertyItems\anchor_popup.cpp">
-      <Filter>Source Files\ComponentTypes\PropertyItems</Filter>
     </ClCompile>
     <ClCompile Include="Sources\ComponentTypes\component_types.cpp">
       <Filter>Source Files\ComponentTypes</Filter>
@@ -113,22 +116,22 @@
     <ClCompile Include="Sources\GridComponent\grid_object.cpp">
       <Filter>Source Files\GridComponent</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\ComponentTypes\PropertyItems\line_edit_popup.cpp">
-      <Filter>Source Files\ComponentTypes\PropertyItems</Filter>
-    </ClCompile>
     <ClCompile Include="Sources\PropertyComponent\property_item_popup.cpp">
       <Filter>Source Files\PropertyComponent</Filter>
     </ClCompile>
     <ClCompile Include="Sources\MainWindow\edit_columns_window.cpp">
       <Filter>Source Files\MainWindow</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\ComponentTypes\PropertyItems\Popups\anchor_popup.cpp">
+      <Filter>Source Files\ComponentTypes\PropertyItems\Popups</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\ComponentTypes\PropertyItems\Popups\line_edit_popup.cpp">
+      <Filter>Source Files\ComponentTypes\PropertyItems\Popups</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\precomp.h">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\ComponentTypes\PropertyItems\anchor_popup.h">
-      <Filter>Source Files\ComponentTypes\PropertyItems</Filter>
     </ClInclude>
     <ClInclude Include="Sources\ComponentTypes\PropertyItems\property_item_class_name.h">
       <Filter>Source Files\ComponentTypes\PropertyItems</Filter>
@@ -241,9 +244,6 @@
     <ClInclude Include="Sources\GridComponent\grid_object.h">
       <Filter>Source Files\GridComponent</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\ComponentTypes\PropertyItems\line_edit_popup.h">
-      <Filter>Source Files\ComponentTypes\PropertyItems</Filter>
-    </ClInclude>
     <ClInclude Include="Sources\PropertyComponent\property_item_popup.h">
       <Filter>Source Files\PropertyComponent</Filter>
     </ClInclude>
@@ -283,15 +283,30 @@
     <ClInclude Include="Sources\ComponentTypes\tab_component_type.h">
       <Filter>Source Files\ComponentTypes</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\ComponentTypes\PropertyItems\property_item_anchor.h">
+      <Filter>Source Files\ComponentTypes\PropertyItems</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\ComponentTypes\PropertyItems\property_item_checkbox.h">
+      <Filter>Source Files\ComponentTypes\PropertyItems</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\ComponentTypes\PropertyItems\property_item_enabled.h">
+      <Filter>Source Files\ComponentTypes\PropertyItems</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\ComponentTypes\PropertyItems\property_item_header.h">
+      <Filter>Source Files\ComponentTypes\PropertyItems</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\ComponentTypes\PropertyItems\property_item_line_edit.h">
+      <Filter>Source Files\ComponentTypes\PropertyItems</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\ComponentTypes\PropertyItems\Popups\anchor_popup.h">
+      <Filter>Source Files\ComponentTypes\PropertyItems\Popups</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\ComponentTypes\PropertyItems\Popups\line_edit_popup.h">
+      <Filter>Source Files\ComponentTypes\PropertyItems\Popups</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Dialogs\options.xml">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="resources.xml">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Dialogs\source_generator.xml">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="theme.css">
@@ -355,5 +370,14 @@
       <Filter>Resource Files\Theme</Filter>
     </None>
     <None Include="todo.txt" />
+    <None Include="Dialogs\source_generator.xml">
+      <Filter>Resource Files\Dialogs</Filter>
+    </None>
+    <None Include="Dialogs\options.xml">
+      <Filter>Resource Files\Dialogs</Filter>
+    </None>
+    <None Include="Dialogs\edit_columns.gui">
+      <Filter>Resource Files\Dialogs</Filter>
+    </None>
   </ItemGroup>
 </Project>
