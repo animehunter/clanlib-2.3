@@ -133,6 +133,7 @@
     <ClInclude Include="Sources\ComponentTypes\component_type_template.h" />
     <ClInclude Include="Sources\ComponentTypes\custom_component.h" />
     <ClInclude Include="Sources\ComponentTypes\frame_component_type.h" />
+    <ClInclude Include="Sources\ComponentTypes\imageview_component_type.h" />
     <ClInclude Include="Sources\ComponentTypes\label_component_type.h" />
     <ClInclude Include="Sources\ComponentTypes\listview_component_type.h" />
     <ClInclude Include="Sources\ComponentTypes\PropertyItems\Popups\anchor_popup.h" />

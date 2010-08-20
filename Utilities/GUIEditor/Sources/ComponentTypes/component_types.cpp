@@ -42,6 +42,7 @@
 #include "scrollbar_vert_component_type.h"
 #include "slider_component_type.h"
 #include "tab_component_type.h"
+#include "imageview_component_type.h"
 
 void ComponentTypes::initialize()
 {
@@ -56,7 +57,7 @@ void ComponentTypes::initialize()
 	types.push_back(new ButtonComponentType("button", "PushButton", next_id++, "gfx/pushbutton.png"));
 	types.push_back(new SliderComponentType("slider", "Slider", next_id++, "gfx/slider.png"));
 	types.push_back(new ComponentTypeTemplate<CL_Spin>("spin", "Spin", next_id++, "gfx/spin.png"));
-	types.push_back(new ComponentTypeTemplate<CL_ImageView>("imageview", "ImageView", next_id++, "gfx/image.png"));
+	types.push_back(new ImageViewComponentType("imageview", "ImageView", next_id++, "gfx/image.png"));
 	types.push_back(new ScrollBarHorizontalComponentType("hscrollbar", "H Scroll Bar", next_id++, "gfx/scroll_horizontal.png"));
 	types.push_back(new ScrollBarVerticalComponentType("vscrollbar", "V Scroll Bar", next_id++, "gfx/scroll_vertical.png"));
 	types.push_back(new TabComponentType("tab", "Tab", next_id++, "gfx/tab.png"));

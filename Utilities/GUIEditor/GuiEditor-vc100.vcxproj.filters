@@ -304,6 +304,9 @@
     <ClInclude Include="Sources\ComponentTypes\PropertyItems\Popups\line_edit_popup.h">
       <Filter>Source Files\ComponentTypes\PropertyItems\Popups</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\ComponentTypes\imageview_component_type.h">
+      <Filter>Source Files\ComponentTypes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources.xml">
