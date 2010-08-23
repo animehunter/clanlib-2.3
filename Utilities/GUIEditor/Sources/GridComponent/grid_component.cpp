@@ -219,9 +219,11 @@ void GridComponent::load(CL_DomElement &element, CL_GUIComponent *parent)
 					CL_DomElement frame_child = e.get_first_child().to_element();
 					load(e, co);
 				}
-
-				// CustomComponent *co = dynamic_cast<CL_CheckBox*>(new_comp);
-				// co->set_type_name(tag);
+				else
+				{
+					CustomComponent *co = dynamic_cast<CustomComponent*>(new_comp);
+					co->set_type_name(tag);
+				}
 			
 				int dist_tl_x = CL_StringHelp::text_to_int(e.get_attribute("dist_tl_x"));
 				int dist_tl_y = CL_StringHelp::text_to_int(e.get_attribute("dist_tl_y"));
