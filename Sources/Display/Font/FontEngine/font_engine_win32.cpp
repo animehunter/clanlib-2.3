@@ -133,14 +133,14 @@ CL_FontPixelBuffer CL_FontEngine_Win32::get_font_glyph_lcd(int glyph, const CL_C
 	HBITMAP bitmap = CreateCompatibleBitmap(screen_dc, bitmap_size.width, bitmap_size.height);
 	old_bitmap = (HBITMAP)SelectObject(dc, bitmap);
 
-	HBRUSH brush = CreateSolidBrush(RGB(0,0,0));
+	HBRUSH brush = CreateSolidBrush(RGB(255,255,255));
 	RECT rect = { 0, 0, bitmap_size.width, bitmap_size.height };
 	FillRect(dc, &rect, brush);
 	DeleteObject(brush);
 
 	old_font = (HFONT)SelectObject(dc, handle);
-	SetTextColor(dc, RGB(255,255,255));
-	SetBkColor(dc, RGB(0,0,0));
+	SetTextColor(dc, RGB(0,0,0));
+	SetBkColor(dc, RGB(255,255,255));
 	SetTextAlign(dc, TA_LEFT|TA_BASELINE|TA_NOUPDATECP);
 	text[0] = indices[0];
 	ExtTextOut(dc, cursor.x, cursor.y, ETO_GLYPH_INDEX, &rect, text, 1, 0);
@@ -165,7 +165,12 @@ CL_FontPixelBuffer CL_FontEngine_Win32::get_font_glyph_lcd(int glyph, const CL_C
 	int scanlines = GetDIBits(screen_dc, bitmap, 0, bitmap_size.height, pixelbuffer.get_data(), (LPBITMAPINFO)&header, DIB_RGB_COLORS);
 	unsigned char *p = (unsigned char *)pixelbuffer.get_data();
 	for (int i = 0; i < bitmap_size.width*bitmap_size.height; i++)
+	{
+		p[i*4+0] = 255-p[i*4+0];
+		p[i*4+1] = 255-p[i*4+1];
+		p[i*4+2] = 255-p[i*4+2];
 		p[i*4+3] = 255;
+	}
 
 	DeleteObject(bitmap);
 	ReleaseDC(0, screen_dc);

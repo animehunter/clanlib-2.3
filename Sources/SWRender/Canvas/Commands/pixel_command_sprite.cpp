@@ -84,13 +84,13 @@ void CL_PixelCommandSprite::render_sprite(CL_PixelThreadContext *context)
 		}
 		else
 		{
-			/*if (scale)
+			if (scale)
 				render_sprite_scale(context, box);
 			else if (white)
 				render_sprite_noscale_white(context, box);
 			else
-				render_sprite_noscale(context, box);*/
-			render_sprite_scale_linear(context, box);
+				render_sprite_noscale(context, box);
+			//render_sprite_scale_linear(context, box);
 		}
 	}
 }
