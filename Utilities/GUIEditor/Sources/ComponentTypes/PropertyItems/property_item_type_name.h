@@ -35,7 +35,7 @@ class PropertyItemTypeName : public PropertyItemLineEdit
 {
 public:
 	PropertyItemTypeName()
-	: PropertyItemLineEdit(".class")
+	: PropertyItemLineEdit("type")
 	{
 	}
 

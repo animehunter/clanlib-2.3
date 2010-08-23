@@ -1,7 +1,6 @@
 Important:
 - Resize components with keyboard
 
-- When editing properties, see what you write
 - Show realtime updated properties when dragging components
 - Show properties of main window (especially width/height when resizing)
 

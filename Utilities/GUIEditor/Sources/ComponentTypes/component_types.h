@@ -42,7 +42,8 @@ public:
 	static const std::vector<ComponentType *> &get_types();
 
 private:
-
 	static std::vector<ComponentType *> types;
 	static std::map<int, int> component_count;
+
+	static ComponentType *custom_component;
 };

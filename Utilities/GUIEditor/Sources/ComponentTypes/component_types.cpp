@@ -47,6 +47,9 @@
 void ComponentTypes::initialize()
 {
 	int next_id = 1;
+
+	custom_component = new ComponentTypeTemplate<CustomComponent>("customcomponent", "Custom", next_id++, "gfx/custom.png");
+
 	types.push_back(new CheckBoxComponentType("checkbox", "CheckBox", next_id++, "gfx/check.png"));
 	types.push_back(new RadioButtonComponentType("radiobutton", "RadioButton", next_id++, "gfx/radio.png"));
 	types.push_back(new LabelComponentType("label", "Label", next_id++, "gfx/label.png"));
@@ -64,7 +67,7 @@ void ComponentTypes::initialize()
 	types.push_back(new FrameComponentType("frame", "Frame", next_id++, "gfx/frame.png"));
 	types.push_back(new ComponentTypeTemplate<CL_StatusBar>("statusbar", "StatusBar", next_id++, "gfx/statusbar.png"));
 	types.push_back(new ComponentTypeTemplate<CL_ToolBar>("toolbar", "ToolBar", next_id++, "gfx/toolbar.png"));
-	types.push_back(new ComponentTypeTemplate<CustomComponent>("customcomponent", "Custom", next_id++, "gfx/custom.png"));
+	types.push_back(custom_component);
 }
 
 void ComponentTypes::deinitialize()
@@ -99,7 +102,9 @@ ComponentType *ComponentTypes::find_from_xml(const CL_String &tag)
 			return types[index];
 		}
 	}
-	return 0;
+
+	// No matching tag found, assume custom component
+	return custom_component;
 }
 
 void ComponentTypes::set_id_name(CL_GUIComponent *new_component, int id)
@@ -117,3 +122,4 @@ const std::vector<ComponentType *> &ComponentTypes::get_types()
 
 std::vector<ComponentType *> ComponentTypes::types;
 std::map<int, int> ComponentTypes::component_count;
+ComponentType *ComponentTypes::custom_component;
