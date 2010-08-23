@@ -235,6 +235,9 @@ void PropertyComponent::on_selection_changed()
 		else if (type == "listview")
 		{
 		}
+		else if (type == "imageview")
+		{
+		}
 		else if (type == "tab")
 		{
 			CL_Tab *tab = dynamic_cast<CL_Tab*>(comp);
