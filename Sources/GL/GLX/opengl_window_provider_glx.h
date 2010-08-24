@@ -317,8 +317,7 @@ private:
 
 	ptr_glXSwapIntervalSGI glXSwapIntervalSGI;
 	ptr_glXSwapIntervalMESA glXSwapIntervalMESA;
-	bool  glx_swap_interval_set;
-	int last_set_interval;	// Set to -1 when not set
+	int swap_interval;
 
 	GLXFBConfig fbconfig;
 
