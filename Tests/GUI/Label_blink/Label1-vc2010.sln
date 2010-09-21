@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Label1", "Label1-vc2010.vcproj", "{82340246-4105-43D5-8D48-5FC35A5D6EB5}"
+# Visual C++ Express 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Label1", "Label1-vc2010.vcxproj", "{82340246-4105-43D5-8D48-5FC35A5D6EB5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

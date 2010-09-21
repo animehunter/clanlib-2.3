@@ -1,7 +1,7 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SpriteSpeed1", "SpriteSpeed1-CL09-vc2010.vcproj", "{6D0EC7A4-83C6-45A4-8BC7-1D1C4EE4EC5D}"
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C++ Express 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SpriteSpeed1", "SpriteSpeed1-CL09-vc2010.vcxproj", "{6D0EC7A4-83C6-45A4-8BC7-1D1C4EE4EC5D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

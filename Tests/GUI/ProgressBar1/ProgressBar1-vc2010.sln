@@ -1,7 +1,7 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProgressBar1", "ProgressBar1-vc2010.vcproj", "{36668BAD-1A0D-469C-BFAF-04E01A0100F2}"
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C++ Express 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProgressBar1", "ProgressBar1-vc2010.vcxproj", "{36668BAD-1A0D-469C-BFAF-04E01A0100F2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
