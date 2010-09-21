@@ -640,7 +640,7 @@ void HTMLTokenizer::unescape(CL_String &text)
 				{
 					eaten += escape.length()-1;
 					i += escape.length()-1;
-					text[i-eaten] = escapes[k].cdata_that_needs_fixed_because_of_utf_8_issues;
+					text[i-eaten] = escapes[k].cdata;
 					break;
 				}
 			}

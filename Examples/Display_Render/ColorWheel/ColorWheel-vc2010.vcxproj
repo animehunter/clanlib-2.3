@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>ColorWheel1</ProjectName>
+    <ProjectName>ColorWheel</ProjectName>
     <ProjectGuid>{BAB64109-DBA5-439B-A821-5AFF2D121133}</ProjectGuid>
     <RootNamespace>ColorWheel</RootNamespace>
   </PropertyGroup>

@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>blend1</ProjectName>
+    <ProjectName>Blend</ProjectName>
     <ProjectGuid>{BAB64109-DBA5-439B-A821-5AFF2D877AEE}</ProjectGuid>
     <RootNamespace>blend</RootNamespace>
   </PropertyGroup>

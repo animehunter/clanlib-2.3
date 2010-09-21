@@ -31,15 +31,6 @@
 class CL_CSSLayout;
 class CL_CSSBoxElement;
 
-class CSSReplaced
-{
-public:
-	CL_Size get_size() { return size; }
-	void set_geometry(const CL_Rect &b) { box = b; }
-	CL_Rect box;
-	CL_Size size;
-};
-
 class CSSView : public CL_GUIComponent
 {
 public:
@@ -62,6 +53,4 @@ private:
 	CL_Rect client_box;
 	CL_Rect scrollbar_box;
 	CL_Rect view_box;
-	std::vector<CSSReplaced*> replaced_objs;
-	CL_Image image;
 };

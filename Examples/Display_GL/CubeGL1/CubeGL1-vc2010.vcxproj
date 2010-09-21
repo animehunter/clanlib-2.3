@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>CubeGL1-vc90</ProjectName>
+    <ProjectName>CubeGL</ProjectName>
     <ProjectGuid>{5C1AAF8C-7FF0-447E-B01D-AED0A0CAF331}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -59,7 +59,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <OutputFile>$(OutDir)Cube.exe</OutputFile>
+      <OutputFile>$(OutDir)CubeGL.exe</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)Cube.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
@@ -80,7 +80,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <OutputFile>$(OutDir)Cube.exe</OutputFile>
+      <OutputFile>$(OutDir)CubeGL.exe</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>

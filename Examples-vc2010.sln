@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual C++ Express 2010
+# Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TexturePacker", "Utilities\TexturePacker\TexturePacker-vc2010.vcxproj", "{2EAAC185-8D7F-4570-9AC6-B07D5AB4FDAC}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GuiEditor", "Utilities\GUIEditor\GuiEditor-vc2010.vcxproj", "{5C1AAF8C-7FF0-447E-B01D-AED0A0B2849F}"
@@ -9,7 +9,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SQL", "Examples\Database\SQ
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CustomGL", "Examples\Display_GL\CustomGL\CustomGL-vc2010.vcxproj", "{4E27E943-27C7-4F00-A431-B6ACA2367333}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CubeGL1-vc90", "Examples\Display_GL\CubeGL1\CubeGL1-vc2010.vcxproj", "{5C1AAF8C-7FF0-447E-B01D-AED0A0CAF331}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CubeGL", "Examples\Display_GL\CubeGL1\CubeGL1-vc2010.vcxproj", "{5C1AAF8C-7FF0-447E-B01D-AED0A0CAF331}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HSVSprite", "Examples\Display_Shaders\HSVSprite\HSVSprite-vc2010.vcxproj", "{77173D24-4CBD-4925-9307-D75442CAD4AD}"
 EndProject
@@ -22,8 +22,14 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DiceWar-Lib", "Examples\Game\DiceWar\DiceWar-Lib-vc2010.vcxproj", "{9BBBD143-5043-4C8D-B6FC-7F3D02739FFF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DiceWar-Client", "Examples\Game\DiceWar\DiceWar-Client-vc2010.vcxproj", "{E40CA023-9C41-441B-8354-7803E63AB758}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9BBBD143-5043-4C8D-B6FC-7F3D02739FFF} = {9BBBD143-5043-4C8D-B6FC-7F3D02739FFF}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DiceWar-Server", "Examples\Game\DiceWar\DiceWar-Server-vc2010.vcxproj", "{4528B1BE-1B77-4D43-9E56-47946D542FFC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9BBBD143-5043-4C8D-B6FC-7F3D02739FFF} = {9BBBD143-5043-4C8D-B6FC-7F3D02739FFF}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SpritesRTS", "Examples\Game\SpritesRTS\SpritesRTS-vc2010.vcxproj", "{D9CE0CB9-BDC8-4306-A1C8-7C9D0C1E61EB}"
 EndProject
@@ -61,9 +67,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Canvas", "Examples\Display_
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MapMode", "Examples\Display_Render\MapMode\mapmode-vc2010.vcxproj", "{BAB64109-DBA5-439B-A821-5AFF2D111AA2}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "stencil", "Examples\Display_Render\Stencil\stencil-vc2010.vcxproj", "{BAB64109-DBA5-439B-A821-5AFF2D123AAD}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stencil", "Examples\Display_Render\Stencil\stencil-vc2010.vcxproj", "{BAB64109-DBA5-439B-A821-5AFF2D123AAD}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "blend1", "Examples\Display_Render\Blend\blend-vc2010.vcxproj", "{BAB64109-DBA5-439B-A821-5AFF2D877AEE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Blend", "Examples\Display_Render\Blend\blend-vc2010.vcxproj", "{BAB64109-DBA5-439B-A821-5AFF2D877AEE}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CanvasAdvanced", "Examples\Display_Render\CanvasAdvanced\CanvasAdvanced-vc2010.vcxproj", "{6367F40C-5DAC-40FB-BC55-4B1D3BCA7D0D}"
 EndProject
@@ -91,7 +97,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Chess3D", "Examples\3D\Ches
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Quaternion", "Examples\3D\Quaternion\Quaternion-vc2010.vcxproj", "{4E27E943-27C7-4F00-A431-B6ACA2366543}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ColorWheel1", "Examples\Display_Render\ColorWheel\ColorWheel-vc2010.vcxproj", "{BAB64109-DBA5-439B-A821-5AFF2D121133}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ColorWheel", "Examples\Display_Render\ColorWheel\ColorWheel-vc2010.vcxproj", "{BAB64109-DBA5-439B-A821-5AFF2D121133}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Particle", "Examples\Display\Particle\Particle-vc2010.vcxproj", "{4E27E943-27C7-4F00-A431-B6ACA57423A2}"
 EndProject
