@@ -20,6 +20,7 @@
 #include "linear6.h"
 #include "linear7.h"
 #include "linear8.h"
+#include "perspective1.h"
 
 void time_algorithm(const CL_String &name, void(*func)(Scanline *), CL_DisplayWindow *window)
 {
@@ -44,6 +45,8 @@ void time_algorithm(const CL_String &name, void(*func)(Scanline *), CL_DisplayWi
 	d.tx2 = 1600.0f/512.0f;
 	d.ty1 = 0.0f;
 	d.ty2 = 0.0f;
+	d.viewport_center = 1600/2;
+	d.viewport_width = 1600;
 
 	unsigned int start = CL_System::get_time();
 	for (int i = 0; i < 100; i++)
@@ -88,6 +91,7 @@ int main(int, char **)
 	*/
 
 	CL_DisplayWindow window("SSE Speed Test", 1600, 1200);
-	time_algorithm("linear8", linear8, &window);
+	//time_algorithm("linear8", linear8, &window);
+	time_algorithm("perspective1", perspective1, &window);
 	return 0;
 }

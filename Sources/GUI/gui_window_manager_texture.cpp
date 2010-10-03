@@ -42,6 +42,13 @@ CL_GUIWindowManagerTexture::CL_GUIWindowManagerTexture(CL_DisplayWindow display_
 {
 }
 
+CL_GUIWindowManagerTexture::CL_GUIWindowManagerTexture(const CL_GUIWindowManager &wm)
+: CL_GUIWindowManager(wm)
+{
+	if (dynamic_cast<CL_GUIWindowManagerProvider_Texture *>(get_provider()) == 0)
+		throw CL_Exception("CL_GUIWindowManager object is not a CL_GUIWindowManagerTexture!");
+}
+
 CL_GUIWindowManagerTexture::~CL_GUIWindowManagerTexture()
 {
 }

@@ -56,6 +56,7 @@ public:
 	///
 	/// \param display_window = Display Window
 	CL_GUIWindowManagerTexture(CL_DisplayWindow display_window);
+	CL_GUIWindowManagerTexture(const CL_GUIWindowManager &wm);
 	~CL_GUIWindowManagerTexture();
 /// \}
 
