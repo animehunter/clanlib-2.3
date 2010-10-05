@@ -36,6 +36,7 @@
 #include "api_gui.h"
 #include "../Core/System/sharedptr.h"
 #include "../Core/System/weakptr.h"
+#include "../Core/Signals/callback_0.h"
 #include "../Core/Signals/callback_1.h"
 #include "../Core/Signals/callback_2.h"
 #include "../Core/Signals/signal_v1.h"
@@ -147,8 +148,8 @@ public:
 	/// \brief bool func_filter_message(const CL_GUIMessage &message)
 	CL_Signal_v1<CL_GUIMessage &> &sig_filter_message();
 
-	/// \brief int func_exec_handler(bool loop_until_complete)
-	CL_Callback_1<int, bool> &func_exec_handler();
+	/// \brief int func_exec_handler()
+	CL_Callback_0<int> &func_exec_handler();
 
 /// \}
 /// \name Operations
@@ -185,9 +186,7 @@ public:
 	void set_window_manager(CL_GUIWindowManager &window_manager);
 
 	/// \brief Processes messages until exit_with_code is called
-	///
-	/// \param loop_until_complete : Obsolete, always keep "true". Use CL_GUIWindowManagerTexture::process() instead
-	int exec(bool loop_until_complete = true);
+	int exec();
 
 	/// \brief Processes all messages available
 	///

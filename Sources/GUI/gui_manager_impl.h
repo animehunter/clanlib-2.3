@@ -120,7 +120,7 @@ public:
 
 	std::vector<CL_GUITopLevelWindow *> root_components;
 	CL_Signal_v1<CL_GUIMessage &> sig_filter_message;
-	CL_Callback_1<int, bool> func_exec_handler;
+	CL_Callback_0<int> func_exec_handler;
 	CL_CSSDocument css_document;
 	CL_GUIThemeLayoutManager layout_manager;
 
