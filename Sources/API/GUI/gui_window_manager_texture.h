@@ -102,6 +102,12 @@ public:
 	/// \param gc = Graphic Context
 	void draw_windows(CL_GraphicContext &gc);
 
+	/// \brief Process the windows
+	/// 
+	/// Can you use this function if you do not want the CL_GUIManager to control the application main loop\n
+	/// Use draw_windows() after this to draw the windows to the screen
+	void process();
+
 /// \}
 
 /// \name Implementation
