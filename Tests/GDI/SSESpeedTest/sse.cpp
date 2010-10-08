@@ -39,14 +39,16 @@ void time_algorithm(const CL_String &name, void(*func)(Scanline *), CL_DisplayWi
 	d.src = texture0;
 	d.src_width = 512;
 	d.src_height = 512;
-	d.x1 = 0.0f;
-	d.x2 = 1600.0f;
+	d.x1 = -1.0f;
+	d.x2 = 1.0f;
+	d.w1 = 1.0f;
+	d.w2 = 1.0f;
 	d.tx1 = 0.0f;
 	d.tx2 = 1600.0f/512.0f;
 	d.ty1 = 0.0f;
 	d.ty2 = 0.0f;
 	d.viewport_center = 1600/2;
-	d.viewport_width = 1600;
+	d.half_viewport_width = 1600/2;
 
 	unsigned int start = CL_System::get_time();
 	for (int i = 0; i < 100; i++)
@@ -59,9 +61,12 @@ void time_algorithm(const CL_String &name, void(*func)(Scanline *), CL_DisplayWi
 			clipScanline(&d, 0, 1600);
 			func(&d);
 		}
+		if (window)
+			break;
 	}
 	unsigned int end = CL_System::get_time();
-	CL_Console::write_line("%3: %1 ms elapsed, %2 fps", end-start, 100000/(end-start), name);
+	if (!window)
+		CL_Console::write_line("%3: %1 ms elapsed, %2 fps", end-start, 100000/(end-start), name);
 
 	if (window)
 	{
@@ -82,16 +87,9 @@ int main(int, char **)
 	CL_SetupCore setup_core;
 	CL_SetupDisplay setup_display;
 	CL_SetupSWRender setup_swrender;
-	/*
-	time_algorithm("nearest1", nearest1, 0);
-	time_algorithm("linear1", linear1, 0);
-	//time_algorithm("linear2", linear2, 0);
-	time_algorithm("linear3", linear3, 0);
-	time_algorithm("linear4", linear4, 0);
-	*/
 
 	CL_DisplayWindow window("SSE Speed Test", 1600, 1200);
-	//time_algorithm("linear8", linear8, &window);
 	time_algorithm("perspective1", perspective1, &window);
+	//time_algorithm("perspective1", perspective1, 0);
 	return 0;
 }

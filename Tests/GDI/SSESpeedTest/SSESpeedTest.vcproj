@@ -220,6 +220,10 @@
 			>
 		</File>
 		<File
+			RelativePath=".\perspective2.h"
+			>
+		</File>
+		<File
 			RelativePath=".\sampler.h"
 			>
 		</File>
