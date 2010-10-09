@@ -21,6 +21,7 @@
 #include "linear7.h"
 #include "linear8.h"
 #include "perspective1.h"
+#include "perspective2.h"
 
 void time_algorithm(const CL_String &name, void(*func)(Scanline *), CL_DisplayWindow *window)
 {
@@ -89,7 +90,9 @@ int main(int, char **)
 	CL_SetupSWRender setup_swrender;
 
 	CL_DisplayWindow window("SSE Speed Test", 1600, 1200);
-	time_algorithm("perspective1", perspective1, &window);
+	//time_algorithm("perspective1", perspective1, &window);
 	//time_algorithm("perspective1", perspective1, 0);
+	time_algorithm("perspective2", perspective2, &window);
+	time_algorithm("perspective2", perspective2, 0);
 	return 0;
 }
