@@ -166,47 +166,6 @@ __m128i blendFunc(__m128i src, __m128i dest)
 
 	return _mm_or_si128(_mm_or_si128(_mm_or_si128(_mm_slli_epi32(dest_alpha, 24), _mm_slli_epi32(dest_red, 16)), _mm_slli_epi32(dest_green, 8)), dest_blue);
 }
-/*
-__m128i blendFunc(__m128i src, __m128i dest)
-{
-	__m128i zero = _mm_setzero_si128();
-	__m128i one = _mm_set1_epi16(0x0100);
-	__m128i half7f = _mm_set1_epi16(0x007f);
-
-	__m128i src0, dest0;
-	__m128i src_alpha, invsrc_alpha;
-	src0 = _mm_unpacklo_epi8(src, zero);
-	dest0 = _mm_unpacklo_epi8(dest, zero);
-	src_alpha = _mm_shufflelo_epi16(src0, _MM_SHUFFLE(3,3,3,3));
-	src_alpha = _mm_shufflehi_epi16(src_alpha, _MM_SHUFFLE(3,3,3,3));
-	invsrc_alpha = _mm_sub_epi16(one, src_alpha);
-
-	src0 = _mm_mullo_epi16(src0, src_alpha);
-	dest0 = _mm_mullo_epi16(dest0, invsrc_alpha);
-	dest0 = _mm_add_epi16(dest0, src0);
-	dest0 = _mm_add_epi16(dest0, half7f);
-	dest0 = _mm_srli_epi16(dest0, 8);
-
-	__m128i src1, dest1;
-	src1 = _mm_unpackhi_epi8(src, zero);
-	dest1 = _mm_unpackhi_epi8(dest, zero);
-	src_alpha = _mm_shufflelo_epi16(src1, _MM_SHUFFLE(3,3,3,3));
-	src_alpha = _mm_shufflehi_epi16(src_alpha, _MM_SHUFFLE(3,3,3,3));
-	invsrc_alpha = _mm_sub_epi16(one, src_alpha);
-
-	src1 = _mm_mullo_epi16(src1, src_alpha);
-	dest1 = _mm_mullo_epi16(dest1, invsrc_alpha);
-	dest1 = _mm_add_epi16(dest1, src1);
-	dest1 = _mm_add_epi16(dest1, half7f);
-	dest1 = _mm_srli_epi16(dest1, 8);
-
-	return _mm_packus_epi16(dest0, dest1);
-}
-*/
-void blendFragment(unsigned int *dest, __m128i src)
-{
-	_mm_storeu_si128((__m128i*)dest, blendFunc(src, _mm_loadu_si128((__m128i*)dest)));
-}
 
 FragmentQuadOutput fragmentProgram(Scanline &scanline, const FragmentQuadInput &input)
 {
@@ -218,16 +177,33 @@ void perspective2(Scanline *d)
 {
 	__m128 rcp_half_viewportwidth = _mm_rcp_ps(_mm_cvtepi32_ps(_mm_set1_epi32(d->half_viewport_width)));
 
-	int tmp = d->startx - d->viewport_center;
+	int ssestart = d->startx; // Only makes sense to align it if scanlines are 16 byte aligned / / (d->startx/4)*4;
+	int sselength = (d->endx - ssestart + 3)/4;
+
+	int tmp = ssestart - d->viewport_center;
 	__m128 pos = _mm_add_ps(_mm_cvtepi32_ps(_mm_set_epi32(tmp+3, tmp+2, tmp+1, tmp)), _mm_set1_ps(0.5f));
 	__m128 blocksize = _mm_set1_ps(4.0f);
 
-	for (int x = d->startx; x < d->endx; x+=4, pos = _mm_add_ps(pos, blocksize))
+	__m128i maskpos = _mm_set_epi32(ssestart+3, ssestart+2, ssestart+1, ssestart);
+	__m128i maskincr = _mm_set1_epi32(4);
+	__m128i left = _mm_set1_epi32(d->startx);
+	__m128i right = _mm_set1_epi32(d->endx);
+	unsigned int *dest = d->dest+ssestart;
+	for (int i = 0; i < sselength; i++)
 	{
 		__m128 xnormalized = _mm_mul_ps(pos, rcp_half_viewportwidth);
 
 		FragmentQuadInput input = createFragmentQuad(*d, xnormalized);
 		FragmentQuadOutput output = fragmentProgram(*d, input);
-		blendFragment(d->dest+x, output.color0);
+
+		__m128i destcolor0 = _mm_loadu_si128((__m128i*)dest);
+		__m128i newdestcolor0 = blendFunc(output.color0, destcolor0);
+
+		__m128i movemask = _mm_andnot_si128(_mm_cmplt_epi32(maskpos, left), _mm_cmplt_epi32(maskpos, right));
+		_mm_maskmoveu_si128(newdestcolor0, movemask, (char*)dest);
+
+		pos = _mm_add_ps(pos, blocksize);
+		maskpos = _mm_add_epi32(maskpos, maskincr);
+		dest+=4;
 	}
 }
