@@ -372,6 +372,12 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCurs
 	cursor.x += margin.left + border.left + padding.left;
 	add_margin_top(cursor);
 
+	// Note: this may have to be added to add_margin_top
+	if (element_node->computed_properties.min_height.type == CL_CSSBoxMinHeight::type_length)
+		cursor.apply_margin();
+	else if (element_node->computed_properties.min_height.type == CL_CSSBoxMinHeight::type_percentage && !containing_height.use_content)
+		cursor.apply_margin();
+
 	if (border.top > 0 || padding.top > 0)
 		cursor.apply_margin();
 
@@ -404,7 +410,27 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCurs
 	if (height.use_content)
 	{
 		height.value = cl_max(0.0f, cursor.y - content_box.top);
-		content_box.bottom = cursor.y;
+
+		if (element_node->computed_properties.max_height.type == CL_CSSBoxMaxHeight::type_length)
+		{
+			height.value = cl_min(height.value, element_node->computed_properties.max_height.length.value);
+		}
+		else if (element_node->computed_properties.max_height.type == CL_CSSBoxMaxHeight::type_percentage && !containing_height.use_content)
+		{
+			height.value = cl_min(height.value, element_node->computed_properties.max_height.percentage * containing_height.value / 100.0f);
+		}
+
+		if (element_node->computed_properties.min_height.type == CL_CSSBoxMinHeight::type_length)
+		{
+			height.value = cl_max(height.value, element_node->computed_properties.min_height.length.value);
+		}
+		else if (element_node->computed_properties.min_height.type == CL_CSSBoxMinHeight::type_percentage && !containing_height.use_content)
+		{
+			height.value = cl_max(height.value, element_node->computed_properties.min_height.percentage * containing_height.value / 100.0f);
+		}
+
+		content_box.bottom = content_box.top+height.value; // content_box.bottom = cursor.y;
+		cursor.y = content_box.top + height.value;
 	}
 	else
 	{
