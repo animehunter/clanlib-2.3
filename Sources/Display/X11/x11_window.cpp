@@ -729,8 +729,7 @@ void CL_X11Window::create_new_window(XVisualInfo *visual, const CL_DisplayWindow
 	// make window visible:
 	if (desc.is_visible())
 	{
-		show(true);
-		set_enabled(true);
+		show(false);
 	}
 
 	if (desc.is_fullscreen()) set_fullscreen();
