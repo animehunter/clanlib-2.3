@@ -118,13 +118,28 @@ void CL_CSSTableLayout::render(CL_GraphicContext &gc, CL_CSSResourceCache *resou
 
 CL_Rect CL_CSSTableLayout::get_cell_border_box(size_t row, size_t col)
 {
-	CL_CSSUsedValue x = 0.0f;
-	CL_CSSUsedValue y = 0.0f;
+	CL_CSSUsedValue left = 0.0f;
+	CL_CSSUsedValue top = 0.0f;
+	CL_CSSUsedValue right = 0.0f;
+	CL_CSSUsedValue bottom = 0.0f;
+
 	for (size_t i = 0; i < col; i++)
-		x += columns[i].cell_width;
+		left += size_grid.get_non_content_width(i) + size_grid.get_width(i);
+	left += size_grid.get_non_content_width(col);
+
 	for (size_t i = 0; i < row; i++)
-		y += rows[i].height;
-	CL_Rect box((int)(x+0.5f),(int)(y+0.5f),(int)(x+columns[col].cell_width+0.5f),(int)(y+rows[row].height+0.5f));
+		top += size_grid.get_non_content_height(i) + size_grid.get_height(i);
+	top += size_grid.get_non_content_height(row);
+
+	right = left + size_grid.get_width(col);
+	bottom = top + size_grid.get_height(row);
+
+	left -= columns[col].rows[row]->border.left;
+	right += columns[col].rows[row]->border.right;
+	top -= columns[col].rows[row]->border.top;
+	bottom += columns[col].rows[row]->border.bottom;
+
+	CL_Rect box((int)(left+0.5f),(int)(top+0.5f),(int)(right+0.5f),(int)(bottom+0.5f));
 	box.translate(formatting_context->get_x(), formatting_context->get_y());
 	return box;
 }
@@ -155,6 +170,47 @@ void CL_CSSTableLayout::render_cell_non_content(CL_GraphicContext &gc, CL_CSSRes
 				CL_ClanImageStretch::draw_image(gc, border_box, image, sizing_left, sizing_top, sizing_right, sizing_bottom);
 			}*/
 		}
+	}
+
+	if (cell->get_element_node()->computed_properties.border_style_top.type == CL_CSSBoxBorderStyle::type_solid)
+	{
+		CL_Draw::fill(
+			gc,
+			(float)border_box.left,
+			(float)border_box.top,
+			(float)border_box.right,
+			(float)(border_box.top+cell->border.top),
+			cell->get_element_node()->computed_properties.border_color_top.color);
+	}
+	if (cell->get_element_node()->computed_properties.border_style_bottom.type == CL_CSSBoxBorderStyle::type_solid)
+	{
+		CL_Draw::fill(
+			gc,
+			(float)border_box.left,
+			(float)(border_box.bottom-cell->border.bottom),
+			(float)border_box.right,
+			(float)border_box.bottom,
+			cell->get_element_node()->computed_properties.border_color_bottom.color);
+	}
+	if (cell->get_element_node()->computed_properties.border_style_left.type == CL_CSSBoxBorderStyle::type_solid)
+	{
+		CL_Draw::fill(
+			gc,
+			(float)border_box.left,
+			(float)(border_box.top+cell->border.top),
+			(float)(border_box.left+cell->border.left),
+			(float)(border_box.bottom-cell->border.bottom),
+			cell->get_element_node()->computed_properties.border_color_left.color);
+	}
+	if (cell->get_element_node()->computed_properties.border_style_right.type == CL_CSSBoxBorderStyle::type_solid)
+	{
+		CL_Draw::fill(
+			gc,
+			(float)(border_box.right-cell->border.right),
+			(float)(border_box.top+cell->border.top),
+			(float)border_box.right,
+			(float)(border_box.bottom-cell->border.bottom),
+			cell->get_element_node()->computed_properties.border_color_right.color);
 	}
 }
 
@@ -238,7 +294,7 @@ void CL_CSSTableLayout::calculate_minimum_cell_widths(CL_GraphicContext & gc, CL
 				if (columns[cell].rows[row])
 				{
 					columns[cell].rows[row]->calc_minimum(gc, cursor);
-					CL_CSSUsedValue cell_width = columns[cell].rows[row]->min_width;
+					CL_CSSUsedValue cell_width = columns[cell].rows[row]->min_width + columns[cell].rows[row]->padding.left + columns[cell].rows[row]->padding.right;
 					columns[cell].minimum_width = cl_max(columns[cell].minimum_width, cell_width);
 				}
 			}
@@ -270,6 +326,8 @@ void CL_CSSTableLayout::calculate_preferred_cell_widths(CL_GraphicContext & gc, 
 						cell_width = columns[cell].rows[row]->width.value;
 					}
 
+					cell_width += columns[cell].rows[row]->padding.left + columns[cell].rows[row]->padding.right;
+
 					columns[cell].maximum_width = cl_max(columns[cell].maximum_width, cell_width);
 				}
 			}
@@ -277,116 +335,150 @@ void CL_CSSTableLayout::calculate_preferred_cell_widths(CL_GraphicContext & gc, 
 	}
 }
 
-void CL_CSSTableLayout::calculate_cell_widths(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor)
+CL_CSSTableSizeGrid CL_CSSTableLayout::create_preferred_width_grid(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor)
+{
+	calculate_preferred_cell_widths(gc, cursor);
+	CL_CSSTableSizeGrid grid(rows.size(), columns.size());
+	apply_non_content(grid);
+	for (size_t col = 0; col < columns.size(); col++)
+		grid.apply_width(col, columns[col].maximum_width);
+	return grid;
+}
+
+CL_CSSTableSizeGrid CL_CSSTableLayout::create_minimum_width_grid(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor)
 {
 	calculate_minimum_cell_widths(gc, cursor);
-	calculate_preferred_cell_widths(gc, cursor);
-
-	// Calculate cell widths:
-	CL_CSSUsedValue content_width = 0;
-	for (size_t cell = 0; cell < columns.size(); cell++)
-		content_width += columns[cell].maximum_width;
-
-	CL_CSSUsedValue available_width = width.value;
-	if (width.expanding)
-		available_width = content_width;
-
-	int columns_expanding = 0;
+	CL_CSSTableSizeGrid grid(rows.size(), columns.size());
+	apply_non_content(grid);
 	for (size_t col = 0; col < columns.size(); col++)
+		grid.apply_width(col, columns[col].minimum_width);
+	return grid;
+}
+
+void CL_CSSTableLayout::apply_non_content(CL_CSSTableSizeGrid &grid)
+{
+	if (element_node->computed_properties.border_collapse.type == CL_CSSBoxBorderCollapse::type_separate)
 	{
-		if (columns[col].expanding)
-			columns_expanding++;
+		grid.apply_separate_table_border(border.left, border.top, border.right, border.bottom, padding.left, padding.top, padding.right, padding.bottom);
+		grid.apply_separate_spacing(element_node->computed_properties.border_spacing.length1.value, element_node->computed_properties.border_spacing.length2.value);
 	}
-	if (columns_expanding > 0)
+	else
 	{
-		float extra_width = (available_width-content_width);
+		grid.apply_collapsed_table_border(border.left, border.top, border.right, border.bottom);
+	}
+
+	if (element_node->computed_properties.border_collapse.type == CL_CSSBoxBorderCollapse::type_separate)
+	{
 		for (size_t col = 0; col < columns.size(); col++)
 		{
-			if (columns[col].expanding)
-				columns[col].maximum_width = extra_width/columns_expanding;
-		}
-		content_width += extra_width;
-	}
-
-	int columns_minimum = 0;
-	for (size_t cell = 0; cell < columns.size(); cell++)
-	{
-		columns[cell].cell_width = columns[cell].maximum_width;
-		if (columns[cell].cell_width < columns[cell].minimum_width+0.1f)
-			columns_minimum++;
-	}
-
-	while (columns_minimum < columns.size())
-	{
-		content_width = 0;
-		for (size_t cell = 0; cell < columns.size(); cell++)
-			content_width += columns[cell].cell_width;
-		if (content_width <= available_width)
-			break;
-
-		CL_CSSUsedValue extra = 0.0f;
-		for (size_t cell = 0; cell < columns.size(); cell++)
-			if (columns[cell].cell_width != columns[cell].minimum_width)
-				extra += columns[cell].cell_width;
-		if (extra == 0.0f)
-			break;
-
-		extra = (extra - content_width + available_width) / extra;
-		for (size_t cell = 0; cell < columns.size(); cell++)
-		{
-			if (columns[cell].cell_width != columns[cell].minimum_width)
+			for (size_t row = 0; row < rows.size(); row++)
 			{
-				columns[cell].cell_width = cl_max(columns[cell].minimum_width, columns[cell].cell_width * extra);
-				if (columns[cell].cell_width < columns[cell].minimum_width+0.1f)
-					columns_minimum++;
+				CL_CSSLayoutTreeNode *cell_node = columns[col].rows[row];
+				grid.apply_collapsed_border(row, col, cell_node->border.left, cell_node->border.top, cell_node->border.right, cell_node->border.bottom);
 			}
 		}
 	}
+	else
+	{
+		for (size_t col = 0; col < columns.size(); col++)
+		{
+			CL_CSSUsedValue border_width_left = 0;
+			CL_CSSUsedValue border_width_right = 0;
+			for (size_t row = 0; row < rows.size(); row++)
+			{
+				border_width_left = cl_max(border_width_left, columns[col].rows[row]->border.left);
+				border_width_right = cl_max(border_width_right, columns[col].rows[row]->border.right);
+			}
+			grid.apply_separate_border_width(col, border_width_left, border_width_right);
+		}
+
+		for (size_t row = 0; row < rows.size(); row++)
+		{
+			CL_CSSUsedValue border_height_top = 0;
+			CL_CSSUsedValue border_height_bottom = 0;
+			for (size_t col = 0; col < columns.size(); col++)
+			{
+				border_height_top = cl_max(border_height_top, columns[col].rows[row]->border.top);
+				border_height_bottom = cl_max(border_height_bottom, columns[col].rows[row]->border.bottom);
+			}
+			grid.apply_separate_border_height(row, border_height_top, border_height_bottom);
+		}
+	}
+}
+
+void CL_CSSTableLayout::calculate_cell_widths(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor)
+{
+	size_grid = create_preferred_width_grid(gc, cursor);
+	if (element_node->computed_properties.width.type == CL_CSSBoxWidth::type_auto)
+	{
+		if (size_grid.get_table_width() > containing_width.value)
+		{
+			size_grid = create_minimum_width_grid(gc, cursor);
+			if (size_grid.get_table_width() < containing_width.value)
+				size_grid.expand_table_width(containing_width.value);
+		}
+	}
+	else
+	{
+		if (size_grid.get_table_width() <= width.value)
+		{
+			size_grid.expand_table_width(width.value);
+		}
+		else
+		{
+			size_grid = create_minimum_width_grid(gc, cursor);
+		}
+	}
+
+	for (size_t col = 0; col < columns.size(); col++)
+	{
+		columns[col].cell_width = size_grid.get_width(col);
+	}
+
+	width.value = size_grid.get_table_width();
 }
 
 void CL_CSSTableLayout::layout_cells(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor)
 {
 	int rows_expanding = 0;
-	for (size_t row = 0; row < rows.size(); row++)
-	{
-		if (rows[row].element->computed_properties.height.type == CL_CSSBoxWidth::type_clan_expanding)
-			rows_expanding++;
-	}
-
 	CL_CSSUsedValue height_used = 0;
 	for (size_t row = 0; row < rows.size(); row++)
 	{
-		if (rows[row].element->computed_properties.height.type != CL_CSSBoxWidth::type_clan_expanding)
+		if (rows[row].element->computed_properties.height.type == CL_CSSBoxWidth::type_clan_expanding)
 		{
-			switch (rows[row].element->computed_properties.height.type)
-			{
-			default:
-			case CL_CSSBoxHeight::type_auto:
-				rows[row].height = 0.0f;
-				break;
-			case CL_CSSBoxHeight::type_length:
-				rows[row].height = rows[row].element->computed_properties.height.length.value;
-				break;
-			case CL_CSSBoxHeight::type_percentage:
-				rows[row].height = height.use_content ? 0.0f : height.value * rows[row].element->computed_properties.height.percentage / 100.0f;
-				break;
-			}
+			rows_expanding++;
+			continue;
+		}
 
-			for (size_t cell = 0; cell < columns.size(); cell++)
+		switch (rows[row].element->computed_properties.height.type)
+		{
+		default:
+		case CL_CSSBoxHeight::type_auto:
+			rows[row].height = 0.0f;
+			break;
+		case CL_CSSBoxHeight::type_length:
+			rows[row].height = rows[row].element->computed_properties.height.length.value;
+			break;
+		case CL_CSSBoxHeight::type_percentage:
+			rows[row].height = height.use_content ? 0.0f : height.value * rows[row].element->computed_properties.height.percentage / 100.0f;
+			break;
+		}
+
+		for (size_t cell = 0; cell < columns.size(); cell++)
+		{
+			if (columns[cell].rows.size() > row)
 			{
-				if (columns[cell].rows.size() > row)
+				if (columns[cell].rows[row])
 				{
-					if (columns[cell].rows[row])
-					{
-						columns[cell].rows[row]->calculate_top_down_sizes();
-						columns[cell].rows[row]->width.value = columns[cell].cell_width;
-						columns[cell].rows[row]->layout_formatting_root_helper(gc, cursor, normal_strategy);
-						rows[row].height = cl_max(rows[row].height, columns[cell].rows[row]->height.value);
-					}
+					CL_CSSUsedValue width = columns[cell].cell_width + columns[cell].rows[row]->padding.left + columns[cell].rows[row]->padding.right;
+					columns[cell].rows[row]->calculate_top_down_sizes();
+					columns[cell].rows[row]->width.value = width;
+					columns[cell].rows[row]->layout_formatting_root_helper(gc, cursor, normal_strategy);
+					rows[row].height = cl_max(rows[row].height, columns[cell].rows[row]->height.value);
 				}
 			}
-			height_used += rows[row].height;
 		}
+		height_used += rows[row].height;
 	}
 
 	if (rows_expanding > 0)
@@ -402,14 +494,23 @@ void CL_CSSTableLayout::layout_cells(CL_GraphicContext & gc, CL_CSSLayoutCursor 
 					{
 						if (columns[cell].rows[row])
 						{
+							CL_CSSUsedValue width = columns[cell].cell_width + columns[cell].rows[row]->padding.left + columns[cell].rows[row]->padding.right;
 							columns[cell].rows[row]->calculate_top_down_sizes();
-							columns[cell].rows[row]->width.value = columns[cell].cell_width;
+							columns[cell].rows[row]->width.value = width;
 							columns[cell].rows[row]->layout_formatting_root_helper(gc, cursor, normal_strategy);
 						}
 					}
 				}
 				rows[row].height = extra_height/rows_expanding;
 			}
+		}
+	}
+
+	for (size_t row = 0; row < rows.size(); row++)
+	{
+		for (size_t col = 0; col < columns.size(); col++)
+		{
+			size_grid.apply_height(row, columns[col].rows[row]->height.value);
 		}
 	}
 }
@@ -419,28 +520,37 @@ void CL_CSSTableLayout::position_cells(CL_CSSLayoutCursor &cursor)
 	CL_CSSUsedValue y = 0;
 	for (size_t row = 0; row < rows.size(); row++)
 	{
+		y += size_grid.get_non_content_height(row);
+
 		CL_CSSUsedValue x = 0;
 		for (size_t cell = 0; cell < columns.size(); cell++)
 		{
+			x += size_grid.get_non_content_width(cell);
+
 			if (columns[cell].rows.size() > row)
 			{
 				if (columns[cell].rows[row])
 				{
+					CL_CSSUsedValue offset_border_left = columns[cell].rows[row]->border.left;
+					CL_CSSUsedValue offset_border_top = columns[cell].rows[row]->border.top;
 					if (columns[cell].rows[row]->get_element_node()->computed_properties.vertical_align.type == CL_CSSBoxVerticalAlign::type_middle)
 					{
-						CL_CSSUsedValue offset = rows[row].height/2.0f - columns[cell].rows[row]->height.value/2.0f;
-						columns[cell].rows[row]->set_root_block_position(cursor.x + x, cursor.y + y + offset);
+						CL_CSSUsedValue offset = size_grid.get_height(row)/2.0f - columns[cell].rows[row]->height.value/2.0f;
+						columns[cell].rows[row]->set_root_block_position(cursor.x + x - offset_border_left, cursor.y + y + offset - offset_border_top);
 					}
 					else
 					{
-						columns[cell].rows[row]->set_root_block_position(cursor.x + x, cursor.y + y);
+						columns[cell].rows[row]->set_root_block_position(cursor.x + x - offset_border_left, cursor.y + y - offset_border_top);
 					}
 				}
 			}
-			x += columns[cell].cell_width;
+
+			x += size_grid.get_width(cell);
 		}
-		cursor.apply_written_width(cursor.x + x);
-		y += rows[row].height;
+		cursor.apply_written_width(cursor.x + size_grid.get_table_width());
+		y += size_grid.get_height(row);
 	}
+	if (!rows.empty())
+		y += size_grid.get_non_content_height(rows.size());
 	cursor.y += y;
 }

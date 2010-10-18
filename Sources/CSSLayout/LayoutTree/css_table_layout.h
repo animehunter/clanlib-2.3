@@ -29,6 +29,7 @@
 #pragma once
 
 #include "css_layout_tree_node.h"
+#include "css_table_size_grid.h"
 
 class CL_CSSBoxElement;
 class CL_CSSBlockLayout;
@@ -62,7 +63,13 @@ private:
 	CL_Rect get_cell_border_box(size_t row, size_t col);
 	void render_cell_non_content(CL_GraphicContext &gc, CL_CSSResourceCache *resources, size_t row, size_t col);
 
+	CL_CSSTableSizeGrid create_preferred_width_grid(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor);
+	CL_CSSTableSizeGrid create_minimum_width_grid(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor);
+	void apply_non_content(CL_CSSTableSizeGrid &size_grid);
+
 	std::vector<CL_CSSTableColumn> columns;
 	std::vector<CL_CSSTableRow> rows;
 	size_t next_column;
+
+	CL_CSSTableSizeGrid size_grid;
 };
