@@ -148,50 +148,50 @@ void App::on_input_up(const CL_InputEvent &key, const CL_InputState &state)
 		quit = true;
 	}
 
-	if (key.id == 'M')
+	if (key.id == CL_KEY_M)
 	{
 		shockwave_start_time = timer;
 	}
 
-	if (key.id == 'Q')
+	if (key.id == CL_KEY_Q)
 	{
 		shockParams.x -= 1.0f;
 	}
-	else if (key.id == 'W')
+	else if (key.id == CL_KEY_W)
 	{
 		shockParams.x += 1.0f;
 	}
-	else if (key.id == 'A')
+	else if (key.id == CL_KEY_A)
 	{
 		shockParams.y -= 0.1f;
 	}
-	else if (key.id == 'S')
+	else if (key.id == CL_KEY_S)
 	{
 		shockParams.y += 0.1f;
 	}
-	else if (key.id == 'Z')
+	else if (key.id == CL_KEY_Z)
 	{
 		shockParams.z -= 0.01f;
 	}
-	else if (key.id == 'X')
+	else if (key.id == CL_KEY_X)
 	{
 		shockParams.z += 0.01f;
 	}
-	else if (key.id == 'E')
+	else if (key.id == CL_KEY_E)
 	{
 		shockwave_rate -= 0.2f;
 		if (shockwave_rate < 0.2f)
 			shockwave_rate = 0.2f;
 	}
-	else if (key.id == 'R')
+	else if (key.id == CL_KEY_R)
 	{
 		shockwave_rate += 0.2f;
 	}
-	else if (key.id == 'D')
+	else if (key.id == CL_KEY_D)
 	{
 		glow -= 0.02f;
 	}
-	else if (key.id == 'F')
+	else if (key.id == CL_KEY_F)
 	{
 		glow += 0.02f;
 	}

@@ -165,27 +165,27 @@ void App::on_input_up(const CL_InputEvent &key, const CL_InputState &state)
 		quit = true;
 	}
 
-	if (key.id == 'Q')
+	if (key.id == CL_KEY_Q)
 	{
 		luminanceThreshold -= 0.02f;
 	}
-	else if (key.id == 'W')
+	else if (key.id == CL_KEY_W)
 	{
 		luminanceThreshold += 0.02f;
 	}
-	else if (key.id == 'A')
+	else if (key.id == CL_KEY_A)
 	{
 		colorAmplification -= 0.5f;
 	}
-	else if (key.id == 'S')
+	else if (key.id == CL_KEY_S)
 	{
 		colorAmplification += 0.5f;
 	}
-	else if (key.id == 'Z')
+	else if (key.id == CL_KEY_Z)
 	{
 		effectCoverage -= 0.2f;
 	}
-	else if (key.id == 'X')
+	else if (key.id == CL_KEY_X)
 	{
 		effectCoverage += 0.2f;
 	}
