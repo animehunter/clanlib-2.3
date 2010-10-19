@@ -93,7 +93,11 @@ CL_InputContext& WindowManager::get_ic(CL_GUITopLevelWindow *handle) const
 
 CL_GraphicContext WindowManager::begin_paint(CL_GUITopLevelWindow *handle, const CL_Rect &update_region)
 {
-	return dispwindow.get_gc();
+	CL_GraphicContext gc = dispwindow.get_gc();
+	gc.set_frame_buffer(get_toplevel_window(handle)->get_frame_buffer());
+	gc.set_cliprect(update_region);
+	gc.clear(CL_Colorf::transparent);
+	return gc;
 }
 
 void WindowManager::set_cliprect(CL_GUITopLevelWindow *handle, CL_GraphicContext &gc, const CL_Rect &rect)
@@ -118,6 +122,8 @@ void WindowManager::pop_cliprect(CL_GUITopLevelWindow *handle, CL_GraphicContext
 
 void WindowManager::end_paint(CL_GUITopLevelWindow *handle, const CL_Rect &update_region)
 {
+	CL_GraphicContext gc = dispwindow.get_gc();
+	gc.reset_frame_buffer();
 }
 
 void WindowManager::request_repaint(CL_GUITopLevelWindow *handle, const CL_Rect &update_region)
@@ -157,6 +163,9 @@ void WindowManager::set_cursor(CL_GUITopLevelWindow *handle, enum CL_StandardCur
 
 void WindowManager::update()
 {
+	std::map<CL_GUITopLevelWindow *, TopLevelWindow *>::iterator it;
+	for (it = window_map.begin(); it != window_map.end(); ++it)
+		site->func_paint->invoke(it->first, it->second->get_geometry().get_size());
 }
 
 void WindowManager::setup_painting()

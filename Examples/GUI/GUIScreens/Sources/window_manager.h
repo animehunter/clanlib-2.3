@@ -12,6 +12,7 @@ public:
 private:
 	WindowManager(CL_DisplayWindow &dispwindow);
 	~WindowManager();
+	TopLevelWindow *get_toplevel_window(CL_GUITopLevelWindow *handle) const;
 
 	// CL_GUIWindowManagerProvider interface:
 	void destroy();
@@ -45,8 +46,6 @@ private:
 	void setup_painting();
 	void complete_painting();
 	CL_GUIWindowManager::CL_WindowManagerType get_window_manager_type() const;
-
-	TopLevelWindow *get_toplevel_window(CL_GUITopLevelWindow *handle) const;
 
 	CL_DisplayWindow dispwindow;
 	CL_GUIWindowManagerSite *site;

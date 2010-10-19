@@ -18,6 +18,8 @@ public:
 	void set_geometry(const CL_Rect &box);
 	void set_enabled(bool enable) { enabled = enable; }
 
+	CL_FrameBuffer &get_frame_buffer() { return frame_buffer; }
+
 private:
 	void create_texture();
 	void destroy_texture();
@@ -31,4 +33,5 @@ private:
 	bool maximized;
 	CL_Rect geometry;
 	CL_Texture texture;
+	CL_FrameBuffer frame_buffer;
 };

@@ -33,10 +33,14 @@ void TopLevelWindow::set_geometry(const CL_Rect &box)
 
 void TopLevelWindow::create_texture()
 {
-	texture = CL_Texture(wm->dispwindow.get_gc(), geometry.get_width(), geometry.get_height());
+	CL_GraphicContext gc = wm->dispwindow.get_gc();
+	texture = CL_Texture(gc, geometry.get_width(), geometry.get_height());
+	frame_buffer = CL_FrameBuffer(gc);
+	frame_buffer.attach_color_buffer(0, texture);
 }
 
 void TopLevelWindow::destroy_texture()
 {
 	texture = CL_Texture();
+	frame_buffer = CL_FrameBuffer();
 }
