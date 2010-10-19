@@ -68,7 +68,7 @@ void WindowManager::set_geometry(CL_GUITopLevelWindow *handle, const CL_Rect &ge
 
 CL_Rect WindowManager::get_geometry(CL_GUITopLevelWindow *handle, bool client_area) const
 {
-	return window_map.find(handle)->second->get_geometry();
+	return get_toplevel_window(handle)->get_geometry();
 }
 
 CL_Point WindowManager::screen_to_window(CL_GUITopLevelWindow *handle, const CL_Point &screen_point, bool client_area) const
@@ -130,12 +130,12 @@ void WindowManager::bring_to_front(CL_GUITopLevelWindow *handle)
 
 bool WindowManager::is_minimized(CL_GUITopLevelWindow *handle) const
 {
-	return window_map.find(handle)->second->is_minimized();
+	return get_toplevel_window(handle)->is_minimized();
 }
 
 bool WindowManager::is_maximized(CL_GUITopLevelWindow *handle) const
 {
-	return window_map.find(handle)->second->is_maximized();
+	return get_toplevel_window(handle)->is_maximized();
 }
 
 void WindowManager::capture_mouse(CL_GUITopLevelWindow *handle, bool state)
@@ -170,4 +170,9 @@ void WindowManager::complete_painting()
 CL_GUIWindowManager::CL_WindowManagerType WindowManager::get_window_manager_type() const
 {
 	return CL_GUIWindowManager::cl_wm_type_texture;
+}
+
+TopLevelWindow *WindowManager::get_toplevel_window(CL_GUITopLevelWindow *handle) const
+{
+	return window_map.find(handle)->second;
 }

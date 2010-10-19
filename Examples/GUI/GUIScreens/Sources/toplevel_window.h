@@ -14,11 +14,14 @@ public:
 	bool is_maximized() const { return maximized; }
 	const CL_Rect &get_geometry() const { return geometry; }
 
-	void set_visible(bool enable, bool activate) { visible = enable; }
+	void set_visible(bool show, bool activate);
+	void set_geometry(const CL_Rect &box);
 	void set_enabled(bool enable) { enabled = enable; }
-	void set_geometry(const CL_Rect &box) { geometry = box; }
 
 private:
+	void create_texture();
+	void destroy_texture();
+
 	WindowManager *wm;
 	CL_GUITopLevelWindow *owner;
 	CL_GUITopLevelDescription description;
@@ -27,4 +30,5 @@ private:
 	bool minimized;
 	bool maximized;
 	CL_Rect geometry;
+	CL_Texture texture;
 };

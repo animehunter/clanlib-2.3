@@ -168,6 +168,22 @@
 	</References>
 	<Files>
 		<File
+			RelativePath=".\Sources\character_screen.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\Sources\character_screen.h"
+			>
+		</File>
+		<File
+			RelativePath=".\Sources\game_screen.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\Sources\game_screen.h"
+			>
+		</File>
+		<File
 			RelativePath=".\Sources\precomp.cpp"
 			>
 			<FileConfiguration
@@ -200,11 +216,27 @@
 			>
 		</File>
 		<File
+			RelativePath=".\Sources\splash_screen.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\Sources\splash_screen.h"
+			>
+		</File>
+		<File
 			RelativePath=".\Sources\toplevel_window.cpp"
 			>
 		</File>
 		<File
 			RelativePath=".\Sources\toplevel_window.h"
+			>
+		</File>
+		<File
+			RelativePath=".\Sources\ui_screen.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\Sources\ui_screen.h"
 			>
 		</File>
 		<File
