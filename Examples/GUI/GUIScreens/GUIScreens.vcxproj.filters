@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Sources\precomp.cpp" />
+    <ClCompile Include="Sources\program.cpp" />
+    <ClCompile Include="Sources\toplevel_window.cpp" />
+    <ClCompile Include="Sources\window_manager.cpp" />
+    <ClCompile Include="Sources\character_screen.cpp" />
+    <ClCompile Include="Sources\splash_screen.cpp" />
+    <ClCompile Include="Sources\game_screen.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Sources\precomp.h" />
+    <ClInclude Include="Sources\program.h" />
+    <ClInclude Include="Sources\toplevel_window.h" />
+    <ClInclude Include="Sources\window_manager.h" />
+    <ClInclude Include="Sources\character_screen.h" />
+    <ClInclude Include="Sources\splash_screen.h" />
+    <ClInclude Include="Sources\game_screen.h" />
+  </ItemGroup>
+</Project>
