@@ -22,14 +22,12 @@ void TopLevelWindow::set_visible(bool show, bool activate)
 
 void TopLevelWindow::set_geometry(const CL_Rect &box)
 {
-	if (box != geometry)
+	bool resized = (box.get_size() != geometry.get_size());
+	geometry = box;
+	if (visible && resized)
 	{
-		geometry = box;
-		if (visible)
-		{
-			destroy_texture();
-			create_texture();
-		}
+		destroy_texture();
+		create_texture();
 	}
 }
 
