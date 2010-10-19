@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GUIScreens", "GUIScreens.vcxproj", "{7F5D5FD8-D97B-471E-A374-14DC14168F10}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GUIScreens", "GUIScreens-vc2010.vcxproj", "{7F5D5FD8-D97B-471E-A374-14DC14168F10}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
