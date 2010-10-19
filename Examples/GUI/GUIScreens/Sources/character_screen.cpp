@@ -1,8 +1,9 @@
+
 #include "precomp.h"
 #include "character_screen.h"
 
 CharacterScreen::CharacterScreen(CL_GUIManager *gui)
-: CL_GUIComponent(gui, CL_GUITopLevelDescription())
+: UIScreen(gui)
 {
 	button_character1 = new CL_PushButton(this);
 	button_character1->set_geometry(CL_Rect(10, 10, CL_Size(300, 40)));

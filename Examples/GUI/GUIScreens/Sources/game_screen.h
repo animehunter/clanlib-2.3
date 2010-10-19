@@ -1,6 +1,9 @@
+
 #pragma once
 
-class GameScreen : public CL_GUIComponent
+#include "ui_screen.h"
+
+class GameScreen : public UIScreen
 {
 public:
 	GameScreen(CL_GUIManager *gui);

@@ -1,6 +1,9 @@
+
 #pragma once
 
-class CharacterScreen : public CL_GUIComponent
+#include "ui_screen.h"
+	
+class CharacterScreen : public UIScreen
 {
 public:
 	CharacterScreen(CL_GUIManager *gui);

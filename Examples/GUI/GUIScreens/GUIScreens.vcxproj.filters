@@ -8,6 +8,7 @@
     <ClCompile Include="Sources\character_screen.cpp" />
     <ClCompile Include="Sources\splash_screen.cpp" />
     <ClCompile Include="Sources\game_screen.cpp" />
+    <ClCompile Include="Sources\ui_screen.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\precomp.h" />
@@ -17,5 +18,6 @@
     <ClInclude Include="Sources\character_screen.h" />
     <ClInclude Include="Sources\splash_screen.h" />
     <ClInclude Include="Sources\game_screen.h" />
+    <ClInclude Include="Sources\ui_screen.h" />
   </ItemGroup>
 </Project>

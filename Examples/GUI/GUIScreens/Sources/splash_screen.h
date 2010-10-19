@@ -1,6 +1,9 @@
+
 #pragma once
 
-class SplashScreen : public CL_GUIComponent
+#include "ui_screen.h"
+
+class SplashScreen : public UIScreen
 {
 public:
 	SplashScreen(CL_GUIManager *gui);
