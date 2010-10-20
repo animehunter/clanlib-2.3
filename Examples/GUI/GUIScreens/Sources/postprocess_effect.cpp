@@ -17,11 +17,12 @@ PostProcessEffectTransparency::PostProcessEffectTransparency()
 void PostProcessEffectTransparency::render(CL_GraphicContext &gc, CL_Texture &texture, CL_Rect geometry)
 {
 	gc.set_texture(0, texture);
-	CL_Draw::texture(gc, geometry, CL_Colorf(1.0f, 1.0f, 1.0f, alpha));
+	CL_Draw::texture(gc, geometry, CL_Colorf(alpha, alpha, alpha, alpha));
 	gc.reset_texture(0);
 }
 
 void PostProcessEffectTransparency::set_transparency(float alpha)
 {
-	this->alpha = alpha;
+	if(alpha >= 0.0f && alpha <= 1.0f)
+		this->alpha = alpha;
 }
