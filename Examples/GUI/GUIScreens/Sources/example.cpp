@@ -13,9 +13,13 @@ int Example::exec()
 	CL_GUIWindowManager wm = WindowManager::create(display_window);
 	gui = CL_GUIManager(wm, "../../../Resources/GUIThemeAeroPacked");
 
+	PostProcessEffectTransparency effect;
+	effect.set_transparency(0.5f);
+
 	SplashScreen splash_screen(&gui);
 	splash_screen.set_geometry(CL_Rect(0,0,1024,768));
 	splash_screen.set_visible(true);
+	splash_screen.set_postprocess_effect(&effect);
 
 	return gui.exec();
 }
