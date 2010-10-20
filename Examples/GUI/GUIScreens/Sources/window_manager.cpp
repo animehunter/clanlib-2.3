@@ -51,9 +51,9 @@ void WindowManager::set_site(CL_GUIWindowManagerSite *new_site)
 	site = new_site;
 }
 
-void WindowManager::create_window(CL_GUITopLevelWindow *handle, CL_GUITopLevelWindow *owner, CL_GUITopLevelDescription description)
+void WindowManager::create_window(CL_GUITopLevelWindow *handle, CL_GUITopLevelWindow *owner, CL_GUIComponent *component, CL_GUITopLevelDescription description)
 {
-	window_map[handle] = new TopLevelWindow(this, owner, description);
+	window_map[handle] = new TopLevelWindow(this, owner, component, description);
 }
 
 void WindowManager::destroy_window(CL_GUITopLevelWindow *handle)

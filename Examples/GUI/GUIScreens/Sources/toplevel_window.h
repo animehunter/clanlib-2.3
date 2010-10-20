@@ -6,7 +6,7 @@ class WindowManager;
 class TopLevelWindow
 {
 public:
-	TopLevelWindow(WindowManager *wm, CL_GUITopLevelWindow *owner, CL_GUITopLevelDescription description);
+	TopLevelWindow(WindowManager *wm, CL_GUITopLevelWindow *owner, CL_GUIComponent *component, CL_GUITopLevelDescription description);
 
 	bool is_visible() const { return visible; }
 	bool is_enabled() const { return enabled; }
@@ -26,7 +26,7 @@ private:
 
 	WindowManager *wm;
 	CL_GUITopLevelWindow *owner;
-	CL_GUITopLevelDescription description;
+	CL_GUIComponent *component;
 	bool visible;
 	bool enabled;
 	bool minimized;

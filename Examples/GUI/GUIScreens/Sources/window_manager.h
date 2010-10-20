@@ -17,7 +17,7 @@ private:
 	// CL_GUIWindowManagerProvider interface:
 	void destroy();
 	void set_site(CL_GUIWindowManagerSite *site);
-	void create_window(CL_GUITopLevelWindow *handle, CL_GUITopLevelWindow *owner, CL_GUITopLevelDescription description);
+	void create_window(CL_GUITopLevelWindow *handle, CL_GUITopLevelWindow *owner, CL_GUIComponent *component, CL_GUITopLevelDescription description);
 	void destroy_window(CL_GUITopLevelWindow *handle);
 	void enable_window(CL_GUITopLevelWindow *handle, bool enable);
 	bool has_focus(CL_GUITopLevelWindow *handle) const;

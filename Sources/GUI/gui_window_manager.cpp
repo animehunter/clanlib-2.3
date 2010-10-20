@@ -104,9 +104,10 @@ void CL_GUIWindowManager::set_site(CL_GUIWindowManagerSite *site)
 void CL_GUIWindowManager::create_window(
 	CL_GUITopLevelWindow *handle,
 	CL_GUITopLevelWindow *owner,
+	CL_GUIComponent *component,
 	CL_GUITopLevelDescription description)
 {
-	impl->provider->create_window(handle, owner, description);
+	impl->provider->create_window(handle, owner, component, description);
 }
 
 void CL_GUIWindowManager::destroy_window(CL_GUITopLevelWindow *handle)

@@ -119,6 +119,7 @@ void CL_GUIWindowManagerProvider_System::set_site(CL_GUIWindowManagerSite *new_s
 void CL_GUIWindowManagerProvider_System::create_window(
 	CL_GUITopLevelWindow *handle,
 	CL_GUITopLevelWindow *owner,
+	CL_GUIComponent *component,
 	CL_GUITopLevelDescription description)
 {
 	CL_GUITopLevelWindowSystem *owner_window = 0;

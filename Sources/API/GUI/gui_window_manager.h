@@ -145,6 +145,7 @@ public:
 	void create_window(
 		CL_GUITopLevelWindow *handle,
 		CL_GUITopLevelWindow *owner,
+		CL_GUIComponent *component,
 		CL_GUITopLevelDescription description);
 
 	/// \brief Destroy window

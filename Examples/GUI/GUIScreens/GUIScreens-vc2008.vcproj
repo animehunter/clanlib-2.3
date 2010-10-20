@@ -184,6 +184,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\Sources\postprocess_effect.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\Sources\postprocess_effect.h"
+			>
+		</File>
+		<File
 			RelativePath=".\Sources\precomp.cpp"
 			>
 			<FileConfiguration

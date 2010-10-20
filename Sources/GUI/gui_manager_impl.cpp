@@ -154,7 +154,7 @@ void CL_GUIManager_Impl::add_component(CL_GUIComponent *component, CL_GUICompone
 
 	try
 	{
-		window_manager.create_window(top_level_window, owner_window, desc);
+		window_manager.create_window(top_level_window, owner_window, component, desc);
 	}
 	catch (CL_Exception e)
 	{
