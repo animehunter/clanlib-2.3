@@ -5,12 +5,12 @@ class PostProcessEffect
 {
 public:
 	PostProcessEffect() {};
-	~PostProcessEffect() {};
+	virtual ~PostProcessEffect() {};
 };
 
 class PostProcessEffectDarken : public PostProcessEffect
 {
 public:
 	PostProcessEffectDarken();
-	~PostProcessEffectDarken() {};
+	virtual ~PostProcessEffectDarken() {};
 };
