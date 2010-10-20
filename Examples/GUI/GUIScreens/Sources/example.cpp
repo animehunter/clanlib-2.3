@@ -12,13 +12,12 @@ int Example::exec()
 	CL_GUIWindowManager wm = WindowManager::create(display_window);
 	gui = CL_GUIManager(wm, "../../../Resources/GUIThemeAeroPacked");
 
-	alpha = 0.0f;
-	effect.set_transparency(alpha);
-
 	SplashScreen splash_screen(&gui);
 	splash_screen.set_geometry(CL_Rect(0,0,1024,768));
 	splash_screen.set_visible(true);
 	splash_screen.set_postprocess_effect(&effect);
+
+	effect.set_transparency(0.0f);
 
 	CL_Timer t;
 	t.func_expired().set(this, &Example::on_timer);
@@ -34,6 +33,5 @@ void Example::on_window_close()
 
 void Example::on_timer()
 {
-	alpha += 0.01f;
-	effect.set_transparency(alpha);
+	effect.set_transparency(effect.get_transparency() + 0.01f);
 }

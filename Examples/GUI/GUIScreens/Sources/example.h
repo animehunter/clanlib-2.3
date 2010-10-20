@@ -15,6 +15,5 @@ private:
 	CL_SlotContainer slots;
 	CL_GUIManager gui;
 
-	float alpha;
 	PostProcessEffectTransparency effect;
 };
