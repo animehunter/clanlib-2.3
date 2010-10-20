@@ -1,9 +1,7 @@
 
 #include "precomp.h"
 #include "program.h"
-#include "window_manager.h"
-#include "splash_screen.h"
-#include "postprocess_effect.h"
+#include "example.h"
 
 CL_ClanApplication clanapp(&Program::main);
 
@@ -16,15 +14,8 @@ int Program::main(const std::vector<CL_String> &args)
 
 	try
 	{
-		CL_DisplayWindow dispwindow("ClanLib GUIScreens Example", 1024, 768);
-		CL_GUIWindowManager wm = WindowManager::create(dispwindow);
-		CL_GUIManager gui(wm, "../../../Resources/GUIThemeAeroPacked");
-
-		SplashScreen splash_screen(&gui);
-		splash_screen.set_geometry(CL_Rect(0,0,1024,768));
-		splash_screen.set_visible(true);
-
-		return gui.exec();
+		Example example;
+		return example.exec();
 	}
 	catch(CL_Exception &exception)
 	{
