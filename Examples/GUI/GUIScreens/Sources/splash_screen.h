@@ -10,5 +10,8 @@ public:
 	~SplashScreen();
 
 private:
+	void on_render(CL_GraphicContext &gc, const CL_Rect &rect);
+
 	CL_Label *label;
+	CL_PushButton *button;
 };
