@@ -3,7 +3,7 @@
 #include "program.h"
 #include "window_manager.h"
 #include "splash_screen.h"
-#include <ClanLib/application.h>
+#include "postprocess_effect.h"
 
 CL_ClanApplication clanapp(&Program::main);
 

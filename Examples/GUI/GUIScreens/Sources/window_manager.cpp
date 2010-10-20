@@ -3,9 +3,9 @@
 #include "window_manager.h"
 #include "toplevel_window.h"
 
-CL_GUIWindowManager WindowManager::create(CL_DisplayWindow &dispwindow)
+CL_GUIWindowManager WindowManager::create(CL_DisplayWindow &display_window)
 {
-	return CL_GUIWindowManager(new WindowManager(dispwindow));
+	return CL_GUIWindowManager(new WindowManager(display_window));
 }
 
 WindowManager *WindowManager::cast(const CL_GUIWindowManager &wm)
@@ -13,9 +13,25 @@ WindowManager *WindowManager::cast(const CL_GUIWindowManager &wm)
 	return dynamic_cast<WindowManager*>(wm.get_provider());
 }
 
-WindowManager::WindowManager(CL_DisplayWindow &dispwindow)
-: dispwindow(dispwindow), site(0)
+WindowManager::WindowManager(CL_DisplayWindow &display_window)
+: display_window(display_window), site(0)
 {
+/*	CL_InputContext& ic = display_window.get_ic();
+
+	slots.connect(ic.get_mouse().sig_key_up(), this, &WindowManager::on_input_mouse_up);
+	slots.connect(ic.get_mouse().sig_key_down(), this, &WindowManager::on_input_mouse_down);
+	slots.connect(ic.get_mouse().sig_pointer_move(), this, &WindowManager::on_input_mouse_move);
+
+	slots.connect(ic.get_keyboard().sig_key_up(), this, &WindowManager::on_input);
+	slots.connect(ic.get_keyboard().sig_key_down(), this, &WindowManager::on_input);
+
+	for (int tc = 0; tc < ic.get_tablet_count(); ++tc)
+	{
+		slots.connect(ic.get_tablet(tc).sig_axis_move(), this, &WindowManager::on_input_mouse_move);
+		slots.connect(ic.get_tablet(tc).sig_key_down(), this, &WindowManager::on_input_mouse_down);
+		slots.connect(ic.get_tablet(tc).sig_key_up(), this, &WindowManager::on_input);
+	}
+*/
 }
 
 WindowManager::~WindowManager()
@@ -83,17 +99,17 @@ CL_Point WindowManager::window_to_screen(CL_GUITopLevelWindow *handle, const CL_
 
 CL_GraphicContext& WindowManager::get_gc(CL_GUITopLevelWindow *handle) const
 {
-	return dispwindow.get_gc();
+	return display_window.get_gc();
 }
 
 CL_InputContext& WindowManager::get_ic(CL_GUITopLevelWindow *handle) const
 {
-	return dispwindow.get_ic();
+	return display_window.get_ic();
 }
 
 CL_GraphicContext WindowManager::begin_paint(CL_GUITopLevelWindow *handle, const CL_Rect &update_region)
 {
-	CL_GraphicContext gc = dispwindow.get_gc();
+	CL_GraphicContext gc = display_window.get_gc();
 	gc.set_frame_buffer(get_toplevel_window(handle)->get_frame_buffer());
 	gc.set_cliprect(update_region);
 	gc.clear(CL_Colorf::transparent);
@@ -122,7 +138,7 @@ void WindowManager::pop_cliprect(CL_GUITopLevelWindow *handle, CL_GraphicContext
 
 void WindowManager::end_paint(CL_GUITopLevelWindow *handle, const CL_Rect &update_region)
 {
-	CL_GraphicContext gc = dispwindow.get_gc();
+	CL_GraphicContext gc = display_window.get_gc();
 	gc.reset_frame_buffer();
 }
 
@@ -150,7 +166,7 @@ void WindowManager::capture_mouse(CL_GUITopLevelWindow *handle, bool state)
 
 CL_DisplayWindow WindowManager::get_display_window(CL_GUITopLevelWindow *handle) const
 {
-	return dispwindow;
+	return display_window;
 }
 
 void WindowManager::set_cursor(CL_GUITopLevelWindow *handle, const CL_Cursor &cursor)

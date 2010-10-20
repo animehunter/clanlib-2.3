@@ -13,3 +13,12 @@ CL_GUITopLevelDescription UIScreen::get_toplevel_description()
 	desc.set_visible(false);
 	return desc;
 }
+
+void UIScreen::set_postprocess_effect(const PostProcessEffect &effect)
+{
+}
+
+void UIScreen::remove_postprocess_effect()
+{
+
+}

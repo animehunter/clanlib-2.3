@@ -9,6 +9,7 @@
     <ClCompile Include="Sources\splash_screen.cpp" />
     <ClCompile Include="Sources\game_screen.cpp" />
     <ClCompile Include="Sources\ui_screen.cpp" />
+    <ClCompile Include="Sources\postprocess_effect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\precomp.h" />
@@ -19,5 +20,6 @@
     <ClInclude Include="Sources\splash_screen.h" />
     <ClInclude Include="Sources\game_screen.h" />
     <ClInclude Include="Sources\ui_screen.h" />
+    <ClInclude Include="Sources\postprocess_effect.h" />
   </ItemGroup>
 </Project>

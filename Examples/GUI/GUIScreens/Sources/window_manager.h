@@ -47,9 +47,11 @@ private:
 	void complete_painting();
 	CL_GUIWindowManager::CL_WindowManagerType get_window_manager_type() const;
 
-	CL_DisplayWindow dispwindow;
+	CL_DisplayWindow display_window;
 	CL_GUIWindowManagerSite *site;
 	std::map<CL_GUITopLevelWindow *, TopLevelWindow *> window_map;
 
 	friend class TopLevelWindow;
+
+	CL_SlotContainer slots;
 };

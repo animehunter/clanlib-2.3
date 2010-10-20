@@ -78,6 +78,7 @@
   <ItemGroup>
     <ClCompile Include="Sources\character_screen.cpp" />
     <ClCompile Include="Sources\game_screen.cpp" />
+    <ClCompile Include="Sources\postprocess_effect.cpp" />
     <ClCompile Include="Sources\precomp.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -91,6 +92,7 @@
   <ItemGroup>
     <ClInclude Include="Sources\character_screen.h" />
     <ClInclude Include="Sources\game_screen.h" />
+    <ClInclude Include="Sources\postprocess_effect.h" />
     <ClInclude Include="Sources\precomp.h" />
     <ClInclude Include="Sources\program.h" />
     <ClInclude Include="Sources\splash_screen.h" />
