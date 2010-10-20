@@ -4,13 +4,13 @@
 class PostProcessEffect
 {
 public:
-	PostProcessEffect() {};
-	virtual ~PostProcessEffect() {};
+	virtual ~PostProcessEffect() {}
+	virtual void render(CL_GraphicContext &gc, CL_Texture &texture, CL_Rect geometry) = 0;
 };
 
 class PostProcessEffectDarken : public PostProcessEffect
 {
 public:
 	PostProcessEffectDarken();
-	virtual ~PostProcessEffectDarken() {};
+	void render(CL_GraphicContext &gc, CL_Texture &texture, CL_Rect geometry);
 };

@@ -2,6 +2,8 @@
 #include "precomp.h"
 #include "window_manager.h"
 #include "toplevel_window.h"
+#include "ui_screen.h"
+#include "postprocess_effect.h"
 
 CL_GUIWindowManager WindowManager::create(CL_DisplayWindow &display_window)
 {
@@ -190,6 +192,40 @@ void WindowManager::setup_painting()
 
 void WindowManager::complete_painting()
 {
+	CL_GraphicContext gc = display_window.get_gc();
+	gc.clear();
+
+	// Our textures are in pre-multiplied alpha
+	CL_BlendMode blendmode;
+	blendmode.enable_blending(true);
+	blendmode.set_blend_function(cl_blend_one, cl_blend_one_minus_src_alpha, cl_blend_one, cl_blend_one_minus_src_alpha);
+	gc.set_blend_mode(blendmode);
+
+	// Not strictly correct since this uses no proper z-order:
+	std::map<CL_GUITopLevelWindow *, TopLevelWindow *>::iterator it;
+	for (it = window_map.begin(); it != window_map.end(); ++it)
+	{
+		TopLevelWindow *toplevel = it->second;
+		CL_Rect geometry = toplevel->get_geometry();
+		CL_Texture &texture = toplevel->get_texture();
+		CL_GUIComponent *component = toplevel->get_component();
+		UIScreen *uiscreen = dynamic_cast<UIScreen*>(component);
+		PostProcessEffect *effect = uiscreen ? uiscreen->get_postprocess_effect() : 0;
+		if (effect)
+		{
+			effect->render(gc, texture, geometry);
+		}
+		else
+		{
+			gc.set_texture(0, texture);
+			CL_Draw::texture(gc, geometry);
+			gc.reset_texture(0);
+		}
+	}
+
+	gc.reset_blend_mode();
+
+	display_window.flip();
 }
 
 CL_GUIWindowManager::CL_WindowManagerType WindowManager::get_window_manager_type() const

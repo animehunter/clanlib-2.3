@@ -13,6 +13,8 @@ public:
 	bool is_minimized() const { return minimized; }
 	bool is_maximized() const { return maximized; }
 	const CL_Rect &get_geometry() const { return geometry; }
+	CL_GUIComponent *get_component() const { return component; }
+	CL_Texture &get_texture() { return texture; }
 
 	void set_visible(bool show, bool activate);
 	void set_geometry(const CL_Rect &box);
