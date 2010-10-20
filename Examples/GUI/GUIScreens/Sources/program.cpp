@@ -21,6 +21,8 @@ int Program::main(const std::vector<CL_String> &args)
 		CL_GUIManager gui(wm, "../../../Resources/GUIThemeAeroPacked");
 
 		SplashScreen splash_screen(&gui);
+		splash_screen.set_geometry(CL_Rect(0,0,1024,768));
+		splash_screen.set_visible(true);
 
 		return gui.exec();
 	}

@@ -4,7 +4,7 @@
 #include "window_manager.h"
 
 TopLevelWindow::TopLevelWindow(WindowManager *wm, CL_GUITopLevelWindow *owner, CL_GUITopLevelDescription description)
-: wm(wm), owner(owner), description(description)
+: wm(wm), owner(owner), description(description), visible(description.is_visible())
 {
 }
 
