@@ -3,6 +3,7 @@
 #include "example.h"
 #include "window_manager.h"
 #include "splash_screen.h"
+#include "error_screen.h"
 #include "postprocess_scene.h"
 #include "postprocess_effect.h"
 
@@ -16,12 +17,17 @@ int Example::exec()
 	gui = CL_GUIManager(wm, "../../../Resources/GUIThemeAeroPacked");
 
 	effect_transparency = new PostProcessEffectTransparency(&post_process_scene);
-	effect_transparency->set_transparency(0.0f);
+	effect_darken = new PostProcessEffectDarken(&post_process_scene);
 
-	SplashScreen splash_screen(&gui);
-	splash_screen.set_geometry(CL_Rect(0,0,1024,768));
-	splash_screen.set_visible(true);
-	splash_screen.set_postprocess_effect(effect_transparency);
+	splash_screen = new SplashScreen(&gui);
+	splash_screen->set_geometry(CL_Rect(0,0,1024,768));
+	splash_screen->set_visible(true);
+
+	error_screen = new ErrorScreen(&gui);
+	error_screen->set_geometry(CL_Rect(200,200,824,568));
+	error_screen->set_visible(true);
+	error_screen->set_postprocess_effect(effect_transparency);
+	effect_transparency->set_transparency(0.0f);
 
 	timer.func_expired().set(this, &Example::on_timer);
 	timer.start(50);
@@ -36,5 +42,13 @@ void Example::on_window_close()
 
 void Example::on_timer()
 {
-	effect_transparency->set_transparency(effect_transparency->get_transparency() + 0.01f);
+	static float total_time = 0;
+	total_time += 50;
+
+	if(total_time > 2000)
+	{
+		splash_screen->set_postprocess_effect(effect_darken);
+
+		effect_transparency->set_transparency(effect_transparency->get_transparency() + 0.05f);
+	}
 }

@@ -3,6 +3,9 @@
 
 class PostProcessScene;
 class PostProcessEffectTransparency;
+class PostProcessEffectDarken;
+class SplashScreen;
+class ErrorScreen;
 
 class Example
 {
@@ -17,5 +20,10 @@ private:
 	CL_GUIManager gui;
 
 	PostProcessEffectTransparency *effect_transparency;
+	PostProcessEffectDarken *effect_darken;
+
+	SplashScreen *splash_screen;
+	ErrorScreen *error_screen;
+
 	CL_Timer timer;
 };

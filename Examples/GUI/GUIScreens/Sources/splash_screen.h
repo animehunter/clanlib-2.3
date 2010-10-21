@@ -11,8 +11,6 @@ public:
 
 private:
 	void on_render(CL_GraphicContext &gc, const CL_Rect &rect);
-	void on_button_click();
 
 	CL_Label *label;
-	CL_PushButton *button;
 };
