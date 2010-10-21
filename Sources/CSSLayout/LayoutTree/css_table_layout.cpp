@@ -31,10 +31,12 @@
 #include "css_table_column.h"
 #include "css_table_row.h"
 #include "css_block_layout.h"
+#include "css_inline_layout.h"
 #include "css_layout_cursor.h"
 #include "css_block_formatting_context.h"
 #include "../css_resource_cache.h"
 #include "../BoxTree/css_box_element.h"
+#include "../BoxTree/css_box_text.h"
 #include "clan_image_stretch.h"
 
 CL_CSSTableLayout::CL_CSSTableLayout(CL_CSSBoxElement *block_element)
@@ -266,6 +268,51 @@ int CL_CSSTableLayout::get_last_line_baseline()
 	return last_line_baseline;
 }
 
+CL_CSSLayoutHitTestResult CL_CSSTableLayout::hit_test(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, const CL_Point &pos) const
+{
+	for (size_t row = 0; row < rows.size(); row++)
+	{
+		for (size_t cell = 0; cell < columns.size(); cell++)
+		{
+			CL_CSSLayoutHitTestResult result = columns[cell].rows[row]->hit_test(gc, resource_cache, pos);
+			if (result.node)
+				return result;
+		}
+	}
+	return CL_CSSLayoutHitTestResult();
+}
+
+CL_CSSInlineLayout *CL_CSSTableLayout::find_inline_layout(CL_CSSBoxText *text_node)
+{
+	for (size_t row = 0; row < rows.size(); row++)
+	{
+		for (size_t cell = 0; cell < columns.size(); cell++)
+		{
+			CL_CSSBlockLayout *block_child = dynamic_cast<CL_CSSBlockLayout*>(columns[cell].rows[row]);
+			CL_CSSInlineLayout *inline_child = dynamic_cast<CL_CSSInlineLayout*>(columns[cell].rows[row]);
+			CL_CSSTableLayout *table_child = dynamic_cast<CL_CSSTableLayout*>(columns[cell].rows[row]);
+			if (block_child)
+			{
+				CL_CSSInlineLayout *inline_layout = block_child->find_inline_layout(text_node);
+				if (inline_layout)
+					return inline_layout;
+			}
+			else if (inline_child)
+			{
+				if (inline_child->contains_node(text_node))
+					return inline_child;
+			}
+			else if (table_child)
+			{
+				CL_CSSInlineLayout *inline_layout = table_child->find_inline_layout(text_node);
+				if (inline_layout)
+					return inline_layout;
+			}
+		}
+	}
+	return 0;
+}
+
 void CL_CSSTableLayout::prepare_children()
 {
 	for (size_t row = 0; row < rows.size(); row++)
@@ -359,26 +406,16 @@ void CL_CSSTableLayout::apply_non_content(CL_CSSTableSizeGrid &grid)
 {
 	if (element_node->computed_properties.border_collapse.type == CL_CSSBoxBorderCollapse::type_separate)
 	{
-		grid.apply_separate_table_border(border.left, border.top, border.right, border.bottom, padding.left, padding.top, padding.right, padding.bottom);
+		// grid.apply_separate_table_border(border.left, border.top, border.right, border.bottom, padding.left, padding.top, padding.right, padding.bottom);
 		grid.apply_separate_spacing(element_node->computed_properties.border_spacing.length1.value, element_node->computed_properties.border_spacing.length2.value);
 	}
 	else
 	{
+		// bug: table border has already been applied by the parent but needs to be adjusted
 		grid.apply_collapsed_table_border(border.left, border.top, border.right, border.bottom);
 	}
 
 	if (element_node->computed_properties.border_collapse.type == CL_CSSBoxBorderCollapse::type_separate)
-	{
-		for (size_t col = 0; col < columns.size(); col++)
-		{
-			for (size_t row = 0; row < rows.size(); row++)
-			{
-				CL_CSSLayoutTreeNode *cell_node = columns[col].rows[row];
-				grid.apply_collapsed_border(row, col, cell_node->border.left, cell_node->border.top, cell_node->border.right, cell_node->border.bottom);
-			}
-		}
-	}
-	else
 	{
 		for (size_t col = 0; col < columns.size(); col++)
 		{
@@ -402,6 +439,17 @@ void CL_CSSTableLayout::apply_non_content(CL_CSSTableSizeGrid &grid)
 				border_height_bottom = cl_max(border_height_bottom, columns[col].rows[row]->border.bottom);
 			}
 			grid.apply_separate_border_height(row, border_height_top, border_height_bottom);
+		}
+	}
+	else
+	{
+		for (size_t col = 0; col < columns.size(); col++)
+		{
+			for (size_t row = 0; row < rows.size(); row++)
+			{
+				CL_CSSLayoutTreeNode *cell_node = columns[col].rows[row];
+				grid.apply_collapsed_border(row, col, cell_node->border.left, cell_node->border.top, cell_node->border.right, cell_node->border.bottom);
+			}
 		}
 	}
 }
@@ -470,11 +518,12 @@ void CL_CSSTableLayout::layout_cells(CL_GraphicContext & gc, CL_CSSLayoutCursor 
 			{
 				if (columns[cell].rows[row])
 				{
-					CL_CSSUsedValue width = columns[cell].cell_width + columns[cell].rows[row]->padding.left + columns[cell].rows[row]->padding.right;
+					CL_CSSUsedValue width = columns[cell].cell_width - columns[cell].rows[row]->padding.left - columns[cell].rows[row]->padding.right;
 					columns[cell].rows[row]->calculate_top_down_sizes();
 					columns[cell].rows[row]->width.value = width;
 					columns[cell].rows[row]->layout_formatting_root_helper(gc, cursor, normal_strategy);
-					rows[row].height = cl_max(rows[row].height, columns[cell].rows[row]->height.value);
+					CL_CSSUsedValue cell_height = columns[cell].rows[row]->height.value + columns[cell].rows[row]->padding.top + columns[cell].rows[row]->padding.bottom;
+					rows[row].height = cl_max(rows[row].height, cell_height);
 				}
 			}
 		}
@@ -494,7 +543,7 @@ void CL_CSSTableLayout::layout_cells(CL_GraphicContext & gc, CL_CSSLayoutCursor 
 					{
 						if (columns[cell].rows[row])
 						{
-							CL_CSSUsedValue width = columns[cell].cell_width + columns[cell].rows[row]->padding.left + columns[cell].rows[row]->padding.right;
+							CL_CSSUsedValue width = columns[cell].cell_width - columns[cell].rows[row]->padding.left - columns[cell].rows[row]->padding.right;
 							columns[cell].rows[row]->calculate_top_down_sizes();
 							columns[cell].rows[row]->width.value = width;
 							columns[cell].rows[row]->layout_formatting_root_helper(gc, cursor, normal_strategy);
@@ -510,7 +559,8 @@ void CL_CSSTableLayout::layout_cells(CL_GraphicContext & gc, CL_CSSLayoutCursor 
 	{
 		for (size_t col = 0; col < columns.size(); col++)
 		{
-			size_grid.apply_height(row, columns[col].rows[row]->height.value);
+			CL_CSSUsedValue cell_height = columns[col].rows[row]->height.value + columns[col].rows[row]->padding.top + columns[col].rows[row]->padding.bottom;
+			size_grid.apply_height(row, cell_height);
 		}
 	}
 }

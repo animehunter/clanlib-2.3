@@ -35,6 +35,8 @@ class CL_CSSBoxElement;
 class CL_CSSBlockLayout;
 class CL_CSSTableColumn;
 class CL_CSSTableRow;
+class CL_CSSBoxText;
+class CL_CSSInlineLayout;
 
 class CL_CSSTableLayout : public CL_CSSLayoutTreeNode
 {
@@ -51,6 +53,8 @@ public:
 	int get_last_line_baseline();
 
 	void calculate_content_top_down_sizes();
+	CL_CSSLayoutHitTestResult hit_test(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, const CL_Point &pos) const;
+	CL_CSSInlineLayout *find_inline_layout(CL_CSSBoxText *text_node);
 
 private:
 	void prepare_children();

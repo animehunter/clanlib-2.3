@@ -81,13 +81,13 @@ void CL_CSSTableSizeGrid::apply_collapsed_table_border(CL_CSSUsedValue border_le
 {
 	if (cols() > 0)
 	{
-		non_content_widths[0] = cl_max(non_content_widths[0], border_left);
-		non_content_widths[cols()] = cl_max(non_content_widths[cols()], border_right);
+		non_content_widths[0] = cl_max(non_content_widths[0], border_left*0.5f);
+		non_content_widths[cols()] = cl_max(non_content_widths[cols()], border_right*0.5f);
 	}
 	if (rows() > 0)
 	{
-		non_content_heights[0] = cl_max(non_content_heights[0], border_top);
-		non_content_heights[rows()] = cl_max(non_content_heights[rows()], border_bottom);
+		non_content_heights[0] = cl_max(non_content_heights[0], border_top*0.5f);
+		non_content_heights[rows()] = cl_max(non_content_heights[rows()], border_bottom*0.5f);
 	}
 }
 

@@ -31,6 +31,7 @@
 #include "css_block_formatting_context.h"
 #include "css_layout_cursor.h"
 #include "css_inline_layout.h"
+#include "css_table_layout.h"
 #include "css_stacking_context.h"
 #include "../BoxTree/css_box_element.h"
 #include "../BoxTree/css_box_text.h"
@@ -212,6 +213,7 @@ CL_CSSInlineLayout *CL_CSSBlockLayout::find_inline_layout(CL_CSSBoxText *text_no
 	{
 		CL_CSSBlockLayout *block_child = dynamic_cast<CL_CSSBlockLayout*>(children[i]);
 		CL_CSSInlineLayout *inline_child = dynamic_cast<CL_CSSInlineLayout*>(children[i]);
+		CL_CSSTableLayout *table_child = dynamic_cast<CL_CSSTableLayout*>(children[i]);
 		if (block_child)
 		{
 			CL_CSSInlineLayout *inline_layout = block_child->find_inline_layout(text_node);
@@ -222,6 +224,12 @@ CL_CSSInlineLayout *CL_CSSBlockLayout::find_inline_layout(CL_CSSBoxText *text_no
 		{
 			if (inline_child->contains_node(text_node))
 				return inline_child;
+		}
+		else if (table_child)
+		{
+			CL_CSSInlineLayout *inline_layout = table_child->find_inline_layout(text_node);
+			if (inline_layout)
+				return inline_layout;
 		}
 	}
 	return 0;
