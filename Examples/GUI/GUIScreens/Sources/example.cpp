@@ -2,6 +2,7 @@
 #include "precomp.h"
 #include "example.h"
 #include "window_manager.h"
+#include "game_screen.h"
 #include "splash_screen.h"
 #include "error_screen.h"
 #include "postprocess_scene.h"
@@ -16,7 +17,11 @@ int Example::exec()
 	CL_GUIWindowManager wm = WindowManager::create(&post_process_scene);
 	gui = CL_GUIManager(wm, "../../../Resources/GUIThemeAeroPacked");
 
-	effect_transparency = new PostProcessEffectTransparency(&post_process_scene);
+	GameScreen game_screen(&gui);
+	game_screen.set_geometry(CL_Rect(0,0,1024,768));
+	game_screen.set_visible(true);
+
+/*	effect_transparency = new PostProcessEffectTransparency(&post_process_scene);
 	effect_darken = new PostProcessEffectDarken(&post_process_scene);
 
 	splash_screen = new SplashScreen(&gui);
@@ -29,7 +34,7 @@ int Example::exec()
 
 	timer.func_expired().set(this, &Example::on_timer);
 	timer.start(50);
-
+*/
 	return gui.exec();
 }
 
