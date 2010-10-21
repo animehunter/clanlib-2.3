@@ -12,6 +12,7 @@
     <ClCompile Include="Sources\example.cpp" />
     <ClCompile Include="Sources\program.cpp" />
     <ClCompile Include="Sources\error_screen.cpp" />
+    <ClCompile Include="Sources\postprocess_scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\precomp.h" />
@@ -25,5 +26,6 @@
     <ClInclude Include="Sources\example.h" />
     <ClInclude Include="Sources\program.h" />
     <ClInclude Include="Sources\error_screen.h" />
+    <ClInclude Include="Sources\postprocess_scene.h" />
   </ItemGroup>
 </Project>

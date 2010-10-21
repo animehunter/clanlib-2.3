@@ -5,10 +5,8 @@
 #include "ui_screen.h"
 
 PostProcessScene::PostProcessScene(CL_DisplayWindow display_window)
-: display_window(display_window), gc(display_window.get_gc()), alpha(0.0f)
+: display_window(display_window), gc(display_window.get_gc())
 {
-	t.func_expired().set(this, &PostProcessScene::on_timer);
-	t.start(50);
 }
 
 void PostProcessScene::begin_scene()
@@ -42,15 +40,4 @@ void PostProcessScene::end_scene()
 {
 	gc.reset_blend_mode();
 	display_window.flip();
-}
-
-void PostProcessScene::set_transparency(float alpha)
-{
-	if(alpha >= 0.0f && alpha <= 1.0f)
-		this->alpha = alpha;
-}
-
-void PostProcessScene::on_timer()
-{
-	set_transparency(get_transparency() + 0.01f);
 }

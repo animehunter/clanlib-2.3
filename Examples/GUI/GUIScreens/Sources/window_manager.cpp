@@ -193,8 +193,8 @@ void WindowManager::setup_painting()
 void WindowManager::complete_painting()
 {
 	// Not strictly correct since this uses no proper z-order:
-	std::map<CL_GUITopLevelWindow *, TopLevelWindow *>::iterator it;
-	for (it = window_map.begin(); it != window_map.end(); ++it)
+	std::map<CL_GUITopLevelWindow *, TopLevelWindow *>::reverse_iterator it;
+	for (it = window_map.rbegin(); it != window_map.rend(); ++it)
 	{
 		TopLevelWindow *toplevel = it->second;
 		CL_Rect geometry = toplevel->get_geometry();
