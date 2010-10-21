@@ -1,16 +1,17 @@
 
 #pragma once
 
+class PostProcessScene;
 class TopLevelWindow;
 
 class WindowManager : CL_GUIWindowManagerProvider
 {
 public:
-	static CL_GUIWindowManager create(CL_DisplayWindow &dispwindow);
+	static CL_GUIWindowManager create(PostProcessScene *scene);
 	static WindowManager *cast(const CL_GUIWindowManager &wm);
 
 private:
-	WindowManager(CL_DisplayWindow &dispwindow);
+	WindowManager(PostProcessScene *scene);
 	~WindowManager();
 	TopLevelWindow *get_toplevel_window(CL_GUITopLevelWindow *handle) const;
 
@@ -47,9 +48,7 @@ private:
 	void complete_painting();
 	CL_GUIWindowManager::CL_WindowManagerType get_window_manager_type() const;
 
-	void on_input_mouse_move(const CL_InputEvent &input_event, const CL_InputState &input_state);
-
-	CL_DisplayWindow display_window;
+	PostProcessScene *scene;
 	CL_GUIWindowManagerSite *site;
 	std::map<CL_GUITopLevelWindow *, TopLevelWindow *> window_map;
 

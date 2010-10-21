@@ -176,6 +176,22 @@
 			>
 		</File>
 		<File
+			RelativePath=".\Sources\error_screen.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\Sources\error_screen.h"
+			>
+		</File>
+		<File
+			RelativePath=".\Sources\example.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\Sources\example.h"
+			>
+		</File>
+		<File
 			RelativePath=".\Sources\game_screen.cpp"
 			>
 		</File>
@@ -189,6 +205,14 @@
 		</File>
 		<File
 			RelativePath=".\Sources\postprocess_effect.h"
+			>
+		</File>
+		<File
+			RelativePath=".\Sources\postprocess_scene.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\Sources\postprocess_scene.h"
 			>
 		</File>
 		<File

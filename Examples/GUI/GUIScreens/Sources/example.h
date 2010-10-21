@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "postprocess_effect.h"
+class PostProcessScene;
 
 class Example
 {
@@ -10,11 +10,8 @@ public:
 
 private:
 	void on_window_close();
-	void on_timer();
+	void on_timer(PostProcessScene &scene);
 
 	CL_SlotContainer slots;
 	CL_GUIManager gui;
-
-	PostProcessEffectTransparency transparency_effect;
-	PostProcessEffectDarken darken_effect;
 };

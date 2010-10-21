@@ -2,12 +2,11 @@
 #include "precomp.h"
 #include "window_manager.h"
 #include "toplevel_window.h"
-#include "ui_screen.h"
-#include "postprocess_effect.h"
+#include "postprocess_scene.h"
 
-CL_GUIWindowManager WindowManager::create(CL_DisplayWindow &display_window)
+CL_GUIWindowManager WindowManager::create(PostProcessScene *scene)
 {
-	return CL_GUIWindowManager(new WindowManager(display_window));
+	return CL_GUIWindowManager(new WindowManager(scene));
 }
 
 WindowManager *WindowManager::cast(const CL_GUIWindowManager &wm)
@@ -15,8 +14,8 @@ WindowManager *WindowManager::cast(const CL_GUIWindowManager &wm)
 	return dynamic_cast<WindowManager*>(wm.get_provider());
 }
 
-WindowManager::WindowManager(CL_DisplayWindow &display_window)
-: display_window(display_window), site(0)
+WindowManager::WindowManager(PostProcessScene *scene)
+: scene(scene), site(0)
 {
 /*	CL_InputContext& ic = display_window.get_ic();
 
@@ -101,17 +100,17 @@ CL_Point WindowManager::window_to_screen(CL_GUITopLevelWindow *handle, const CL_
 
 CL_GraphicContext& WindowManager::get_gc(CL_GUITopLevelWindow *handle) const
 {
-	return display_window.get_gc();
+	return scene->get_display_window().get_gc();
 }
 
 CL_InputContext& WindowManager::get_ic(CL_GUITopLevelWindow *handle) const
 {
-	return display_window.get_ic();
+	return scene->get_display_window().get_ic();
 }
 
 CL_GraphicContext WindowManager::begin_paint(CL_GUITopLevelWindow *handle, const CL_Rect &update_region)
 {
-	CL_GraphicContext gc = display_window.get_gc();
+	CL_GraphicContext gc = scene->get_display_window().get_gc();
 	gc.set_frame_buffer(get_toplevel_window(handle)->get_frame_buffer());
 	gc.set_cliprect(update_region);
 	gc.clear(CL_Colorf::transparent);
@@ -140,7 +139,7 @@ void WindowManager::pop_cliprect(CL_GUITopLevelWindow *handle, CL_GraphicContext
 
 void WindowManager::end_paint(CL_GUITopLevelWindow *handle, const CL_Rect &update_region)
 {
-	CL_GraphicContext gc = display_window.get_gc();
+	CL_GraphicContext gc = scene->get_display_window().get_gc();
 	gc.reset_frame_buffer();
 }
 
@@ -168,7 +167,7 @@ void WindowManager::capture_mouse(CL_GUITopLevelWindow *handle, bool state)
 
 CL_DisplayWindow WindowManager::get_display_window(CL_GUITopLevelWindow *handle) const
 {
-	return display_window;
+	return scene->get_display_window();
 }
 
 void WindowManager::set_cursor(CL_GUITopLevelWindow *handle, const CL_Cursor &cursor)
@@ -188,19 +187,11 @@ void WindowManager::update()
 
 void WindowManager::setup_painting()
 {
+	scene->begin_scene();
 }
 
 void WindowManager::complete_painting()
 {
-	CL_GraphicContext gc = display_window.get_gc();
-	gc.clear();
-
-	// Our textures are in pre-multiplied alpha
-	CL_BlendMode blendmode;
-	blendmode.enable_blending(true);
-	blendmode.set_blend_function(cl_blend_one, cl_blend_one_minus_src_alpha, cl_blend_one, cl_blend_one_minus_src_alpha);
-	gc.set_blend_mode(blendmode);
-
 	// Not strictly correct since this uses no proper z-order:
 	std::map<CL_GUITopLevelWindow *, TopLevelWindow *>::iterator it;
 	for (it = window_map.begin(); it != window_map.end(); ++it)
@@ -209,23 +200,10 @@ void WindowManager::complete_painting()
 		CL_Rect geometry = toplevel->get_geometry();
 		CL_Texture &texture = toplevel->get_texture();
 		CL_GUIComponent *component = toplevel->get_component();
-		UIScreen *uiscreen = dynamic_cast<UIScreen*>(component);
-		PostProcessEffect *effect = uiscreen ? uiscreen->get_postprocess_effect() : 0;
-		if (effect)
-		{
-			effect->render(gc, texture, geometry);
-		}
-		else
-		{
-			gc.set_texture(0, texture);
-			CL_Draw::texture(gc, geometry);
-			gc.reset_texture(0);
-		}
+		scene->render_component(component, texture, geometry);
 	}
 
-	gc.reset_blend_mode();
-
-	display_window.flip();
+	scene->end_scene();
 }
 
 CL_GUIWindowManager::CL_WindowManagerType WindowManager::get_window_manager_type() const
