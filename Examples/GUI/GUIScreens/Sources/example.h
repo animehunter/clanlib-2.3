@@ -15,5 +15,6 @@ private:
 	CL_SlotContainer slots;
 	CL_GUIManager gui;
 
-	PostProcessEffectTransparency effect;
+	PostProcessEffectTransparency transparency_effect;
+	PostProcessEffectDarken darken_effect;
 };

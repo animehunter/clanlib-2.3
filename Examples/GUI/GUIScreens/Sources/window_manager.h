@@ -47,6 +47,8 @@ private:
 	void complete_painting();
 	CL_GUIWindowManager::CL_WindowManagerType get_window_manager_type() const;
 
+	void on_input_mouse_move(const CL_InputEvent &input_event, const CL_InputState &input_state);
+
 	CL_DisplayWindow display_window;
 	CL_GUIWindowManagerSite *site;
 	std::map<CL_GUITopLevelWindow *, TopLevelWindow *> window_map;

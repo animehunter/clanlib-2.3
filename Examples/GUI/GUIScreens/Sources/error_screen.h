@@ -3,11 +3,11 @@
 
 #include "ui_screen.h"
 
-class SplashScreen : public UIScreen
+class ErrorScreen : public UIScreen
 {
 public:
-	SplashScreen(CL_GUIManager *gui);
-	~SplashScreen();
+	ErrorScreen(CL_GUIManager *gui);
+	~ErrorScreen();
 
 private:
 	void on_render(CL_GraphicContext &gc, const CL_Rect &rect);

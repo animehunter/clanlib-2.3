@@ -11,7 +11,8 @@ SplashScreen::SplashScreen(CL_GUIManager *gui)
 
 	button = new CL_PushButton(this);
 	button->set_geometry(CL_Rect(10, 50, CL_Size(100, 30)));
-	button->set_text("Quit");
+	button->set_text("Continue");
+	button->func_clicked().set(this, &SplashScreen::on_button_click);
 
 	func_render().set(this, &SplashScreen::on_render);
 }
@@ -23,4 +24,9 @@ SplashScreen::~SplashScreen()
 void SplashScreen::on_render(CL_GraphicContext &gc, const CL_Rect &rect)
 {
 	gc.clear(CL_Colorf::orangered);
+}
+
+void SplashScreen::on_button_click()
+{
+
 }
