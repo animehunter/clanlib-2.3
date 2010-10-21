@@ -51,6 +51,7 @@ private:
 	PostProcessScene *scene;
 	CL_GUIWindowManagerSite *site;
 	std::map<CL_GUITopLevelWindow *, TopLevelWindow *> window_map;
+	std::vector<CL_GUITopLevelWindow *> zorder;
 
 	friend class TopLevelWindow;
 

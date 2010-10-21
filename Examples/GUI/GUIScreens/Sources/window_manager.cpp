@@ -3,6 +3,7 @@
 #include "window_manager.h"
 #include "toplevel_window.h"
 #include "postprocess_scene.h"
+#include <algorithm>
 
 CL_GUIWindowManager WindowManager::create(PostProcessScene *scene)
 {
@@ -40,6 +41,7 @@ WindowManager::~WindowManager()
 	for (std::map<CL_GUITopLevelWindow *, TopLevelWindow *>::iterator it = window_map.begin(); it != window_map.end(); ++it)
 		delete it->second;
 	window_map.clear();
+	zorder.clear();
 }
 
 void WindowManager::destroy()
@@ -55,12 +57,14 @@ void WindowManager::set_site(CL_GUIWindowManagerSite *new_site)
 void WindowManager::create_window(CL_GUITopLevelWindow *handle, CL_GUITopLevelWindow *owner, CL_GUIComponent *component, CL_GUITopLevelDescription description)
 {
 	window_map[handle] = new TopLevelWindow(this, owner, component, description);
+	zorder.push_back(handle);
 }
 
 void WindowManager::destroy_window(CL_GUITopLevelWindow *handle)
 {
 	delete window_map[handle];
 	window_map.erase(window_map.find(handle));
+	zorder.erase(std::find(zorder.begin(), zorder.end(), handle));
 }
 
 void WindowManager::enable_window(CL_GUITopLevelWindow *handle, bool enable)
@@ -190,16 +194,16 @@ void WindowManager::update()
 
 void WindowManager::setup_painting()
 {
-	scene->begin_scene();
 }
 
 void WindowManager::complete_painting()
 {
+	scene->begin_scene();
+
 	// Not strictly correct since this uses no proper z-order:
-	std::map<CL_GUITopLevelWindow *, TopLevelWindow *>::reverse_iterator it;
-	for (it = window_map.rbegin(); it != window_map.rend(); ++it)
+	for (size_t i = 0; i < zorder.size(); i++)
 	{
-		TopLevelWindow *toplevel = it->second;
+		TopLevelWindow *toplevel = window_map[zorder[i]];
 		if(toplevel->is_visible())
 		{
 			CL_Rect geometry = toplevel->get_geometry();
