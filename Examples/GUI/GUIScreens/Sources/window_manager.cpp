@@ -182,7 +182,10 @@ void WindowManager::update()
 {
 	std::map<CL_GUITopLevelWindow *, TopLevelWindow *>::iterator it;
 	for (it = window_map.begin(); it != window_map.end(); ++it)
-		site->func_paint->invoke(it->first, it->second->get_geometry().get_size());
+	{
+		if(it->second->is_visible())
+			site->func_paint->invoke(it->first, it->second->get_geometry().get_size());
+	}
 }
 
 void WindowManager::setup_painting()
@@ -197,10 +200,13 @@ void WindowManager::complete_painting()
 	for (it = window_map.rbegin(); it != window_map.rend(); ++it)
 	{
 		TopLevelWindow *toplevel = it->second;
-		CL_Rect geometry = toplevel->get_geometry();
-		CL_Texture &texture = toplevel->get_texture();
-		CL_GUIComponent *component = toplevel->get_component();
-		scene->render_component(component, texture, geometry);
+		if(toplevel->is_visible())
+		{
+			CL_Rect geometry = toplevel->get_geometry();
+			CL_Texture &texture = toplevel->get_texture();
+			CL_GUIComponent *component = toplevel->get_component();
+			scene->render_component(component, texture, geometry);
+		}
 	}
 
 	scene->end_scene();
