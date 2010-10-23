@@ -62,7 +62,7 @@ CL_Texture CL_SharedGCData_Impl::load_texture(CL_GraphicContext &gc, const CL_St
 		if (textures[i].key == key)
 		{
 			// Texture is no longer valid
-			if (textures[i].texture_impl.is_invalid_weak_link())
+			if (textures[i].texture_impl.is_null())
 			{
 				// Remove from the cache
 				unload_texture(filename, virtual_directory, import_desc);

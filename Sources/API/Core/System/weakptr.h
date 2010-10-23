@@ -25,6 +25,7 @@
 **
 **    Magnus Norddahl
 **    Harry Storbacka
+**    Thomas Gottschalk Larsen
 */
 
 /// \addtogroup clanCore_System clanCore System
@@ -33,49 +34,37 @@
 
 #pragma once
 
-
 #include "../api_core.h"
+#include "mutex.h"
 #include "sharedptr.h"
 
 /// \brief Weak pointer class (pointer to a CL_SharedPtr object that dont increase reference count).
 ///
-///   <p>Use CL_WeakPtr when you want to have a pointer that is reference counted by CL_SharedPtr
-///    but want a pointer that dont increase the reference count.</p>
-///    <p>The purpose of CL_WeakPtr is to avoid circular loop issues. By using CL_WeakPtr you
-///    can construct new CL_SharedPtr'ed objects based on the weak pointer.</p> 
+/// Use CL_WeakPtr when you want to have a pointer that is reference counted by CL_SharedPtr
+/// but want a pointer that don't increase the reference count.
+///
+/// The purpose of CL_WeakPtr is to avoid circular loop issues. By using CL_WeakPtr you
+/// can construct new CL_SharedPtr'ed objects based on the weak pointer.
 /// \xmlonly !group=Core/System! !header=core.h! \endxmlonly
 template <typename Type>
-class CL_WeakPtr : public CL_SharedPtr_Link
+class CL_API_CORE CL_WeakPtr
 {
 public:
 	CL_WeakPtr()
-	: ptr(0)
 	{
-		set_weak_link();
+		d.data = 0;
 	}
 
 	CL_WeakPtr(const CL_WeakPtr<Type> &copy)
-	: ptr(0)
 	{
-		set_weak_link();
-		connect(copy);
-		ptr = copy.ptr;
+		d.data = 0;
+		connect(copy.d.data);
 	}
 
 	explicit CL_WeakPtr(const CL_SharedPtr<Type> &copy)
-	: ptr(0)
 	{
-		set_weak_link();
-		connect(copy);
-		ptr = copy.ptr;
-	}
-
-	explicit CL_WeakPtr(const CL_UnknownSharedPtr &copy)
-	: ptr(0)
-	{
-		set_weak_link();
-		connect(copy);
-		ptr = (Type *) copy.ptr;
+		d.data = 0;
+		connect(copy.d.data);
 	}
 
 	~CL_WeakPtr()
@@ -83,21 +72,11 @@ public:
 		disconnect();
 	}
 
-	CL_WeakPtr &operator =(const CL_UnknownSharedPtr &copy)
-	{
-		disconnect();
-		connect(copy);
-		ptr = (Type *) copy.ptr;
-		set_weak_link();
-		return *this;
-	}
-
+public:
 	CL_WeakPtr &operator =(const CL_SharedPtr<Type> &copy)
 	{
 		disconnect();
-		connect(copy);
-		ptr = copy.ptr;
-		set_weak_link();
+		connect(copy.d.data);
 		return *this;
 	}
 
@@ -105,87 +84,112 @@ public:
 	{
 		if (this == &copy)
 			return *this;
+
 		disconnect();
-		connect(copy);
-		ptr = copy.ptr;
-		set_weak_link();
+		connect(copy.d.data);
 		return *this;
 	}
 
-	/// \brief Disconnect from linked list and unset the pointer
-	/** \return true if the list is empty or only contains weak links*/
-	bool disconnect()
-	{
-		bool result = CL_SharedPtr_Link::disconnect();
-		ptr = NULL;
-		return result;
-	}
+	operator Type* () { return get(); }
+	operator const Type* () const { return get(); }
 
+	operator CL_SharedPtr<Type>() { return to_sharedptr(); }
+	operator CL_SharedPtr<Type>() const { return to_sharedptr(); }
+
+	template <typename InitType>
+	operator CL_SharedPtr<InitType>() { return to_sharedptr(); }
+
+	template <typename InitType>
+	operator CL_SharedPtr<InitType>() const { return to_sharedptr(); }
+
+	Type *operator ->() { return get(); }
+	const Type *operator ->() const { return get(); }
+
+	template <typename OtherType>
+	bool operator ==(OtherType *other) const { return get() == other; }
+
+	template <typename OtherType>
+	bool operator !=(OtherType *other) const { return get() != other; }
+
+	template <typename OtherType>
+	bool operator <=(OtherType *other) const { return get() <= other; }
+
+	template <typename OtherType>
+	bool operator >=(OtherType *other) const { return get() >= other; }
+
+	template <typename OtherType>
+	bool operator <(OtherType *other) const { return get() < other; }
+
+	template <typename OtherType>
+	bool operator >(OtherType *other) const { return get() > other; }
+
+public:
 	/// \brief Tests if the pointer is unset, or the weak link is no longer valid
 	/** \return true, pointer not set (or not valid)*/
-	bool is_null() const { return is_invalid_weak_link() || ptr == 0; }
+	bool is_null() const { return is_invalid_weak_link() || d.p == 0; }
 
 	/// \brief Retrieves the pointer
 	/** \return The pointer (May be NULL, if it has not been set or the weak link is no longer valid)*/
-	Type *get() { return !is_invalid_weak_link() ? ptr : 0; }
+	Type *get() { return is_invalid_weak_link() ? 0 : *d.p; }
 
 	/// \brief Retrieves the pointer
-	/** \return The pointer (May be NULL, if it has not been set or the weak link is no longer valid)	*/
-	const Type *get() const { return !is_invalid_weak_link() ? ptr : 0; }
-
-	CL_UnknownSharedPtr to_unknownptr() const
-	{
-		if (!is_invalid_weak_link())
-			return CL_UnknownSharedPtr(*this, (Type *) ptr);
-		else
-			return CL_UnknownSharedPtr();
-	}
+	/** \return The pointer (May be NULL, if it has not been set or the weak link is no longer valid)*/
+	const Type *get() const { return is_invalid_weak_link() ? 0 : *d.p; }
 
 	CL_SharedPtr<Type> to_sharedptr() const
 	{
-		if (!is_invalid_weak_link())
-			return CL_SharedPtr<Type>(*this, (Type *) ptr);
+		if (!is_null())
+			return CL_SharedPtr<Type>(d.data);
 		else
 			return CL_SharedPtr<Type>();
 	}
 
-	operator Type *() { return get(); }
+private:
+	void connect(CL_SharedPtrData *data)
+	{
+		if (data)
+		{
+			CL_MutexSection s(&data->mutex);
+			++data->refCount;
+			d.data = data;
+		}
+	}
 
-	operator const Type *() const { return get(); }
+	bool disconnect()
+	{
+		bool result = false;
+		if (d.data)
+		{
+			CL_MutexSection s(&d.data->mutex);
+			result = d.data->strongCount == 0;
+			if (--d.data->refCount == 0)
+			{
+				s.unlock();
+				delete d.data;
+			}
+			d.data = 0;
+		}
+		return result;
+	}
 
-	operator CL_UnknownSharedPtr() { return to_unknownptr(); }
+	bool is_invalid_weak_link() const
+	{
+		if (d.data)
+		{
+			CL_MutexSection s(&d.data->mutex);
+			if (d.data->strongCount > 0)
+				return false;
+		}
+		return true;
+	}
 
-	operator CL_UnknownSharedPtr() const { return to_unknownptr(); }
+	union
+	{
+		Type **p;
+		CL_SharedPtrData *data;
+	} d;
 
-	operator CL_SharedPtr<Type>() { return to_sharedptr(); }
-
-	operator CL_SharedPtr<Type>() const { return to_sharedptr(); }
-
-	Type *operator ->() { return get(); }
-
-	const Type *operator ->() const { return get(); }
-
-	template <typename OtherType>
-	bool operator ==(OtherType *other) const { return ptr == other; }
-
-	template <typename OtherType>
-	bool operator !=(OtherType *other) const { return ptr != other; }
-
-	template <typename OtherType>
-	bool operator <(OtherType *other) const { return ptr < other; }
-
-	template <typename OtherType>
-	bool operator <=(OtherType *other) const { return ptr <= other; }
-
-	template <typename OtherType>
-	bool operator >(OtherType *other) const { return ptr > other; }
-
-	template <typename OtherType>
-	bool operator >=(OtherType *other) const { return ptr >= other; }
-
-public:
-	Type *ptr;
+	friend class CL_SharedPtr<Type>;
 };
-
 
 /// \}

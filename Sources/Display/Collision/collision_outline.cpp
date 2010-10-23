@@ -269,7 +269,7 @@ void CL_CollisionOutline::load(CL_IODevice &file)
 	impl->width = provider->get_width();
 	impl->height = provider->get_height();
 
-	provider.disconnect();
+	provider = CL_SharedPtr<CL_OutlineProviderFile>();
 
 	impl->calculate_radius();
 	impl->calculate_sub_circles();
