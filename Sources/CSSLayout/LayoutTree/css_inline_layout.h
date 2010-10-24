@@ -88,6 +88,7 @@ private:
 	int find_baseline_offset(CL_GraphicContext &gc, CL_CSSResourceCache *resources, const CL_CSSBoxElement *element);
 	bool stop_at_block_level(CL_CSSInlineLineBoxCursor &cursor, CL_CSSInlineLineBoxCursor &next_linebreak);
 	void calculate_content_top_down_sizes();
+	void set_content_expanding_width();
 
 	std::vector<CL_CSSInlineObject> objects;
 	std::vector<CL_CSSInlineLineBreakOpportunity> linebreak_opportunities;

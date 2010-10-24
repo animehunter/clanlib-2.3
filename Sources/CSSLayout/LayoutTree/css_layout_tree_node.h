@@ -60,17 +60,19 @@ public:
 	virtual int get_last_line_baseline() = 0;
 	virtual bool find_content_box(CL_CSSBoxElement *element, CL_Rect &out_rect) { return false; }
 
-	void layout_formatting_root(CL_GraphicContext &gc, CL_CSSLayoutCursor &normal_flow, LayoutStrategy strategy = normal_strategy);
+	void layout_formatting_root(CL_GraphicContext &gc, CL_CSSResourceCache *resources, LayoutStrategy strategy = normal_strategy);
 	void set_root_block_position(int x, int y);
 	void layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy);
 
-	void calc_preferred(CL_GraphicContext &gc, CL_CSSLayoutCursor &parent_flow);
-	void calc_minimum(CL_GraphicContext &gc, CL_CSSLayoutCursor &parent_flow);
-	void layout_formatting_root_helper(CL_GraphicContext &gc, CL_CSSLayoutCursor &parent_flow, LayoutStrategy strategy);
+	void calc_preferred(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
+	void calc_minimum(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
+	void set_expanding_width(CL_CSSUsedValue expanding_width);
+	void layout_formatting_root_helper(CL_GraphicContext &gc, CL_CSSResourceCache *resources, LayoutStrategy strategy);
 
 
 	virtual void calculate_top_down_sizes();
 	virtual void calculate_content_top_down_sizes() { }
+	virtual void set_content_expanding_width() { }
 	bool add_margin_top(CL_CSSLayoutCursor &cursor);
 	int get_block_width() const;
 	int get_block_height() const;
@@ -127,7 +129,7 @@ private:
 	void set_formatting_context(CL_CSSBlockFormattingContext *formatting_context, bool is_root);
 	void establish_stacking_context_if_needed(CL_CSSStackingContext *current_stacking_context);
 
-	void layout_minimum(CL_GraphicContext &gc, CL_CSSLayoutCursor &parent_flow);
-	void layout_preferred(CL_GraphicContext &gc, CL_CSSLayoutCursor &parent_flow);
-	void layout_shrink_to_fit(CL_GraphicContext &gc, CL_CSSLayoutCursor &parent_flow);
+	void layout_minimum(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
+	void layout_preferred(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
+	void layout_shrink_to_fit(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
 };

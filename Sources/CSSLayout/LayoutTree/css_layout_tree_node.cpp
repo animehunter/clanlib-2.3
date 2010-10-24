@@ -130,7 +130,7 @@ void CL_CSSLayoutTreeNode::calculate_top_down_sizes()
 	}
 	else if (element_node->computed_properties.width.type == CL_CSSBoxWidth::type_auto)
 	{
-		if (containing_width.expanding)
+		if (containing_width.expanding || element_node->computed_properties.display.type == CL_CSSBoxDisplay::type_table_cell)
 		{
 			width.value = 0.0f;
 			width.expanding = true;
@@ -255,67 +255,74 @@ void CL_CSSLayoutTreeNode::set_root_block_position(int x, int y)
 	formatting_context->set_position(content_box.left, content_box.top);
 }
 
-void CL_CSSLayoutTreeNode::calc_preferred(CL_GraphicContext &gc, CL_CSSLayoutCursor &parent_flow)
+void CL_CSSLayoutTreeNode::calc_preferred(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
 {
 	if (!preferred_width_calculated)
 	{
-		layout_formatting_root_helper(gc, parent_flow, preferred_strategy);
+		calculate_top_down_sizes();
+		layout_formatting_root_helper(gc, resources, preferred_strategy);
 	}
 }
 
-void CL_CSSLayoutTreeNode::calc_minimum(CL_GraphicContext &gc, CL_CSSLayoutCursor &parent_flow)
+void CL_CSSLayoutTreeNode::calc_minimum(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
 {
 	if (!min_width_calculated)
 	{
-		layout_formatting_root_helper(gc, parent_flow, minimum_strategy);
+		calculate_top_down_sizes();
+		layout_formatting_root_helper(gc, resources, minimum_strategy);
 	}
 }
 
-void CL_CSSLayoutTreeNode::layout_minimum(CL_GraphicContext &gc, CL_CSSLayoutCursor &parent_flow)
+void CL_CSSLayoutTreeNode::layout_minimum(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
 {
-	calc_minimum(gc, parent_flow);
-	width.value = min_width;
-	layout_formatting_root_helper(gc, parent_flow, normal_strategy);
+	calc_minimum(gc, resources);
+	calculate_top_down_sizes();
+	set_expanding_width(min_width);
+	layout_formatting_root_helper(gc, resources, normal_strategy);
 }
 
-void CL_CSSLayoutTreeNode::layout_preferred(CL_GraphicContext &gc, CL_CSSLayoutCursor &parent_flow)
+void CL_CSSLayoutTreeNode::layout_preferred(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
 {
-	calc_preferred(gc, parent_flow);
-	width.value = preferred_width;
-	layout_formatting_root_helper(gc, parent_flow, normal_strategy);
+	calc_preferred(gc, resources);
+	calculate_top_down_sizes();
+	set_expanding_width(preferred_width);
+	layout_formatting_root_helper(gc, resources, normal_strategy);
 }
 
-void CL_CSSLayoutTreeNode::layout_shrink_to_fit(CL_GraphicContext &gc, CL_CSSLayoutCursor &parent_flow)
+void CL_CSSLayoutTreeNode::layout_shrink_to_fit(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
 {
-	calc_preferred(gc, parent_flow);
+	calc_preferred(gc, resources);
 	CL_CSSUsedValue available_width = containing_width.value;
+	CL_CSSUsedValue shrink_to_fit_width;
 	if (preferred_width > available_width + 0.1f)
 	{
-		calc_minimum(gc, parent_flow);
-		width.value = cl_max(min_width, available_width);
+		calc_minimum(gc, resources);
+		shrink_to_fit_width = cl_max(min_width, available_width);
 	}
 	else
 	{
-		width.value = preferred_width;
+		shrink_to_fit_width = preferred_width;
 	}
-	layout_formatting_root_helper(gc, parent_flow, normal_strategy);
+	calculate_top_down_sizes();
+	set_expanding_width(shrink_to_fit_width);
+	layout_formatting_root_helper(gc, resources, normal_strategy);
 }
 
-void CL_CSSLayoutTreeNode::layout_formatting_root(CL_GraphicContext &gc, CL_CSSLayoutCursor &parent_flow, LayoutStrategy strategy)
+void CL_CSSLayoutTreeNode::layout_formatting_root(CL_GraphicContext &gc, CL_CSSResourceCache *resources, LayoutStrategy strategy)
 {
-	calculate_top_down_sizes();
 	if (element_node->is_shrink_to_fit())
 	{
 		if (strategy == preferred_strategy)
-			layout_preferred(gc, parent_flow);
+			layout_preferred(gc, resources);
 		else if (strategy == minimum_strategy)
-			layout_minimum(gc, parent_flow);
+			layout_minimum(gc, resources);
 		else
-			layout_shrink_to_fit(gc, parent_flow);
+			layout_shrink_to_fit(gc, resources);
 	}
 	else
 	{
-		layout_formatting_root_helper(gc, parent_flow, normal_strategy);
+		calculate_top_down_sizes();
+		layout_formatting_root_helper(gc, resources, normal_strategy);
 	}
 
 /*	if (element_node->computed_properties.background_color.type == CL_CSSBoxBackgroundColor::type_color &&
@@ -325,16 +332,23 @@ void CL_CSSLayoutTreeNode::layout_formatting_root(CL_GraphicContext &gc, CL_CSSL
 	}*/
 }
 
-void CL_CSSLayoutTreeNode::layout_formatting_root_helper(CL_GraphicContext &gc, CL_CSSLayoutCursor &parent_flow, LayoutStrategy strategy)
+void CL_CSSLayoutTreeNode::set_expanding_width(CL_CSSUsedValue expanding_width)
+{
+	if (width.expanding)
+	{
+		width.value = expanding_width;
+		set_content_expanding_width();
+	}
+}
+
+void CL_CSSLayoutTreeNode::layout_formatting_root_helper(CL_GraphicContext &gc, CL_CSSResourceCache *resources, LayoutStrategy strategy)
 {
 	formatting_context->clear();
-
-	calculate_content_top_down_sizes();
 
 	CL_CSSLayoutCursor cursor;
 	cursor.x = 0;
 	cursor.y = 0;
-	cursor.resources = parent_flow.resources;
+	cursor.resources = resources;
 	add_content_margin_top(cursor);
 	layout_content(gc, cursor, strategy);
 	cursor.apply_margin();

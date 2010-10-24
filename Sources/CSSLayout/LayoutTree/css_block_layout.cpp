@@ -58,6 +58,15 @@ void CL_CSSBlockLayout::calculate_content_top_down_sizes()
 	}
 }
 
+void CL_CSSBlockLayout::set_content_expanding_width()
+{
+	for (size_t i = 0; i < children.size(); i++)
+	{
+		children[i]->containing_width.value = width.value;
+		children[i]->set_expanding_width(width.value - children[i]->margin.left - children[i]->margin.right - children[i]->border.left - children[i]->border.right - children[i]->padding.left - children[i]->padding.right);
+	}
+}
+
 void CL_CSSBlockLayout::render(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache)
 {
 	render_non_content(gc, resource_cache);
@@ -104,7 +113,7 @@ void CL_CSSBlockLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor
 
 				children[i]->containing_width = width;
 				children[i]->containing_height = height;
-				children[i]->layout_formatting_root(gc, cursor, strategy);
+				children[i]->layout_formatting_root(gc, cursor.resources, strategy);
 
 				CL_Rect float_box(0, 0, children[i]->get_block_width(), children[i]->get_block_height());
 				float_box.translate(cursor.x, cursor.y+cursor.margin_y);

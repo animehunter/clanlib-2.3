@@ -61,7 +61,7 @@ private:
 	void layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy);
 	void position_cells(CL_CSSLayoutCursor &cursor);
 	void layout_cells(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor);
-	void calculate_cell_widths(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor);
+	void calculate_cell_widths(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor, LayoutStrategy strategy);
 	void calculate_preferred_cell_widths(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor);
 	void calculate_minimum_cell_widths(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor);
 	CL_Rect get_cell_border_box(size_t row, size_t col);

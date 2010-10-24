@@ -76,10 +76,8 @@ void CL_CSSLayoutTree::layout(CL_GraphicContext &gc, CL_CSSResourceCache *resour
 	root_layout->containing_width.expanding = false;
 	root_layout->containing_height.use_content = false;
 
-	CL_CSSLayoutCursor cursor;
-	cursor.resources = resource_cache;
 	root_layout->prepare(0, root_stacking_context);
-	root_layout->layout_formatting_root(gc, cursor);
+	root_layout->layout_formatting_root(gc, resource_cache);
 	root_layout->set_root_block_position(0, 0);
 	root_layout->set_component_geometry();
 

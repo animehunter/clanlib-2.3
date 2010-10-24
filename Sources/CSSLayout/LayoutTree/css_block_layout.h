@@ -58,6 +58,7 @@ public:
 	CL_CSSLayoutHitTestResult hit_test(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, const CL_Point &pos) const;
 
 	void calculate_content_top_down_sizes();
+	void set_content_expanding_width();
 
 	std::vector<CL_CSSLayoutTreeNode *> children;
 

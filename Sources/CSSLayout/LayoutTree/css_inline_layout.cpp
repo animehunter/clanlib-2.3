@@ -65,6 +65,18 @@ void CL_CSSInlineLayout::calculate_content_top_down_sizes()
 	}
 }
 
+void CL_CSSInlineLayout::set_content_expanding_width()
+{
+	for (size_t i = 0; i < objects.size(); i++)
+	{
+		if (objects[i].layout)
+		{
+			objects[i].layout->containing_width.value = width.value;
+			objects[i].layout->set_expanding_width(width.value - objects[i].layout->margin.left - objects[i].layout->margin.right - objects[i].layout->border.left - objects[i].layout->border.right - objects[i].layout->padding.left - objects[i].layout->padding.right);
+		}
+	}
+}
+
 void CL_CSSInlineLayout::render(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
 {
 	render_non_content(gc, resources);
@@ -231,8 +243,8 @@ void CL_CSSInlineLayout::create_line_boxes(CL_GraphicContext &gc, CL_CSSLayoutCu
 				CL_CSSInlineLineBoxCursor next_linebreak = find_next_linebreak_opportunity(cursor, is_newline);
 				if (stop_at_block_level(cursor, next_linebreak))
 					break;
-				int width = find_width(gc, cursor, next_linebreak, start_of_line);
-				bool fits_on_line = x+width <= line.box.get_width();
+				int text_width = find_width(gc, cursor, next_linebreak, start_of_line);
+				bool fits_on_line = x+text_width <= line.box.get_width();
 				if (!fits_on_line && start_of_line)
 				{
 					// To do: force line break at the character level
@@ -256,7 +268,7 @@ void CL_CSSInlineLayout::create_line_boxes(CL_GraphicContext &gc, CL_CSSLayoutCu
 						start_of_line = true;
 						continue;
 					}
-					x += width;
+					x += text_width;
 				}
 				else if (!start_of_line)
 				{
@@ -334,7 +346,7 @@ void CL_CSSInlineLayout::apply_expanding_width(CL_GraphicContext &gc, CL_CSSLayo
 				objects[line.segments[i].object_index].layout->get_element_node()->computed_properties.width.type == CL_CSSBoxWidth::type_clan_expanding)
 			{
 				objects[line.segments[i].object_index].layout->width.value += extra;
-				objects[line.segments[i].object_index].layout->layout_formatting_root_helper(gc, layout_cursor, CL_CSSLayoutTreeNode::normal_strategy);
+				objects[line.segments[i].object_index].layout->layout_formatting_root_helper(gc, layout_cursor.resources, CL_CSSLayoutTreeNode::normal_strategy);
 
 				added += extra;
 				line.segments[i].right += added;
@@ -521,7 +533,7 @@ void CL_CSSInlineLayout::create_block_segment(CL_GraphicContext &gc, CL_CSSLayou
 	block_cursor.x = 0;
 	block_cursor.y = 0;
 	block_cursor.margin_y = 0;*/
-	objects[object_index].layout->layout_formatting_root(gc, layout_cursor);
+	objects[object_index].layout->layout_formatting_root(gc, layout_cursor.resources);
 
 	CL_CSSInlineLineSegment segment;
 	segment.object_index = object_index;
