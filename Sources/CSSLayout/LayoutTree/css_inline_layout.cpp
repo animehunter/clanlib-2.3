@@ -258,7 +258,7 @@ void CL_CSSInlineLayout::create_line_boxes(CL_GraphicContext &gc, CL_CSSLayoutCu
 
 				if (fits_on_line)
 				{
-					bool reflow = create_line_segments(gc, layout_cursor, cursor, next_linebreak, line, start_of_line);
+					bool reflow = create_line_segments(gc, layout_cursor, cursor, next_linebreak, line, start_of_line, text_width);
 					if (reflow)
 					{
 						cursor = line_start_cursor;
@@ -461,14 +461,15 @@ int CL_CSSInlineLayout::find_width(CL_GraphicContext &gc, const CL_CSSInlineLine
 	return width;
 }
 
-bool CL_CSSInlineLayout::create_line_segments(CL_GraphicContext &gc, CL_CSSLayoutCursor &layout_cursor,  const CL_CSSInlineLineBoxCursor &start, const CL_CSSInlineLineBoxCursor &end, CL_CSSInlineLineBox &line, bool &start_of_line)
+bool CL_CSSInlineLayout::create_line_segments(CL_GraphicContext &gc, CL_CSSLayoutCursor &layout_cursor,  const CL_CSSInlineLineBoxCursor &start, const CL_CSSInlineLineBoxCursor &end, CL_CSSInlineLineBox &line, bool &start_of_line, int &out_text_width)
 {
+	out_text_width = 0;
 	CL_CSSInlineLineBoxCursor cursor = start;
 	while (cursor.object_index < end.object_index || cursor.text_index < end.text_index)
 	{
 		size_t text_start = cursor.text_index;
 		size_t text_end = (cursor.object_index < end.object_index) ? CL_String::npos : end.text_index;
-		create_object_segment(gc, layout_cursor, cursor.object_index, text_start, text_end, line, start_of_line);
+		create_object_segment(gc, layout_cursor, cursor.object_index, text_start, text_end, line, start_of_line, out_text_width);
 		if (cursor.object_index == end.object_index)
 			break;
 
@@ -512,22 +513,29 @@ int CL_CSSInlineLayout::find_text_width(CL_GraphicContext &gc, CL_CSSResourceCac
 				start_of_line = false;
 		}
 	}
+	/*if (properties.white_space.type == CL_CSSBoxWhiteSpace::type_pre_wrap)
+	{
+		CL_String::size_type p = text->processed_text.find_last_not_of(' ', text_end);
+		text_end = (p == CL_String::npos) ? text_end : p+1;
+		text_end = cl_max(text_start, text_end);
+	}*/
 	return resources->get_font(gc, properties).get_text_size(gc, text->processed_text.substr(text_start, text_end-text_start)).width;
 }
 
-void CL_CSSInlineLayout::create_object_segment(CL_GraphicContext &gc, CL_CSSLayoutCursor &layout_cursor, size_t object_index, size_t text_start, size_t text_end, CL_CSSInlineLineBox &line, bool &start_of_line)
+void CL_CSSInlineLayout::create_object_segment(CL_GraphicContext &gc, CL_CSSLayoutCursor &layout_cursor, size_t object_index, size_t text_start, size_t text_end, CL_CSSInlineLineBox &line, bool &start_of_line, int &text_width)
 {
 	CL_CSSBoxElement *element = dynamic_cast<CL_CSSBoxElement*>(objects[object_index].node);
 	CL_CSSBoxText *text = dynamic_cast<CL_CSSBoxText*>(objects[object_index].node);
 	if (element)
-		create_block_segment(gc, layout_cursor, object_index, line, start_of_line);
+		create_block_segment(gc, layout_cursor, object_index, line, start_of_line, text_width);
 	else if (text)
-		create_text_segment(gc, layout_cursor, object_index, text_start, text_end, line, start_of_line);
+		create_text_segment(gc, layout_cursor, object_index, text_start, text_end, line, start_of_line, text_width);
 }
 
-void CL_CSSInlineLayout::create_block_segment(CL_GraphicContext &gc, CL_CSSLayoutCursor &layout_cursor, size_t object_index, CL_CSSInlineLineBox &line, bool &start_of_line)
+void CL_CSSInlineLayout::create_block_segment(CL_GraphicContext &gc, CL_CSSLayoutCursor &layout_cursor, size_t object_index, CL_CSSInlineLineBox &line, bool &start_of_line, int &text_width)
 {
 	start_of_line = false;
+	text_width += objects[object_index].layout->get_block_width();
 
 /*	CL_CSSLayoutCursor block_cursor = layout_cursor;
 	block_cursor.x = 0;
@@ -555,7 +563,7 @@ void CL_CSSInlineLayout::create_block_segment(CL_GraphicContext &gc, CL_CSSLayou
 	line.segments.push_back(segment);
 }
 
-void CL_CSSInlineLayout::create_text_segment(CL_GraphicContext &gc, CL_CSSLayoutCursor &layout_cursor, size_t object_index, size_t text_start, size_t text_end, CL_CSSInlineLineBox &line, bool &start_of_line)
+void CL_CSSInlineLayout::create_text_segment(CL_GraphicContext &gc, CL_CSSLayoutCursor &layout_cursor, size_t object_index, size_t text_start, size_t text_end, CL_CSSInlineLineBox &line, bool &start_of_line, int &text_width)
 {
 	CL_CSSBoxText *text = dynamic_cast<CL_CSSBoxText*>(objects[object_index].node);
 	const CL_CSSBoxProperties &properties = text->get_properties();
@@ -605,6 +613,7 @@ void CL_CSSInlineLayout::create_text_segment(CL_GraphicContext &gc, CL_CSSLayout
 
 		line.segments.push_back(segment);
 	}
+	text_width += text_size.width;
 }
 
 int CL_CSSInlineLayout::find_baseline_offset(CL_GraphicContext &gc, CL_CSSResourceCache *resources, const CL_CSSBoxElement *element)
@@ -689,24 +698,27 @@ void CL_CSSInlineLayout::create_linebreak_opportunities()
 			{
 				if (text->processed_text[j] == ' ')
 				{
-					if (!prev_space)
-					{
-						linebreak_opportunities.push_back(CL_CSSInlineLineBreakOpportunity(i, j));
-						prev_space = true;
-					}
+					prev_space = true;
 				}
 				else if (text->processed_text[j] == '\n')
 				{
 					linebreak_opportunities.push_back(CL_CSSInlineLineBreakOpportunity(i, j+1, true));
-					prev_space = true;
+					prev_space = false;
 				}
 				else
 				{
+					if (prev_space && should_break_at_end_of_spaces(text->get_properties().white_space))
+						linebreak_opportunities.push_back(CL_CSSInlineLineBreakOpportunity(i, j));
 					prev_space = false;
 				}
 			}
 		}
 	}
+}
+
+bool CL_CSSInlineLayout::should_break_at_end_of_spaces(const CL_CSSBoxWhiteSpace &whitespace)
+{
+	return whitespace.type != CL_CSSBoxWhiteSpace::type_pre || whitespace.type == CL_CSSBoxWhiteSpace::type_nowrap;
 }
 
 bool CL_CSSInlineLayout::margin_collapses()

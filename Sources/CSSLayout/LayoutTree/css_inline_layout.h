@@ -41,6 +41,7 @@ class CL_CSSBlockFormattingContext;
 class CL_CSSResourceCache;
 class CL_CSSLayoutCursor;
 class CL_CSSBlockLayout;
+class CL_CSSBoxWhiteSpace;
 
 class CL_CSSInlineLayout : public CL_CSSLayoutTreeNode
 {
@@ -79,16 +80,17 @@ private:
 	int find_object_width(CL_GraphicContext &gc, CL_CSSResourceCache *resources, CL_CSSInlineObject &object, size_t text_start, size_t text_end, bool &start_of_line);
 	int find_block_width(CL_GraphicContext &gc, CL_CSSResourceCache *resources, CL_CSSInlineObject &object, bool &start_of_line);
 	int find_text_width(CL_GraphicContext &gc, CL_CSSResourceCache *resources, CL_CSSBoxText *text, size_t text_start, size_t text_end, bool &start_of_line);
-	bool create_line_segments(CL_GraphicContext &gc, CL_CSSLayoutCursor &layout_cursor, const CL_CSSInlineLineBoxCursor &start, const CL_CSSInlineLineBoxCursor &end, CL_CSSInlineLineBox &line, bool &start_of_line);
-	void create_object_segment(CL_GraphicContext &gc, CL_CSSLayoutCursor &layout_cursor, size_t object_index, size_t text_start, size_t text_end, CL_CSSInlineLineBox &line, bool &start_of_line);
-	void create_block_segment(CL_GraphicContext &gc, CL_CSSLayoutCursor &layout_cursor, size_t object_index, CL_CSSInlineLineBox &line, bool &start_of_line);
-	void create_text_segment(CL_GraphicContext &gc, CL_CSSLayoutCursor &layout_cursor, size_t object_index, size_t text_start, size_t text_end, CL_CSSInlineLineBox &line, bool &start_of_line);
+	bool create_line_segments(CL_GraphicContext &gc, CL_CSSLayoutCursor &layout_cursor, const CL_CSSInlineLineBoxCursor &start, const CL_CSSInlineLineBoxCursor &end, CL_CSSInlineLineBox &line, bool &start_of_line, int &out_text_width);
+	void create_object_segment(CL_GraphicContext &gc, CL_CSSLayoutCursor &layout_cursor, size_t object_index, size_t text_start, size_t text_end, CL_CSSInlineLineBox &line, bool &start_of_line, int &text_width);
+	void create_block_segment(CL_GraphicContext &gc, CL_CSSLayoutCursor &layout_cursor, size_t object_index, CL_CSSInlineLineBox &line, bool &start_of_line, int &text_width);
+	void create_text_segment(CL_GraphicContext &gc, CL_CSSLayoutCursor &layout_cursor, size_t object_index, size_t text_start, size_t text_end, CL_CSSInlineLineBox &line, bool &start_of_line, int &text_width);
 	void update_line_box_height(CL_GraphicContext &gc, CL_CSSResourceCache *resources, CL_CSSInlineLineBox &line);
 	void apply_line_box_alignment(CL_CSSInlineLineBox &line);
 	int find_baseline_offset(CL_GraphicContext &gc, CL_CSSResourceCache *resources, const CL_CSSBoxElement *element);
 	bool stop_at_block_level(CL_CSSInlineLineBoxCursor &cursor, CL_CSSInlineLineBoxCursor &next_linebreak);
 	void calculate_content_top_down_sizes();
 	void set_content_expanding_width();
+	static bool should_break_at_end_of_spaces(const CL_CSSBoxWhiteSpace &whitespace);
 
 	std::vector<CL_CSSInlineObject> objects;
 	std::vector<CL_CSSInlineLineBreakOpportunity> linebreak_opportunities;
