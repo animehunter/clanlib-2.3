@@ -274,9 +274,14 @@ CL_CSSLayoutHitTestResult CL_CSSTableLayout::hit_test(CL_GraphicContext &gc, CL_
 	{
 		for (size_t cell = 0; cell < columns.size(); cell++)
 		{
-			CL_CSSLayoutHitTestResult result = columns[cell].rows[row]->hit_test(gc, resource_cache, pos);
-			if (result.node)
-				return result;
+			CL_Rect r = columns[cell].rows[row]->content_box;
+			r.translate(formatting_context->get_x(), formatting_context->get_y());
+			if (r.contains(pos))
+			{
+				CL_CSSLayoutHitTestResult result = columns[cell].rows[row]->hit_test(gc, resource_cache, pos);
+				if (result.node)
+					return result;
+			}
 		}
 	}
 	return CL_CSSLayoutHitTestResult();
