@@ -35,8 +35,16 @@
 #pragma once
 
 #include "../api_core.h"
-#include "mutex.h"
 #include "sharedptr.h"
+
+
+#if defined(WIN32) || __GNUC__ > 4 ||  (__GNUC__ == 4 & __GNUC_MINOR__ >= 1)
+#define CL_SHAREDPTR_INTERLOCKED
+#include "interlocked_variable.h"
+#else
+#include "mutex.h"
+#endif
+
 
 /// \brief Weak pointer class (pointer to a CL_SharedPtr object that dont increase reference count).
 ///
@@ -136,22 +144,28 @@ public:
 	/** \return The pointer (May be NULL, if it has not been set or the weak link is no longer valid)*/
 	const Type *get() const { return is_invalid_weak_link() ? 0 : *d.p; }
 
+#if defined(CL_SHAREDPTR_INTERLOCKED)
+
 	CL_SharedPtr<Type> to_sharedptr() const
 	{
 		if (!is_null())
-			return CL_SharedPtr<Type>(d.data);
-		else
-			return CL_SharedPtr<Type>();
-	}
-
-private:
-	void connect(CL_SharedPtrData *data)
-	{
-		if (data)
 		{
-			CL_MutexSection s(&data->mutex);
-			++data->refCount;
-			d.data = data;
+			while (true)
+			{
+				if (d.data->strong.compare_and_swap(0, 0))
+					return CL_SharedPtr<Type>();
+
+				long value = d.data->strong.get();
+				if (d.data->strong.compare_and_swap(value, value+1)) // Increment strong count to prevent object being freed when we're copying
+					break;
+			}
+			CL_SharedPtr<Type> temp(d.data);
+			d.data->strong.decrement(); // Decrement the strong count again...
+			return temp;
+		}
+		else
+		{
+			return CL_SharedPtr<Type>();
 		}
 	}
 
@@ -160,12 +174,10 @@ private:
 		bool result = false;
 		if (d.data)
 		{
-			CL_MutexSection s(&d.data->mutex);
-			result = d.data->strongCount == 0;
-			if (--d.data->refCount == 0)
+			if (d.data->refCount.decrement() == 0)
 			{
-				s.unlock();
 				delete d.data;
+				result = true;
 			}
 			d.data = 0;
 		}
@@ -175,13 +187,83 @@ private:
 	bool is_invalid_weak_link() const
 	{
 		if (d.data)
-		{
-			CL_MutexSection s(&d.data->mutex);
-			if (d.data->strongCount > 0)
-				return false;
-		}
-		return true;
+			return d.data->strong.compare_and_swap(0, 0);
+		else
+			return true;
 	}
+
+
+private:
+	void connect(CL_SharedPtrData *data)
+	{
+		if (data)
+		{
+			data->refCount.increment();
+			d.data = data;
+		}
+	}
+
+#else
+
+	CL_SharedPtr<Type> to_sharedptr() const
+	{
+		if (!is_null())
+		{
+			CL_MutexSection s(d.data->mutex);
+			return CL_SharedPtr<Type>(d.data);
+		}
+		else
+		{
+			return CL_SharedPtr<Type>();
+		}
+	}
+
+
+	bool disconnect()
+	{
+		bool result = false;
+		if (d.data)
+		{
+			CL_Mutex *mutex = d.data->mutex;
+			{
+				CL_MutexSection s(mutex);
+				if (--d.data->refCount == 0)
+				{
+					delete d.data;
+					result = true;
+				}
+				d.data = 0;
+			}
+			delete mutex;
+		}
+		return result;
+	}
+
+	bool is_invalid_weak_link() const
+	{
+		if (d.data)
+		{
+			CL_MutexSection s(d.data->mutex);
+			return d.data->strong == 0;
+		}
+		else
+		{
+			return true;
+		}
+	}
+
+private:
+	void connect(CL_SharedPtrData *data)
+	{
+		if (data)
+		{
+			CL_MutexSection s(data->mutex);
+			++data->refCount;
+			d.data = data;
+		}
+	}
+
+#endif
 
 	union
 	{

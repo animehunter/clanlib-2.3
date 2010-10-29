@@ -35,7 +35,14 @@
 
 #include "../api_core.h"
 #include "system.h"
+
+
+#if defined(WIN32) || __GNUC__ > 4 ||  (__GNUC__ == 4 & __GNUC_MINOR__ >= 1)
+#define CL_SHAREDPTR_INTERLOCKED
+#include "interlocked_variable.h"
+#else
 #include "mutex.h"
+#endif
 
 /// (Internal ClanLib Class)
 /// \xmlonly !group=Core/System! !header=core.h! !hide! \endxmlonly
@@ -144,7 +151,10 @@ class CL_API_CORE CL_SharedPtrData
 public:
 	template <typename Type>
 	CL_SharedPtrData(Type *ptr)
-	: refCount(0), strongCount(0), ptr(ptr)
+	: ptr(ptr)
+#if !defined(CL_SHAREDPTR_INTERLOCKED)
+	, mutex(new CL_Mutex)
+#endif
 	{
 		memset(deleter, 0, CL_DELETER_SIZE);
 		if (ptr)
@@ -153,7 +163,10 @@ public:
 
 	template <typename Type>
 	CL_SharedPtrData(Type *ptr, CL_MemoryPool *memory_pool)
-	: refCount(0), strongCount(0), ptr(ptr)
+	: ptr(ptr)
+#if !defined(CL_SHAREDPTR_INTERLOCKED)
+	, mutex(new CL_Mutex)
+#endif
 	{
 		memset(deleter, 0, CL_DELETER_SIZE);
 		if (ptr)
@@ -162,7 +175,10 @@ public:
 
 	template <typename Type>
 	CL_SharedPtrData(Type *ptr, void (*free_callback) (Type *ptr))
-	: refCount(0), strongCount(0), ptr(ptr)
+	: ptr(ptr)
+#if !defined(CL_SHAREDPTR_INTERLOCKED)
+	, mutex(new CL_Mutex)
+#endif
 	{
 		memset(deleter, 0, CL_DELETER_SIZE);
 		if (ptr)
@@ -171,7 +187,10 @@ public:
 
 	template <typename Type, typename FreeClass>
 	CL_SharedPtrData(Type *ptr, FreeClass *free_class, void (FreeClass::*free_callback)(Type *ptr))
-	: refCount(0), strongCount(0), ptr(ptr)
+	: ptr(ptr)
+#if !defined(CL_SHAREDPTR_INTERLOCKED)
+	, mutex(new CL_Mutex)
+#endif
 	{
 		memset(deleter, 0, CL_DELETER_SIZE);
 		if (ptr)
@@ -186,9 +205,14 @@ public:
 
 public:
 	void *ptr;
-	unsigned long strongCount;
+#if defined(CL_SHAREDPTR_INTERLOCKED)
+	CL_InterlockedVariable strong;
+	CL_InterlockedVariable refCount;
+#else
+	CL_Mutex *mutex;
+	unsigned long strong;
 	unsigned long refCount;
-	CL_Mutex mutex;
+#endif
 
 private:
 	template <typename Type>
@@ -346,39 +370,75 @@ public:
 	/** \return The pointer (May be NULL, if it has not been set)*/
 	const Type *get() const { return is_null() ? 0 : *d.p; }
 
-private:
-	void connect(CL_SharedPtrData *data)
-	{
-		if (data)
-		{
-			CL_MutexSection s(&data->mutex);
-			++data->strongCount;
-			++data->refCount;
-			d.data = data;
-		}
-	}
+#if defined(CL_SHAREDPTR_INTERLOCKED)
 
 	bool disconnect()
 	{
 		bool result = false;
 		if (d.data)
 		{
-			CL_MutexSection s(&d.data->mutex);
-			if (--d.data->strongCount == 0)
+			if (d.data->strong.decrement() == 0)
 			{
 				d.data->call_deleter();
 				d.data->ptr = 0;
 				result = true;
 			}
-			if (--d.data->refCount == 0)
-			{
-				s.unlock();
+			if (d.data->refCount.decrement() == 0)
 				delete d.data;
-			}
 			d.p = 0;
 		}
 		return result;
 	}
+
+private:
+	void connect(CL_SharedPtrData *data)
+	{
+		if (data)
+		{
+			data->refCount.increment();
+			data->strong.increment();
+			d.data = data;
+		}
+	}
+
+#else
+
+	bool disconnect()
+	{
+		bool result = false;
+		if (d.data)
+		{
+			CL_Mutex *mutex = d.data->mutex;
+			{
+				CL_MutexSection s(mutex);
+				if (--d.data->strong == 0)
+				{
+					d.data->call_deleter();
+					d.data->ptr = 0;
+					result = true;
+				}
+				if (--d.data->refCount == 0)
+					delete d.data;
+			}
+			d.p = 0;
+			delete mutex;
+		}
+		return result;
+	}
+
+private:
+	void connect(CL_SharedPtrData *data)
+	{
+		if (data)
+		{
+			CL_MutexSection s(data->mutex);
+			++data->refCount;
+			++data->strong;
+			d.data = data;
+		}
+	}
+
+#endif
 
 	union
 	{
