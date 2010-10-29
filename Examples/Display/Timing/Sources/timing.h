@@ -34,6 +34,7 @@ public:
 	float xpos;
 	float ypos;
 	float speed;
+	CL_Colorf color;
 };
 
 // This is the Application class (That is instantiated by the Program Class)

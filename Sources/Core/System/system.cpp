@@ -249,7 +249,21 @@ std::vector<CL_String> CL_System::get_stack_frames_text(void **frames, int num_f
 void CL_System::sleep(int msecs)
 {
 #ifdef WIN32
-	Sleep(msecs);
+
+// For sleep less than 30ms (except 0), we perform a spinlock to increase the accuracy of sleep() to avoid the win32 scheduler misunderstanding the sleep hint
+	if ((msecs < 30) && (msecs >0) )
+	{
+		unsigned int time_start = get_time();
+		do
+		{
+			Sleep(0);
+		}while( (get_time() - time_start) < msecs );
+	}
+	else
+	{
+		Sleep(msecs);
+	}
+
 #else
 	timeval tv;
 	tv.tv_sec = msecs / 1000;

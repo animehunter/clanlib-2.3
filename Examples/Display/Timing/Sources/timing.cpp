@@ -51,13 +51,14 @@ int Timing::start(const std::vector<CL_String> &args)
 	// Get the graphic context
 	CL_GraphicContext gc = window.get_gc();
 
-	set_stars(gc, 64);
+	set_stars(gc, 100);
 
 	unsigned int last_time = CL_System::get_time();
 
 	// Run until someone presses escape
 	while (!quit)
 	{
+		// Get the time delta to control movement
 		unsigned int current_time = CL_System::get_time();
 		float time_delta_ms = (float) (current_time - last_time);
 		last_time = current_time;
@@ -66,12 +67,17 @@ int Timing::start(const std::vector<CL_String> &args)
 
 		draw_graphics(gc, time_delta_ms);
 
-		// Flip the display, showing on the screen what we have drawed
-		// since last call to flip()
 		window.flip(1);
 
-		// This call processes user input and other events
 		CL_KeepAlive::process(0);
+
+		// Sleep to give other processes more time
+		current_time = CL_System::get_time();
+		const int main_loop_rate = 10;	// 10 ms (100 hz)
+		int time_to_sleep_for = main_loop_rate - (current_time - last_time);
+		if (time_to_sleep_for > 0)
+			CL_System::sleep(time_to_sleep_for);
+
 	}
 
 	return 0;
@@ -107,7 +113,7 @@ void Timing::draw_graphics(CL_GraphicContext &gc, float time_delta_ms)
 			xpos -= (gc_width + 8);
 		stars[cnt].xpos = xpos;
 
-		CL_Draw::circle(gc, xpos, stars[cnt].ypos, 6.0f, CL_Colorf::white);
+		CL_Draw::circle(gc, xpos, stars[cnt].ypos, 6.0f, stars[cnt].color);
 	}
 }
 
@@ -127,6 +133,13 @@ void Timing::set_stars(CL_GraphicContext &gc, int star_cnt)
 		random+= 89079086;
 		stars[cnt].speed = (((float) (random % 256)) / 1024.0f) + 0.01f;
 		random*= 595443965;
+		stars[cnt].color.r = (((float) (random % 256)) / 256.0f);
+		random*= 196243625;
+		stars[cnt].color.b = (((float) (random % 256)) / 256.0f);
+		random*= 14365;
+		stars[cnt].color.g = (((float) (random % 256)) / 256.0f);
+		stars[cnt].color.a = 1.0f;
+
 	}
 
 }
