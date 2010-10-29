@@ -1,5 +1,5 @@
 EXAMPLE_BIN=timing
-OBJF = Sources/basic2d.o Sources/precomp.o Sources/program.o
+OBJF = Sources/timing.o Sources/precomp.o Sources/program.o
 #LIBS=clanApp clanDisplay clanCore clanGL
 #LIBS=clanApp clanDisplay clanCore clanGL1
 LIBS=clanApp clanDisplay clanCore clanSWRender
