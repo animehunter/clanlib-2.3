@@ -38,7 +38,9 @@
 
 
 #if defined(WIN32) || __GNUC__ > 4 ||  (__GNUC__ == 4 & __GNUC_MINOR__ >= 1)
+#ifndef CL_SHAREDPTR_INTERLOCKED
 #define CL_SHAREDPTR_INTERLOCKED
+#endif
 #include "interlocked_variable.h"
 #else
 #include "mutex.h"
