@@ -249,6 +249,18 @@ std::vector<CL_String> CL_System::get_stack_frames_text(void **frames, int num_f
 void CL_System::sleep(int msecs)
 {
 #ifdef WIN32
+	Sleep(msecs);
+#else
+	timeval tv;
+	tv.tv_sec = msecs / 1000;
+	tv.tv_usec = (msecs % 1000) * 1000;
+	select(0, 0, 0, 0, &tv);
+#endif
+}
+
+void CL_System::pause(int msecs)
+{
+#ifdef WIN32
 
 // For sleep less than 30ms (except 0), we perform a spinlock to increase the accuracy of sleep() to avoid the win32 scheduler misunderstanding the sleep hint
 	if ((msecs < 30) && (msecs >0) )
@@ -271,6 +283,7 @@ void CL_System::sleep(int msecs)
 	select(0, 0, 0, 0, &tv);
 #endif
 }
+
 CL_Mutex *CL_System::get_sharedptr_mutex()
 {
 	static CL_Mutex *sharedptr_mutex = new CL_Mutex;

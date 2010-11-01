@@ -95,7 +95,17 @@ public:
 	static std::vector<CL_String> get_stack_frames_text(void **frames, int num_frames);
 
 	/// \brief Sleep for 'millis' milliseconds.
+	///
+	/// It is possible for this function to sleep for more than millis, depending on the OS scheduler.
+	/// If you require a more accurate sleep, consider pause.
 	static void sleep(int millis);
+
+	/// \brief Pause for 'millis' milliseconds.
+	///
+	/// This function acts as sleep, but the function "may" perform a spinlock on some operating systems
+	/// to give a more accurate pause. This may have a side effect of causing 100% cpu usage.
+	/// If you do not require an accurate pause, use sleep instead.
+	static void pause(int millis);
 
 	/// \brief Returns the full dirname of the executable that started this
 	/// \brief process (aka argv[0])
