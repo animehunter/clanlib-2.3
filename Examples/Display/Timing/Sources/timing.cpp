@@ -76,7 +76,10 @@ int Timing::start(const std::vector<CL_String> &args)
 		const int main_loop_rate = 10;	// 10 ms (100 hz)
 		int time_to_sleep_for = main_loop_rate - (current_time - last_time);
 		if (time_to_sleep_for > 0)
-			CL_System::sleep(time_to_sleep_for);
+		{
+			// Depending on the application, it may be preferable to use CL_System::sleep() instead
+			CL_System::pause(time_to_sleep_for);
+		}
 
 	}
 
