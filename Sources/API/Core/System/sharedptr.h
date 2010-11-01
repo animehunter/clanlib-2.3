@@ -155,7 +155,7 @@ public:
 	CL_SharedPtrData(Type *ptr)
 	: ptr(ptr)
 #if !defined(CL_SHAREDPTR_INTERLOCKED)
-	, mutex(new CL_Mutex)
+	, strong(0), refCount(0)
 #endif
 	{
 		memset(deleter, 0, CL_DELETER_SIZE);
@@ -167,7 +167,7 @@ public:
 	CL_SharedPtrData(Type *ptr, CL_MemoryPool *memory_pool)
 	: ptr(ptr)
 #if !defined(CL_SHAREDPTR_INTERLOCKED)
-	, mutex(new CL_Mutex)
+	, strong(0), refCount(0)
 #endif
 	{
 		memset(deleter, 0, CL_DELETER_SIZE);
@@ -179,7 +179,7 @@ public:
 	CL_SharedPtrData(Type *ptr, void (*free_callback) (Type *ptr))
 	: ptr(ptr)
 #if !defined(CL_SHAREDPTR_INTERLOCKED)
-	, mutex(new CL_Mutex)
+	, strong(0), refCount(0)
 #endif
 	{
 		memset(deleter, 0, CL_DELETER_SIZE);
@@ -191,7 +191,7 @@ public:
 	CL_SharedPtrData(Type *ptr, FreeClass *free_class, void (FreeClass::*free_callback)(Type *ptr))
 	: ptr(ptr)
 #if !defined(CL_SHAREDPTR_INTERLOCKED)
-	, mutex(new CL_Mutex)
+	, strong(0), refCount(0)
 #endif
 	{
 		memset(deleter, 0, CL_DELETER_SIZE);
@@ -211,7 +211,7 @@ public:
 	CL_InterlockedVariable strong;
 	CL_InterlockedVariable refCount;
 #else
-	CL_Mutex *mutex;
+	CL_Mutex mutex;
 	unsigned long strong;
 	unsigned long refCount;
 #endif
@@ -410,20 +410,19 @@ private:
 		bool result = false;
 		if (d.data)
 		{
-			CL_Mutex *mutex = d.data->mutex;
+			CL_MutexSection s(&d.data->mutex);
+			if (--d.data->strong == 0)
 			{
-				CL_MutexSection s(mutex);
-				if (--d.data->strong == 0)
-				{
-					d.data->call_deleter();
-					d.data->ptr = 0;
-					result = true;
-				}
-				if (--d.data->refCount == 0)
-					delete d.data;
+				d.data->call_deleter();
+				d.data->ptr = 0;
+				result = true;
+			}
+			if (--d.data->refCount == 0)
+			{
+				s.unlock();
+				delete d.data;
 			}
 			d.p = 0;
-			delete mutex;
 		}
 		return result;
 	}
@@ -433,7 +432,7 @@ private:
 	{
 		if (data)
 		{
-			CL_MutexSection s(data->mutex);
+			CL_MutexSection s(&data->mutex);
 			++data->refCount;
 			++data->strong;
 			d.data = data;

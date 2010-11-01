@@ -211,7 +211,7 @@ private:
 	{
 		if (!is_null())
 		{
-			CL_MutexSection s(d.data->mutex);
+			CL_MutexSection s(&d.data->mutex);
 			return CL_SharedPtr<Type>(d.data);
 		}
 		else
@@ -226,17 +226,14 @@ private:
 		bool result = false;
 		if (d.data)
 		{
-			CL_Mutex *mutex = d.data->mutex;
+			CL_MutexSection s(&d.data->mutex);
+			if (--d.data->refCount == 0)
 			{
-				CL_MutexSection s(mutex);
-				if (--d.data->refCount == 0)
-				{
-					delete d.data;
-					result = true;
-				}
-				d.data = 0;
+				s.unlock();
+				delete d.data;
+				result = true;
 			}
-			delete mutex;
+			d.data = 0;
 		}
 		return result;
 	}
@@ -245,7 +242,7 @@ private:
 	{
 		if (d.data)
 		{
-			CL_MutexSection s(d.data->mutex);
+			CL_MutexSection s(&d.data->mutex);
 			return d.data->strong == 0;
 		}
 		else
@@ -259,7 +256,7 @@ private:
 	{
 		if (data)
 		{
-			CL_MutexSection s(data->mutex);
+			CL_MutexSection s(&data->mutex);
 			++data->refCount;
 			d.data = data;
 		}
