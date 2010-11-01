@@ -36,6 +36,7 @@
 #include "../api_core.h"
 #include "system.h"
 
+#include <cstring>
 
 #if defined(WIN32) || __GNUC__ > 4 ||  (__GNUC__ == 4 & __GNUC_MINOR__ >= 1)
 #ifndef CL_SHAREDPTR_INTERLOCKED
