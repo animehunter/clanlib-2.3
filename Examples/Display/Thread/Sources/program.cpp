@@ -26,11 +26,26 @@
 */
 
 #include "precomp.h"
-
-#include "app.h"
 #include "program.h"
+#include "app.h"
 
-// This is the Program class that is called by CL_ClanApplication
+// Choose the target renderer
+#define USE_OPENGL_2
+//#define USE_OPENGL_1
+//#define USE_SOFTWARE_RENDERER
+
+#ifdef USE_SOFTWARE_RENDERER
+#include <ClanLib/swrender.h>
+#endif
+
+#ifdef USE_OPENGL_1
+#include <ClanLib/gl1.h>
+#endif
+
+#ifdef USE_OPENGL_2
+#include <ClanLib/gl.h>
+#endif
+
 int Program::main(const std::vector<CL_String> &args)
 {
 	try
@@ -41,7 +56,17 @@ int Program::main(const std::vector<CL_String> &args)
 		// Initialize the ClanLib display component
 		CL_SetupDisplay setup_display;
 
-		CL_SetupGL setup_gl;
+		#ifdef USE_SOFTWARE_RENDERER
+			CL_SetupSWRender setup_swrender;
+		#endif
+
+		#ifdef USE_OPENGL_1
+			CL_SetupGL1 setup_gl1;
+		#endif
+
+		#ifdef USE_OPENGL_2
+			CL_SetupGL setup_gl;
+		#endif
 
 		// Start the Application
 		App app;
