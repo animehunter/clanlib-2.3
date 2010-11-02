@@ -43,26 +43,35 @@ int App::start(const std::vector<CL_String> &args)
 
 	CL_Slot slot_window_close = window.sig_window_close().connect(this, &App::window_close);
 
-	// Create texture
-	texture_1 = CL_Texture(gc, texture_size, texture_size);
-	texture_2 = CL_Texture(gc, texture_size, texture_size);
-
 	// Load the font
 	CL_Font font(gc, "tahoma", 32);
 
-	// Load and link shaders
-	shader = CL_ProgramObject::load(gc, "Resources/vertex_shader.glsl", "Resources/fragment_shader.glsl");
-	shader.bind_attribute_location(0, "Position");
-	shader.bind_attribute_location(2, "TexCoord0");
-	if (!shader.link())
-		throw CL_Exception("Unable to link shader program: Error:" + shader.get_info_log());
+	// Create the initial textures
+	texture_buffers[0] = CL_Texture(gc, texture_size, texture_size);
+	texture_buffers[1] = CL_Texture(gc, texture_size, texture_size);
+
+	// Initially clear the textures, so they are filled with a "Calculating..." message
+	CL_FrameBuffer framebuffer(gc);
+	framebuffer.attach_color_buffer(0, texture_buffers[0]);
+	gc.set_frame_buffer(framebuffer);
+	gc.clear();
+	font.draw_text(gc, 32, 96, "Calculating...");
+	gc.flush_batcher();
+	framebuffer.attach_color_buffer(0, texture_buffers[1]);
+	gc.set_frame_buffer(framebuffer);
+	gc.clear();
+	font.draw_text(gc, 32, 96, "Calculating...");
+	gc.reset_frame_buffer();
+
+	// Setup the initial texture double buffering variables
+	texture_write_buffer_offset = 0;
+	texture_write = &texture_buffers[0];
+	texture_completed = &texture_buffers[1];
 
 	quit = false;
 	crashed_flag = false;
 
-	// Prepare thread
-	working_framebuffer = 1;
-	CL_MutexSection mutex_section(&working_framebuffer_mutex, false);
+	CL_MutexSection texture_complete_mutex_section(&texture_completed_mutex, false);
 
 	// We require a try block, so the worker thread exits correctly
 	CL_Thread thread;
@@ -96,20 +105,12 @@ int App::start(const std::vector<CL_String> &args)
 			gc.push_modelview();
 			gc.mult_translate(gc.get_width()/2, gc.get_height()/2);
 			gc.mult_rotate(CL_Angle(angle, cl_degrees));
-			mutex_section.lock();
-			if (working_framebuffer == 1)
-			{
-				gc.set_texture(0, texture_2);
-			}
-			else
-			{
-				gc.set_texture(0, texture_1);
-			}
-
+			texture_complete_mutex_section.lock();
+			gc.set_texture(0, *texture_completed);
 			CL_Rectf dest_position(-texture_size/2, -texture_size/2, CL_Sizef(texture_size, texture_size));
 			CL_Draw::texture(gc,dest_position, CL_Colorf::white, CL_Rectf(0.0f, 0.0f, 1.0f, 1.0f));
 			gc.reset_texture(0);
-			mutex_section.unlock();
+			texture_complete_mutex_section.unlock();
 			gc.pop_modelview();
 		
 			// Draw FPS
@@ -120,7 +121,7 @@ int App::start(const std::vector<CL_String> &args)
 			if (crashed_flag)
 				font.draw_text(gc, 16, 32, "WORKER THREAD CRASHED");
 	
-			window.flip(1);
+			window.flip(0);
 
 			CL_KeepAlive::process();
 		}
@@ -146,22 +147,45 @@ void App::window_close()
 	quit = true;
 }
 
-void App::render_mandelbrot(CL_GraphicContext &gc, CL_ProgramObject &program_object)
+void App::render_mandelbrot(CL_GraphicContext &gc, CL_PixelBuffer &dest)
 {
+	unsigned char *pptr = (unsigned char *) dest.get_data();
 
-	gc.set_program_object(program_object, cl_program_matrix_modelview_projection);
+	const int max_iteration = 254;
 
-	float x0 = -0.639;
-	float y0 = 0.41;
-	float size = 1.0f;
+	for (int ycnt =0; ycnt < texture_size; ycnt++)
+	{
+		for (int xcnt =0; xcnt < texture_size; xcnt++)
+		{
+			double x0 = ((double) (xcnt - texture_size/2)) / (double) texture_size;
+			double y0 = ((double) (ycnt - texture_size/2)) / (double) texture_size;
 
-	//x0 *= scale/2.0f;
-	//y0 *= scale/2.0f;
-	size *= scale;
+			x0 *= scale;
+			y0 *= scale;
 
+			x0 += -0.639;
+			y0 += 0.41;
 
-	draw_texture(gc, CL_Rectf(0,0,gc.get_width(),gc.get_height()), CL_Colorf::white, CL_Rectf(x0, y0, CL_Sizef(size, size)));
-	gc.reset_program_object();
+			double x = 0.0f;
+			double y = 0.0f;
+
+			int iteration = 0;
+			while ( (x*x + y*y) <= 4.0 )
+			{
+				double xtemp = x*x - y*y + x0;
+				y = 2*x*y + y0;
+				x = xtemp;
+				++iteration;
+				if ((++iteration) == max_iteration)
+					break;
+			}
+
+			*(pptr++) = 0xFF;
+			*(pptr++) = iteration;
+			*(pptr++) = iteration/2;
+			*(pptr++) = iteration/2;
+		}
+	}
 
 }
 
@@ -174,102 +198,80 @@ void App::on_input_up(const CL_InputEvent &key, const CL_InputState &state)
 
 }
 
-void App::draw_texture(CL_GraphicContext &gc, const CL_Rectf &rect, const CL_Colorf &color, const CL_Rectf &texture_unit1_coords)
-{
-	CL_Vec2f positions[6] =
-	{
-		CL_Vec2f(rect.left, rect.top),
-		CL_Vec2f(rect.right, rect.top),
-		CL_Vec2f(rect.left, rect.bottom),
-		CL_Vec2f(rect.right, rect.top),
-		CL_Vec2f(rect.left, rect.bottom),
-		CL_Vec2f(rect.right, rect.bottom)
-	};
-
-	CL_Vec2f tex1_coords[6] =
-	{
-		CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.top),
-		CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.top),
-		CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.bottom),
-		CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.top),
-		CL_Vec2f(texture_unit1_coords.left, texture_unit1_coords.bottom),
-		CL_Vec2f(texture_unit1_coords.right, texture_unit1_coords.bottom)
-	};
-
-	CL_PrimitivesArray prim_array(gc);
-	prim_array.set_attributes(0, positions);
-	prim_array.set_attribute(1, color);
-	prim_array.set_attributes(2, tex1_coords);
-	gc.draw_primitives(cl_triangles, 6, prim_array);
-}
-
 void App::worker_thread(CL_GraphicContext gc)
 {
 	CL_SharedGCData::add_ref();
 
 	try
 	{
-		CL_MutexSection mutex_section(&working_framebuffer_mutex, false);
 
+		texture_pixels = CL_PixelBuffer(gc, texture_size, texture_size);
 
-		// Create framebuffer
-		CL_FrameBuffer framebuffer_1(gc);
-		framebuffer_1.attach_color_buffer(0, texture_1);
-	
-		CL_FrameBuffer framebuffer_2(gc);
-		framebuffer_2.attach_color_buffer(0, texture_2);
+		CL_MutexSection texture_complete_mutex_section(&texture_completed_mutex, false);
 
 		// Load the font
-		CL_Font font(gc, "tahoma", 64);
+		CL_Font font(gc, "tahoma", 16);
 
-		// Clear the framebuffers
-		gc.set_frame_buffer(framebuffer_1);
-		gc.clear();
-		font.draw_text(gc, 32, 96, "Calculating...");
-
-		gc.set_frame_buffer(framebuffer_2);
-		gc.clear();
-		font.draw_text(gc, 32, 96, "Calculating...");
-		gc.reset_frame_buffer();
+		CL_FrameBuffer framebuffer(gc);
 
 		unsigned int last_time = CL_System::get_time();
 
 		while(!quit)
 		{
-			// Render mandelbrot
-			if (working_framebuffer == 1)
-			{
-				gc.set_frame_buffer(framebuffer_1);
-			}
-			else
-			{
-				gc.set_frame_buffer(framebuffer_2);
-			}
-
+			// Control the loop timing
 			unsigned int current_time = CL_System::get_time();
 			float time_delta_ms = (float) (current_time - last_time);
 			last_time = current_time;
 
-			scale -= time_delta_ms / 1000.0f;
-			if (scale <= 0.1f)
-				scale = 2.0f;
+			scale -= scale * time_delta_ms / 1000.0f;
+			if (scale <= 0.001f)
+				scale = 4.0f;
 
-			render_mandelbrot(gc, shader);
-			gc.reset_frame_buffer();
-
-			// Swap the working framebuffers
-			mutex_section.lock();
-			if (working_framebuffer == 1)
+			// Lock the pixel buffer object
+			texture_pixels.lock(cl_access_write_only);
+			
+			// Double buffer the textures
+			texture_complete_mutex_section.lock();
+			if (texture_write_buffer_offset == 0)
 			{
-				working_framebuffer = 2;
+				texture_write_buffer_offset = 1;
+				texture_write = &texture_buffers[1];
+				texture_completed = &texture_buffers[0];
 			}
 			else
 			{
-				working_framebuffer = 1;
+				texture_write_buffer_offset = 0;
+				texture_write = &texture_buffers[0];
+				texture_completed = &texture_buffers[1];
 			}
-			mutex_section.unlock();
+			texture_complete_mutex_section.unlock();
+
+			// Write to texture
+			render_mandelbrot(gc, texture_pixels);
+
+			// Unlock the pixel buffer object
+			texture_pixels.unlock();
+
+			// Upload the pixel buffer
+			texture_write->set_subimage(0, 0, texture_pixels, texture_pixels.get_size());
+
+			// Draw text to the image, to show that we can. (This is optional)
+			framebuffer.attach_color_buffer(0, *texture_write);
+			gc.set_frame_buffer(framebuffer);
+			font.draw_text(gc, 32, 96, CL_StringHelp::float_to_text(scale));
+			gc.reset_frame_buffer();
+
 
 			//throw CL_Exception("Bang!");	// <--- Use this to test the application handles exceptions in threads
+
+			// Sleep to slow down this thread on fast pc's
+			current_time = CL_System::get_time();
+			const int main_loop_rate = 100;	// 100 ms (10 hz)
+			int time_to_sleep_for = main_loop_rate - (current_time - last_time);
+			if (time_to_sleep_for > 0)
+			{
+				CL_System::sleep(time_to_sleep_for);
+			}
 		}
 	}
 	catch(CL_Exception &exception)

@@ -34,21 +34,21 @@ public:
 	void window_close();
 
 private:
-	void render_mandelbrot(CL_GraphicContext &gc, CL_ProgramObject &program_object);
+	void render_mandelbrot(CL_GraphicContext &gc, CL_PixelBuffer &dest);
 	void on_input_up(const CL_InputEvent &key, const CL_InputState &state);
-	void draw_texture(CL_GraphicContext &gc, const CL_Rectf &rect, const CL_Colorf &color, const CL_Rectf &texture_unit1_coords);
 	void worker_thread(CL_GraphicContext gc);
 	volatile bool quit;
 	volatile bool crashed_flag;
 
 	static const int texture_size = 512;
 
-	int working_framebuffer;
-	CL_Mutex working_framebuffer_mutex;
+	CL_Texture texture_buffers[2];
+	CL_PixelBuffer texture_pixels;
 
-	CL_ProgramObject shader;
-	CL_Texture texture_1;
-	CL_Texture texture_2;
+	int texture_write_buffer_offset;
+	CL_Texture *texture_write;	// Texture that is written to
+	CL_Texture *texture_completed;	// Completed texture
+	CL_Mutex texture_completed_mutex;
 
 	float scale;
 };
