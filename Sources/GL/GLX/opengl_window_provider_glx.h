@@ -152,7 +152,6 @@ public:
 	virtual int get_viewport_height() const;
 	virtual void flip_buffers(int interval) const;
 	virtual void make_current() const;
-	virtual const CL_RenderWindowProvider * new_worker_context() const;
 	CL_ProcAddress *get_proc_address(const CL_String8& function_name) const;
 
 	GLXContext get_context() const {return glx_context;}

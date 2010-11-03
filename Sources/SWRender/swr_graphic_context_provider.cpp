@@ -97,11 +97,6 @@ void CL_SWRenderGraphicContextProvider::destroy()
 	delete this;
 }
 
-CL_GraphicContext CL_SWRenderGraphicContextProvider::create_worker_gc()
-{
-	return CL_GraphicContext();
-}
-
 CL_PixelBuffer CL_SWRenderGraphicContextProvider::get_pixeldata(const CL_Rect& rect) const
 {
 	return canvas->to_pixelbuffer().copy(rect);

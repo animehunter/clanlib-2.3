@@ -93,11 +93,6 @@ void CL_GL_RenderWindowProvider_GLX::make_current() const
 	window.glx.glXMakeCurrent(window.get_display(), window.get_window(), glx_context);
 }
 
-const CL_RenderWindowProvider * CL_GL_RenderWindowProvider_GLX::new_worker_context() const
-{
-	return new CL_GL_RenderWindowProvider_GLX(window, window.create_context(), true);
-}
-
 CL_ProcAddress *CL_GL_RenderWindowProvider_GLX::get_proc_address(const CL_String8& function_name) const
 {
 	if (window.glx.glXGetProcAddressARB)

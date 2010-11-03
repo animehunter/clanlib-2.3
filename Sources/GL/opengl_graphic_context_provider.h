@@ -83,7 +83,6 @@ public:
 /// \{
 public:
 	void destroy();
-	CL_GraphicContext create_worker_gc();
 	CL_TextureProvider *alloc_texture(CL_TextureDimensions texture_dimensions);
 	CL_OcclusionQueryProvider *alloc_occlusion_query();
 	CL_ProgramObjectProvider *alloc_program_object();

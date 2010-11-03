@@ -127,10 +127,7 @@ public:
 public:
 	/// \brief Destroys graphic context provider.
 	virtual void destroy() = 0;
-
-	/// \brief Creates a new additional graphic context for the window.
-	virtual CL_GraphicContext create_worker_gc() = 0;
-
+	
 	/// \brief Return the content of the draw buffer into a pixel buffer.
 	virtual CL_PixelBuffer get_pixeldata(const CL_Rect& rect) const = 0;
 

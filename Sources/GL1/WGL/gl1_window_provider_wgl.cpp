@@ -82,13 +82,6 @@ void CL_RenderWindowProvider_WGL::make_current() const
 	wglMakeCurrent(window.get_device_context(), wgl_context );
 }
 
-const CL_RenderWindowProvider * CL_RenderWindowProvider_WGL::new_worker_context() const
-{
-	HGLRC new_gl_context = wglCreateContext(window.get_device_context());
-	wglShareLists(window.get_opengl_context(), new_gl_context);
-	return new CL_RenderWindowProvider_WGL(window, new_gl_context, true);
-}
-
 CL_GL1WindowProvider_WGL &CL_RenderWindowProvider_WGL::get_window()
 {
 	return window;

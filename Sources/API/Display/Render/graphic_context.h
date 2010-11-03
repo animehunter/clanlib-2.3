@@ -214,13 +214,6 @@ public:
 /// \name Operations
 /// \{
 public:
-	/// \brief Creates a new additional graphic context.
-	/** <p>This function creates a new graphic context which shares objects
-	    with the current graphic context.  Since a GC cannot be safely accessed
-	    from multiple threads simultaneously, this function allows the
-	    application to create a graphic context for the worker threads.</p>*/
-	CL_GraphicContext create_worker_gc();
-
 	/// \brief Return the content of the draw buffer into a pixel buffer.
 	CL_PixelBuffer get_pixeldata(const CL_Rect& rect = CL_Rect(0,0,0,0)) const;
 

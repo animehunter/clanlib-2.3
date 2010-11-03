@@ -95,11 +95,6 @@ void CL_GL1_RenderWindowProvider_GLX::make_current() const
 	window.glx.glXMakeCurrent(window.get_display(), window.get_window(), glx_context);
 }
 
-const CL_RenderWindowProvider * CL_GL1_RenderWindowProvider_GLX::new_worker_context() const
-{
-	return new CL_GL1_RenderWindowProvider_GLX(window, window.create_context(), true);
-}
-
 CL_GL1WindowProvider_GLX &CL_GL1_RenderWindowProvider_GLX::get_window()
 {
 	return window;

@@ -80,12 +80,7 @@ namespace
 		{
 			wglMakeCurrent(window.get_device_context(), wgl_context);
 		}
-		virtual const CL_RenderWindowProvider * new_worker_context() const
-		{
-			HGLRC new_gl_context = wglCreateContext(window.get_device_context());
-			wglShareLists(window.get_opengl_context(), new_gl_context);
-			return new RenderWindowProvider_WGL(window, new_gl_context, true);
-		}
+
 	private:
 		CL_OpenGLWindowProvider_WGL & window;
 		HGLRC wgl_context;

@@ -358,11 +358,6 @@ void CL_OpenGLGraphicContextProvider::destroy()
 	delete this;
 }
 
-CL_GraphicContext CL_OpenGLGraphicContextProvider::create_worker_gc()
-{
-	return CL_GraphicContext(new CL_OpenGLGraphicContextProvider(render_window->new_worker_context()));
-}
-
 CL_OcclusionQueryProvider *CL_OpenGLGraphicContextProvider::alloc_occlusion_query()
 {
 	return new CL_OpenGLOcclusionQueryProvider(this);

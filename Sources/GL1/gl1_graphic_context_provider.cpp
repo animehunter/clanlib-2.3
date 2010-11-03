@@ -288,11 +288,6 @@ void CL_GL1GraphicContextProvider::destroy()
 	delete this;
 }
 
-CL_GraphicContext CL_GL1GraphicContextProvider::create_worker_gc()
-{
-	return CL_GraphicContext(new CL_GL1GraphicContextProvider(render_window->new_worker_context()));
-}
-
 CL_OcclusionQueryProvider *CL_GL1GraphicContextProvider::alloc_occlusion_query()
 {
 	throw CL_Exception("Occlusion Queries are not supported for OpenGL 1.3");

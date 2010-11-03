@@ -171,11 +171,6 @@ const CL_GraphicContextProvider * const CL_GraphicContext::get_provider() const
 /////////////////////////////////////////////////////////////////////////////
 // CL_GraphicContext Operations:
 
-CL_GraphicContext CL_GraphicContext::create_worker_gc()
-{
-	return impl->provider->create_worker_gc();
-}
-
 CL_PixelBuffer CL_GraphicContext::get_pixeldata(const CL_Rect &rect) const
 {
 	return impl->provider->get_pixeldata(rect);
