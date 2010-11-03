@@ -50,6 +50,17 @@ int App::start(const std::vector<CL_String> &args)
 	texture_buffers[0] = CL_Texture(gc, texture_size, texture_size);
 	texture_buffers[1] = CL_Texture(gc, texture_size, texture_size);
 
+	// Create the initial pixelbuffers
+#ifdef USE_OPENGL_2
+	// Only clanGL supports OpenGL Pixel Buffer Objects -- The #define is in app.h
+	pixel_buffers[0] = CL_PixelBuffer(gc, texture_size, texture_size, cl_data_to_gpu, cl_rgba8);
+	pixel_buffers[1] = CL_PixelBuffer(gc, texture_size, texture_size, cl_data_to_gpu, cl_rgba8);
+#else
+	// app.h contains the display target selection #define's
+	pixel_buffers[0] = CL_PixelBuffer(texture_size, texture_size, cl_rgba8);
+	pixel_buffers[1] = CL_PixelBuffer(texture_size, texture_size, cl_rgba8);
+#endif
+
 	// Initially clear the textures, so they are filled with a "Calculating..." message
 	CL_FrameBuffer framebuffer(gc);
 	framebuffer.attach_color_buffer(0, texture_buffers[0]);
@@ -64,27 +75,37 @@ int App::start(const std::vector<CL_String> &args)
 	gc.reset_frame_buffer();
 
 	// Setup the initial texture double buffering variables
-	texture_write_buffer_offset = 0;
+
+	texture_buffers_offset = 0;
+	pixel_buffers_offset = 0;
+	worker_thread_complete = false;
+	
 	texture_write = &texture_buffers[0];
 	texture_completed = &texture_buffers[1];
+	pixelbuffer_write = &pixel_buffers[0];
+	pixelbuffer_completed = &pixel_buffers[1];
 
+	dest_pixels = NULL;
 	quit = false;
 	crashed_flag = false;
 
-	CL_MutexSection texture_complete_mutex_section(&texture_completed_mutex, false);
+	CL_MutexSection worker_thread_mutex_section(&worker_thread_mutex, false);
 
 	// We require a try block, so the worker thread exits correctly
 	CL_Thread thread;
 	try
 	{
-		CL_GraphicContext worker_gc = gc.create_worker_gc();
-		thread.start(this, &App::worker_thread, worker_gc);
+		thread.start(this, &App::worker_thread);
 
 		// Main loop
 		FramerateCounter framerate_counter;
+		FramerateCounter worker_thread_framerate_counter;
 		unsigned int last_time = CL_System::get_time();
+		unsigned int last_mandelbrot_time = CL_System::get_time();
 
 		float angle = 0.0f;
+		bool worker_thread_started = false;
+		bool texture_write_active = false;
 
 		while (!quit)
 		{
@@ -95,27 +116,100 @@ int App::start(const std::vector<CL_String> &args)
 			float time_delta_ms = (float) (current_time - last_time);
 			last_time = current_time;
 
-			angle += time_delta_ms / 100.0f;
+			angle += time_delta_ms / 50.0f;
 			while(angle > 360.0f)
 				angle-=360.0f;
 
 			gc.clear();
 			
+			// If the pixel buffer was uploaded on the last frame, double buffer it
+			if (texture_write_active)
+			{
+				texture_write_active = false;
+				if (texture_buffers_offset == 0)
+				{
+					texture_buffers_offset = 1;
+					texture_write = &texture_buffers[1];
+					texture_completed = &texture_buffers[0];
+				}
+				else
+				{
+					texture_buffers_offset = 0;
+					texture_write = &texture_buffers[0];
+					texture_completed = &texture_buffers[1];
+				}
+			}
+
+			// Wait for pixel buffer completion
+			if ((worker_thread_started == true) && (worker_thread_complete==true))
+			{
+				worker_thread_mutex_section.lock();
+
+				worker_thread_started = false;
+				worker_thread_complete = false;
+				pixelbuffer_write->unlock();
+
+				worker_thread_mutex_section.unlock();
+
+				texture_write->set_subimage(0, 0, *pixelbuffer_write, pixelbuffer_write->get_size());
+				texture_write_active = true;
+				// Note the worker thread will start on the other pixelbuffer straight away, in the next "if" statement
+			}
+
+			// Start a new transfer when required
+			if ((worker_thread_started == false) && (worker_thread_complete==false))
+			{
+				worker_thread_framerate_counter.frame_shown();
+
+				worker_thread_mutex_section.lock();
+				// Swap the pixelbuffer's
+				if (pixel_buffers_offset == 0)
+				{
+					pixel_buffers_offset = 1;
+					pixelbuffer_write = &pixel_buffers[1];
+					pixelbuffer_completed = &pixel_buffers[0];
+				}
+				else
+				{
+					pixel_buffers_offset = 0;
+					pixelbuffer_write = &pixel_buffers[0];
+					pixelbuffer_completed = &pixel_buffers[1];
+				}
+
+				pixelbuffer_write->lock(cl_access_write_only);
+				dest_pixels = (unsigned char *) pixelbuffer_write->get_data();
+				worker_thread_started = true;
+				worker_thread_complete = false;
+
+				// Adjust the mandelbrot scale
+				float mandelbrot_time_delta_ms = (float) (current_time - last_mandelbrot_time);
+				last_mandelbrot_time = current_time;
+				scale -= scale * mandelbrot_time_delta_ms / 1000.0f;
+				if (scale <= 0.001f)
+					scale = 4.0f;
+
+				worker_thread_mutex_section.unlock();
+				worker_thread_activate_event.set();
+			}
+
 			// Draw rotating mandelbrot
 			gc.push_modelview();
 			gc.mult_translate(gc.get_width()/2, gc.get_height()/2);
 			gc.mult_rotate(CL_Angle(angle, cl_degrees));
-			texture_complete_mutex_section.lock();
+			//gc.mult_scale(2.0f, 2.0f);
 			gc.set_texture(0, *texture_completed);
 			CL_Rectf dest_position(-texture_size/2, -texture_size/2, CL_Sizef(texture_size, texture_size));
 			CL_Draw::texture(gc,dest_position, CL_Colorf::white, CL_Rectf(0.0f, 0.0f, 1.0f, 1.0f));
 			gc.reset_texture(0);
-			texture_complete_mutex_section.unlock();
+
 			gc.pop_modelview();
 		
 			// Draw FPS
-			CL_String fps(cl_format("%1 fps", framerate_counter.get_framerate()));
-			font.draw_text(gc, 16, gc.get_height()-16-2, fps, CL_Colorf(1.0f, 0.0f, 0.0f, 1.0f));
+			CL_String fps;
+			fps = CL_String(cl_format("Main Loop %1 fps", framerate_counter.get_framerate()));
+			font.draw_text(gc, 16, gc.get_height()-16-2, fps, CL_Colorf(1.0f, 1.0f, 0.0f, 1.0f));
+			fps = CL_String(cl_format("Worker Thread %1 fps", worker_thread_framerate_counter.get_framerate()));
+			font.draw_text(gc, 16, gc.get_height()-64-2, fps, CL_Colorf(1.0f, 1.0f, 0.0f, 1.0f));
 
 			// Draw worker thread crashed message
 			if (crashed_flag)
@@ -128,12 +222,12 @@ int App::start(const std::vector<CL_String> &args)
 		gc.clear();
 		font.draw_text(gc, 32, 32, "Waiting for worker thread to exit");
 		window.flip(0);
-
+		worker_thread_stop_event.set();
 		thread.join();
 	}
 	catch(CL_Exception &exception)
 	{
-		quit = true;
+		worker_thread_stop_event.set();
 		thread.join();
 		throw exception;
 	}
@@ -147,9 +241,9 @@ void App::window_close()
 	quit = true;
 }
 
-void App::render_mandelbrot(CL_GraphicContext &gc, CL_PixelBuffer &dest)
+void App::render_mandelbrot(float mandelbrot_scale, unsigned char *dest)
 {
-	unsigned char *pptr = (unsigned char *) dest.get_data();
+	unsigned char *pptr = dest;
 
 	const int max_iteration = 254;
 
@@ -160,8 +254,8 @@ void App::render_mandelbrot(CL_GraphicContext &gc, CL_PixelBuffer &dest)
 			double x0 = ((double) (xcnt - texture_size/2)) / (double) texture_size;
 			double y0 = ((double) (ycnt - texture_size/2)) / (double) texture_size;
 
-			x0 *= scale;
-			y0 *= scale;
+			x0 *= mandelbrot_scale;
+			y0 *= mandelbrot_scale;
 
 			x0 += -0.639;
 			y0 += 0.41;
@@ -198,80 +292,30 @@ void App::on_input_up(const CL_InputEvent &key, const CL_InputState &state)
 
 }
 
-void App::worker_thread(CL_GraphicContext gc)
+void App::worker_thread()
 {
-	CL_SharedGCData::add_ref();
-
 	try
 	{
+		
+		CL_MutexSection worker_thread_mutex_section(&worker_thread_mutex, false);
 
-		texture_pixels = CL_PixelBuffer(gc, texture_size, texture_size);
-
-		CL_MutexSection texture_complete_mutex_section(&texture_completed_mutex, false);
-
-		// Load the font
-		CL_Font font(gc, "tahoma", 16);
-
-		CL_FrameBuffer framebuffer(gc);
-
-		unsigned int last_time = CL_System::get_time();
-
-		while(!quit)
+		while(true)
 		{
-			// Control the loop timing
-			unsigned int current_time = CL_System::get_time();
-			float time_delta_ms = (float) (current_time - last_time);
-			last_time = current_time;
-
-			scale -= scale * time_delta_ms / 1000.0f;
-			if (scale <= 0.001f)
-				scale = 4.0f;
-
-			// Lock the pixel buffer object
-			texture_pixels.lock(cl_access_write_only);
-			
-			// Double buffer the textures
-			texture_complete_mutex_section.lock();
-			if (texture_write_buffer_offset == 0)
-			{
-				texture_write_buffer_offset = 1;
-				texture_write = &texture_buffers[1];
-				texture_completed = &texture_buffers[0];
-			}
-			else
-			{
-				texture_write_buffer_offset = 0;
-				texture_write = &texture_buffers[0];
-				texture_completed = &texture_buffers[1];
-			}
-			texture_complete_mutex_section.unlock();
+		
+			int wakeup_reason = CL_Event::wait(worker_thread_activate_event, worker_thread_stop_event);
+			if (wakeup_reason != 0)	// Stop event called
+				break;
+			worker_thread_activate_event.reset();
 
 			// Write to texture
-			render_mandelbrot(gc, texture_pixels);
-
-			// Unlock the pixel buffer object
-			texture_pixels.unlock();
-
-			// Upload the pixel buffer
-			texture_write->set_subimage(0, 0, texture_pixels, texture_pixels.get_size());
-
-			// Draw text to the image, to show that we can. (This is optional)
-			framebuffer.attach_color_buffer(0, *texture_write);
-			gc.set_frame_buffer(framebuffer);
-			font.draw_text(gc, 32, 96, CL_StringHelp::float_to_text(scale));
-			gc.reset_frame_buffer();
-
+			worker_thread_mutex_section.lock();
+			if (dest_pixels)
+				render_mandelbrot(scale, dest_pixels);
+			worker_thread_mutex_section.unlock();
 
 			//throw CL_Exception("Bang!");	// <--- Use this to test the application handles exceptions in threads
 
-			// Sleep to slow down this thread on fast pc's
-			current_time = CL_System::get_time();
-			const int main_loop_rate = 100;	// 100 ms (10 hz)
-			int time_to_sleep_for = main_loop_rate - (current_time - last_time);
-			if (time_to_sleep_for > 0)
-			{
-				CL_System::sleep(time_to_sleep_for);
-			}
+			worker_thread_complete = true;
 		}
 	}
 	catch(CL_Exception &exception)
@@ -279,7 +323,6 @@ void App::worker_thread(CL_GraphicContext gc)
 		crashed_flag = true;
 	}
 
-	CL_SharedGCData::release_ref();
 
 }
 

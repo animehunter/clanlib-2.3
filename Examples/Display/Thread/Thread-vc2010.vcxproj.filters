@@ -27,5 +27,8 @@
     <ClInclude Include="Sources\program.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\framerate_counter.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
