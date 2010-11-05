@@ -97,7 +97,7 @@ int App::start(const std::vector<CL_String> &args)
 
 		render_gaussian_blur(gc, blur, texture_offscreen2, shader, 0.0f, 1.0f / texture_offscreen2.get_height());
 
-		CL_String text( "Press 0 to 9 to control blur amount. Currently it is :" + CL_StringHelp::float_to_text(blur) );
+		CL_String text( "Press 1 to 9 to control blur amount. Currently it is :" + CL_StringHelp::float_to_text(blur) );
 		font.draw_text(gc, 10, 64, text);
 
 		window.flip();
@@ -175,7 +175,7 @@ void App::on_input_up(const CL_InputEvent &key, const CL_InputState &state)
 		quit = true;
 	}
 
-	if ((key.id >= CL_KEY_0) && (key.id <= CL_KEY_9))
+	if ((key.id >= CL_KEY_1) && (key.id <= CL_KEY_9))
 	{
 		blur = (float) (key.id - CL_KEY_0);
 	}
