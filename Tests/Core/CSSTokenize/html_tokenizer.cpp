@@ -622,10 +622,8 @@ HTMLTokenizer::HTMLEscape HTMLTokenizer::escapes[] =
 
 void HTMLTokenizer::unescape(CL_String &text)
 {
-	size_t eaten = 0;
 	for (size_t i = 0; i < text.length(); i++)
 	{
-		text[i-eaten] = text[i];
 		if (text[i] == '&')
 		{
 			size_t j;
@@ -638,13 +636,10 @@ void HTMLTokenizer::unescape(CL_String &text)
 			{
 				if (escape == escapes[k].name)
 				{
-					eaten += escape.length()-1;
-					i += escape.length()-1;
-					text[i-eaten] = escapes[k].cdata;
+					text = text.substr(0, i) + CL_StringHelp::wchar_to_utf8(escapes[k].cdata) + text.substr(j);
 					break;
 				}
 			}
 		}
 	}
-	text.resize(text.length()-eaten);
 }

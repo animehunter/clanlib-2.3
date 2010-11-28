@@ -37,20 +37,12 @@ CL_CSSReplacedLayout::CL_CSSReplacedLayout(CL_CSSBoxObject *block_element)
 : CL_CSSLayoutTreeNode(block_element), component(0)
 {
 	component = block_element->get_component();
-	CL_Size s = component->get_size();
-	intrinsic.width = s.width;
-	intrinsic.height = s.height;
-	intrinsic.has_width = true;
-	intrinsic.has_height = true;
-	if (intrinsic.width == 0)
-	{
-		intrinsic.has_ratio = false;
-	}
-	else
-	{
-		intrinsic.ratio = intrinsic.height/intrinsic.width;
-		intrinsic.has_ratio = true;
-	}
+	intrinsic.width = component->intrinsic_width;
+	intrinsic.height = component->intrinsic_height;
+	intrinsic.ratio = component->intrinsic_ratio;
+	intrinsic.has_width = component->intrinsic_has_width;
+	intrinsic.has_height = component->intrinsic_has_height;
+	intrinsic.has_ratio = component->intrinsic_has_ratio;
 }
 
 CL_CSSReplacedLayout::~CL_CSSReplacedLayout()
@@ -232,8 +224,19 @@ void CL_CSSReplacedLayout::prepare_children()
 
 void CL_CSSReplacedLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy)
 {
+	if (strategy != normal_strategy)
+	{
+		if (width.expanding)
+			width.value = intrinsic.width;
+
+		if (height.use_content && intrinsic.has_height)
+			height.value = intrinsic.height;
+		else if (height.use_content && intrinsic.has_ratio)
+			height.value = width.value * intrinsic.ratio;
+	}
+
 	cursor.apply_margin();
-	box = CL_Rect((int)(cursor.x+0.5f), (int)(cursor.y+0.5f), (int)(cursor.x+width.value+0.5f), (int)(cursor.y+height.value+0.5f));
+	box = CL_Rect(cl_used_to_actual(cursor.x), cl_used_to_actual(cursor.y), cl_used_to_actual(cursor.x+width.value), cl_used_to_actual(cursor.y+height.value));
 	cursor.apply_written_width(cursor.x + box.right);
 	cursor.y += height.value;
 }

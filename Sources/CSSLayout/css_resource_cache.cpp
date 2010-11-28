@@ -29,6 +29,7 @@
 #include "CSSLayout/precomp.h"
 #include "css_resource_cache.h"
 #include "API/CSSLayout/css_box_properties.h"
+#include "LayoutTree/css_used_value.h"
 
 CL_CSSResourceCache::CL_CSSResourceCache()
 {
@@ -40,7 +41,7 @@ CL_CSSResourceCache::~CL_CSSResourceCache()
 
 CL_Font &CL_CSSResourceCache::get_font(CL_GraphicContext &gc, const CL_CSSBoxProperties &properties)
 {
-	int font_size = (int)(properties.font_size.length.value+0.5f);
+	int font_size = cl_used_to_actual(properties.font_size.length.value);
 	CL_String font_name = properties.font_family.names[0].name;
 	int font_weight = 400;
 	switch (properties.font_weight.type)

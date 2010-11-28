@@ -141,7 +141,7 @@ CL_Rect CL_CSSTableLayout::get_cell_border_box(size_t row, size_t col)
 	top -= columns[col].rows[row]->border.top;
 	bottom += columns[col].rows[row]->border.bottom;
 
-	CL_Rect box((int)(left+0.5f),(int)(top+0.5f),(int)(right+0.5f),(int)(bottom+0.5f));
+	CL_Rect box(cl_used_to_actual(left),cl_used_to_actual(top),cl_used_to_actual(right),cl_used_to_actual(bottom));
 	box.translate(formatting_context->get_x(), formatting_context->get_y());
 	return box;
 }
@@ -165,10 +165,10 @@ void CL_CSSTableLayout::render_cell_non_content(CL_GraphicContext &gc, CL_CSSRes
 			}
 /*			else if (cell->get_element_node()->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_clan_stretch)
 			{
-				int sizing_left = (int)(cell->get_element_node()->computed_properties.clan_background_border_left.length.value+0.5f);
-				int sizing_top = (int)(cell->get_element_node()->computed_properties.clan_background_border_top.length.value+0.5f);
-				int sizing_right = (int)(cell->get_element_node()->computed_properties.clan_background_border_right.length.value+0.5f);
-				int sizing_bottom = (int)(cell->get_element_node()->computed_properties.clan_background_border_bottom.length.value+0.5f);
+				int sizing_left = cl_used_to_actual(cell->get_element_node()->computed_properties.clan_background_border_left.length.value);
+				int sizing_top = cl_used_to_actual(cell->get_element_node()->computed_properties.clan_background_border_top.length.value);
+				int sizing_right = cl_used_to_actual(cell->get_element_node()->computed_properties.clan_background_border_right.length.value);
+				int sizing_bottom = cl_used_to_actual(cell->get_element_node()->computed_properties.clan_background_border_bottom.length.value);
 				CL_ClanImageStretch::draw_image(gc, border_box, image, sizing_left, sizing_top, sizing_right, sizing_bottom);
 			}*/
 		}

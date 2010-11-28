@@ -309,14 +309,14 @@ void CL_CSSInlineLayout::place_line_box(CL_CSSInlineLineBox &line, CL_CSSLayoutC
 
 void CL_CSSInlineLayout::apply_text_indent(CL_CSSLayoutCursor &layout_cursor, CL_CSSInlineLineBox &line)
 {
-	int text_indent = 0;
+	CL_CSSActualValue text_indent = 0;
 	if (element_node->computed_properties.text_indent.type == CL_CSSBoxTextIndent::type_length)
 	{
-		text_indent = (int)(element_node->computed_properties.text_indent.length.value + 0.5f);
+		text_indent = cl_used_to_actual(element_node->computed_properties.text_indent.length.value);
 	}
 	else if (element_node->computed_properties.text_indent.type == CL_CSSBoxTextIndent::type_percentage)
 	{
-		text_indent = (int)(width.value * element_node->computed_properties.text_indent.percentage / 100.0f + 0.5f);
+		text_indent = cl_used_to_actual(width.value * element_node->computed_properties.text_indent.percentage / 100.0f);
 	}
 
 	if (element_node->computed_properties.direction.type == CL_CSSBoxDirection::type_ltr)
@@ -404,7 +404,7 @@ void CL_CSSInlineLayout::update_line_box_height(CL_GraphicContext &gc, CL_CSSRes
 		line.descent = cl_max(line.descent, line.segments[i].descent);
 	}
 
-	int line_height = line.ascent + line.descent;
+	CL_CSSActualValue line_height = line.ascent + line.descent;
 	if (element_node->computed_properties.line_height.type == CL_CSSBoxLineHeight::type_normal)
 	{
 		// "Tells user agents to set the used value to a "reasonable" value based
@@ -422,25 +422,25 @@ void CL_CSSInlineLayout::update_line_box_height(CL_GraphicContext &gc, CL_CSSRes
 
 		CL_Font &block_font = resources->get_font(gc, element_node->computed_properties);
 		float block_line_height = block_font.get_font_metrics(gc).get_height();
-		line_height = cl_max(line_height, (int)(block_line_height+0.5f));
+		line_height = cl_max(line_height, cl_used_to_actual(block_line_height));
 	}
 	else if (element_node->computed_properties.line_height.type == CL_CSSBoxLineHeight::type_number)
 	{
 		//CL_Font &block_font = resources->get_font(gc, element_node->computed_properties);
 		//float block_line_height = block_font.get_font_metrics(gc).get_height();
 		float block_line_height = element_node->computed_properties.font_size.length.value;
-		line_height = cl_max(line_height, (int)(element_node->computed_properties.line_height.number * block_line_height + 0.5f));
+		line_height = cl_max(line_height, cl_used_to_actual(element_node->computed_properties.line_height.number * block_line_height));
 	}
 	else if (element_node->computed_properties.line_height.type == CL_CSSBoxLineHeight::type_length)
 	{
-		line_height = cl_max(line_height, (int)(element_node->computed_properties.line_height.length.value+0.5f));
+		line_height = cl_max(line_height, cl_used_to_actual(element_node->computed_properties.line_height.length.value));
 	}
 	else if (element_node->computed_properties.line_height.type == CL_CSSBoxLineHeight::type_percentage)
 	{
 		//CL_Font &block_font = resources->get_font(gc, element_node->computed_properties);
 		//float block_line_height = block_font.get_font_metrics(gc).get_height();
 		float block_line_height = element_node->computed_properties.font_size.length.value;
-		line_height = cl_max(line_height, (int)(element_node->computed_properties.line_height.percentage * block_line_height / 100.0f + 0.5f));
+		line_height = cl_max(line_height, cl_used_to_actual(element_node->computed_properties.line_height.percentage * block_line_height / 100.0f));
 	}
 
 	line.box.bottom = line.box.top + line_height;
@@ -603,15 +603,15 @@ void CL_CSSInlineLayout::create_text_segment(CL_GraphicContext &gc, CL_CSSLayout
 
 		if (properties.line_height.type == CL_CSSBoxLineHeight::type_number)
 		{
-			segment.height = cl_max(segment.height, (int)(properties.line_height.number * segment.height + 0.5f));
+			segment.height = cl_max(segment.height, cl_used_to_actual(properties.line_height.number * segment.height));
 		}
 		else if (properties.line_height.type == CL_CSSBoxLineHeight::type_length)
 		{
-			segment.height = cl_max(segment.height, (int)(properties.line_height.length.value+0.5f));
+			segment.height = cl_max(segment.height, cl_used_to_actual(properties.line_height.length.value));
 		}
 		else if (properties.line_height.type == CL_CSSBoxLineHeight::type_percentage)
 		{
-			segment.height = cl_max(segment.height, (int)(properties.line_height.percentage * segment.height / 100.0f + 0.5f));
+			segment.height = cl_max(segment.height, cl_used_to_actual(properties.line_height.percentage * segment.height / 100.0f));
 		}
 
 		line.segments.push_back(segment);

@@ -103,6 +103,9 @@ CL_CSSUsedValue CL_CSSLayoutTreeNode::get_css_padding_height(const CL_CSSBoxPadd
 
 void CL_CSSLayoutTreeNode::calculate_top_down_sizes()
 {
+	bool is_table_cell = element_node->computed_properties.display.type == CL_CSSBoxDisplay::type_table_cell;
+	bool is_float = element_node->computed_properties.float_box.type != CL_CSSBoxFloat::type_none;
+
 	margin.left = get_css_margin_width(element_node->computed_properties.margin_width_left, containing_width);
 	margin.right = get_css_margin_width(element_node->computed_properties.margin_width_right, containing_width);
 	border.left = element_node->computed_properties.border_width_left.length.value;
@@ -130,7 +133,7 @@ void CL_CSSLayoutTreeNode::calculate_top_down_sizes()
 	}
 	else if (element_node->computed_properties.width.type == CL_CSSBoxWidth::type_auto)
 	{
-		if (containing_width.expanding || element_node->computed_properties.display.type == CL_CSSBoxDisplay::type_table_cell)
+		if (containing_width.expanding || is_table_cell || is_float)
 		{
 			width.value = 0.0f;
 			width.expanding = true;
@@ -160,7 +163,7 @@ void CL_CSSLayoutTreeNode::calculate_top_down_sizes()
 		else if (element_node->computed_properties.min_width.type == CL_CSSBoxMinWidth::type_percentage && !containing_width.expanding)
 			width.value = cl_max(width.value, element_node->computed_properties.min_width.percentage * containing_width.value / 100.0f);
 
-		if (!containing_width.expanding)
+		if (!containing_width.expanding && !is_float)
 		{
 			if (element_node->computed_properties.margin_width_left.type == CL_CSSBoxMarginWidth::type_auto && element_node->computed_properties.margin_width_right.type == CL_CSSBoxMarginWidth::type_auto)
 			{
@@ -513,12 +516,12 @@ void CL_CSSLayoutTreeNode::establish_stacking_context_if_needed(CL_CSSStackingCo
 
 int CL_CSSLayoutTreeNode::get_block_width() const
 {
-	return (int)(margin.left + border.left + padding.left + width.value + padding.right + border.right + margin.right + 0.5f);
+	return cl_used_to_actual(margin.left + border.left + padding.left + width.value + padding.right + border.right + margin.right);
 }
 
 int CL_CSSLayoutTreeNode::get_block_height() const
 {
-	return (int)(margin.top + border.top + padding.top + height.value + padding.bottom + border.bottom + margin.bottom + 0.5f);
+	return cl_used_to_actual(margin.top + border.top + padding.top + height.value + padding.bottom + border.bottom + margin.bottom);
 }
 
 void CL_CSSLayoutTreeNode::render_non_content(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache)
@@ -571,10 +574,10 @@ void CL_CSSLayoutTreeNode::render_background(CL_GraphicContext &gc, CL_CSSResour
 			}
 			/*else if (element_node->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_clan_stretch)
 			{
-				int sizing_left = (int)(element_node->computed_properties.clan_background_border_left.length.value+0.5f);
-				int sizing_top = (int)(element_node->computed_properties.clan_background_border_top.length.value+0.5f);
-				int sizing_right = (int)(element_node->computed_properties.clan_background_border_right.length.value+0.5f);
-				int sizing_bottom = (int)(element_node->computed_properties.clan_background_border_bottom.length.value+0.5f);
+				int sizing_left = cl_used_to_actual(element_node->computed_properties.clan_background_border_left.length.value);
+				int sizing_top = cl_used_to_actual(element_node->computed_properties.clan_background_border_top.length.value);
+				int sizing_right = cl_used_to_actual(element_node->computed_properties.clan_background_border_right.length.value);
+				int sizing_bottom = cl_used_to_actual(element_node->computed_properties.clan_background_border_bottom.length.value);
 				CL_ClanImageStretch::draw_image(gc, border_box, image, sizing_left, sizing_top, sizing_right, sizing_bottom);
 			}*/
 		}
