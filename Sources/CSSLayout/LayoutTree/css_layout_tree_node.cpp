@@ -310,19 +310,14 @@ void CL_CSSLayoutTreeNode::layout_shrink_to_fit(CL_GraphicContext &gc, CL_CSSRes
 
 void CL_CSSLayoutTreeNode::layout_formatting_root(CL_GraphicContext &gc, CL_CSSResourceCache *resources, LayoutStrategy strategy)
 {
-	if (element_node->is_shrink_to_fit())
+	if (strategy == normal_strategy && element_node->is_shrink_to_fit())
 	{
-		if (strategy == preferred_strategy)
-			layout_preferred(gc, resources);
-		else if (strategy == minimum_strategy)
-			layout_minimum(gc, resources);
-		else
-			layout_shrink_to_fit(gc, resources);
+		layout_shrink_to_fit(gc, resources);
 	}
 	else
 	{
 		calculate_top_down_sizes();
-		layout_formatting_root_helper(gc, resources, normal_strategy);
+		layout_formatting_root_helper(gc, resources, strategy);
 	}
 
 /*	if (element_node->computed_properties.background_color.type == CL_CSSBoxBackgroundColor::type_color &&

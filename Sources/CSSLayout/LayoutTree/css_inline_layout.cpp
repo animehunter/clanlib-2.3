@@ -251,10 +251,13 @@ void CL_CSSInlineLayout::create_line_boxes(CL_GraphicContext &gc, CL_CSSLayoutCu
 					fits_on_line = true;
 				}
 
-				if (strategy == preferred_strategy)
-					fits_on_line = true;
-				else if (strategy == minimum_strategy)
-					fits_on_line = start_of_line;
+				if (width.expanding)
+				{
+					if (strategy == preferred_strategy)
+						fits_on_line = true;
+					else if (strategy == minimum_strategy)
+						fits_on_line = start_of_line;
+				}
 
 				if (fits_on_line)
 				{

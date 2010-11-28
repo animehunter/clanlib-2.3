@@ -454,7 +454,7 @@ void CL_CSSTableLayout::apply_non_content(CL_CSSTableSizeGrid &grid)
 
 void CL_CSSTableLayout::calculate_cell_widths(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor, LayoutStrategy strategy)
 {
-	if (width.expanding || containing_width.expanding)
+	if (strategy != normal_strategy && (width.expanding || containing_width.expanding))
 	{
 		if (strategy == minimum_strategy)
 		{
