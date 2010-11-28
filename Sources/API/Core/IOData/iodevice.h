@@ -104,6 +104,12 @@ public:
 	/** \return true if little endian*/
 	bool is_little_endian() const;
 
+	/// \brief Returns the provider for this object
+	const CL_IODeviceProvider *get_provider() const;
+
+	/// \brief Returns the provider for this object
+	CL_IODeviceProvider *get_provider();
+
 /// \}
 /// \name Operations
 /// \{

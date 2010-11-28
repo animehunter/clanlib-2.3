@@ -78,6 +78,18 @@ bool CL_IODevice::is_little_endian() const
 	return impl->little_endian_mode;
 }
 
+const CL_IODeviceProvider *CL_IODevice::get_provider() const
+{
+	throw_if_null();
+	return impl->provider;
+}
+
+CL_IODeviceProvider *CL_IODevice::get_provider()
+{
+	throw_if_null();
+	return impl->provider;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // CL_IODevice Operations:
 

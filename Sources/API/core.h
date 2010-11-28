@@ -150,6 +150,7 @@
 #include "Core/IOData/file_help.h"
 #include "Core/IOData/path_help.h"
 #include "Core/IOData/iodevice.h"
+#include "Core/IOData/iodevice_provider.h"
 #include "Core/IOData/pipe_connection.h"
 #include "Core/IOData/pipe_listen.h"
 #include "Core/IOData/security_descriptor.h"
