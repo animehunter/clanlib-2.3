@@ -351,19 +351,21 @@ void CL_CSSLayoutTreeNode::layout_formatting_root_helper(CL_GraphicContext &gc, 
 	layout_content(gc, cursor, strategy);
 	cursor.apply_margin();
 
-	if (strategy != normal_strategy && element_node->computed_properties.width.type == CL_CSSBoxWidth::type_auto)
+	if (strategy == preferred_strategy)
 	{
-		if (strategy == preferred_strategy)
-		{
+		if (element_node->computed_properties.width.type == CL_CSSBoxWidth::type_auto)
 			preferred_width = cursor.max_written_width;
-			preferred_width_calculated = true;
-		}
-		else if (strategy == minimum_strategy)
-		{
+		else
+			preferred_width = width.value;
+		preferred_width_calculated = true;
+	}
+	else if (strategy == minimum_strategy)
+	{
+		if (element_node->computed_properties.width.type == CL_CSSBoxWidth::type_auto)
 			min_width = cursor.max_written_width;
-			min_width_calculated = true;
-		}
-		//used.width = cursor.max_written_width+0.1f; // temp hack to test some rounding issues elsewhere.
+		else
+			min_width = width.value;
+		min_width_calculated = true;
 	}
 
 	if (element_node->computed_properties.height.type == CL_CSSBoxHeight::type_auto)
