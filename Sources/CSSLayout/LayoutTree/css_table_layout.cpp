@@ -71,8 +71,6 @@ void CL_CSSTableLayout::add_cell(CL_CSSLayoutTreeNode *cell_layout)
 	if (columns[next_column].rows.size() + 1 < rows.size())
 		columns[next_column].rows.resize(rows.size() - 1);
 	columns[next_column].rows.push_back(cell_layout);
-	if (cell_layout->get_element_node()->computed_properties.width.type == CL_CSSBoxWidth::type_clan_expanding)
-		columns[next_column].expanding = true;
 	next_column++;
 }
 
@@ -454,38 +452,34 @@ void CL_CSSTableLayout::apply_non_content(CL_CSSTableSizeGrid &grid)
 
 void CL_CSSTableLayout::calculate_cell_widths(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor, LayoutStrategy strategy)
 {
-	if (strategy != normal_strategy && (width.expanding || containing_width.expanding))
+	if (strategy == minimum_strategy)
+		size_grid = create_minimum_width_grid(gc, cursor);
+	else
+		size_grid = create_preferred_width_grid(gc, cursor);
+
+	if (element_node->computed_properties.width.type == CL_CSSBoxWidth::type_auto)
 	{
-		if (strategy == minimum_strategy)
+		if (!containing_width.expanding && size_grid.get_table_width() > containing_width.value)
 		{
-			size_grid = create_minimum_width_grid(gc, cursor);
-		}
-		else
-		{
-			size_grid = create_preferred_width_grid(gc, cursor);
+			if (strategy != minimum_strategy)
+				size_grid = create_minimum_width_grid(gc, cursor);
+			if (size_grid.get_table_width() < containing_width.value)
+				size_grid.expand_table_width(containing_width.value);
 		}
 	}
 	else
 	{
-		size_grid = create_preferred_width_grid(gc, cursor);
-		if (element_node->computed_properties.width.type == CL_CSSBoxWidth::type_auto)
+		if (size_grid.get_table_width() < width.value)
 		{
-			if (size_grid.get_table_width() > containing_width.value)
-			{
-				size_grid = create_minimum_width_grid(gc, cursor);
-				if (size_grid.get_table_width() < containing_width.value)
-					size_grid.expand_table_width(containing_width.value);
-			}
+			size_grid.expand_table_width(width.value);
 		}
 		else
 		{
-			if (size_grid.get_table_width() <= width.value)
-			{
-				size_grid.expand_table_width(width.value);
-			}
-			else
+			if (strategy != minimum_strategy)
 			{
 				size_grid = create_minimum_width_grid(gc, cursor);
+				if (size_grid.get_table_width() < width.value)
+					size_grid.expand_table_width(width.value);
 			}
 		}
 	}
@@ -500,16 +494,9 @@ void CL_CSSTableLayout::calculate_cell_widths(CL_GraphicContext & gc, CL_CSSLayo
 
 void CL_CSSTableLayout::layout_cells(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor)
 {
-	int rows_expanding = 0;
 	CL_CSSUsedValue height_used = 0;
 	for (size_t row = 0; row < rows.size(); row++)
 	{
-		if (rows[row].element->computed_properties.height.type == CL_CSSBoxWidth::type_clan_expanding)
-		{
-			rows_expanding++;
-			continue;
-		}
-
 		switch (rows[row].element->computed_properties.height.type)
 		{
 		default:
@@ -540,31 +527,6 @@ void CL_CSSTableLayout::layout_cells(CL_GraphicContext & gc, CL_CSSLayoutCursor 
 			}
 		}
 		height_used += rows[row].height;
-	}
-
-	if (rows_expanding > 0)
-	{
-		CL_CSSUsedValue extra_height = height.value - height_used;
-		for (size_t row = 0; row < rows.size(); row++)
-		{
-			if (rows[row].element->computed_properties.height.type == CL_CSSBoxWidth::type_clan_expanding)
-			{
-				for (size_t cell = 0; cell < columns.size(); cell++)
-				{
-					if (columns[cell].rows.size() > row)
-					{
-						if (columns[cell].rows[row])
-						{
-							CL_CSSUsedValue width = columns[cell].cell_width - columns[cell].rows[row]->padding.left - columns[cell].rows[row]->padding.right;
-							columns[cell].rows[row]->calculate_top_down_sizes();
-							columns[cell].rows[row]->width.value = width;
-							columns[cell].rows[row]->layout_formatting_root_helper(gc, cursor.resources, normal_strategy);
-						}
-					}
-				}
-				rows[row].height = extra_height/rows_expanding;
-			}
-		}
 	}
 
 	for (size_t row = 0; row < rows.size(); row++)
