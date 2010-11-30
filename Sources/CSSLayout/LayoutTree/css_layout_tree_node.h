@@ -118,6 +118,7 @@ protected:
 	void render_border(CL_GraphicContext &gc);
 	void render_background(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache);
 	CL_Rect get_border_box() const;
+	CL_Rect get_padding_box() const;
 
 	CL_CSSBoxElement *element_node;
 	CL_CSSBlockFormattingContext *formatting_context;

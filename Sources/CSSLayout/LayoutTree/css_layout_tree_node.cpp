@@ -551,39 +551,114 @@ void CL_CSSLayoutTreeNode::render_non_content(CL_GraphicContext &gc, CL_CSSResou
 
 CL_Rect CL_CSSLayoutTreeNode::get_border_box() const
 {
-	CL_Rect border_rect = content_box;
-	if (!formatting_context_root)
-		border_rect.translate(formatting_context->get_x(), formatting_context->get_y());
-	else if (formatting_context->get_parent())
-		border_rect.translate(formatting_context->get_parent()->get_x(), formatting_context->get_parent()->get_y());
-	border_rect.expand(padding.left, padding.top, padding.right, padding.bottom);
+	CL_Rect border_rect = get_padding_box();
 	border_rect.expand(border.left, border.top, border.right, border.bottom);
 	return border_rect;
 }
 
+CL_Rect CL_CSSLayoutTreeNode::get_padding_box() const
+{
+	CL_Rect padding_rect = content_box;
+	if (!formatting_context_root)
+		padding_rect.translate(formatting_context->get_x(), formatting_context->get_y());
+	else if (formatting_context->get_parent())
+		padding_rect.translate(formatting_context->get_parent()->get_x(), formatting_context->get_parent()->get_y());
+	padding_rect.expand(padding.left, padding.top, padding.right, padding.bottom);
+	return padding_rect;
+}
+
 void CL_CSSLayoutTreeNode::render_background(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache)
 {
-	CL_Rect border_box = get_border_box();
+	CL_Rect padding_box = get_padding_box();
 	if (element_node->computed_properties.background_color.type == CL_CSSBoxBackgroundColor::type_color)
-		CL_Draw::fill(gc, border_box, element_node->computed_properties.background_color.color);
+		CL_Draw::fill(gc, padding_box, element_node->computed_properties.background_color.color);
 
 	if (element_node->computed_properties.background_image.type == CL_CSSBoxBackgroundImage::type_uri)
 	{
 		CL_Image &image = resource_cache->get_image(gc, element_node->computed_properties.background_image.url);
 		if (!image.is_null())
 		{
-			if (element_node->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_repeat)
+			int x = padding_box.left;
+			switch (element_node->computed_properties.background_position.type_x)
 			{
-				image.draw(gc, border_box);
+			case CL_CSSBoxBackgroundPosition::type1_left:
+				x = padding_box.left;
+				break;
+			case CL_CSSBoxBackgroundPosition::type1_center:
+				x = padding_box.left + (padding_box.get_width() - image.get_width()) / 2;
+				break;
+			case CL_CSSBoxBackgroundPosition::type1_right:
+				x = padding_box.right - image.get_width();
+				break;
+			case CL_CSSBoxBackgroundPosition::type1_percentage:
+				x = cl_used_to_actual(padding_box.left + (padding_box.get_width()-image.get_width()) * element_node->computed_properties.background_position.percentage_x / 100.0f);
+				break;
+			case CL_CSSBoxBackgroundPosition::type1_length:
+				x = cl_used_to_actual(padding_box.left + element_node->computed_properties.background_position.length_x.value);
+				break;
 			}
-			/*else if (element_node->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_clan_stretch)
+
+			int y = padding_box.top;
+			switch (element_node->computed_properties.background_position.type_y)
 			{
-				int sizing_left = cl_used_to_actual(element_node->computed_properties.clan_background_border_left.length.value);
-				int sizing_top = cl_used_to_actual(element_node->computed_properties.clan_background_border_top.length.value);
-				int sizing_right = cl_used_to_actual(element_node->computed_properties.clan_background_border_right.length.value);
-				int sizing_bottom = cl_used_to_actual(element_node->computed_properties.clan_background_border_bottom.length.value);
-				CL_ClanImageStretch::draw_image(gc, border_box, image, sizing_left, sizing_top, sizing_right, sizing_bottom);
-			}*/
+			case CL_CSSBoxBackgroundPosition::type2_top:
+				y = padding_box.top;
+				break;
+			case CL_CSSBoxBackgroundPosition::type2_center:
+				y = padding_box.top + (padding_box.get_height() - image.get_height()) / 2;
+				break;
+			case CL_CSSBoxBackgroundPosition::type2_bottom:
+				y = padding_box.bottom - image.get_height();
+				break;
+			case CL_CSSBoxBackgroundPosition::type2_percentage:
+				y = cl_used_to_actual(padding_box.top + (padding_box.get_height()-image.get_height()) * element_node->computed_properties.background_position.percentage_y / 100.0f);
+				break;
+			case CL_CSSBoxBackgroundPosition::type1_length:
+				y = cl_used_to_actual(padding_box.top + element_node->computed_properties.background_position.length_y.value);
+				break;
+			}
+
+			if (element_node->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_no_repeat)
+			{
+				gc.push_cliprect(padding_box);
+				image.draw(gc, x, y);
+				gc.pop_cliprect();
+			}
+			else if (element_node->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_repeat_x)
+			{
+				gc.push_cliprect(padding_box);
+				int start_x = (x-padding_box.left)%image.get_width();
+				if (start_x > 0)
+					start_x -= image.get_width();
+				for (x = start_x; x < padding_box.right; x += image.get_width())
+					image.draw(gc, x, y);
+				gc.pop_cliprect();
+			}
+			else if (element_node->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_repeat_y)
+			{
+				gc.push_cliprect(padding_box);
+				int start_y = (y-padding_box.top)%image.get_height();
+				if (start_y > 0)
+					start_y -= image.get_height();
+				for (y = start_y; y < padding_box.bottom; y += image.get_height())
+					image.draw(gc, x, y);
+				gc.pop_cliprect();
+			}
+			else if (element_node->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_repeat)
+			{
+				gc.push_cliprect(padding_box);
+				int start_x = (x-padding_box.left)%image.get_width();
+				if (start_x > 0)
+					start_x -= image.get_width();
+				int start_y = (y-padding_box.top)%image.get_height();
+				if (start_y > 0)
+					start_y -= image.get_height();
+
+				for (y = start_y; y < padding_box.bottom; y += image.get_height())
+					for (x = start_x; x < padding_box.right; x += image.get_width())
+						image.draw(gc, x, y);
+				gc.pop_cliprect();
+			}
 		}
 	}
 }

@@ -46,8 +46,8 @@ CSSView::CSSView(CL_GUIComponent *parent)
 	//load_html("acid1.xml", "acid1.css");
 	//load_html("slashdot.html", "slashdot.css");
 	//load_html("politiken.html", "politiken.css");
-	load_html("test.xml", "test.css");
-	//load_html("zengarden-sample.html", "zengarden-sample.css");
+	//load_html("test.xml", "test.css");
+	load_html("zengarden-sample.html", "zengarden-sample.css");
 	//load_html("zengarden-sample.html", "zengarden-sample2.css");
 
 	on_resized();
