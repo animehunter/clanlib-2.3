@@ -73,8 +73,8 @@ void CL_CSSBlockLayout::render(CL_GraphicContext &gc, CL_CSSResourceCache *resou
 
 	for (size_t i = 0; i < children.size(); i++)
 	{
-		if (children[i]->get_element_node()->computed_properties.position.type == CL_CSSBoxPosition::type_static ||
-			children[i]->get_element_node()->computed_properties.position.type == CL_CSSBoxPosition::type_relative)
+//		if (children[i]->get_element_node()->computed_properties.position.type == CL_CSSBoxPosition::type_static ||
+//			children[i]->get_element_node()->computed_properties.position.type == CL_CSSBoxPosition::type_relative)
 		{
 			if (stacking_context == children[i]->get_stacking_context())
 				children[i]->render(gc, resource_cache);
@@ -89,7 +89,7 @@ void CL_CSSBlockLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor
 		if (children[i]->get_element_node()->computed_properties.position.type == CL_CSSBoxPosition::type_absolute ||
 			children[i]->get_element_node()->computed_properties.position.type == CL_CSSBoxPosition::type_fixed)
 		{
-			// To do: layout absolute and fixed elements later since they may rely on the calculated height of the normal flow.
+			// We layout absolute and fixed elements later since they may rely on the calculated height of the normal flow.
 		}
 		else
 		{
@@ -156,7 +156,7 @@ void CL_CSSBlockLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor
 				}
 
 				cursor.apply_written_width(float_box.right);
-				children[i]->set_root_block_position(float_box.left+children[i]->offset.x, float_box.top+children[i]->offset.y);
+				children[i]->set_root_block_position(float_box.left, float_box.top);
 			}
 			else
 			{
@@ -165,6 +165,90 @@ void CL_CSSBlockLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor
 				children[i]->layout_normal(gc, cursor, strategy);
 			}
 		}
+	}
+}
+
+
+void CL_CSSBlockLayout::layout_absolute_and_fixed(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+{
+	for (size_t i = 0; i < children.size(); i++)
+	{
+		if (children[i]->get_element_node()->computed_properties.position.type == CL_CSSBoxPosition::type_absolute ||
+			children[i]->get_element_node()->computed_properties.position.type == CL_CSSBoxPosition::type_fixed)
+		{
+			children[i]->containing_width = width;
+			children[i]->containing_height = height;
+			children[i]->layout_formatting_root(gc, resources);
+
+			CL_CSSActualValue x = 0;
+			CL_CSSActualValue y = 0;
+
+			CL_CSSActualValue right = cl_used_to_actual(children[i]->width.value);
+			CL_CSSActualValue bottom = cl_used_to_actual(children[i]->height.value);
+			if (children[i]->get_element_node()->computed_properties.position.type == CL_CSSBoxPosition::type_fixed)
+			{
+				right = gc.get_width();
+				bottom = gc.get_height();
+			}
+
+			if (children[i]->get_element_node()->computed_properties.left.type == CL_CSSBoxLeft::type_auto)
+			{
+				if (children[i]->get_element_node()->computed_properties.right.type == CL_CSSBoxRight::type_length)
+				{
+					x = right - cl_used_to_actual(children[i]->get_element_node()->computed_properties.right.length.value);
+				}
+				else if (children[i]->get_element_node()->computed_properties.right.type == CL_CSSBoxRight::type_percentage)
+				{
+					x = right - cl_used_to_actual(children[i]->get_element_node()->computed_properties.right.percentage * 100.0f / children[i]->containing_width.value);
+				}
+				else
+				{
+					// To do: Use position stored in layout_content
+				}
+			}
+			else if (children[i]->get_element_node()->computed_properties.left.type == CL_CSSBoxLeft::type_length)
+			{
+				x = cl_used_to_actual(children[i]->get_element_node()->computed_properties.left.length.value);
+			}
+			else if (children[i]->get_element_node()->computed_properties.left.type == CL_CSSBoxLeft::type_percentage)
+			{
+				x = cl_used_to_actual(children[i]->get_element_node()->computed_properties.left.percentage * 100.0f / children[i]->containing_width.value);
+			}
+
+			if (children[i]->get_element_node()->computed_properties.top.type == CL_CSSBoxTop::type_auto)
+			{
+				if (children[i]->get_element_node()->computed_properties.bottom.type == CL_CSSBoxBottom::type_length)
+				{
+					y = bottom - cl_used_to_actual(children[i]->get_element_node()->computed_properties.bottom.length.value);
+				}
+				else if (children[i]->get_element_node()->computed_properties.bottom.type == CL_CSSBoxBottom::type_percentage)
+				{
+					y = bottom - cl_used_to_actual(children[i]->get_element_node()->computed_properties.bottom.percentage * 100.0f / children[i]->containing_height.value);
+				}
+				else
+				{
+					// To do: Use position stored in layout_content
+				}
+			}
+			else if (children[i]->get_element_node()->computed_properties.top.type == CL_CSSBoxTop::type_length)
+			{
+				y = cl_used_to_actual(children[i]->get_element_node()->computed_properties.top.length.value);
+			}
+			else if (children[i]->get_element_node()->computed_properties.top.type == CL_CSSBoxTop::type_percentage)
+			{
+				y = cl_used_to_actual(children[i]->get_element_node()->computed_properties.top.percentage * 100.0f / children[i]->containing_height.value);
+			}
+
+			if (children[i]->get_element_node()->computed_properties.position.type == CL_CSSBoxPosition::type_absolute)
+			{
+				x += content_box.left;
+				y += content_box.top;
+			}
+
+			children[i]->set_root_block_position(x, y);
+		}
+
+		children[i]->layout_absolute_and_fixed(gc, resources);
 	}
 }
 

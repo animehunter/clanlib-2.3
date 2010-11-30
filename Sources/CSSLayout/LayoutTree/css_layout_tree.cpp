@@ -79,6 +79,7 @@ void CL_CSSLayoutTree::layout(CL_GraphicContext &gc, CL_CSSResourceCache *resour
 	root_layout->prepare(0, root_stacking_context);
 	root_layout->layout_formatting_root(gc, resource_cache);
 	root_layout->set_root_block_position(0, 0);
+	root_layout->layout_absolute_and_fixed(gc, resource_cache);
 	root_layout->set_component_geometry();
 
 	root_stacking_context->sort();

@@ -51,8 +51,10 @@ CL_CSSLayoutTreeNode::~CL_CSSLayoutTreeNode()
 
 void CL_CSSLayoutTreeNode::prepare(CL_CSSBlockFormattingContext *current_formatting_context, CL_CSSStackingContext *current_stacking_context)
 {
-	if (current_formatting_context == 0 || element_node->is_inline_block_level() || element_node->is_float() || element_node->is_table() || element_node->is_table_cell() || is_replaced())
+	if (current_formatting_context == 0 || element_node->is_inline_block_level() || element_node->is_float() || element_node->is_table() || element_node->is_table_cell() || is_replaced() || element_node->is_absolute())
 		set_formatting_context(new CL_CSSBlockFormattingContext(current_formatting_context), true);
+	else if (element_node->is_fixed())
+		set_formatting_context(new CL_CSSBlockFormattingContext(0), true);
 	else
 		set_formatting_context(current_formatting_context, false);
 	establish_stacking_context_if_needed(current_stacking_context);

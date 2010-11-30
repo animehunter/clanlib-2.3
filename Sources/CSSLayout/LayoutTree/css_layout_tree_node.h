@@ -62,6 +62,7 @@ public:
 
 	void layout_formatting_root(CL_GraphicContext &gc, CL_CSSResourceCache *resources, LayoutStrategy strategy = normal_strategy);
 	void set_root_block_position(int x, int y);
+	virtual void layout_absolute_and_fixed(CL_GraphicContext &gc, CL_CSSResourceCache *resources) { }
 	void layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy);
 
 	void calc_preferred(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
@@ -93,7 +94,6 @@ public:
 	LTRB padding;
 	CL_CSSUsedWidth width;
 	CL_CSSUsedHeight height;
-	CL_Pointx<CL_CSSUsedValue> offset;
 	CL_CSSUsedWidth containing_width;
 	CL_CSSUsedHeight containing_height;
 	CL_CSSUsedValue preferred_width;

@@ -87,7 +87,8 @@ bool CL_CSSBoxElement::is_shrink_to_fit() const
 		computed_properties.display.type == CL_CSSBoxDisplay::type_inline_table ||
 		computed_properties.display.type == CL_CSSBoxDisplay::type_table ||
 		/*computed_properties.display.type == CL_CSSBoxDisplay::type_table_cell ||*/
-		computed_properties.float_box.type != CL_CSSBoxFloat::type_none)
+		computed_properties.float_box.type != CL_CSSBoxFloat::type_none ||
+		is_absolute() || is_fixed())
 	{
 		return computed_properties.width.type == CL_CSSBoxWidth::type_auto;
 	}
@@ -120,4 +121,14 @@ bool CL_CSSBoxElement::is_table_row() const
 bool CL_CSSBoxElement::is_table_cell() const
 {
 	return computed_properties.display.type == CL_CSSBoxDisplay::type_table_cell;
+}
+
+bool CL_CSSBoxElement::is_absolute() const
+{
+	return computed_properties.position.type == CL_CSSBoxPosition::type_absolute;
+}
+
+bool CL_CSSBoxElement::is_fixed() const
+{
+	return computed_properties.position.type == CL_CSSBoxPosition::type_fixed;
 }

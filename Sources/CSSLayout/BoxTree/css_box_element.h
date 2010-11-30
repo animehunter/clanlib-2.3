@@ -49,4 +49,6 @@ public:
 	bool is_inline_table() const;
 	bool is_table_row() const;
 	bool is_table_cell() const;
+	bool is_absolute() const;
+	bool is_fixed() const;
 };
