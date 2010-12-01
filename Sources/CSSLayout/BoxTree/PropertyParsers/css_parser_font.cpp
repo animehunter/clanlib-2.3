@@ -233,7 +233,6 @@ void CL_CSSParserFont::parse(CL_CSSBoxProperties &properties, const CL_String &n
 	{
 		size.type = CL_CSSBoxFontSize::type_percentage;
 		size.percentage = CL_StringHelp::text_to_float(token.value);
-		return;
 	}
 	else
 	{

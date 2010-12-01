@@ -620,33 +620,33 @@ void CL_CSSLayoutTreeNode::render_background(CL_GraphicContext &gc, CL_CSSResour
 
 			if (element_node->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_no_repeat)
 			{
-				gc.push_cliprect(padding_box);
+				//gc.push_cliprect(padding_box);
 				image.draw(gc, x, y);
-				gc.pop_cliprect();
+				//gc.pop_cliprect();
 			}
 			else if (element_node->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_repeat_x)
 			{
-				gc.push_cliprect(padding_box);
+				//gc.push_cliprect(padding_box);
 				int start_x = (x-padding_box.left)%image.get_width();
 				if (start_x > 0)
 					start_x -= image.get_width();
 				for (x = start_x; x < padding_box.right; x += image.get_width())
 					image.draw(gc, x, y);
-				gc.pop_cliprect();
+				//gc.pop_cliprect();
 			}
 			else if (element_node->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_repeat_y)
 			{
-				gc.push_cliprect(padding_box);
+				//gc.push_cliprect(padding_box);
 				int start_y = (y-padding_box.top)%image.get_height();
 				if (start_y > 0)
 					start_y -= image.get_height();
 				for (y = start_y; y < padding_box.bottom; y += image.get_height())
 					image.draw(gc, x, y);
-				gc.pop_cliprect();
+				//gc.pop_cliprect();
 			}
 			else if (element_node->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_repeat)
 			{
-				gc.push_cliprect(padding_box);
+				//gc.push_cliprect(padding_box);
 				int start_x = (x-padding_box.left)%image.get_width();
 				if (start_x > 0)
 					start_x -= image.get_width();
@@ -657,7 +657,7 @@ void CL_CSSLayoutTreeNode::render_background(CL_GraphicContext &gc, CL_CSSResour
 				for (y = start_y; y < padding_box.bottom; y += image.get_height())
 					for (x = start_x; x < padding_box.right; x += image.get_width())
 						image.draw(gc, x, y);
-				gc.pop_cliprect();
+				//gc.pop_cliprect();
 			}
 		}
 	}
