@@ -41,10 +41,10 @@ CL_CSSTokenizer::CL_CSSTokenizer(const CL_String &text)
 {
 }
 
-void CL_CSSTokenizer::read(CL_CSSToken &token, bool eat_whitespace)
+void CL_CSSTokenizer::read(CL_CSSToken &token, bool eat_whitespace, bool eat_comments)
 {
 	do
 	{
 		impl->read(token);
-	} while(eat_whitespace && token.type == CL_CSSToken::type_whitespace);
+	} while((eat_whitespace && token.type == CL_CSSToken::type_whitespace) || (eat_comments && token.type == CL_CSSToken::type_comment));
 }

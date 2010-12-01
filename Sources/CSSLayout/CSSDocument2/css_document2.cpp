@@ -357,7 +357,8 @@ bool CL_CSSDocument2_Impl::read_selector_chain(CL_CSSTokenizer &tokenizer, CL_CS
 			bool whitespace = false;
 			if (token.type == CL_CSSToken::type_whitespace)
 			{
-				tokenizer.read(token, true);
+				while (token.type == CL_CSSToken::type_whitespace)
+					tokenizer.read(token, true);
 				if (token.type != CL_CSSToken::type_curly_brace_begin)
 					whitespace = true;
 			}
@@ -598,7 +599,7 @@ bool CL_CSSDocument2_Impl::read_property_value(CL_CSSTokenizer &tokenizer, CL_CS
 		property.get_value_tokens().erase(property.get_value_tokens().begin());
 
 	// Remove any possible whitespace at the end of the property:
-	if (!property.get_value_tokens().empty() && property.get_value_tokens().back().type == CL_CSSToken::type_whitespace)
+	while (!property.get_value_tokens().empty() && property.get_value_tokens().back().type == CL_CSSToken::type_whitespace)
 		property.get_value_tokens().pop_back();
 
 	return curly_count < 0;
