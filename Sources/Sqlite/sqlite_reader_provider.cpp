@@ -137,10 +137,13 @@ bool CL_SqliteReaderProvider::retrieve_row()
 				finished = true;
 				return false;
 			case SQLITE_ERROR:
+				finished = true;
 				throw CL_Exception("Database Error!");
 			case SQLITE_MISUSE:
+				finished = true;
 				throw CL_Exception("Database Misuse!");
 			default:
+				finished = true;
 				throw CL_Exception(cl_format("Unknown database result code: %1", result));
 			}
 		}
