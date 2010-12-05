@@ -30,6 +30,7 @@
 #include "css_view.h"
 #include "html_tokenizer.h"
 #include "html_token.h"
+#include "html_page.h"
 
 CSSView::CSSView(CL_GUIComponent *parent)
 : CL_GUIComponent(parent), scrollbar(0)
@@ -42,12 +43,18 @@ CSSView::CSSView(CL_GUIComponent *parent)
 	scrollbar->set_ranges(0, 30000, 12, 800);
 	scrollbar->func_scroll().set(this, &CSSView::on_scroll);
 
+	//HTMLPage page("http://www.csszengarden.com/");
+	//HTMLPage page("http://codegrind.net/2010/11/01/clanlib-tutorial-part-4-server-as-a-service/");
+	HTMLPage page("http://clanlib.org/wiki/Main_Page");
+	//HTMLPage page("http://www.dr.dk/nyheder/");
+	load_html("htmlpage.html", "htmlpage.css");
+
 	//load_html("clanlib.html", "clanlib.css");
 	//load_html("acid1.xml", "acid1.css");
 	//load_html("slashdot.html", "slashdot.css");
 	//load_html("politiken.html", "politiken.css");
 	//load_html("test.xml", "test.css");
-	load_html("zengarden-sample.html", "zengarden-sample.css");
+//	load_html("zengarden-sample.html", "zengarden-sample.css");
 	//load_html("zengarden-sample.html", "zengarden-sample2.css");
 
 	on_resized();

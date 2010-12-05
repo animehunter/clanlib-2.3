@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="CSSTokenize"
 	ProjectGUID="{80C87802-898E-428B-A314-AB34E920EFA5}"
 	TargetFrameworkVersion="131072"
@@ -245,6 +245,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\html_page.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\html_page.h"
+			>
+		</File>
+		<File
 			RelativePath=".\html_token.h"
 			>
 		</File>
@@ -254,6 +262,14 @@
 		</File>
 		<File
 			RelativePath=".\html_tokenizer.h"
+			>
+		</File>
+		<File
+			RelativePath=".\html_url.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\html_url.h"
 			>
 		</File>
 		<File

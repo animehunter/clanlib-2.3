@@ -289,7 +289,7 @@ size_t HTMLTokenizer::read_style_value(size_t p, size_t pvalue, HTMLToken &token
 			CL_String name;
 			size_t p2 = read_name(i+2, name);
 			size_t p3 = read_whitespace(p2);
-			if (compare(name, "script") && is_tag_end(p3))
+			if (compare(name, "style") && is_tag_end(p3))
 			{
 				token.type = HTMLToken::type_style_tag;
 				token.value = data.substr(pvalue, i-pvalue);
