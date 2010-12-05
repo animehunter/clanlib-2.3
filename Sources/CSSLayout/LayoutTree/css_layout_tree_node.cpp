@@ -103,7 +103,186 @@ CL_CSSUsedValue CL_CSSLayoutTreeNode::get_css_padding_height(const CL_CSSBoxPadd
 	}
 }
 
-void CL_CSSLayoutTreeNode::calculate_top_down_sizes()
+void CL_CSSLayoutTreeNode::calculate_absolute_sizes()
+{
+	LTRB static_position;
+
+	margin.left = get_css_margin_width(element_node->computed_properties.margin_width_left, containing_width);
+	margin.right = get_css_margin_width(element_node->computed_properties.margin_width_right, containing_width);
+	border.left = element_node->computed_properties.border_width_left.length.value;
+	border.right = element_node->computed_properties.border_width_right.length.value;
+	padding.left = get_css_padding_width(element_node->computed_properties.padding_width_left, containing_width);
+	padding.right = get_css_padding_width(element_node->computed_properties.padding_width_right, containing_width);
+
+	CL_CSSUsedValue left = 0.0f;
+	if (element_node->computed_properties.left.type == CL_CSSBoxLeft::type_length)
+		left = element_node->computed_properties.left.length.value;
+	else if (element_node->computed_properties.left.type == CL_CSSBoxLeft::type_percentage)
+		left = element_node->computed_properties.left.percentage * containing_width.value / 100.0f;
+
+	CL_CSSUsedValue right = 0.0f;
+	if (element_node->computed_properties.right.type == CL_CSSBoxRight::type_length)
+		right = element_node->computed_properties.right.length.value;
+	else if (element_node->computed_properties.right.type == CL_CSSBoxRight::type_percentage)
+		right = element_node->computed_properties.right.percentage * containing_width.value / 100.0f;
+
+	width.value = 0.0f;
+	width.expanding = false;
+	if (element_node->computed_properties.width.type == CL_CSSBoxWidth::type_length)
+		width.value = element_node->computed_properties.width.length.value;
+	else
+		width.value = element_node->computed_properties.width.percentage * containing_width.value / 100.0f;
+
+	if (element_node->computed_properties.left.type == CL_CSSBoxLeft::type_auto &&
+		element_node->computed_properties.right.type == CL_CSSBoxRight::type_auto &&
+		element_node->computed_properties.width.type == CL_CSSBoxWidth::type_auto)
+	{
+		width.value = 0.0f;
+		width.expanding = true;
+	}
+	else if (element_node->computed_properties.left.type != CL_CSSBoxLeft::type_auto &&
+		element_node->computed_properties.right.type != CL_CSSBoxLeft::type_auto &&
+		element_node->computed_properties.width.type != CL_CSSBoxLeft::type_auto)
+	{
+		if (element_node->computed_properties.margin_width_left.type == CL_CSSBoxMarginWidth::type_auto &&
+			element_node->computed_properties.margin_width_right.type == CL_CSSBoxMarginWidth::type_auto)
+		{
+			CL_CSSUsedValue space_left = containing_width.value - border.left - border.right - padding.left - padding.right - width.value - left - right;
+			if (space_left < 0.0f)
+			{
+				if (element_node->computed_properties.direction.type == CL_CSSBoxDirection::type_ltr)
+				{
+					margin.left = 0.0f;
+					margin.right = space_left;
+				}
+				else
+				{
+					margin.left = space_left;
+					margin.right = 0.0f;
+				}
+			}
+			else
+			{
+				margin.left = space_left / 2.0f;
+				margin.right = margin.left;
+			}
+		}
+		else if (element_node->computed_properties.margin_width_left.type == CL_CSSBoxMarginWidth::type_auto)
+		{
+			margin.left = containing_width.value - border.left - border.right - padding.left - padding.right - width.value - margin.right - left - right;
+		}
+		else if (element_node->computed_properties.margin_width_right.type == CL_CSSBoxMarginWidth::type_auto)
+		{
+			margin.right = containing_width.value - border.left - border.right - padding.left - padding.right - width.value - margin.left - left - right;
+		}
+	}
+	else if (element_node->computed_properties.left.type == CL_CSSBoxLeft::type_auto &&
+		element_node->computed_properties.width.type == CL_CSSBoxWidth::type_auto &&
+		element_node->computed_properties.right.type != CL_CSSBoxRight::type_auto) // rule #1
+	{
+		width.value = 0.0f;
+		width.expanding = true;
+	}
+	else if (element_node->computed_properties.width.type == CL_CSSBoxWidth::type_auto &&
+		element_node->computed_properties.right.type == CL_CSSBoxRight::type_auto &&
+		element_node->computed_properties.left.type != CL_CSSBoxLeft::type_auto) // rule #3
+	{
+		width.value = 0.0f;
+		width.expanding = true;
+	}
+	else if (element_node->computed_properties.width.type == CL_CSSBoxWidth::type_auto &&
+		element_node->computed_properties.left.type != CL_CSSBoxLeft::type_auto &&
+		element_node->computed_properties.right.type != CL_CSSBoxRight::type_auto) // rule #5
+	{
+		width.value = containing_width.value - border.left - border.right - padding.left - padding.right - margin.left - margin.right - left - right;
+	}
+
+
+
+	margin.top = get_css_margin_height(element_node->computed_properties.margin_width_top, containing_height);
+	margin.bottom = get_css_margin_height(element_node->computed_properties.margin_width_bottom, containing_height);
+	border.top = element_node->computed_properties.border_width_top.length.value;
+	border.bottom = element_node->computed_properties.border_width_bottom.length.value;
+	padding.top = get_css_padding_height(element_node->computed_properties.padding_width_top, containing_height);
+	padding.bottom = get_css_padding_height(element_node->computed_properties.padding_width_bottom, containing_height);
+
+	CL_CSSUsedValue top = 0.0f;
+	if (element_node->computed_properties.top.type == CL_CSSBoxTop::type_length)
+		top = element_node->computed_properties.top.length.value;
+	else if (element_node->computed_properties.top.type == CL_CSSBoxTop::type_percentage)
+		top = element_node->computed_properties.top.percentage * containing_height.value / 100.0f;
+
+	CL_CSSUsedValue bottom = 0.0f;
+	if (element_node->computed_properties.bottom.type == CL_CSSBoxBottom::type_length)
+		bottom = element_node->computed_properties.bottom.length.value;
+	else if (element_node->computed_properties.bottom.type == CL_CSSBoxBottom::type_percentage)
+		bottom = element_node->computed_properties.bottom.percentage * containing_height.value / 100.0f;
+
+	height.value = 0.0f;
+	height.use_content = false;
+	if (element_node->computed_properties.height.type == CL_CSSBoxHeight::type_length)
+		height.value = element_node->computed_properties.height.length.value;
+	else
+		height.value = element_node->computed_properties.height.percentage * containing_height.value / 100.0f;
+
+	if (element_node->computed_properties.top.type == CL_CSSBoxTop::type_auto &&
+		element_node->computed_properties.bottom.type == CL_CSSBoxBottom::type_auto &&
+		element_node->computed_properties.height.type == CL_CSSBoxHeight::type_auto)
+	{
+		height.value = 0.0f;
+		height.use_content = true;
+	}
+	else if (element_node->computed_properties.top.type != CL_CSSBoxTop::type_auto &&
+		element_node->computed_properties.bottom.type != CL_CSSBoxBottom::type_auto &&
+		element_node->computed_properties.height.type != CL_CSSBoxHeight::type_auto)
+	{
+		if (element_node->computed_properties.margin_width_top.type == CL_CSSBoxMarginWidth::type_auto &&
+			element_node->computed_properties.margin_width_bottom.type == CL_CSSBoxMarginWidth::type_auto)
+		{
+			CL_CSSUsedValue space_left = containing_height.value - border.top - border.bottom - padding.top - padding.bottom - height.value - top - bottom;
+			if (space_left < 0.0f)
+			{
+				margin.top = 0.0f;
+				margin.bottom = space_left;
+			}
+			else
+			{
+				margin.top = space_left / 2.0f;
+				margin.bottom = margin.top;
+			}
+		}
+		else if (element_node->computed_properties.margin_width_top.type == CL_CSSBoxMarginWidth::type_auto)
+		{
+			margin.top = containing_height.value - border.top - border.bottom - padding.top - padding.bottom - height.value - margin.bottom - top - bottom;
+		}
+		else if (element_node->computed_properties.margin_width_bottom.type == CL_CSSBoxMarginWidth::type_auto)
+		{
+			margin.bottom = containing_height.value - border.top - border.bottom - padding.top - padding.bottom - height.value - margin.top - top - bottom;
+		}
+	}
+	else if (element_node->computed_properties.top.type == CL_CSSBoxTop::type_auto &&
+		element_node->computed_properties.height.type == CL_CSSBoxHeight::type_auto &&
+		element_node->computed_properties.bottom.type != CL_CSSBoxBottom::type_auto) // rule #1
+	{
+		height.value = 0.0f;
+		height.use_content = true;
+	}
+	else if (element_node->computed_properties.height.type == CL_CSSBoxWidth::type_auto &&
+		element_node->computed_properties.bottom.type == CL_CSSBoxBottom::type_auto &&
+		element_node->computed_properties.top.type != CL_CSSBoxTop::type_auto) // rule #3
+	{
+		height.value = 0.0f;
+		height.use_content = true;
+	}
+	else if (element_node->computed_properties.height.type == CL_CSSBoxWidth::type_auto &&
+		element_node->computed_properties.top.type != CL_CSSBoxTop::type_auto &&
+		element_node->computed_properties.bottom.type != CL_CSSBoxBottom::type_auto) // rule #5
+	{
+		height.value = containing_height.value - border.top - border.bottom - padding.top - padding.bottom - margin.top - margin.bottom - top - bottom;
+	}
+}
+
+void CL_CSSLayoutTreeNode::calculate_static_sizes()
 {
 	bool is_table_cell = element_node->computed_properties.display.type == CL_CSSBoxDisplay::type_table_cell;
 	bool is_float = element_node->computed_properties.float_box.type != CL_CSSBoxFloat::type_none;
@@ -248,6 +427,19 @@ void CL_CSSLayoutTreeNode::calculate_top_down_sizes()
 			height.value = cl_max(height.value, element_node->computed_properties.min_height.percentage * containing_height.value / 100.0f);
 		}
 	}
+}
+
+void CL_CSSLayoutTreeNode::calculate_top_down_sizes()
+{
+	if (element_node->computed_properties.position.type == CL_CSSBoxPosition::type_absolute ||
+		element_node->computed_properties.position.type == CL_CSSBoxPosition::type_fixed)
+	{
+		calculate_absolute_sizes();
+	}
+	else
+	{
+		calculate_static_sizes();
+	}
 
 	calculate_content_top_down_sizes();
 }
@@ -278,20 +470,151 @@ void CL_CSSLayoutTreeNode::calc_minimum(CL_GraphicContext &gc, CL_CSSResourceCac
 	}
 }
 
-void CL_CSSLayoutTreeNode::layout_minimum(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+void CL_CSSLayoutTreeNode::layout_absolute_or_fixed(CL_GraphicContext &gc, CL_CSSResourceCache *resources, const CL_Rect &containing_block, const CL_Size &viewport_size)
 {
-	calc_minimum(gc, resources);
+	containing_width.value = containing_block.get_width();
+	containing_width.expanding = false;
+	containing_height.value = containing_block.get_height();
+	containing_height.use_content = false;
 	calculate_top_down_sizes();
-	set_expanding_width(min_width);
-	layout_formatting_root_helper(gc, resources, normal_strategy);
-}
+	if (width.expanding)
+		layout_shrink_to_fit(gc, resources);
+	else
+		layout_formatting_root_helper(gc, resources, normal_strategy);
 
-void CL_CSSLayoutTreeNode::layout_preferred(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
-{
-	calc_preferred(gc, resources);
-	calculate_top_down_sizes();
-	set_expanding_width(preferred_width);
-	layout_formatting_root_helper(gc, resources, normal_strategy);
+	LTRB static_position;
+
+	CL_CSSUsedValue left = 0.0f;
+	if (element_node->computed_properties.left.type == CL_CSSBoxLeft::type_length)
+		left = element_node->computed_properties.left.length.value;
+	else if (element_node->computed_properties.left.type == CL_CSSBoxLeft::type_percentage)
+		left = element_node->computed_properties.left.percentage * containing_width.value / 100.0f;
+
+	CL_CSSUsedValue right = 0.0f;
+	if (element_node->computed_properties.right.type == CL_CSSBoxRight::type_length)
+		right = element_node->computed_properties.right.length.value;
+	else if (element_node->computed_properties.right.type == CL_CSSBoxRight::type_percentage)
+		right = element_node->computed_properties.right.percentage * containing_width.value / 100.0f;
+
+	if (element_node->computed_properties.left.type == CL_CSSBoxLeft::type_auto &&
+		element_node->computed_properties.right.type == CL_CSSBoxRight::type_auto &&
+		element_node->computed_properties.width.type == CL_CSSBoxWidth::type_auto)
+	{
+		if (element_node->computed_properties.direction.type == CL_CSSBoxDirection::type_ltr)
+		{
+			left = static_position.left;
+			right = containing_width.value - border.left - border.right - padding.left - padding.right - margin.left - margin.right - width.value - left;
+		}
+		else
+		{
+			right = static_position.right;
+			left = containing_width.value - border.left - border.right - padding.left - padding.right - margin.left - margin.right - width.value - right;
+		}
+	}
+	else
+	{
+		if (element_node->computed_properties.left.type == CL_CSSBoxLeft::type_auto &&
+			element_node->computed_properties.width.type == CL_CSSBoxWidth::type_auto &&
+			element_node->computed_properties.right.type != CL_CSSBoxRight::type_auto) // rule #1
+		{
+			left = containing_width.value - border.left - border.right - padding.left - padding.right - margin.left - margin.right - width.value - right;
+		}
+		else if (element_node->computed_properties.left.type == CL_CSSBoxLeft::type_auto &&
+			element_node->computed_properties.right.type == CL_CSSBoxRight::type_auto &&
+			element_node->computed_properties.width.type != CL_CSSBoxWidth::type_auto) // rule #2
+		{
+			if (element_node->computed_properties.direction.type == CL_CSSBoxDirection::type_ltr)
+			{
+				left = static_position.left;
+				right = containing_width.value - border.left - border.right - padding.left - padding.right - margin.left - margin.right - width.value - left;
+			}
+			else
+			{
+				right = static_position.right;
+				left = containing_width.value - border.left - border.right - padding.left - padding.right - margin.left - margin.right - width.value - right;
+			}
+		}
+		else if (element_node->computed_properties.width.type == CL_CSSBoxWidth::type_auto &&
+			element_node->computed_properties.right.type == CL_CSSBoxRight::type_auto &&
+			element_node->computed_properties.left.type != CL_CSSBoxLeft::type_auto) // rule #3
+		{
+			right = containing_width.value - border.left - border.right - padding.left - padding.right - margin.left - margin.right - width.value - left;
+		}
+		else if (element_node->computed_properties.left.type == CL_CSSBoxLeft::type_auto &&
+			element_node->computed_properties.width.type != CL_CSSBoxWidth::type_auto &&
+			element_node->computed_properties.right.type != CL_CSSBoxRight::type_auto) // rule #4
+		{
+			left = containing_width.value - border.left - border.right - padding.left - padding.right - margin.left - margin.right - width.value - right;
+		}
+		else if (element_node->computed_properties.right.type == CL_CSSBoxRight::type_auto &&
+			element_node->computed_properties.left.type != CL_CSSBoxLeft::type_auto &&
+			element_node->computed_properties.width.type != CL_CSSBoxWidth::type_auto) // rule #6
+		{
+			right = containing_width.value - border.left - border.right - padding.left - padding.right - margin.left - margin.right - width.value - left;
+		}
+	}
+
+
+	CL_CSSUsedValue top = 0.0f;
+	if (element_node->computed_properties.top.type == CL_CSSBoxTop::type_length)
+		top = element_node->computed_properties.top.length.value;
+	else if (element_node->computed_properties.top.type == CL_CSSBoxTop::type_percentage)
+		top = element_node->computed_properties.top.percentage * containing_height.value / 100.0f;
+
+	CL_CSSUsedValue bottom = 0.0f;
+	if (element_node->computed_properties.bottom.type == CL_CSSBoxBottom::type_length)
+		bottom = element_node->computed_properties.bottom.length.value;
+	else if (element_node->computed_properties.bottom.type == CL_CSSBoxBottom::type_percentage)
+		bottom = element_node->computed_properties.bottom.percentage * containing_height.value / 100.0f;
+
+	if (element_node->computed_properties.top.type == CL_CSSBoxTop::type_auto &&
+		element_node->computed_properties.bottom.type == CL_CSSBoxBottom::type_auto &&
+		element_node->computed_properties.height.type == CL_CSSBoxHeight::type_auto)
+	{
+		top = static_position.top;
+		bottom = containing_height.value - border.top - border.bottom - padding.top - padding.bottom - margin.top - margin.bottom - height.value - top;
+	}
+	else
+	{
+		if (element_node->computed_properties.top.type == CL_CSSBoxTop::type_auto &&
+			element_node->computed_properties.height.type == CL_CSSBoxHeight::type_auto &&
+			element_node->computed_properties.bottom.type != CL_CSSBoxBottom::type_auto) // rule #1
+		{
+			top = containing_height.value - border.top - border.bottom - padding.top - padding.bottom - margin.top - margin.bottom - height.value - bottom;
+		}
+		else if (element_node->computed_properties.top.type == CL_CSSBoxTop::type_auto &&
+			element_node->computed_properties.bottom.type == CL_CSSBoxBottom::type_auto &&
+			element_node->computed_properties.height.type != CL_CSSBoxHeight::type_auto) // rule #2
+		{
+			top = static_position.top;
+			bottom = containing_height.value - border.top - border.bottom - padding.top - padding.bottom - margin.top - margin.bottom - height.value - top;
+		}
+		else if (element_node->computed_properties.height.type == CL_CSSBoxHeight::type_auto &&
+			element_node->computed_properties.bottom.type == CL_CSSBoxBottom::type_auto &&
+			element_node->computed_properties.top.type != CL_CSSBoxTop::type_auto) // rule #3
+		{
+			bottom = containing_height.value - border.top - border.bottom - padding.top - padding.bottom - margin.top - margin.bottom - height.value - top;
+		}
+		else if (element_node->computed_properties.top.type == CL_CSSBoxTop::type_auto &&
+			element_node->computed_properties.height.type != CL_CSSBoxHeight::type_auto &&
+			element_node->computed_properties.bottom.type != CL_CSSBoxBottom::type_auto) // rule #4
+		{
+			top = containing_height.value - border.top - border.bottom - padding.top - padding.bottom - margin.top - margin.bottom - height.value - bottom;
+		}
+		else if (element_node->computed_properties.bottom.type == CL_CSSBoxBottom::type_auto &&
+			element_node->computed_properties.top.type != CL_CSSBoxTop::type_auto &&
+			element_node->computed_properties.height.type != CL_CSSBoxHeight::type_auto) // rule #6
+		{
+			bottom = containing_height.value - border.top - border.bottom - padding.top - padding.bottom - margin.top - margin.bottom - height.value - top;
+		}
+	}
+
+
+
+
+	int x = containing_block.left + cl_used_to_actual(left);
+	int y = containing_block.top + cl_used_to_actual(top);
+	set_root_block_position(x, y);
 }
 
 void CL_CSSLayoutTreeNode::layout_shrink_to_fit(CL_GraphicContext &gc, CL_CSSResourceCache *resources)

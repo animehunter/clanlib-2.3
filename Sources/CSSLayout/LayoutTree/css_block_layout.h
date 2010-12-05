@@ -66,5 +66,5 @@ private:
 	bool add_content_margin_top(CL_CSSLayoutCursor &cursor);
 	void prepare_children();
 	void layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy);
-	void layout_absolute_and_fixed(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
+	void layout_absolute_and_fixed_content(CL_GraphicContext &gc, CL_CSSResourceCache *resources, CL_Rect containing_block, const CL_Size &viewport_size);
 };
