@@ -43,7 +43,7 @@ void CL_CSSParserMinHeight::parse(CL_CSSBoxProperties &properties, const CL_Stri
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "inherit")
+		if (equals(token.value, "inherit"))
 			properties.min_height.type = CL_CSSBoxMinHeight::type_inherit;
 	}
 	else if (is_length(token) && pos == tokens.size())

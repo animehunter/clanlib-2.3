@@ -43,13 +43,13 @@ void CL_CSSParserFloat::parse(CL_CSSBoxProperties &properties, const CL_String &
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "left")
+		if (equals(token.value, "left"))
 			properties.float_box.type = CL_CSSBoxFloat::type_left;
-		else if (token.value == "right")
+		else if (equals(token.value, "right"))
 			properties.float_box.type = CL_CSSBoxFloat::type_right;
-		else if (token.value == "none")
+		else if (equals(token.value, "none"))
 			properties.float_box.type = CL_CSSBoxFloat::type_none;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.float_box.type = CL_CSSBoxFloat::type_inherit;
 	}
 }

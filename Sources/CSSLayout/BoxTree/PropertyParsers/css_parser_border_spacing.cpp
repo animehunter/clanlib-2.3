@@ -43,7 +43,7 @@ void CL_CSSParserBorderSpacing::parse(CL_CSSBoxProperties &properties, const CL_
 
 	size_t pos = 0;
 	CL_CSSToken token = next_token(pos, tokens);
-	if (token.type == CL_CSSToken::type_ident && token.value == "inherit" && pos == tokens.size())
+	if (token.type == CL_CSSToken::type_ident && equals(token.value, "inherit") && pos == tokens.size())
 	{
 		properties.border_spacing.type = CL_CSSBoxBorderSpacing::type_inherit;
 		return;

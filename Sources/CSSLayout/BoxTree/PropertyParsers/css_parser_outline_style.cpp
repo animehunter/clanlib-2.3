@@ -43,27 +43,27 @@ void CL_CSSParserOutlineStyle::parse(CL_CSSBoxProperties &properties, const CL_S
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "none")
+		if (equals(token.value, "none"))
 			properties.outline_style.type = CL_CSSBoxOutlineStyle::type_none;
-		else if (token.value == "hidden")
+		else if (equals(token.value, "hidden"))
 			properties.outline_style.type = CL_CSSBoxOutlineStyle::type_hidden;
-		else if (token.value == "dotted")
+		else if (equals(token.value, "dotted"))
 			properties.outline_style.type = CL_CSSBoxOutlineStyle::type_dotted;
-		else if (token.value == "dashed")
+		else if (equals(token.value, "dashed"))
 			properties.outline_style.type = CL_CSSBoxOutlineStyle::type_dashed;
-		else if (token.value == "solid")
+		else if (equals(token.value, "solid"))
 			properties.outline_style.type = CL_CSSBoxOutlineStyle::type_solid;
-		else if (token.value == "double")
+		else if (equals(token.value, "double"))
 			properties.outline_style.type = CL_CSSBoxOutlineStyle::type_double;
-		else if (token.value == "groove")
+		else if (equals(token.value, "groove"))
 			properties.outline_style.type = CL_CSSBoxOutlineStyle::type_groove;
-		else if (token.value == "ridge")
+		else if (equals(token.value, "ridge"))
 			properties.outline_style.type = CL_CSSBoxOutlineStyle::type_ridge;
-		else if (token.value == "inset")
+		else if (equals(token.value, "inset"))
 			properties.outline_style.type = CL_CSSBoxOutlineStyle::type_inset;
-		else if (token.value == "outset")
+		else if (equals(token.value, "outset"))
 			properties.outline_style.type = CL_CSSBoxOutlineStyle::type_outset;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.outline_style.type = CL_CSSBoxOutlineStyle::type_inherit;
 	}
 }

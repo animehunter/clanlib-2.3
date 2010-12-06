@@ -43,17 +43,17 @@ void CL_CSSParserWhiteSpace::parse(CL_CSSBoxProperties &properties, const CL_Str
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "normal")
+		if (equals(token.value, "normal"))
 			properties.white_space.type = CL_CSSBoxWhiteSpace::type_normal;
-		else if (token.value == "pre")
+		else if (equals(token.value, "pre"))
 			properties.white_space.type = CL_CSSBoxWhiteSpace::type_pre;
-		else if (token.value == "nowrap")
+		else if (equals(token.value, "nowrap"))
 			properties.white_space.type = CL_CSSBoxWhiteSpace::type_nowrap;
-		else if (token.value == "pre-wrap")
+		else if (equals(token.value, "pre-wrap"))
 			properties.white_space.type = CL_CSSBoxWhiteSpace::type_pre_wrap;
-		else if (token.value == "pre-line")
+		else if (equals(token.value, "pre-line"))
 			properties.white_space.type = CL_CSSBoxWhiteSpace::type_pre_line;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.white_space.type = CL_CSSBoxWhiteSpace::type_inherit;
 	}
 }

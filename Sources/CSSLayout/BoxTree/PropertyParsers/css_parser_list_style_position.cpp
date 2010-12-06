@@ -43,11 +43,11 @@ void CL_CSSParserListStylePosition::parse(CL_CSSBoxProperties &properties, const
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "inside")
+		if (equals(token.value, "inside"))
 			properties.list_style_position.type = CL_CSSBoxListStylePosition::type_inside;
-		else if (token.value == "outside")
+		else if (equals(token.value, "outside"))
 			properties.list_style_position.type = CL_CSSBoxListStylePosition::type_outside;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.list_style_position.type = CL_CSSBoxListStylePosition::type_inherit;
 	}
 }

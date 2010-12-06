@@ -43,11 +43,11 @@ void CL_CSSParserTextDecoration::parse(CL_CSSBoxProperties &properties, const CL
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "none")
+		if (equals(token.value, "none"))
 		{
 			properties.text_decoration.type = CL_CSSBoxTextDecoration::type_none;
 		}
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 		{
 			properties.text_decoration.type = CL_CSSBoxTextDecoration::type_inherit;
 		}
@@ -61,13 +61,13 @@ void CL_CSSParserTextDecoration::parse(CL_CSSBoxProperties &properties, const CL
 			{
 				if (token.type == CL_CSSToken::type_ident)
 				{
-					if (token.value == "underline")
+					if (equals(token.value, "underline"))
 						underline++;
-					else if (token.value == "overline")
+					else if (equals(token.value, "overline"))
 						overline++;
-					else if (token.value == "line-through")
+					else if (equals(token.value, "line-through"))
 						line_through++;
-					else if (token.value == "blink")
+					else if (equals(token.value, "blink"))
 						blink++;
 				}
 				else

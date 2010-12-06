@@ -43,15 +43,15 @@ void CL_CSSParserOverflow::parse(CL_CSSBoxProperties &properties, const CL_Strin
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "visible")
+		if (equals(token.value, "visible"))
 			properties.overflow.type = CL_CSSBoxOverflow::type_visible;
-		else if (token.value == "hidden")
+		else if (equals(token.value, "hidden"))
 			properties.overflow.type = CL_CSSBoxOverflow::type_hidden;
-		else if (token.value == "scroll")
+		else if (equals(token.value, "scroll"))
 			properties.overflow.type = CL_CSSBoxOverflow::type_scroll;
-		else if (token.value == "auto")
+		else if (equals(token.value, "auto"))
 			properties.overflow.type = CL_CSSBoxOverflow::type_auto;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.overflow.type = CL_CSSBoxOverflow::type_inherit;
 	}
 }

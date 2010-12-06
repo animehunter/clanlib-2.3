@@ -51,7 +51,7 @@ void CL_CSSParserColor::parse(CL_CSSBoxProperties &properties, const CL_String &
 		CL_CSSToken token = next_token(pos, tokens);
 		if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 		{
-			if (token.value == "inherit")
+			if (equals(token.value, "inherit"))
 			{
 				properties.color.type = CL_CSSBoxColor::type_inherit;
 			}

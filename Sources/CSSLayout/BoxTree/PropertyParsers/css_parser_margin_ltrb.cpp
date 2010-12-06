@@ -43,13 +43,13 @@ std::vector<CL_String> CL_CSSParserMarginLTRB::get_names()
 void CL_CSSParserMarginLTRB::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens)
 {
 	CL_CSSBoxMarginWidth *width = 0;
-	if (name == "margin-top")
+	if (equals(name, "margin-top"))
 		width = &properties.margin_width_top;
-	else if (name == "margin-right")
+	else if (equals(name, "margin-right"))
 		width = &properties.margin_width_right;
-	else if (name == "margin-bottom")
+	else if (equals(name, "margin-bottom"))
 		width = &properties.margin_width_bottom;
-	else if (name == "margin-left")
+	else if (equals(name, "margin-left"))
 		width = &properties.margin_width_left;
 
 	if (width)
@@ -58,9 +58,9 @@ void CL_CSSParserMarginLTRB::parse(CL_CSSBoxProperties &properties, const CL_Str
 		CL_CSSToken token = next_token(pos, tokens);
 		if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 		{
-			if (token.value == "auto")
+			if (equals(token.value, "auto"))
 				width->type = CL_CSSBoxMarginWidth::type_auto;
-			else if (token.value == "inherit")
+			else if (equals(token.value, "inherit"))
 				width->type = CL_CSSBoxMarginWidth::type_inherit;
 		}
 		else if (is_length(token) && pos == tokens.size())

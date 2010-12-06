@@ -45,7 +45,7 @@ void CL_CSSParserPadding::parse(CL_CSSBoxProperties &properties, const CL_String
 	for (count = 0; count < 4; count++)
 	{
 		CL_CSSToken token = next_token(pos, tokens);
-		if (token.type == CL_CSSToken::type_ident && token.value == "inherit" && count == 0 && pos == tokens.size())
+		if (token.type == CL_CSSToken::type_ident && equals(token.value, "inherit") && count == 0 && pos == tokens.size())
 		{
 			properties.padding_width_left.type = CL_CSSBoxPaddingWidth::type_inherit;
 			properties.padding_width_top.type = CL_CSSBoxPaddingWidth::type_inherit;

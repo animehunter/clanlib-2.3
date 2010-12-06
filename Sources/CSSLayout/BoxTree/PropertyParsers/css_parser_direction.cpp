@@ -43,11 +43,11 @@ void CL_CSSParserDirection::parse(CL_CSSBoxProperties &properties, const CL_Stri
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "ltr")
+		if (equals(token.value, "ltr"))
 			properties.direction.type = CL_CSSBoxDirection::type_ltr;
-		else if (token.value == "rtl")
+		else if (equals(token.value, "rtl"))
 			properties.direction.type = CL_CSSBoxDirection::type_rtl;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.direction.type = CL_CSSBoxDirection::type_inherit;
 	}
 }

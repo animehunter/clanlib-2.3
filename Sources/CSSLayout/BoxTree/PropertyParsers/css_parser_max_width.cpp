@@ -43,9 +43,9 @@ void CL_CSSParserMaxWidth::parse(CL_CSSBoxProperties &properties, const CL_Strin
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "none")
+		if (equals(token.value, "none"))
 			properties.max_width.type = CL_CSSBoxMaxWidth::type_none;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.max_width.type = CL_CSSBoxMaxWidth::type_inherit;
 	}
 	else if (is_length(token) && pos == tokens.size())

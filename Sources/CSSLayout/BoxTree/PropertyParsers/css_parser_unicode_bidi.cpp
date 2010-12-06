@@ -43,13 +43,13 @@ void CL_CSSParserUnicodeBidi::parse(CL_CSSBoxProperties &properties, const CL_St
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "normal")
+		if (equals(token.value, "normal"))
 			properties.unicode_bidi.type = CL_CSSBoxUnicodeBidi::type_normal;
-		else if (token.value == "embed")
+		else if (equals(token.value, "embed"))
 			properties.unicode_bidi.type = CL_CSSBoxUnicodeBidi::type_embed;
-		else if (token.value == "bidi-override")
+		else if (equals(token.value, "bidi-override"))
 			properties.unicode_bidi.type = CL_CSSBoxUnicodeBidi::type_bidi_override;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.unicode_bidi.type = CL_CSSBoxUnicodeBidi::type_inherit;
 	}
 }

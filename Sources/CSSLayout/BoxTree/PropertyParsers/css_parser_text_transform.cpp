@@ -43,15 +43,15 @@ void CL_CSSParserTextTransform::parse(CL_CSSBoxProperties &properties, const CL_
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "capitalize")
+		if (equals(token.value, "capitalize"))
 			properties.text_transform.type = CL_CSSBoxTextTransform::type_capitalize;
-		else if (token.value == "uppercase")
+		else if (equals(token.value, "uppercase"))
 			properties.text_transform.type = CL_CSSBoxTextTransform::type_uppercase;
-		else if (token.value == "lowercase")
+		else if (equals(token.value, "lowercase"))
 			properties.text_transform.type = CL_CSSBoxTextTransform::type_lowercase;
-		else if (token.value == "none")
+		else if (equals(token.value, "none"))
 			properties.text_transform.type = CL_CSSBoxTextTransform::type_none;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.text_transform.type = CL_CSSBoxTextTransform::type_inherit;
 	}
 }

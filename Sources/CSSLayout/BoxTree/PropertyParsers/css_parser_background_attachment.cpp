@@ -43,11 +43,11 @@ void CL_CSSParserBackgroundAttachment::parse(CL_CSSBoxProperties &properties, co
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "scroll")
+		if (equals(token.value, "scroll"))
 			properties.background_attachment.type = CL_CSSBoxBackgroundAttachment::type_scroll;
-		else if (token.value == "fixed")
+		else if (equals(token.value, "fixed"))
 			properties.background_attachment.type = CL_CSSBoxBackgroundAttachment::type_fixed;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.background_attachment.type = CL_CSSBoxBackgroundAttachment::type_inherit;
 	}
 }

@@ -43,11 +43,11 @@ void CL_CSSParserCaptionSide::parse(CL_CSSBoxProperties &properties, const CL_St
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "top")
+		if (equals(token.value, "top"))
 			properties.caption_side.type = CL_CSSBoxCaptionSide::type_top;
-		else if (token.value == "bottom")
+		else if (equals(token.value, "bottom"))
 			properties.caption_side.type = CL_CSSBoxCaptionSide::type_bottom;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.caption_side.type = CL_CSSBoxCaptionSide::type_inherit;
 	}
 }

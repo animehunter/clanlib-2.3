@@ -43,13 +43,13 @@ std::vector<CL_String> CL_CSSParserPaddingLTRB::get_names()
 void CL_CSSParserPaddingLTRB::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens)
 {
 	CL_CSSBoxPaddingWidth *width = 0;
-	if (name == "padding-top")
+	if (equals(name, "padding-top"))
 		width = &properties.padding_width_top;
-	else if (name == "padding-right")
+	else if (equals(name, "padding-right"))
 		width = &properties.padding_width_right;
-	else if (name == "padding-bottom")
+	else if (equals(name, "padding-bottom"))
 		width = &properties.padding_width_bottom;
-	else if (name == "padding-left")
+	else if (equals(name, "padding-left"))
 		width = &properties.padding_width_left;
 
 	if (width)
@@ -58,7 +58,7 @@ void CL_CSSParserPaddingLTRB::parse(CL_CSSBoxProperties &properties, const CL_St
 		CL_CSSToken token = next_token(pos, tokens);
 		if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 		{
-			if (token.value == "inherit")
+			if (equals(token.value, "inherit"))
 				width->type = CL_CSSBoxPaddingWidth::type_inherit;
 		}
 		else if (is_length(token) && pos == tokens.size())

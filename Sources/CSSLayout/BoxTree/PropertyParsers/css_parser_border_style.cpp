@@ -47,47 +47,47 @@ void CL_CSSParserBorderStyle::parse(CL_CSSBoxProperties &properties, const CL_St
 		CL_CSSToken token = next_token(pos, tokens);
 		if (token.type == CL_CSSToken::type_ident)
 		{
-			if (token.value == "none")
+			if (equals(token.value, "none"))
 			{
 				border_styles[count].type = CL_CSSBoxBorderStyle::type_none;
 			}
-			else if (token.value == "hidden")
+			else if (equals(token.value, "hidden"))
 			{
 				border_styles[count].type = CL_CSSBoxBorderStyle::type_hidden;
 			}
-			else if (token.value == "dotted")
+			else if (equals(token.value, "dotted"))
 			{
 				border_styles[count].type = CL_CSSBoxBorderStyle::type_dotted;
 			}
-			else if (token.value == "dashed")
+			else if (equals(token.value, "dashed"))
 			{
 				border_styles[count].type = CL_CSSBoxBorderStyle::type_dashed;
 			}
-			else if (token.value == "solid")
+			else if (equals(token.value, "solid"))
 			{
 				border_styles[count].type = CL_CSSBoxBorderStyle::type_solid;
 			}
-			else if (token.value == "double")
+			else if (equals(token.value, "double"))
 			{
 				border_styles[count].type = CL_CSSBoxBorderStyle::type_double;
 			}
-			else if (token.value == "groove")
+			else if (equals(token.value, "groove"))
 			{
 				border_styles[count].type = CL_CSSBoxBorderStyle::type_groove;
 			}
-			else if (token.value == "ridge")
+			else if (equals(token.value, "ridge"))
 			{
 				border_styles[count].type = CL_CSSBoxBorderStyle::type_ridge;
 			}
-			else if (token.value == "inset")
+			else if (equals(token.value, "inset"))
 			{
 				border_styles[count].type = CL_CSSBoxBorderStyle::type_inset;
 			}
-			else if (token.value == "outset")
+			else if (equals(token.value, "outset"))
 			{
 				border_styles[count].type = CL_CSSBoxBorderStyle::type_outset;
 			}
-			else if (token.value == "inherit")
+			else if (equals(token.value, "inherit"))
 			{
 				if (count == 0 && pos == tokens.size())
 				{

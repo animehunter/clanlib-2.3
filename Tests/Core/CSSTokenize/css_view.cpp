@@ -43,11 +43,12 @@ CSSView::CSSView(CL_GUIComponent *parent)
 	scrollbar->set_ranges(0, 30000, 12, 800);
 	scrollbar->func_scroll().set(this, &CSSView::on_scroll);
 
-	HTMLPage page("http://www.csszengarden.com/");
+	//HTMLPage page("http://en.wikipedia.org/wiki/ClanLib");
+	//HTMLPage page("http://www.csszengarden.com/");
 	//HTMLPage page("http://www.csszengarden.com/?cssfile=/210/210.css&page=0");
 	//HTMLPage page("http://www.csszengarden.com/?cssfile=/207/207.css&page=0");
 	//HTMLPage page("http://codegrind.net/2010/11/01/clanlib-tutorial-part-4-server-as-a-service/");
-	//HTMLPage page("http://clanlib.org/wiki/Main_Page");
+	HTMLPage page("http://clanlib.org/wiki/Main_Page");
 	//HTMLPage page("http://www.dr.dk/nyheder/");
 	//HTMLPage page("http://politiken.dk/erhverv/ECE1134488/nemid-nedslider-ansatte-i-borgerservice/");
 	//HTMLPage page("http://nyhederne.tv2.dk/");

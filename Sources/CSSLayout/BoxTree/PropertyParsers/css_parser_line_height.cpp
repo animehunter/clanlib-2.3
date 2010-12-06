@@ -43,9 +43,9 @@ void CL_CSSParserLineHeight::parse(CL_CSSBoxProperties &properties, const CL_Str
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "normal")
+		if (equals(token.value, "normal"))
 			properties.line_height.type = CL_CSSBoxLineHeight::type_normal;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.line_height.type = CL_CSSBoxLineHeight::type_inherit;
 	}
 	else if (token.type == CL_CSSToken::type_number && pos == tokens.size())

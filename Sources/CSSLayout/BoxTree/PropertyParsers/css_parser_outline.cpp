@@ -61,79 +61,79 @@ void CL_CSSParserOutline::parse(CL_CSSBoxProperties &properties, const CL_String
 			CL_CSSToken token = next_token(pos, tokens);
 			if (token.type == CL_CSSToken::type_ident)
 			{
-				if (token.value == "inherit" && tokens.size() == 1)
+				if (equals(token.value, "inherit") && tokens.size() == 1)
 				{
 					properties.outline_width.type = CL_CSSBoxOutlineWidth::type_inherit;
 					properties.outline_style.type = CL_CSSBoxOutlineStyle::type_inherit;
 					properties.outline_color.type = CL_CSSBoxOutlineColor::type_inherit;
 					return;
 				}
-				else if (!width_specified && token.value == "thin")
+				else if (!width_specified && equals(token.value, "thin"))
 				{
 					outline_width.type = CL_CSSBoxOutlineWidth::type_thin;
 					width_specified = true;
 				}
-				else if (!width_specified && token.value == "medium")
+				else if (!width_specified && equals(token.value, "medium"))
 				{
 					outline_width.type = CL_CSSBoxOutlineWidth::type_medium;
 					width_specified = true;
 				}
-				else if (!width_specified && token.value == "thick")
+				else if (!width_specified && equals(token.value, "thick"))
 				{
 					outline_width.type = CL_CSSBoxOutlineWidth::type_thick;
 					width_specified = true;
 				}
-				else if (!style_specified && token.value == "none")
+				else if (!style_specified && equals(token.value, "none"))
 				{
 					outline_style.type = CL_CSSBoxOutlineStyle::type_none;
 					style_specified = true;
 				}
-				else if (!style_specified && token.value == "hidden")
+				else if (!style_specified && equals(token.value, "hidden"))
 				{
 					outline_style.type = CL_CSSBoxOutlineStyle::type_hidden;
 					style_specified = true;
 				}
-				else if (!style_specified && token.value == "dotted")
+				else if (!style_specified && equals(token.value, "dotted"))
 				{
 					outline_style.type = CL_CSSBoxOutlineStyle::type_dotted;
 					style_specified = true;
 				}
-				else if (!style_specified && token.value == "dashed")
+				else if (!style_specified && equals(token.value, "dashed"))
 				{
 					outline_style.type = CL_CSSBoxOutlineStyle::type_dashed;
 					style_specified = true;
 				}
-				else if (!style_specified && token.value == "solid")
+				else if (!style_specified && equals(token.value, "solid"))
 				{
 					outline_style.type = CL_CSSBoxOutlineStyle::type_solid;
 					style_specified = true;
 				}
-				else if (!style_specified && token.value == "double")
+				else if (!style_specified && equals(token.value, "double"))
 				{
 					outline_style.type = CL_CSSBoxOutlineStyle::type_double;
 					style_specified = true;
 				}
-				else if (!style_specified && token.value == "groove")
+				else if (!style_specified && equals(token.value, "groove"))
 				{
 					outline_style.type = CL_CSSBoxOutlineStyle::type_groove;
 					style_specified = true;
 				}
-				else if (!style_specified && token.value == "ridge")
+				else if (!style_specified && equals(token.value, "ridge"))
 				{
 					outline_style.type = CL_CSSBoxOutlineStyle::type_ridge;
 					style_specified = true;
 				}
-				else if (!style_specified && token.value == "inset")
+				else if (!style_specified && equals(token.value, "inset"))
 				{
 					outline_style.type = CL_CSSBoxOutlineStyle::type_inset;
 					style_specified = true;
 				}
-				else if (!style_specified && token.value == "outset")
+				else if (!style_specified && equals(token.value, "outset"))
 				{
 					outline_style.type = CL_CSSBoxOutlineStyle::type_outset;
 					style_specified = true;
 				}
-				else if (!color_specified && token.value == "invert")
+				else if (!color_specified && equals(token.value, "invert"))
 				{
 					outline_color.type = CL_CSSBoxOutlineColor::type_invert;
 					color_specified = true;

@@ -43,13 +43,13 @@ void CL_CSSParserFontStyle::parse(CL_CSSBoxProperties &properties, const CL_Stri
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "normal")
+		if (equals(token.value, "normal"))
 			properties.font_style.type = CL_CSSBoxFontStyle::type_normal;
-		else if (token.value == "italic")
+		else if (equals(token.value, "italic"))
 			properties.font_style.type = CL_CSSBoxFontStyle::type_italic;
-		else if (token.value == "oblique")
+		else if (equals(token.value, "oblique"))
 			properties.font_style.type = CL_CSSBoxFontStyle::type_oblique;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.font_style.type = CL_CSSBoxFontStyle::type_inherit;
 	}
 }

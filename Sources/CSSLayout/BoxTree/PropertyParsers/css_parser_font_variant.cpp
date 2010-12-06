@@ -43,11 +43,11 @@ void CL_CSSParserFontVariant::parse(CL_CSSBoxProperties &properties, const CL_St
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "normal")
+		if (equals(token.value, "normal"))
 			properties.font_variant.type = CL_CSSBoxFontVariant::type_normal;
-		else if (token.value == "small-caps")
+		else if (equals(token.value, "small-caps"))
 			properties.font_variant.type = CL_CSSBoxFontVariant::type_small_caps;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.font_variant.type = CL_CSSBoxFontVariant::type_inherit;
 	}
 }

@@ -48,13 +48,13 @@ void CL_CSSParserBackgroundPosition::parse(CL_CSSBoxProperties &properties, cons
 	while (pos != tokens.size())
 	{
 		CL_CSSToken token = next_token(pos, tokens);
-		if (token.type == CL_CSSToken::type_ident && token.value == "inherit" && tokens.size() == 1)
+		if (token.type == CL_CSSToken::type_ident && equals(token.value, "inherit") && tokens.size() == 1)
 		{
 			properties.background_position.type = CL_CSSBoxBackgroundPosition::type_inherit;
 		}
 		else if (token.type == CL_CSSToken::type_ident)
 		{
-			if (!y_specified && token.value == "top")
+			if (!y_specified && equals(token.value, "top"))
 			{
 				position.type_y = CL_CSSBoxBackgroundPosition::type2_top;
 				y_specified = true;
@@ -66,7 +66,7 @@ void CL_CSSParserBackgroundPosition::parse(CL_CSSBoxProperties &properties, cons
 					center_specified = false;
 				}
 			}
-			else if (!y_specified && token.value == "bottom")
+			else if (!y_specified && equals(token.value, "bottom"))
 			{
 				position.type_y = CL_CSSBoxBackgroundPosition::type2_bottom;
 				y_specified = true;
@@ -78,7 +78,7 @@ void CL_CSSParserBackgroundPosition::parse(CL_CSSBoxProperties &properties, cons
 					center_specified = false;
 				}
 			}
-			else if (!x_specified && token.value == "left")
+			else if (!x_specified && equals(token.value, "left"))
 			{
 				position.type_x = CL_CSSBoxBackgroundPosition::type1_left;
 				x_specified = true;
@@ -90,7 +90,7 @@ void CL_CSSParserBackgroundPosition::parse(CL_CSSBoxProperties &properties, cons
 					center_specified = false;
 				}
 			}
-			else if (!x_specified && token.value == "right")
+			else if (!x_specified && equals(token.value, "right"))
 			{
 				position.type_x = CL_CSSBoxBackgroundPosition::type1_right;
 				x_specified = true;
@@ -102,7 +102,7 @@ void CL_CSSParserBackgroundPosition::parse(CL_CSSBoxProperties &properties, cons
 					center_specified = false;
 				}
 			}
-			else if (token.value == "center")
+			else if (equals(token.value, "center"))
 			{
 				if (center_specified)
 				{

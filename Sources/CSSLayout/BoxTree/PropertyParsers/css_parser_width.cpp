@@ -43,11 +43,11 @@ void CL_CSSParserWidth::parse(CL_CSSBoxProperties &properties, const CL_String &
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "auto")
+		if (equals(token.value, "auto"))
 			properties.width.type = CL_CSSBoxWidth::type_auto;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.width.type = CL_CSSBoxWidth::type_inherit;
-		else if (token.value == "-clan-expanding")
+		else if (equals(token.value, "-clan-expanding"))
 			properties.width.type = CL_CSSBoxWidth::type_clan_expanding;
 	}
 	else if (is_length(token) && pos == tokens.size())

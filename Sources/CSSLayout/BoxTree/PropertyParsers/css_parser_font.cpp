@@ -65,12 +65,12 @@ void CL_CSSParserFont::parse(CL_CSSBoxProperties &properties, const CL_String &n
 		if (token.type == CL_CSSToken::type_ident)
 		{
 			if (tokens.size() == 1 &&
-				(token.value == "caption" ||
-				token.value == "icon" ||
-				token.value == "menu" ||
-				token.value == "message-box" ||
-				token.value == "small-caption" ||
-				token.value == "status-bar"))
+				(equals(token.value, "caption") ||
+				equals(token.value, "icon") ||
+				equals(token.value, "menu") ||
+				equals(token.value, "message-box") ||
+				equals(token.value, "small-caption") ||
+				equals(token.value, "status-bar")))
 			{
 				properties.font_style = style;
 				properties.font_variant = variant;
@@ -80,7 +80,7 @@ void CL_CSSParserFont::parse(CL_CSSBoxProperties &properties, const CL_String &n
 				properties.font_family = family;
 				return;
 			}
-			else if (token.value == "inherit" && tokens.size() == 1)
+			else if (equals(token.value, "inherit") && tokens.size() == 1)
 			{
 				properties.font_style.type = CL_CSSBoxFontStyle::type_inherit;
 				properties.font_variant.type = CL_CSSBoxFontVariant::type_inherit;
@@ -90,7 +90,7 @@ void CL_CSSParserFont::parse(CL_CSSBoxProperties &properties, const CL_String &n
 				properties.font_family.type = CL_CSSBoxFontFamily::type_inherit;
 				return;
 			}
-			else if (token.value == "normal") // font-style or font-weight or font-variant
+			else if (equals(token.value, "normal")) // font-style or font-weight or font-variant
 			{
 				int allowed = 3;
 				if (font_style_set)
@@ -102,32 +102,32 @@ void CL_CSSParserFont::parse(CL_CSSBoxProperties &properties, const CL_String &n
 				if (normal_count < allowed)
 					normal_count++;
 			}
-			else if (token.value == "italic" && !font_style_set) // font-style
+			else if (equals(token.value, "italic") && !font_style_set) // font-style
 			{
 				font_style_set = true;
 				style.type = CL_CSSBoxFontStyle::type_italic;
 			}
-			else if (token.value == "oblique" && !font_style_set) // font-style
+			else if (equals(token.value, "oblique") && !font_style_set) // font-style
 			{
 				font_style_set = true;
 				style.type = CL_CSSBoxFontStyle::type_oblique;
 			}
-			else if (token.value == "small-caps" && !font_variant_set) // font-variant
+			else if (equals(token.value, "small-caps") && !font_variant_set) // font-variant
 			{
 				font_style_set = true;
 				variant.type = CL_CSSBoxFontVariant::type_small_caps;
 			}
-			else if (token.value == "bold" && !font_weight_set) // font-weight
+			else if (equals(token.value, "bold") && !font_weight_set) // font-weight
 			{
 				font_weight_set = true;
 				weight.type = CL_CSSBoxFontWeight::type_bold;
 			}
-			else if (token.value == "bolder" && !font_weight_set) // font-weight
+			else if (equals(token.value, "bolder") && !font_weight_set) // font-weight
 			{
 				font_weight_set = true;
 				weight.type = CL_CSSBoxFontWeight::type_bolder;
 			}
-			else if (token.value == "lighter" && !font_weight_set) // font-weight
+			else if (equals(token.value, "lighter") && !font_weight_set) // font-weight
 			{
 				font_weight_set = true;
 				weight.type = CL_CSSBoxFontWeight::type_lighter;
@@ -193,25 +193,25 @@ void CL_CSSParserFont::parse(CL_CSSBoxProperties &properties, const CL_String &n
 
 	if (token.type == CL_CSSToken::type_ident)
 	{
-		if (token.value == "xx-small")
+		if (equals(token.value, "xx-small"))
 			size.type = CL_CSSBoxFontSize::type_xx_small;
-		else if (token.value == "x-small")
+		else if (equals(token.value, "x-small"))
 			size.type = CL_CSSBoxFontSize::type_x_small;
-		else if (token.value == "small")
+		else if (equals(token.value, "small"))
 			size.type = CL_CSSBoxFontSize::type_small;
-		else if (token.value == "medium")
+		else if (equals(token.value, "medium"))
 			size.type = CL_CSSBoxFontSize::type_medium;
-		else if (token.value == "large")
+		else if (equals(token.value, "large"))
 			size.type = CL_CSSBoxFontSize::type_large;
-		else if (token.value == "x-large")
+		else if (equals(token.value, "x-large"))
 			size.type = CL_CSSBoxFontSize::type_x_large;
-		else if (token.value == "xx-large")
+		else if (equals(token.value, "xx-large"))
 			size.type = CL_CSSBoxFontSize::type_xx_large;
-		else if (token.value == "smaller")
+		else if (equals(token.value, "smaller"))
 			size.type = CL_CSSBoxFontSize::type_smaller;
-		else if (token.value == "larger")
+		else if (equals(token.value, "larger"))
 			size.type = CL_CSSBoxFontSize::type_larger;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			size.type = CL_CSSBoxFontSize::type_inherit;
 		else
 			return;
@@ -246,9 +246,9 @@ void CL_CSSParserFont::parse(CL_CSSBoxProperties &properties, const CL_String &n
 
 		if (token.type == CL_CSSToken::type_ident)
 		{
-			if (token.value == "normal")
+			if (equals(token.value, "normal"))
 				line_height.type = CL_CSSBoxLineHeight::type_normal;
-			else if (token.value == "inherit")
+			else if (equals(token.value, "inherit"))
 				line_height.type = CL_CSSBoxLineHeight::type_inherit;
 			else
 				return;
@@ -290,32 +290,32 @@ void CL_CSSParserFont::parse(CL_CSSBoxProperties &properties, const CL_String &n
 		if (token.type == CL_CSSToken::type_ident)
 		{
 			CL_CSSBoxFontFamilyName name;
-			if (token.value == "serif")
+			if (equals(token.value, "serif"))
 			{
 				name.type = CL_CSSBoxFontFamilyName::type_serif;
 			}
-			else if (token.value == "sans-serif")
+			else if (equals(token.value, "sans-serif"))
 			{
 				name.type = CL_CSSBoxFontFamilyName::type_sans_serif;
 			}
-			else if (token.value == "cursive")
+			else if (equals(token.value, "cursive"))
 			{
 				name.type = CL_CSSBoxFontFamilyName::type_cursive;
 			}
-			else if (token.value == "fantasy")
+			else if (equals(token.value, "fantasy"))
 			{
 				name.type = CL_CSSBoxFontFamilyName::type_fantasy;
 			}
-			else if (token.value == "monospace")
+			else if (equals(token.value, "monospace"))
 			{
 				name.type = CL_CSSBoxFontFamilyName::type_monospace;
 			}
-			else if (token.value == "default")
+			else if (equals(token.value, "default"))
 			{
 				// reserved for future use
 				return;
 			}
-			else if (token.value == "initial")
+			else if (equals(token.value, "initial"))
 			{
 				// reserved for future use
 				return;

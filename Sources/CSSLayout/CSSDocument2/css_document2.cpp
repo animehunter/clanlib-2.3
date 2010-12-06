@@ -53,6 +53,7 @@ public:
 	bool read_selector_chain(CL_CSSTokenizer &tokenizer, CL_CSSToken &token, CL_CSSSelectorChain2 &out_selector_chain);
 	static bool read_property_value(CL_CSSTokenizer &tokenizer, CL_CSSToken &token, CL_CSSProperty2 &property);
 	CL_String to_string(const CL_CSSToken &token);
+	static bool equals(const CL_String &s1, const CL_String &s2);
 
 	std::vector<CL_CSSRuleset2> rulesets;
 };
@@ -152,7 +153,7 @@ std::vector<CL_CSSRulesetMatch2> CL_CSSDocument2_Impl::select_rulesets(CL_CSSSel
 		for (size_t j = 0; j < cur_ruleset.selectors.size(); j++)
 		{
 			const CL_CSSSelectorChain2 &chain = cur_ruleset.selectors[j];
-			if (chain.pseudo_element == pseudo_element)
+			if (equals(chain.pseudo_element, pseudo_element))
 			{
 				bool matches = try_match_chain(chain, node, chain.links.size());
 				if (matches)
@@ -237,7 +238,7 @@ bool CL_CSSDocument2_Impl::try_match_chain(const CL_CSSSelectorChain2 &chain, CL
 bool CL_CSSDocument2_Impl::try_match_link(const CL_CSSSelectorLink2 &link, const CL_CSSSelectNode2 *node)
 {
 	bool match = false;
-	if ((link.type == CL_CSSSelectorLink2::type_simple_selector && link.element_name == node->name) ||
+	if ((link.type == CL_CSSSelectorLink2::type_simple_selector && equals(link.element_name, node->name)) ||
 		link.type == CL_CSSSelectorLink2::type_universal_selector)
 	{
 		match = true;
@@ -256,7 +257,7 @@ bool CL_CSSDocument2_Impl::try_match_link(const CL_CSSSelectorLink2 &link, const
 		bool found = false;
 		for (size_t t = 0; t < node->element_classes.size(); t++)
 		{
-			if (link.element_classes[k] == node->element_classes[t])
+			if (equals(link.element_classes[k], node->element_classes[t]))
 			{
 				found = true;
 				break;
@@ -270,7 +271,7 @@ bool CL_CSSDocument2_Impl::try_match_link(const CL_CSSSelectorLink2 &link, const
 		bool found = false;
 		for (size_t t = 0; t < node->pseudo_classes.size(); t++)
 		{
-			if (link.pseudo_classes[k] == node->pseudo_classes[t])
+			if (equals(link.pseudo_classes[k], node->pseudo_classes[t]))
 			{
 				found = true;
 				break;
@@ -285,8 +286,8 @@ bool CL_CSSDocument2_Impl::try_match_link(const CL_CSSSelectorLink2 &link, const
 		for (size_t t = 0; t < node->attributes.size(); t++)
 		{
 			if (link.attribute_selectors[k].type == CL_CSSAttributeSelector2::type_set &&
-				link.attribute_selectors[k].name == node->attributes[t].name &&
-				link.attribute_selectors[k].value == node->attributes[t].value)
+				equals(link.attribute_selectors[k].name, node->attributes[t].name) &&
+				equals(link.attribute_selectors[k].value, node->attributes[t].value))
 			{
 				found = true;
 				break;
@@ -427,8 +428,8 @@ bool CL_CSSDocument2_Impl::read_selector_chain(CL_CSSTokenizer &tokenizer, CL_CS
 				tokenizer.read(token, false);
 				if (token.type == CL_CSSToken::type_ident)
 				{
-					if (token.value == "before" ||
-						token.value == "after")
+					if (equals(token.value, "before") ||
+						equals(token.value, "after"))
 					{
 						// CSS2 pseudo-element
 						out_selector_chain.pseudo_element = token.value;
@@ -587,7 +588,7 @@ bool CL_CSSDocument2_Impl::read_property_value(CL_CSSTokenizer &tokenizer, CL_CS
 	size_t tokens_size = property.get_value_tokens().size();
 	if (tokens_size >= 2 &&
 		property.get_value_tokens()[tokens_size-2].type == CL_CSSToken::type_delim && property.get_value_tokens()[tokens_size-2].value == "!" &&
-		property.get_value_tokens()[tokens_size-1].type == CL_CSSToken::type_ident && property.get_value_tokens()[tokens_size-1].value == "important")
+		property.get_value_tokens()[tokens_size-1].type == CL_CSSToken::type_ident && equals(property.get_value_tokens()[tokens_size-1].value, "important"))
 	{
 		property.set_important(true);
 		property.get_value_tokens().pop_back();
@@ -669,4 +670,9 @@ CL_String CL_CSSDocument2_Impl::to_string(const CL_CSSToken &token)
 	default:
 		return "Unknown";
 	}
+}
+
+bool CL_CSSDocument2_Impl::equals(const CL_String &s1, const CL_String &s2)
+{
+	return CL_StringHelp::compare(s1, s2, true) == 0;
 }

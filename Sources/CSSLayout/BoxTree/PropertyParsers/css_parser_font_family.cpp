@@ -51,32 +51,32 @@ void CL_CSSParserFontFamily::parse(CL_CSSBoxProperties &properties, const CL_Str
 			return;
 
 		CL_CSSBoxFontFamilyName name;
-		if (token.value == "serif")
+		if (equals(token.value, "serif"))
 		{
 			name.type = CL_CSSBoxFontFamilyName::type_serif;
 		}
-		else if (token.value == "sans-serif")
+		else if (equals(token.value, "sans-serif"))
 		{
 			name.type = CL_CSSBoxFontFamilyName::type_sans_serif;
 		}
-		else if (token.value == "cursive")
+		else if (equals(token.value, "cursive"))
 		{
 			name.type = CL_CSSBoxFontFamilyName::type_cursive;
 		}
-		else if (token.value == "fantasy")
+		else if (equals(token.value, "fantasy"))
 		{
 			name.type = CL_CSSBoxFontFamilyName::type_fantasy;
 		}
-		else if (token.value == "monospace")
+		else if (equals(token.value, "monospace"))
 		{
 			name.type = CL_CSSBoxFontFamilyName::type_monospace;
 		}
-		else if (token.value == "default")
+		else if (equals(token.value, "default"))
 		{
 			// reserved for future use
 			return;
 		}
-		else if (token.value == "initial")
+		else if (equals(token.value, "initial"))
 		{
 			// reserved for future use
 			return;

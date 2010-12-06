@@ -43,11 +43,11 @@ void CL_CSSParserBorderCollapse::parse(CL_CSSBoxProperties &properties, const CL
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "collapse")
+		if (equals(token.value, "collapse"))
 			properties.border_collapse.type = CL_CSSBoxBorderCollapse::type_collapse;
-		else if (token.value == "separate")
+		else if (equals(token.value, "separate"))
 			properties.border_collapse.type = CL_CSSBoxBorderCollapse::type_separate;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.border_collapse.type = CL_CSSBoxBorderCollapse::type_inherit;
 	}
 }

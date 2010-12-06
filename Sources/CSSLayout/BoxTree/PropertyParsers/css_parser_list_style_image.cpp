@@ -43,9 +43,9 @@ void CL_CSSParserListStyleImage::parse(CL_CSSBoxProperties &properties, const CL
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "none")
+		if (equals(token.value, "none"))
 			properties.list_style_image.type = CL_CSSBoxListStyleImage::type_none;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.list_style_image.type = CL_CSSBoxListStyleImage::type_inherit;
 	}
 	else if (token.type == CL_CSSToken::type_uri && pos == tokens.size())

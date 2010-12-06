@@ -419,8 +419,11 @@ void CL_CSSTableLayout::apply_non_content(CL_CSSTableSizeGrid &grid)
 			CL_CSSUsedValue border_width_right = 0;
 			for (size_t row = 0; row < rows.size(); row++)
 			{
-				border_width_left = cl_max(border_width_left, columns[col].rows[row]->border.left);
-				border_width_right = cl_max(border_width_right, columns[col].rows[row]->border.right);
+				if (columns[col].rows[row])
+				{
+					border_width_left = cl_max(border_width_left, columns[col].rows[row]->border.left);
+					border_width_right = cl_max(border_width_right, columns[col].rows[row]->border.right);
+				}
 			}
 			grid.apply_separate_border_width(col, border_width_left, border_width_right);
 		}
@@ -431,8 +434,11 @@ void CL_CSSTableLayout::apply_non_content(CL_CSSTableSizeGrid &grid)
 			CL_CSSUsedValue border_height_bottom = 0;
 			for (size_t col = 0; col < columns.size(); col++)
 			{
-				border_height_top = cl_max(border_height_top, columns[col].rows[row]->border.top);
-				border_height_bottom = cl_max(border_height_bottom, columns[col].rows[row]->border.bottom);
+				if (columns[col].rows[row])
+				{
+					border_height_top = cl_max(border_height_top, columns[col].rows[row]->border.top);
+					border_height_bottom = cl_max(border_height_bottom, columns[col].rows[row]->border.bottom);
+				}
 			}
 			grid.apply_separate_border_height(row, border_height_top, border_height_bottom);
 		}
@@ -444,7 +450,8 @@ void CL_CSSTableLayout::apply_non_content(CL_CSSTableSizeGrid &grid)
 			for (size_t row = 0; row < rows.size(); row++)
 			{
 				CL_CSSLayoutTreeNode *cell_node = columns[col].rows[row];
-				grid.apply_collapsed_border(row, col, cell_node->border.left, cell_node->border.top, cell_node->border.right, cell_node->border.bottom);
+				if (cell_node)
+					grid.apply_collapsed_border(row, col, cell_node->border.left, cell_node->border.top, cell_node->border.right, cell_node->border.bottom);
 			}
 		}
 	}
@@ -533,8 +540,11 @@ void CL_CSSTableLayout::layout_cells(CL_GraphicContext & gc, CL_CSSLayoutCursor 
 	{
 		for (size_t col = 0; col < columns.size(); col++)
 		{
-			CL_CSSUsedValue cell_height = columns[col].rows[row]->height.value + columns[col].rows[row]->padding.top + columns[col].rows[row]->padding.bottom;
-			size_grid.apply_height(row, cell_height);
+			if (columns[col].rows[row])
+			{
+				CL_CSSUsedValue cell_height = columns[col].rows[row]->height.value + columns[col].rows[row]->padding.top + columns[col].rows[row]->padding.bottom;
+				size_grid.apply_height(row, cell_height);
+			}
 		}
 	}
 }

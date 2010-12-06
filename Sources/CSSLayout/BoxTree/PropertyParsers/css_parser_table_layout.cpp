@@ -43,11 +43,11 @@ void CL_CSSParserTableLayout::parse(CL_CSSBoxProperties &properties, const CL_St
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "auto")
+		if (equals(token.value, "auto"))
 			properties.table_layout.type = CL_CSSBoxTableLayout::type_auto;
-		else if (token.value == "fixed")
+		else if (equals(token.value, "fixed"))
 			properties.table_layout.type = CL_CSSBoxTableLayout::type_fixed;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.table_layout.type = CL_CSSBoxTableLayout::type_inherit;
 	}
 }

@@ -43,13 +43,13 @@ void CL_CSSParserVisibility::parse(CL_CSSBoxProperties &properties, const CL_Str
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "visible")
+		if (equals(token.value, "visible"))
 			properties.visibility.type = CL_CSSBoxVisibility::type_visible;
-		else if (token.value == "hidden")
+		else if (equals(token.value, "hidden"))
 			properties.visibility.type = CL_CSSBoxVisibility::type_hidden;
-		else if (token.value == "collapse")
+		else if (equals(token.value, "collapse"))
 			properties.visibility.type = CL_CSSBoxVisibility::type_collapse;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.visibility.type = CL_CSSBoxVisibility::type_inherit;
 	}
 }

@@ -41,7 +41,7 @@ void CL_CSSParserOrphans::parse(CL_CSSBoxProperties &properties, const CL_String
 {
 	size_t pos = 0;
 	CL_CSSToken token = next_token(pos, tokens);
-	if (token.type == CL_CSSToken::type_ident && pos == tokens.size() && token.value == "inherit")
+	if (token.type == CL_CSSToken::type_ident && pos == tokens.size() && equals(token.value, "inherit"))
 	{
 		properties.orphans.type = CL_CSSBoxOrphans::type_inherit;
 	}

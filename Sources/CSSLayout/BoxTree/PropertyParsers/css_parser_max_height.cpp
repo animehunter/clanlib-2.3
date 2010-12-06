@@ -43,9 +43,9 @@ void CL_CSSParserMaxHeight::parse(CL_CSSBoxProperties &properties, const CL_Stri
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "none")
+		if (equals(token.value, "none"))
 			properties.max_height.type = CL_CSSBoxMaxHeight::type_none;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.max_height.type = CL_CSSBoxMaxHeight::type_inherit;
 	}
 	else if (is_length(token) && pos == tokens.size())

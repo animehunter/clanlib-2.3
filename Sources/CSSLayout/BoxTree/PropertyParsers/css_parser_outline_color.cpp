@@ -51,11 +51,11 @@ void CL_CSSParserOutlineColor::parse(CL_CSSBoxProperties &properties, const CL_S
 		CL_CSSToken token = next_token(pos, tokens);
 		if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 		{
-			if (token.value == "invert")
+			if (equals(token.value, "invert"))
 			{
 				properties.outline_color.type = CL_CSSBoxOutlineColor::type_invert;
 			}
-			else if (token.value == "inherit")
+			else if (equals(token.value, "inherit"))
 			{
 				properties.outline_color.type = CL_CSSBoxOutlineColor::type_inherit;
 			}

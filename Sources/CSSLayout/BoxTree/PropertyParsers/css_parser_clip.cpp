@@ -43,16 +43,16 @@ void CL_CSSParserClip::parse(CL_CSSBoxProperties &properties, const CL_String &n
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "auto")
+		if (equals(token.value, "auto"))
 		{
 			properties.clip.type = CL_CSSBoxClip::type_auto;
 		}
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 		{
 			properties.clip.type = CL_CSSBoxClip::type_inherit;
 		}
 	}
-	else if (token.type == CL_CSSToken::type_function && token.value == "rect")
+	else if (token.type == CL_CSSToken::type_function && equals(token.value, "rect"))
 	{
 		CL_CSSBoxLength rect[4];
 		bool rect_auto[4] = { false, false, false, false };
@@ -74,7 +74,7 @@ void CL_CSSParserClip::parse(CL_CSSBoxProperties &properties, const CL_String &n
 				if (!parse_length(token, rect[dir]))
 					return;
 			}
-			else if (token.type == CL_CSSToken::type_ident && token.value == "auto")
+			else if (token.type == CL_CSSToken::type_ident && equals(token.value, "auto"))
 			{
 				rect_auto[dir] = true;
 			}

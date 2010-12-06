@@ -43,17 +43,17 @@ void CL_CSSParserBackgroundRepeat::parse(CL_CSSBoxProperties &properties, const 
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "repeat")
+		if (equals(token.value, "repeat"))
 			properties.background_repeat.type = CL_CSSBoxBackgroundRepeat::type_repeat;
-		else if (token.value == "repeat-x")
+		else if (equals(token.value, "repeat-x"))
 			properties.background_repeat.type = CL_CSSBoxBackgroundRepeat::type_repeat_x;
-		else if (token.value == "repeat-y")
+		else if (equals(token.value, "repeat-y"))
 			properties.background_repeat.type = CL_CSSBoxBackgroundRepeat::type_repeat_y;
-		else if (token.value == "no-repeat")
+		else if (equals(token.value, "no-repeat"))
 			properties.background_repeat.type = CL_CSSBoxBackgroundRepeat::type_no_repeat;
-		else if (token.value == "-clan-stretch")
+		else if (equals(token.value, "-clan-stretch"))
 			properties.background_repeat.type = CL_CSSBoxBackgroundRepeat::type_clan_stretch;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.background_repeat.type = CL_CSSBoxBackgroundRepeat::type_inherit;
 	}
 }

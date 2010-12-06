@@ -43,15 +43,15 @@ void CL_CSSParserClear::parse(CL_CSSBoxProperties &properties, const CL_String &
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "none")
+		if (equals(token.value, "none"))
 			properties.clear.type = CL_CSSBoxClear::type_none;
-		else if (token.value == "left")
+		else if (equals(token.value, "left"))
 			properties.clear.type = CL_CSSBoxClear::type_left;
-		else if (token.value == "right")
+		else if (equals(token.value, "right"))
 			properties.clear.type = CL_CSSBoxClear::type_right;
-		else if (token.value == "both")
+		else if (equals(token.value, "both"))
 			properties.clear.type = CL_CSSBoxClear::type_both;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.clear.type = CL_CSSBoxClear::type_inherit;
 	}
 }

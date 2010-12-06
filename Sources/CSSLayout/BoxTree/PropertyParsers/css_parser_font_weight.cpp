@@ -43,15 +43,15 @@ void CL_CSSParserFontWeight::parse(CL_CSSBoxProperties &properties, const CL_Str
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "normal")
+		if (equals(token.value, "normal"))
 			properties.font_weight.type = CL_CSSBoxFontWeight::type_normal;
-		else if (token.value == "bold")
+		else if (equals(token.value, "bold"))
 			properties.font_weight.type = CL_CSSBoxFontWeight::type_bold;
-		else if (token.value == "bolder")
+		else if (equals(token.value, "bolder"))
 			properties.font_weight.type = CL_CSSBoxFontWeight::type_bolder;
-		else if (token.value == "lighter")
+		else if (equals(token.value, "lighter"))
 			properties.font_weight.type = CL_CSSBoxFontWeight::type_lighter;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.font_weight.type = CL_CSSBoxFontWeight::type_inherit;
 	}
 	else if (token.type == CL_CSSToken::type_number && pos == tokens.size())

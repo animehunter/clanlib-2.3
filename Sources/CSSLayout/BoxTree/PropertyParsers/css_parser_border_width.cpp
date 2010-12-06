@@ -47,19 +47,19 @@ void CL_CSSParserBorderWidth::parse(CL_CSSBoxProperties &properties, const CL_St
 		CL_CSSToken token = next_token(pos, tokens);
 		if (token.type == CL_CSSToken::type_ident)
 		{
-			if (token.value == "thin")
+			if (equals(token.value, "thin"))
 			{
 				border_widths[count].type = CL_CSSBoxBorderWidth::type_thin;
 			}
-			else if (token.value == "medium")
+			else if (equals(token.value, "medium"))
 			{
 				border_widths[count].type = CL_CSSBoxBorderWidth::type_medium;
 			}
-			else if (token.value == "thick")
+			else if (equals(token.value, "thick"))
 			{
 				border_widths[count].type = CL_CSSBoxBorderWidth::type_thick;
 			}
-			else if (token.value == "inherit" && count == 0 && pos == tokens.size())
+			else if (equals(token.value, "inherit") && count == 0 && pos == tokens.size())
 			{
 				properties.border_width_left.type = CL_CSSBoxBorderWidth::type_inherit;
 				properties.border_width_top.type = CL_CSSBoxBorderWidth::type_inherit;

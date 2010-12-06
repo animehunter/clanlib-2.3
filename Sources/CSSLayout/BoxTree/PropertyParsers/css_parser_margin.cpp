@@ -45,11 +45,11 @@ void CL_CSSParserMargin::parse(CL_CSSBoxProperties &properties, const CL_String 
 	for (count = 0; count < 4; count++)
 	{
 		CL_CSSToken token = next_token(pos, tokens);
-		if (token.type == CL_CSSToken::type_ident && token.value == "auto")
+		if (token.type == CL_CSSToken::type_ident && equals(token.value, "auto"))
 		{
 			margin_widths[count].type = CL_CSSBoxMarginWidth::type_auto;
 		}
-		else if (token.type == CL_CSSToken::type_ident && token.value == "inherit" && count == 0 && pos == tokens.size())
+		else if (token.type == CL_CSSToken::type_ident && equals(token.value, "inherit") && count == 0 && pos == tokens.size())
 		{
 			properties.margin_width_left.type = CL_CSSBoxMarginWidth::type_inherit;
 			properties.margin_width_top.type = CL_CSSBoxMarginWidth::type_inherit;
@@ -57,7 +57,7 @@ void CL_CSSParserMargin::parse(CL_CSSBoxProperties &properties, const CL_String 
 			properties.margin_width_bottom.type = CL_CSSBoxMarginWidth::type_inherit;
 			return;
 		}
-		else if (token.type == CL_CSSToken::type_number && token.value == "0")
+		else if (token.type == CL_CSSToken::type_number && equals(token.value, "0"))
 		{
 			margin_widths[count].type = CL_CSSBoxMarginWidth::type_length;
 			margin_widths[count].length = CL_CSSBoxLength(0.0f, CL_CSSBoxLength::type_px);

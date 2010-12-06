@@ -43,23 +43,23 @@ void CL_CSSParserVerticalAlign::parse(CL_CSSBoxProperties &properties, const CL_
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "baseline")
+		if (equals(token.value, "baseline"))
 			properties.vertical_align.type = CL_CSSBoxVerticalAlign::type_baseline;
-		else if (token.value == "sub")
+		else if (equals(token.value, "sub"))
 			properties.vertical_align.type = CL_CSSBoxVerticalAlign::type_sub;
-		else if (token.value == "super")
+		else if (equals(token.value, "super"))
 			properties.vertical_align.type = CL_CSSBoxVerticalAlign::type_super;
-		else if (token.value == "top")
+		else if (equals(token.value, "top"))
 			properties.vertical_align.type = CL_CSSBoxVerticalAlign::type_top;
-		else if (token.value == "text-top")
+		else if (equals(token.value, "text-top"))
 			properties.vertical_align.type = CL_CSSBoxVerticalAlign::type_text_top;
-		else if (token.value == "middle")
+		else if (equals(token.value, "middle"))
 			properties.vertical_align.type = CL_CSSBoxVerticalAlign::type_middle;
-		else if (token.value == "bottom")
+		else if (equals(token.value, "bottom"))
 			properties.vertical_align.type = CL_CSSBoxVerticalAlign::type_bottom;
-		else if (token.value == "text-bottom")
+		else if (equals(token.value, "text-bottom"))
 			properties.vertical_align.type = CL_CSSBoxVerticalAlign::type_text_bottom;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.vertical_align.type = CL_CSSBoxVerticalAlign::type_inherit;
 	}
 	else if (is_length(token) && pos == tokens.size())

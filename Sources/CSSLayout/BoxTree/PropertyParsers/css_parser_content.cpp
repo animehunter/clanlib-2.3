@@ -43,23 +43,23 @@ void CL_CSSParserContent::parse(CL_CSSBoxProperties &properties, const CL_String
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "none")
+		if (equals(token.value, "none"))
 		{
 			properties.content.type = CL_CSSBoxContent::type_none;
 		}
-		else if (token.value == "normal")
+		else if (equals(token.value, "normal"))
 		{
 			properties.content.type = CL_CSSBoxContent::type_normal;
 		}
-		else if (token.value == "open-quote")
+		else if (equals(token.value, "open-quote"))
 		{
 			properties.content.type = CL_CSSBoxContent::type_open_quote;
 		}
-		else if (token.value == "close-quote")
+		else if (equals(token.value, "close-quote"))
 		{
 			properties.content.type = CL_CSSBoxContent::type_close_quote;
 		}
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 		{
 			properties.content.type = CL_CSSBoxContent::type_inherit;
 		}
@@ -76,15 +76,15 @@ void CL_CSSParserContent::parse(CL_CSSBoxProperties &properties, const CL_String
 	}
 	else if (token.type == CL_CSSToken::type_function)
 	{
-		if (token.value == "counter")
+		if (equals(token.value, "counter"))
 		{
 			//properties.content.type = CSSBoxContent::type_counter;
 		}
-		else if (token.value == "counters")
+		else if (equals(token.value, "counters"))
 		{
 			//properties.content.type = CSSBoxContent::type_counters;
 		}
-		else if (token.value == "attr")
+		else if (equals(token.value, "attr"))
 		{
 			//properties.content.type = CSSBoxContent::type_attr;
 		}

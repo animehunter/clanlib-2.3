@@ -43,9 +43,9 @@ void CL_CSSParserBottom::parse(CL_CSSBoxProperties &properties, const CL_String 
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "auto")
+		if (equals(token.value, "auto"))
 			properties.bottom.type = CL_CSSBoxBottom::type_auto;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.bottom.type = CL_CSSBoxBottom::type_inherit;
 	}
 	else if (is_length(token) && pos == tokens.size())

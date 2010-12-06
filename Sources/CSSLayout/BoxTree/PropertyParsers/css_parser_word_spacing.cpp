@@ -43,9 +43,9 @@ void CL_CSSParserWordSpacing::parse(CL_CSSBoxProperties &properties, const CL_St
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "normal")
+		if (equals(token.value, "normal"))
 			properties.word_spacing.type = CL_CSSBoxWordSpacing::type_normal;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.word_spacing.type = CL_CSSBoxWordSpacing::type_inherit;
 	}
 	else if (is_length(token) && pos == tokens.size())

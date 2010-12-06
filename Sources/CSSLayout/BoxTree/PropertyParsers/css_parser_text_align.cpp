@@ -43,15 +43,15 @@ void CL_CSSParserTextAlign::parse(CL_CSSBoxProperties &properties, const CL_Stri
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "left")
+		if (equals(token.value, "left"))
 			properties.text_align.type = CL_CSSBoxTextAlign::type_left;
-		else if (token.value == "right")
+		else if (equals(token.value, "right"))
 			properties.text_align.type = CL_CSSBoxTextAlign::type_right;
-		else if (token.value == "center")
+		else if (equals(token.value, "center"))
 			properties.text_align.type = CL_CSSBoxTextAlign::type_center;
-		else if (token.value == "justify")
+		else if (equals(token.value, "justify"))
 			properties.text_align.type = CL_CSSBoxTextAlign::type_justify;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.text_align.type = CL_CSSBoxTextAlign::type_inherit;
 	}
 }

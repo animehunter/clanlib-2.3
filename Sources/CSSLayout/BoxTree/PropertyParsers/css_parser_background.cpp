@@ -68,7 +68,7 @@ void CL_CSSParserBackground::parse(CL_CSSBoxProperties &properties, const CL_Str
 		else
 		{
 			CL_CSSToken token = next_token(pos, tokens);
-			if (token.type == CL_CSSToken::type_ident && token.value == "inherit" && tokens.size() == 1)
+			if (token.type == CL_CSSToken::type_ident && equals(token.value, "inherit") && tokens.size() == 1)
 			{
 				properties.background_color.type = CL_CSSBoxBackgroundColor::type_inherit;
 				properties.background_image.type = CL_CSSBoxBackgroundImage::type_inherit;
@@ -79,52 +79,52 @@ void CL_CSSParserBackground::parse(CL_CSSBoxProperties &properties, const CL_Str
 			}
 			else if (token.type == CL_CSSToken::type_ident)
 			{
-				if (!color_specified && token.value == "transparent")
+				if (!color_specified && equals(token.value, "transparent"))
 				{
 					bgcolor.type = CL_CSSBoxBackgroundColor::type_transparent;
 					color_specified = true;
 				}
-				else if (!image_specified && token.value == "none")
+				else if (!image_specified && equals(token.value, "none"))
 				{
 					bgimage.type = CL_CSSBoxBackgroundImage::type_none;
 					image_specified = true;
 				}
-				else if (!repeat_specified && token.value == "repeat")
+				else if (!repeat_specified && equals(token.value, "repeat"))
 				{
 					bgrepeat.type = CL_CSSBoxBackgroundRepeat::type_repeat;
 					repeat_specified = true;
 				}
-				else if (!repeat_specified && token.value == "repeat-x")
+				else if (!repeat_specified && equals(token.value, "repeat-x"))
 				{
 					bgrepeat.type = CL_CSSBoxBackgroundRepeat::type_repeat_x;
 					repeat_specified = true;
 				}
-				else if (!repeat_specified && token.value == "repeat-y")
+				else if (!repeat_specified && equals(token.value, "repeat-y"))
 				{
 					bgrepeat.type = CL_CSSBoxBackgroundRepeat::type_repeat_y;
 					repeat_specified = true;
 				}
-				else if (!repeat_specified && token.value == "no-repeat")
+				else if (!repeat_specified && equals(token.value, "no-repeat"))
 				{
 					bgrepeat.type = CL_CSSBoxBackgroundRepeat::type_no_repeat;
 					repeat_specified = true;
 				}
-				else if (!repeat_specified && token.value == "-clan-stretch")
+				else if (!repeat_specified && equals(token.value, "-clan-stretch"))
 				{
 					bgrepeat.type = CL_CSSBoxBackgroundRepeat::type_clan_stretch;
 					repeat_specified = true;
 				}
-				else if (!attachment_specified && token.value == "scroll")
+				else if (!attachment_specified && equals(token.value, "scroll"))
 				{
 					bgattachment.type = CL_CSSBoxBackgroundAttachment::type_scroll;
 					attachment_specified = true;
 				}
-				else if (!attachment_specified && token.value == "fixed")
+				else if (!attachment_specified && equals(token.value, "fixed"))
 				{
 					bgattachment.type = CL_CSSBoxBackgroundAttachment::type_fixed;
 					attachment_specified = true;
 				}
-				else if (!y_specified && token.value == "top")
+				else if (!y_specified && equals(token.value, "top"))
 				{
 					bgposition.type_y = CL_CSSBoxBackgroundPosition::type2_top;
 					y_specified = true;
@@ -136,7 +136,7 @@ void CL_CSSParserBackground::parse(CL_CSSBoxProperties &properties, const CL_Str
 						center_specified = false;
 					}
 				}
-				else if (!y_specified && token.value == "bottom")
+				else if (!y_specified && equals(token.value, "bottom"))
 				{
 					bgposition.type_y = CL_CSSBoxBackgroundPosition::type2_bottom;
 					y_specified = true;
@@ -148,7 +148,7 @@ void CL_CSSParserBackground::parse(CL_CSSBoxProperties &properties, const CL_Str
 						center_specified = false;
 					}
 				}
-				else if (!x_specified && token.value == "left")
+				else if (!x_specified && equals(token.value, "left"))
 				{
 					bgposition.type_x = CL_CSSBoxBackgroundPosition::type1_left;
 					x_specified = true;
@@ -160,7 +160,7 @@ void CL_CSSParserBackground::parse(CL_CSSBoxProperties &properties, const CL_Str
 						center_specified = false;
 					}
 				}
-				else if (!x_specified && token.value == "right")
+				else if (!x_specified && equals(token.value, "right"))
 				{
 					bgposition.type_x = CL_CSSBoxBackgroundPosition::type1_right;
 					x_specified = true;
@@ -172,7 +172,7 @@ void CL_CSSParserBackground::parse(CL_CSSBoxProperties &properties, const CL_Str
 						center_specified = false;
 					}
 				}
-				else if (token.value == "center")
+				else if (equals(token.value, "center"))
 				{
 					if (center_specified)
 					{

@@ -43,17 +43,17 @@ void CL_CSSParserPageBreakBefore::parse(CL_CSSBoxProperties &properties, const C
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "auto")
+		if (equals(token.value, "auto"))
 			properties.page_break_before.type = CL_CSSBoxPageBreakBefore::type_auto;
-		else if (token.value == "always")
+		else if (equals(token.value, "always"))
 			properties.page_break_before.type = CL_CSSBoxPageBreakBefore::type_always;
-		else if (token.value == "avoid")
+		else if (equals(token.value, "avoid"))
 			properties.page_break_before.type = CL_CSSBoxPageBreakBefore::type_avoid;
-		else if (token.value == "left")
+		else if (equals(token.value, "left"))
 			properties.page_break_before.type = CL_CSSBoxPageBreakBefore::type_left;
-		else if (token.value == "right")
+		else if (equals(token.value, "right"))
 			properties.page_break_before.type = CL_CSSBoxPageBreakBefore::type_right;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.page_break_before.type = CL_CSSBoxPageBreakBefore::type_inherit;
 	}
 }

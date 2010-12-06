@@ -43,9 +43,9 @@ void CL_CSSParserLetterSpacing::parse(CL_CSSBoxProperties &properties, const CL_
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "normal")
+		if (equals(token.value, "normal"))
 			properties.letter_spacing.type = CL_CSSBoxLetterSpacing::type_normal;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.letter_spacing.type = CL_CSSBoxLetterSpacing::type_inherit;
 	}
 	else if (is_length(token) && pos == tokens.size())

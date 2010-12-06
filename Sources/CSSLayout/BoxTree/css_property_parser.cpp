@@ -62,42 +62,42 @@ bool CL_CSSPropertyParser::parse_length(const CL_CSSToken &token, CL_CSSBoxLengt
 {
 	if (token.type == CL_CSSToken::type_dimension)
 	{
-		if (token.dimension == "px")
+		if (equals(token.dimension, "px"))
 		{
 			out_length = CL_CSSBoxLength(CL_StringHelp::text_to_float(token.value), CL_CSSBoxLength::type_px);
 			return true;
 		}
-		else if (token.dimension == "em")
+		else if (equals(token.dimension, "em"))
 		{
 			out_length = CL_CSSBoxLength(CL_StringHelp::text_to_float(token.value), CL_CSSBoxLength::type_em);
 			return true;
 		}
-		else if (token.dimension == "pt")
+		else if (equals(token.dimension, "pt"))
 		{
 			out_length = CL_CSSBoxLength(CL_StringHelp::text_to_float(token.value), CL_CSSBoxLength::type_pt);
 			return true;
 		}
-		else if (token.dimension == "mm")
+		else if (equals(token.dimension, "mm"))
 		{
 			out_length = CL_CSSBoxLength(CL_StringHelp::text_to_float(token.value), CL_CSSBoxLength::type_mm);
 			return true;
 		}
-		else if (token.dimension == "cm")
+		else if (equals(token.dimension, "cm"))
 		{
 			out_length = CL_CSSBoxLength(CL_StringHelp::text_to_float(token.value), CL_CSSBoxLength::type_cm);
 			return true;
 		}
-		else if (token.dimension == "in")
+		else if (equals(token.dimension, "in"))
 		{
 			out_length = CL_CSSBoxLength(CL_StringHelp::text_to_float(token.value), CL_CSSBoxLength::type_in);
 			return true;
 		}
-		else if (token.dimension == "pc")
+		else if (equals(token.dimension, "pc"))
 		{
 			out_length = CL_CSSBoxLength(CL_StringHelp::text_to_float(token.value), CL_CSSBoxLength::type_pc);
 			return true;
 		}
-		else if (token.dimension == "ex")
+		else if (equals(token.dimension, "ex"))
 		{
 			out_length = CL_CSSBoxLength(CL_StringHelp::text_to_float(token.value), CL_CSSBoxLength::type_ex);
 			return true;
@@ -139,7 +139,7 @@ bool CL_CSSPropertyParser::parse_color(const std::vector<CL_CSSToken> &tokens, s
 	{
 		for (int i = 0; colors[i].name != 0; i++)
 		{
-			if (token.value == colors[i].name)
+			if (equals(token.value, colors[i].name))
 			{
 				out_color = CL_Colorf(
 					(colors[i].color>>16)/255.0f,
@@ -152,7 +152,7 @@ bool CL_CSSPropertyParser::parse_color(const std::vector<CL_CSSToken> &tokens, s
 			}
 		}
 	}
-	else if (token.type == CL_CSSToken::type_function && token.value == "rgb")
+	else if (token.type == CL_CSSToken::type_function && equals(token.value, "rgb"))
 	{
 		int color[3] = { 0, 0, 0 };
 		for (int channel = 0; channel < 3; channel++)
@@ -192,7 +192,7 @@ bool CL_CSSPropertyParser::parse_color(const std::vector<CL_CSSToken> &tokens, s
 			return true;
 		}
 	}
-	else if (token.type == CL_CSSToken::type_function && token.value == "rgba")
+	else if (token.type == CL_CSSToken::type_function && equals(token.value, "rgba"))
 	{
 		int color[4] = { 0, 0, 0, 0 };
 		for (int channel = 0; channel < 4; channel++)
@@ -366,3 +366,8 @@ CL_CSSPropertyParser::ColorType CL_CSSPropertyParser::colors[] =
 	"gray",   0x808080,
 	0, 0
 };
+
+bool CL_CSSPropertyParser::equals(const CL_String &s1, const CL_String &s2)
+{
+	return CL_StringHelp::compare(s1, s2, true) == 0;
+}

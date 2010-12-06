@@ -61,7 +61,7 @@ void CL_CSSParserBorder::parse(CL_CSSBoxProperties &properties, const CL_String 
 			CL_CSSToken token = next_token(pos, tokens);
 			if (token.type == CL_CSSToken::type_ident)
 			{
-				if (token.value == "inherit" && tokens.size() == 1)
+				if (equals(token.value, "inherit") && tokens.size() == 1)
 				{
 					properties.border_width_left.type = CL_CSSBoxBorderWidth::type_inherit;
 					properties.border_width_right.type = CL_CSSBoxBorderWidth::type_inherit;
@@ -77,72 +77,72 @@ void CL_CSSParserBorder::parse(CL_CSSBoxProperties &properties, const CL_String 
 					properties.border_color_bottom.type = CL_CSSBoxBorderColor::type_inherit;
 					return;
 				}
-				else if (!width_specified && token.value == "thin")
+				else if (!width_specified && equals(token.value, "thin"))
 				{
 					border_width.type = CL_CSSBoxBorderWidth::type_thin;
 					width_specified = true;
 				}
-				else if (!width_specified && token.value == "medium")
+				else if (!width_specified && equals(token.value, "medium"))
 				{
 					border_width.type = CL_CSSBoxBorderWidth::type_medium;
 					width_specified = true;
 				}
-				else if (!width_specified && token.value == "thick")
+				else if (!width_specified && equals(token.value, "thick"))
 				{
 					border_width.type = CL_CSSBoxBorderWidth::type_thick;
 					width_specified = true;
 				}
-				else if (!style_specified && token.value == "none")
+				else if (!style_specified && equals(token.value, "none"))
 				{
 					border_style.type = CL_CSSBoxBorderStyle::type_none;
 					style_specified = true;
 				}
-				else if (!style_specified && token.value == "hidden")
+				else if (!style_specified && equals(token.value, "hidden"))
 				{
 					border_style.type = CL_CSSBoxBorderStyle::type_hidden;
 					style_specified = true;
 				}
-				else if (!style_specified && token.value == "dotted")
+				else if (!style_specified && equals(token.value, "dotted"))
 				{
 					border_style.type = CL_CSSBoxBorderStyle::type_dotted;
 					style_specified = true;
 				}
-				else if (!style_specified && token.value == "dashed")
+				else if (!style_specified && equals(token.value, "dashed"))
 				{
 					border_style.type = CL_CSSBoxBorderStyle::type_dashed;
 					style_specified = true;
 				}
-				else if (!style_specified && token.value == "solid")
+				else if (!style_specified && equals(token.value, "solid"))
 				{
 					border_style.type = CL_CSSBoxBorderStyle::type_solid;
 					style_specified = true;
 				}
-				else if (!style_specified && token.value == "double")
+				else if (!style_specified && equals(token.value, "double"))
 				{
 					border_style.type = CL_CSSBoxBorderStyle::type_double;
 					style_specified = true;
 				}
-				else if (!style_specified && token.value == "groove")
+				else if (!style_specified && equals(token.value, "groove"))
 				{
 					border_style.type = CL_CSSBoxBorderStyle::type_groove;
 					style_specified = true;
 				}
-				else if (!style_specified && token.value == "ridge")
+				else if (!style_specified && equals(token.value, "ridge"))
 				{
 					border_style.type = CL_CSSBoxBorderStyle::type_ridge;
 					style_specified = true;
 				}
-				else if (!style_specified && token.value == "inset")
+				else if (!style_specified && equals(token.value, "inset"))
 				{
 					border_style.type = CL_CSSBoxBorderStyle::type_inset;
 					style_specified = true;
 				}
-				else if (!style_specified && token.value == "outset")
+				else if (!style_specified && equals(token.value, "outset"))
 				{
 					border_style.type = CL_CSSBoxBorderStyle::type_outset;
 					style_specified = true;
 				}
-				else if (!color_specified && token.value == "transparent")
+				else if (!color_specified && equals(token.value, "transparent"))
 				{
 					border_color.type = CL_CSSBoxBorderColor::type_transparent;
 					color_specified = true;

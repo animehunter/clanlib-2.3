@@ -43,11 +43,11 @@ void CL_CSSParserEmptyCells::parse(CL_CSSBoxProperties &properties, const CL_Str
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "show")
+		if (equals(token.value, "show"))
 			properties.empty_cells.type = CL_CSSBoxEmptyCells::type_show;
-		else if (token.value == "hide")
+		else if (equals(token.value, "hide"))
 			properties.empty_cells.type = CL_CSSBoxEmptyCells::type_hide;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.empty_cells.type = CL_CSSBoxEmptyCells::type_inherit;
 	}
 }

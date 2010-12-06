@@ -43,15 +43,15 @@ void CL_CSSParserPosition::parse(CL_CSSBoxProperties &properties, const CL_Strin
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "static")
+		if (equals(token.value, "static"))
 			properties.position.type = CL_CSSBoxPosition::type_static;
-		else if (token.value == "relative")
+		else if (equals(token.value, "relative"))
 			properties.position.type = CL_CSSBoxPosition::type_relative;
-		else if (token.value == "absolute")
+		else if (equals(token.value, "absolute"))
 			properties.position.type = CL_CSSBoxPosition::type_absolute;
-		else if (token.value == "fixed")
+		else if (equals(token.value, "fixed"))
 			properties.position.type = CL_CSSBoxPosition::type_fixed;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.position.type = CL_CSSBoxPosition::type_inherit;
 	}
 }

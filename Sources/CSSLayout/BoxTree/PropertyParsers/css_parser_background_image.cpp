@@ -43,9 +43,9 @@ void CL_CSSParserBackgroundImage::parse(CL_CSSBoxProperties &properties, const C
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "none")
+		if (equals(token.value, "none"))
 			properties.background_image.type = CL_CSSBoxBackgroundImage::type_none;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.background_image.type = CL_CSSBoxBackgroundImage::type_inherit;
 	}
 	else if (token.type == CL_CSSToken::type_uri && pos == tokens.size())

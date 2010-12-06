@@ -43,11 +43,11 @@ void CL_CSSParserPageBreakInside::parse(CL_CSSBoxProperties &properties, const C
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "auto")
+		if (equals(token.value, "auto"))
 			properties.page_break_inside.type = CL_CSSBoxPageBreakInside::type_auto;
-		else if (token.value == "avoid")
+		else if (equals(token.value, "avoid"))
 			properties.page_break_inside.type = CL_CSSBoxPageBreakInside::type_avoid;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.page_break_inside.type = CL_CSSBoxPageBreakInside::type_inherit;
 	}
 }

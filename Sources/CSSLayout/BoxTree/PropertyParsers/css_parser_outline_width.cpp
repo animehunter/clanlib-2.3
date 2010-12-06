@@ -43,13 +43,13 @@ void CL_CSSParserOutlineWidth::parse(CL_CSSBoxProperties &properties, const CL_S
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "thin")
+		if (equals(token.value, "thin"))
 			properties.outline_width.type = CL_CSSBoxOutlineWidth::type_thin;
-		else if (token.value == "medium")
+		else if (equals(token.value, "medium"))
 			properties.outline_width.type = CL_CSSBoxOutlineWidth::type_medium;
-		else if (token.value == "thick")
+		else if (equals(token.value, "thick"))
 			properties.outline_width.type = CL_CSSBoxOutlineWidth::type_thick;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.outline_width.type = CL_CSSBoxOutlineWidth::type_inherit;
 	}
 	else if (is_length(token) && pos == tokens.size())

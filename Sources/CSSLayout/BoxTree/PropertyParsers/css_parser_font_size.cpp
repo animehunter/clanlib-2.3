@@ -43,25 +43,25 @@ void CL_CSSParserFontSize::parse(CL_CSSBoxProperties &properties, const CL_Strin
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 	{
-		if (token.value == "xx-small")
+		if (equals(token.value, "xx-small"))
 			properties.font_size.type = CL_CSSBoxFontSize::type_xx_small;
-		else if (token.value == "x-small")
+		else if (equals(token.value, "x-small"))
 			properties.font_size.type = CL_CSSBoxFontSize::type_x_small;
-		else if (token.value == "small")
+		else if (equals(token.value, "small"))
 			properties.font_size.type = CL_CSSBoxFontSize::type_small;
-		else if (token.value == "medium")
+		else if (equals(token.value, "medium"))
 			properties.font_size.type = CL_CSSBoxFontSize::type_medium;
-		else if (token.value == "large")
+		else if (equals(token.value, "large"))
 			properties.font_size.type = CL_CSSBoxFontSize::type_large;
-		else if (token.value == "x-large")
+		else if (equals(token.value, "x-large"))
 			properties.font_size.type = CL_CSSBoxFontSize::type_x_large;
-		else if (token.value == "xx-large")
+		else if (equals(token.value, "xx-large"))
 			properties.font_size.type = CL_CSSBoxFontSize::type_xx_large;
-		else if (token.value == "smaller")
+		else if (equals(token.value, "smaller"))
 			properties.font_size.type = CL_CSSBoxFontSize::type_smaller;
-		else if (token.value == "larger")
+		else if (equals(token.value, "larger"))
 			properties.font_size.type = CL_CSSBoxFontSize::type_larger;
-		else if (token.value == "inherit")
+		else if (equals(token.value, "inherit"))
 			properties.font_size.type = CL_CSSBoxFontSize::type_inherit;
 	}
 	else if (is_length(token) && pos == tokens.size())
