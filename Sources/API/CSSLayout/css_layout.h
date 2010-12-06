@@ -29,6 +29,7 @@
 #pragma once
 
 #include "api_csslayout.h"
+#include "../Core/Signals/callback_2.h"
 
 class CL_CSSBoxElement;
 class CL_GraphicContext;
@@ -40,6 +41,7 @@ class CL_CSSHitTestResult;
 class CL_CSSLayout_Impl;
 class CL_Size;
 class CL_Point;
+class CL_Image;
 
 class CL_API_CSSLAYOUT CL_CSSLayout
 {
@@ -64,6 +66,9 @@ public:
 	CL_CSSLayoutText create_text(const CL_String &text);
 
 	CL_CSSLayoutElement find_element(const CL_String &name);
+
+	// CL_Image on_get_image(CL_GraphicContext &gc, const CL_String &uri);
+	CL_Callback_2<CL_Image, CL_GraphicContext &, const CL_String &> &func_get_image();
 
 private:
 	CL_CSSLayout(CL_SharedPtr<CL_CSSLayout_Impl> impl);

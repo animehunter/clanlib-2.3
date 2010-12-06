@@ -1,11 +1,15 @@
 
 #pragma once
 
+#include "html_url.h"
+
 class HTMLPage
 {
 public:
-	HTMLPage(const CL_String &page_url, const CL_String &refererer_url = CL_String());
+	void load(const CL_String &page_url, const CL_String &refererer_url = CL_String());
+	CL_Image load_image(CL_GraphicContext &gc, const CL_String &image_url);
 
+	HTMLUrl pageurl;
 	CL_String webpage;
 	CL_String pagecss;
 

@@ -43,7 +43,7 @@ public:
 	void set_name(const CL_String &name);
 
 	void apply_properties(const CL_CSSPropertyList2 &properties);
-	void apply_properties(const CL_String &style_string);
+	void apply_properties(const CL_String &style_string, const CL_String &base_uri = CL_String());
 
 	void insert_before(CL_CSSLayoutNode &new_child, CL_CSSLayoutNode &ref_child);
 	void append_child(CL_CSSLayoutNode &new_child);

@@ -47,6 +47,8 @@ public:
 	CL_CSSResourceCache();
 	~CL_CSSResourceCache();
 
+	CL_Callback_2<CL_Image, CL_GraphicContext &, const CL_String &> cb_get_image;
+
 	CL_CSSBoxLength compute_length(const CL_CSSBoxLength &length, float em_size, float ex_size);
 	std::vector<CL_String> get_default_quotes();
 	CL_String get_default_font();

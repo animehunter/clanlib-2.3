@@ -72,9 +72,9 @@ void CL_CSSLayoutElement::apply_properties(const CL_CSSPropertyList2 &properties
 	}
 }
 
-void CL_CSSLayoutElement::apply_properties(const CL_String &style_string)
+void CL_CSSLayoutElement::apply_properties(const CL_String &style_string, const CL_String &base_uri)
 {
-	apply_properties(CL_CSSDocument2::get_style_properties(style_string));
+	apply_properties(CL_CSSDocument2::get_style_properties(style_string, base_uri));
 }
 
 void CL_CSSLayoutElement::insert_before(CL_CSSLayoutNode &new_child, CL_CSSLayoutNode &ref_child)

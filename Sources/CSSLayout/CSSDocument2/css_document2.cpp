@@ -51,10 +51,32 @@ public:
 	void read_statement(CL_CSSTokenizer &tokenizer, CL_CSSToken &token);
 	static bool read_end_of_statement(CL_CSSTokenizer &tokenizer, CL_CSSToken &token);
 	bool read_selector_chain(CL_CSSTokenizer &tokenizer, CL_CSSToken &token, CL_CSSSelectorChain2 &out_selector_chain);
-	static bool read_property_value(CL_CSSTokenizer &tokenizer, CL_CSSToken &token, CL_CSSProperty2 &property);
+	static bool read_property_value(CL_CSSTokenizer &tokenizer, CL_CSSToken &token, CL_CSSProperty2 &property, CL_String base_uri);
 	CL_String to_string(const CL_CSSToken &token);
 	static bool equals(const CL_String &s1, const CL_String &s2);
+	static CL_String make_absolute_uri(CL_String uri, CL_String base_uri);
 
+	class HTMLUrl
+	{
+	public:
+		HTMLUrl();
+		HTMLUrl(const CL_String &url, const HTMLUrl &base = HTMLUrl());
+		CL_String to_string() const;
+
+		CL_String scheme;
+		CL_String host;
+		CL_String port;
+		CL_String path;
+		CL_String query;
+
+	private:
+		CL_String read_scheme();
+
+		CL_String input;
+		CL_String::size_type pos;
+	};
+
+	CL_String base_uri;
 	std::vector<CL_CSSRuleset2> rulesets;
 };
 
@@ -105,7 +127,7 @@ CL_CSSPropertyList2 CL_CSSDocument2::select(CL_CSSSelectNode2 *node, const CL_St
 	return properties;
 }
 
-CL_CSSPropertyList2 CL_CSSDocument2::get_style_properties(const CL_String &style_string)
+CL_CSSPropertyList2 CL_CSSDocument2::get_style_properties(const CL_String &style_string, const CL_String &base_uri)
 {
 	CL_CSSPropertyList2 properties;
 	CL_CSSTokenizer tokenizer(style_string);
@@ -123,7 +145,7 @@ CL_CSSPropertyList2 CL_CSSDocument2::get_style_properties(const CL_String &style
 
 				CL_CSSProperty2 property;
 				property.set_name(property_name);
-				CL_CSSDocument2_Impl::read_property_value(tokenizer, token, property);
+				CL_CSSDocument2_Impl::read_property_value(tokenizer, token, property, base_uri);
 				if (!property.get_value_tokens().empty())
 					properties.push_back(property);
 			}
@@ -322,28 +344,40 @@ void CL_CSSDocument2_Impl::read_stylesheet(CL_CSSTokenizer &tokenizer)
 
 void CL_CSSDocument2_Impl::read_at_rule(CL_CSSTokenizer &tokenizer, CL_CSSToken &token)
 {
-	// CL_Console::write_line("@%1", token.value);
-	int curly_count = 0;
-	while (true)
+	if (equals(token.value, "-clan-base-uri"))
 	{
-		tokenizer.read(token, false);
-		if (token.type == CL_CSSToken::type_null)
+		tokenizer.read(token, true);
+		if (token.type == CL_CSSToken::type_string)
 		{
-			break;
+			base_uri = token.value;
+			tokenizer.read(token, true);
 		}
-		else if (token.type == CL_CSSToken::type_semi_colon && curly_count == 0)
+	}
+	else
+	{
+		// CL_Console::write_line("@%1", token.value);
+		int curly_count = 0;
+		while (true)
 		{
-			break;
-		}
-		else if (token.type == CL_CSSToken::type_curly_brace_begin)
-		{
-			curly_count++;
-		}
-		else if (token.type == CL_CSSToken::type_curly_brace_end)
-		{
-			curly_count--;
-			if (curly_count == 0)
+			tokenizer.read(token, false);
+			if (token.type == CL_CSSToken::type_null)
+			{
 				break;
+			}
+			else if (token.type == CL_CSSToken::type_semi_colon && curly_count == 0)
+			{
+				break;
+			}
+			else if (token.type == CL_CSSToken::type_curly_brace_begin)
+			{
+				curly_count++;
+			}
+			else if (token.type == CL_CSSToken::type_curly_brace_end)
+			{
+				curly_count--;
+				if (curly_count == 0)
+					break;
+			}
 		}
 	}
 }
@@ -525,7 +559,7 @@ void CL_CSSDocument2_Impl::read_statement(CL_CSSTokenizer &tokenizer, CL_CSSToke
 
 					CL_CSSProperty2 property;
 					property.set_name(property_name);
-					bool end_of_scope = read_property_value(tokenizer, token, property);
+					bool end_of_scope = read_property_value(tokenizer, token, property, base_uri);
 					if (!property.get_value_tokens().empty())
 						ruleset.properties.push_back(property);
 					if (end_of_scope)
@@ -555,7 +589,7 @@ void CL_CSSDocument2_Impl::read_statement(CL_CSSTokenizer &tokenizer, CL_CSSToke
 	}
 }
 
-bool CL_CSSDocument2_Impl::read_property_value(CL_CSSTokenizer &tokenizer, CL_CSSToken &token, CL_CSSProperty2 &property)
+bool CL_CSSDocument2_Impl::read_property_value(CL_CSSTokenizer &tokenizer, CL_CSSToken &token, CL_CSSProperty2 &property, CL_String base_uri)
 {
 	property.get_value_tokens().clear();
 	int curly_count = 0;
@@ -580,6 +614,10 @@ bool CL_CSSDocument2_Impl::read_property_value(CL_CSSTokenizer &tokenizer, CL_CS
 			if (curly_count == 0)
 				break;
 		}
+
+		if (token.type == CL_CSSToken::type_uri)
+			token.value = make_absolute_uri(token.value, base_uri);
+
 		property.get_value_tokens().push_back(token);
 		tokenizer.read(token, false);
 	}
@@ -675,4 +713,111 @@ CL_String CL_CSSDocument2_Impl::to_string(const CL_CSSToken &token)
 bool CL_CSSDocument2_Impl::equals(const CL_String &s1, const CL_String &s2)
 {
 	return CL_StringHelp::compare(s1, s2, true) == 0;
+}
+
+CL_String CL_CSSDocument2_Impl::make_absolute_uri(CL_String uri, CL_String base_uri)
+{
+	return HTMLUrl(uri, base_uri).to_string();
+}
+
+/////////////////////////////////////////////////////////////////////////////
+
+CL_CSSDocument2_Impl::HTMLUrl::HTMLUrl()
+{
+	scheme = "http";
+	port = "80";
+	path = "/";
+}
+
+CL_CSSDocument2_Impl::HTMLUrl::HTMLUrl(const CL_String &url, const HTMLUrl &base)
+: input(url), pos(0)
+{
+	// http://tools.ietf.org/html/rfc3987
+
+	CL_String s = read_scheme();
+	if (input.substr(pos, 1) == ":")
+	{
+		scheme = s;
+		pos += 1;
+	}
+	else
+	{
+		scheme = base.scheme;
+		pos = 0;
+	}
+
+	if (input.substr(pos, 2) == "//")
+	{
+		pos += 2;
+		CL_String::size_type colon = input.find_first_of(':', pos);
+		CL_String::size_type slash = input.find_first_of('/', pos);
+		if (colon < slash)
+		{
+			host = input.substr(pos, colon-pos);
+			port = input.substr(colon+1, slash-colon-1);
+		}
+		else
+		{
+			host = input.substr(pos, slash-pos);
+			port = base.port;
+		}
+		pos = slash;
+	}
+	else
+	{
+		host = base.host;
+		port = base.port;
+	}
+
+	CL_String::size_type query_pos = input.find_first_of('?');
+	path = input.substr(pos, query_pos);
+	query = input.substr(query_pos);
+
+	if (path.substr(0, 1) != "/")
+	{
+		CL_String base_directory;
+		CL_String::size_type last_slash = base.path.find_last_of('/');
+		if (last_slash == CL_String::npos)
+		{
+			base_directory = "/";
+		}
+		else
+		{
+			base_directory = base.path.substr(0, last_slash + 1);
+		}
+		path = base_directory + path;
+	}
+}
+
+CL_String CL_CSSDocument2_Impl::HTMLUrl::read_scheme()
+{
+	if (pos < input.length() && ((input[pos] >= 'A' && input[pos] <= 'Z') || (input[pos] >= 'a' && input[pos] <= 'z')))
+	{
+		CL_String::size_type pos2;
+		for (pos2 = pos+1; pos2 != input.length(); pos2++)
+		{
+			if ((input[pos2] >= 'A' && input[pos2] <= 'Z') ||
+				(input[pos2] >= 'a' && input[pos2] <= 'z') ||
+				(input[pos2] >= '0' && input[pos2] <= '9') ||
+				input[pos2] == '.' || input[pos2] == '+' || input[pos2] == '-')
+			{
+			}
+			else
+			{
+				break;
+			}
+		}
+		CL_String s = input.substr(pos, pos2-pos);
+		pos = pos2;
+		return s;
+	}
+	else
+	{
+		return CL_String();
+	}
+}
+
+CL_String CL_CSSDocument2_Impl::HTMLUrl::to_string() const
+{
+	return scheme + "://" + host + ":" + port + path + query;
 }

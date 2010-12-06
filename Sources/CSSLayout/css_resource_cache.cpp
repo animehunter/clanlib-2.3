@@ -92,13 +92,9 @@ CL_Image &CL_CSSResourceCache::get_image(CL_GraphicContext &gc, const CL_String 
 	if (it == image_cache.end())
 	{
 		CL_Image image;
-		try
-		{
-			image = CL_Image(gc, url);
-		}
-		catch (CL_Exception &)
-		{
-		}
+		if (!cb_get_image.is_null())
+			image = cb_get_image.invoke(gc, url);
+
 		image_cache[url] = image;
 		return image_cache[url];
 	}

@@ -233,6 +233,11 @@ CL_CSSLayoutElement CL_CSSLayout::find_element(const CL_String &name)
 	}
 }
 
+CL_Callback_2<CL_Image, CL_GraphicContext &, const CL_String &> &CL_CSSLayout::func_get_image()
+{
+	return impl->resource_cache.cb_get_image;
+}
+
 CL_CSSLayout::CL_CSSLayout(CL_SharedPtr<CL_CSSLayout_Impl> impl)
 : impl(impl)
 {

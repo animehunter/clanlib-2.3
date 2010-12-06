@@ -28,6 +28,8 @@
 
 #pragma once
 
+#include "html_page.h"
+
 class CL_CSSLayout;
 class CL_CSSBoxElement;
 
@@ -41,10 +43,12 @@ private:
 	void on_resized();
 	void on_render(CL_GraphicContext &gc, const CL_Rect &update_rect);
 	void on_scroll();
+	CL_Image on_layout_get_image(CL_GraphicContext &gc, const CL_String &uri);
 
 	void load_html(const CL_String &html_filename, const CL_String &css_filename);
 	bool is_end_tag_forbidden(const CL_String &name);
 
+	HTMLPage page;
 	CL_CSSLayout layout;
 	CL_Size last_layout_size;
 	CL_CSSDocument2 css_document;

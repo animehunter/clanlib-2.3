@@ -30,28 +30,28 @@
 #include "css_view.h"
 #include "html_tokenizer.h"
 #include "html_token.h"
-#include "html_page.h"
 
 CSSView::CSSView(CL_GUIComponent *parent)
 : CL_GUIComponent(parent), scrollbar(0)
 {
 	func_resized().set(this, &CSSView::on_resized);
 	func_render().set(this, &CSSView::on_render);
+	layout.func_get_image().set(this, &CSSView::on_layout_get_image);
 
 	scrollbar = new CL_ScrollBar(this);
 	scrollbar->set_vertical();
 	scrollbar->set_ranges(0, 30000, 12, 800);
 	scrollbar->func_scroll().set(this, &CSSView::on_scroll);
 
-	//HTMLPage page("http://en.wikipedia.org/wiki/ClanLib");
-	//HTMLPage page("http://www.csszengarden.com/");
-	//HTMLPage page("http://www.csszengarden.com/?cssfile=/210/210.css&page=0");
-	//HTMLPage page("http://www.csszengarden.com/?cssfile=/207/207.css&page=0");
-	//HTMLPage page("http://codegrind.net/2010/11/01/clanlib-tutorial-part-4-server-as-a-service/");
-	HTMLPage page("http://clanlib.org/wiki/Main_Page");
-	//HTMLPage page("http://www.dr.dk/nyheder/");
-	//HTMLPage page("http://politiken.dk/erhverv/ECE1134488/nemid-nedslider-ansatte-i-borgerservice/");
-	//HTMLPage page("http://nyhederne.tv2.dk/");
+	page.load("http://en.wikipedia.org/wiki/ClanLib");
+	//page.load("http://www.csszengarden.com/");
+	//page.load("http://www.csszengarden.com/?cssfile=/210/210.css&page=0");
+	//page.load("http://www.csszengarden.com/?cssfile=/207/207.css&page=0");
+	//page.load("http://codegrind.net/2010/11/01/clanlib-tutorial-part-4-server-as-a-service/");
+	//page.load("http://clanlib.org/wiki/Main_Page");
+	//page.load("http://www.dr.dk/nyheder/");
+	//page.load("http://politiken.dk/erhverv/ECE1134488/nemid-nedslider-ansatte-i-borgerservice/");
+	//page.load("http://nyhederne.tv2.dk/");
 	load_html("htmlpage.html", "htmlpage.css");
 
 	//load_html("clanlib.html", "clanlib.css");
@@ -104,6 +104,18 @@ void CSSView::on_scroll()
 	request_repaint();
 }
 
+CL_Image CSSView::on_layout_get_image(CL_GraphicContext &gc, const CL_String &uri)
+{
+	try
+	{
+		return page.load_image(gc, uri);
+	}
+	catch (CL_Exception)
+	{
+		return CL_Image();
+	}
+}
+
 void CSSView::load_html(const CL_String &html_filename, const CL_String &css_filename)
 {
 	css_document.add_sheet("default.css");
@@ -138,12 +150,12 @@ void CSSView::load_html(const CL_String &html_filename, const CL_String &css_fil
 				dom_element.set_attribute(token.attributes[i].name, token.attributes[i].value);
 			if (!dom_elements.empty())
 				dom_elements.back().append_child(dom_element);
-
+/*
 			if (dom_element.get_attribute(L"class") == "deck140")
 			{
 				CL_Console::write_line("test");
 			}
-
+*/
 /*			if (token.name == "img")
 			{
 				CL_String filename;
@@ -177,7 +189,7 @@ void CSSView::load_html(const CL_String &html_filename, const CL_String &css_fil
 
 				CL_DomSelectNode select_node(dom_element);
 				element.apply_properties(css_document.select(&select_node));
-				element.apply_properties(dom_element.get_attribute("style"));
+				element.apply_properties(dom_element.get_attribute("style"), page.pageurl.to_string());
 				if (!css_elements.empty())
 					css_elements.back().append_child(element);
 
