@@ -6,6 +6,7 @@ HTMLUrl::HTMLUrl()
 {
 	scheme = "http";
 	port = "80";
+	path = "/";
 }
 
 HTMLUrl::HTMLUrl(const CL_String &url, const HTMLUrl &base)
@@ -32,7 +33,7 @@ HTMLUrl::HTMLUrl(const CL_String &url, const HTMLUrl &base)
 		CL_String::size_type slash = input.find_first_of('/', pos);
 		if (colon < slash)
 		{
-			host = input.substr(pos, colon);
+			host = input.substr(pos, colon-pos);
 			port = input.substr(colon+1, slash-colon-1);
 		}
 		else
@@ -54,10 +55,17 @@ HTMLUrl::HTMLUrl(const CL_String &url, const HTMLUrl &base)
 
 	if (path.substr(0, 1) != "/")
 	{
-		if (base.path.empty() || base.path[base.path.length()-1] != '/')
-			path = base.path + "/" + path;
+		CL_String base_directory;
+		CL_String::size_type last_slash = base.path.find_last_of('/');
+		if (last_slash == CL_String::npos)
+		{
+			base_directory = "/";
+		}
 		else
-			path = base.path + path;
+		{
+			base_directory = base.path.substr(0, last_slash + 1);
+		}
+		path = base_directory + path;
 	}
 }
 
@@ -91,5 +99,5 @@ CL_String HTMLUrl::read_scheme()
 
 CL_String HTMLUrl::to_string() const
 {
-	return scheme + ":" + host + ":" + port + path + query;
+	return scheme + "://" + host + ":" + port + path + query;
 }

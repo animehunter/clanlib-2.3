@@ -19,7 +19,7 @@ HTMLPage::HTMLPage(const CL_String &page_url, const CL_String &refererer_url)
 			break;
 		if (token.type == HTMLToken::type_style_tag)
 		{
-//			pagecss += token.value;
+			pagecss += load_css(token.value, page_url);
 		}
 		if (token.type == HTMLToken::type_tag_begin || token.type == HTMLToken::type_tag_single)
 		{
@@ -39,7 +39,7 @@ HTMLPage::HTMLPage(const CL_String &page_url, const CL_String &refererer_url)
 				if (rel == "stylesheet" && !href.empty() && (media.empty() || media == "screen"))
 				{
 					CL_String css = download_url(href, page_url);
-					pagecss += css;
+					pagecss += load_css(css, HTMLUrl(href, page_url).to_string());
 				}
 			}
 		}
@@ -52,6 +52,34 @@ HTMLPage::HTMLPage(const CL_String &page_url, const CL_String &refererer_url)
 	CL_File fcss("htmlpage.css", CL_File::create_always, CL_File::access_write);
 	fcss.write(pagecss.data(), pagecss.length());
 	fcss.close();
+}
+
+CL_String HTMLPage::load_css(const CL_String &csstext, const CL_String &base_url)
+{
+	CL_String pagecss;
+	CL_CSSTokenizer css_tokenizer(csstext);
+	CL_CSSToken css_token;
+	while (true)
+	{
+		css_tokenizer.read(css_token, true);
+		if (css_token.type != CL_CSSToken::type_atkeyword || css_token.value != "import")
+			break;
+
+		css_tokenizer.read(css_token, true);
+		if (css_token.type != CL_CSSToken::type_string)
+			break;
+
+		CL_String import_url = css_token.value;
+
+		css_tokenizer.read(css_token, true);
+		if (css_token.type != CL_CSSToken::type_semi_colon)
+			break;
+
+		CL_String css = download_url(import_url, base_url);
+		pagecss += load_css(css, HTMLUrl(import_url, base_url).to_string());
+	}
+	pagecss += csstext;
+	return pagecss;
 }
 
 CL_String HTMLPage::download_url(const CL_String &page_url, const CL_String &refererer_url)
