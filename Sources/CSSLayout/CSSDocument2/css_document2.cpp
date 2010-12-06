@@ -110,18 +110,18 @@ CL_CSSPropertyList2 CL_CSSDocument2::select(CL_CSSSelectNode2 *node, const CL_St
 	CL_CSSPropertyList2 properties;
 	for (size_t i = rulesets.size(); i > 0; i--)
 	{
-		for (size_t j = 0; j < rulesets[i-1].ruleset->properties.size(); j++)
+		for (size_t j = rulesets[i-1].ruleset->properties.size(); j > 0; j--)
 		{
-			if (rulesets[i-1].ruleset->properties[j].is_important())
-				properties.push_back(rulesets[i-1].ruleset->properties[j]);
+			if (rulesets[i-1].ruleset->properties[j-1].is_important())
+				properties.push_back(rulesets[i-1].ruleset->properties[j-1]);
 		}
 	}
 	for (size_t i = rulesets.size(); i > 0; i--)
 	{
-		for (size_t j = 0; j < rulesets[i-1].ruleset->properties.size(); j++)
+		for (size_t j = rulesets[i-1].ruleset->properties.size(); j > 0; j--)
 		{
-			if (!rulesets[i-1].ruleset->properties[j].is_important())
-				properties.push_back(rulesets[i-1].ruleset->properties[j]);
+			if (!rulesets[i-1].ruleset->properties[j-1].is_important())
+				properties.push_back(rulesets[i-1].ruleset->properties[j-1]);
 		}
 	}
 	return properties;

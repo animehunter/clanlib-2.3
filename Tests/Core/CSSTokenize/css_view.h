@@ -57,4 +57,5 @@ private:
 	CL_Rect client_box;
 	CL_Rect scrollbar_box;
 	CL_Rect view_box;
+	std::map<CL_String, CL_Image> image_cache;
 };

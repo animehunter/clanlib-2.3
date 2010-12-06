@@ -43,10 +43,13 @@ CSSView::CSSView(CL_GUIComponent *parent)
 	scrollbar->set_ranges(0, 30000, 12, 800);
 	scrollbar->func_scroll().set(this, &CSSView::on_scroll);
 
-	page.load("http://en.wikipedia.org/wiki/ClanLib");
+	//page.load("http://en.wikipedia.org/wiki/ClanLib");
 	//page.load("http://www.csszengarden.com/");
 	//page.load("http://www.csszengarden.com/?cssfile=/210/210.css&page=0");
 	//page.load("http://www.csszengarden.com/?cssfile=/207/207.css&page=0");
+	//page.load("http://www.csszengarden.com/?cssfile=/211/211.css&page=0");
+	//page.load("http://www.csszengarden.com/?cssfile=/209/209.css&page=0");
+	page.load("http://www.csszengarden.com/?cssfile=/206/206.css&page=0");
 	//page.load("http://codegrind.net/2010/11/01/clanlib-tutorial-part-4-server-as-a-service/");
 	//page.load("http://clanlib.org/wiki/Main_Page");
 	//page.load("http://www.dr.dk/nyheder/");
@@ -84,11 +87,11 @@ void CSSView::on_render(CL_GraphicContext &gc, const CL_Rect &update_rect)
 	if (size != last_layout_size)
 	{
 		layout.layout(gc, size);
-		CL_String s = layout.get_root_element().print_node();
+		/*CL_String s = layout.get_root_element().print_node();
 		CL_File f("C:\\Development\\layout debug.txt", CL_File::create_always, CL_File::access_write, CL_File::share_write);
 		CL_String8 s8 = CL_StringHelp::text_to_utf8(s);
 		f.write(s8.data(), s8.length());
-		f.close();
+		f.close();*/
 		last_layout_size = size;
 	}
 	set_cliprect(gc, get_size());
@@ -108,10 +111,14 @@ CL_Image CSSView::on_layout_get_image(CL_GraphicContext &gc, const CL_String &ur
 {
 	try
 	{
-		return page.load_image(gc, uri);
+		if (image_cache.find(uri) != image_cache.end())
+			return image_cache[uri];
+		image_cache[uri] = page.load_image(gc, uri);
+		return image_cache[uri];
 	}
 	catch (CL_Exception)
 	{
+		image_cache[uri] = CL_Image();
 		return CL_Image();
 	}
 }
