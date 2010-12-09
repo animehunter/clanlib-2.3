@@ -211,12 +211,17 @@ void CL_ShaderObject::throw_if_null() const
 		throw CL_Exception("CL_ShaderObject is null");
 }
 
+CL_ShaderObjectProvider *CL_ShaderObject::get_provider() const
+{
+	return impl->provider;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // CL_ShaderObject Operations:
 
 bool CL_ShaderObject::operator==(const CL_ShaderObject &other) const
 {
-	return impl->provider->get_handle() == other.get_handle();
+	return impl == other.impl;
 }
 
 bool CL_ShaderObject::compile()

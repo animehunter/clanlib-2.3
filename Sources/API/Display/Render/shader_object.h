@@ -42,6 +42,7 @@
 class CL_GraphicContextProvider;
 class CL_ResourceManager;
 class CL_ShaderObject_Impl;
+class CL_ShaderObjectProvider;
 
 /// \brief Shader Type
 ///
@@ -188,12 +189,17 @@ public:
 	/// \brief Throw an exception if this object is invalid.
 	void throw_if_null() const;
 
+	/// \brief Get Provider
+	///
+	/// \return provider
+	CL_ShaderObjectProvider *get_provider() const;
+
 /// \}
 /// \name Operations
 /// \{
 
 public:
-	/// \brief Handle comparision operator.
+	/// \brief Handle comparison operator.
 	bool operator==(const CL_ShaderObject &other) const;
 
 	/// \brief Compile program.

@@ -261,6 +261,21 @@ void CL_IODevice::write_string_a(const CL_StringRef8 &str)
 	write(str.data(), size);
 }
 
+void CL_IODevice::write_string_nul(const CL_StringRef8 &str)
+{
+	write(str.c_str(), str.length() + 1);
+}
+
+void CL_IODevice::write_string_text(const CL_StringRef8 &str)
+{
+	write(str.data(), str.length());
+#ifdef WIN32
+	write("\r\n", 2);
+#else
+	write("\n", 1);
+#endif
+}
+
 cl_int64 CL_IODevice::read_int64()
 {
 	cl_int64 answer;

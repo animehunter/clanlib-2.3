@@ -402,7 +402,8 @@ void CL_OpenGLProgramObjectProvider::fetch_attributes() const
 
 	CL_ProgramObjectStateTracker state_tracker(handle, 0);
 
-	int count = get_attribute_count();
+	CLint count = 0;
+	clGetProgramiv(handle, CL_ACTIVE_ATTRIBUTES, &count);
 	CLint name_size = 0;
 	clGetProgramiv(handle, CL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &name_size);
 	CLchar *name = new CLchar[name_size+1];

@@ -228,6 +228,22 @@ public:
 	/// string, and then the string itself.
 	void write_string_a(const CL_StringRef8 &str);
 
+	/// \brief Writes a nul terminated string to the output source.
+	///
+	/// \param str String to write
+	///
+	/// The binary format written to the output source is the string content followed by the NUL character.
+	void write_string_nul(const CL_StringRef8 &str);
+
+	/// \brief Writes a text string to the output source.
+	///
+	/// \param str String to write
+	///
+	/// The binary format written to the output source is the string content appended with a native newline.
+	/// On Windows the newline is CR+LF sequence and on other platforms it is only LF character.
+	/// This function is intended for use with text files.
+	void write_string_text(const CL_StringRef8 &str);
+
 	/// \brief Reads a signed 64 bit integer from input source.
 	/** \return The integer read.*/
 	cl_int64 read_int64();

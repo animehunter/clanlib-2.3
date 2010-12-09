@@ -87,6 +87,11 @@ bool CL_OcclusionQuery::is_result_ready()
 	return impl->provider->is_result_ready();
 }
 
+CL_OcclusionQueryProvider *CL_OcclusionQuery::get_provider() const
+{
+	return impl->provider;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // CL_OcclusionQuery Operations:
 

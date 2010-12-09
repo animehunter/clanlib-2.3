@@ -153,6 +153,13 @@ CL_VirtualFileSource *CL_VirtualFileSystem::get_provider()
 	return impl->provider;
 }
 
+CL_String CL_VirtualFileSystem::get_path() const
+{
+	if (impl->provider)
+		return impl->provider->get_path();
+	return "";
+}
+
 CL_String CL_VirtualFileSystem::get_identifier() const
 {
 	CL_String internal_name = "/";

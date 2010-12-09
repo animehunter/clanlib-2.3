@@ -441,7 +441,7 @@ void CL_ProgramObject::attach(const CL_ShaderObject &obj)
 
 void CL_ProgramObject::detach(const CL_ShaderObject &obj)
 {
-	impl->provider->attach(obj);
+	impl->provider->detach(obj);
 }
 
 void CL_ProgramObject::bind_attribute_location(int index, const CL_StringRef &name)

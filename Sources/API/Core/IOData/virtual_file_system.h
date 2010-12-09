@@ -92,6 +92,9 @@ public:
 	/// \brief Returns the file source for this file system.
 	CL_VirtualFileSource *get_provider();
 
+	/// \brief Returns a path to the file source for this file system.
+	CL_String get_path() const;
+
 	/// \brief Get the identifier of this file source
 	///
 	/// The exact format of this identifier depends on the implementation of the underlying filesystem and mounts
