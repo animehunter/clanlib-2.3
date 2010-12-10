@@ -157,12 +157,12 @@ void CSSView::load_html(const CL_String &html_filename, const CL_String &css_fil
 				dom_element.set_attribute(token.attributes[i].name, token.attributes[i].value);
 			if (!dom_elements.empty())
 				dom_elements.back().append_child(dom_element);
-/*
-			if (dom_element.get_attribute(L"class") == "deck140")
+
+/*			if (dom_element.get_attribute(L"class") == "title icon-home")
 			{
 				CL_Console::write_line("test");
-			}
-*/
+			}*/
+
 /*			if (token.name == "img")
 			{
 				CL_String filename;

@@ -632,12 +632,20 @@ void HTMLTokenizer::unescape(CL_String &text)
 			if (j < length)
 				j++;
 			CL_StringRef escape = text.substr(i, j-i);
-			for (size_t k = 0; escapes[k].name != 0; k++)
+			if (escape.size() > 3 && escape[1] == '#')
 			{
-				if (escape == escapes[k].name)
+				unsigned int v = CL_StringHelp::text_to_uint(escape.substr(2, escape.length()-3));
+				text = text.substr(0, i) + CL_StringHelp::wchar_to_utf8(v) + text.substr(j);
+			}
+			else
+			{
+				for (size_t k = 0; escapes[k].name != 0; k++)
 				{
-					text = text.substr(0, i) + CL_StringHelp::wchar_to_utf8(escapes[k].cdata) + text.substr(j);
-					break;
+					if (escape == escapes[k].name)
+					{
+						text = text.substr(0, i) + CL_StringHelp::wchar_to_utf8(escapes[k].cdata) + text.substr(j);
+						break;
+					}
 				}
 			}
 		}

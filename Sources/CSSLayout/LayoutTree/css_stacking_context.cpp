@@ -66,18 +66,19 @@ void CL_CSSStackingContext::sort()
 
 void CL_CSSStackingContext::render(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache)
 {
-	for (size_t i = 0; i < children.size(); i++)
-	{
-		if (children[i]->level >= 0)
-			break;
+	size_t i;
+	layout->render_layer_background(gc, resource_cache);
+	for (i = 0; i < children.size() && children[i]->level < 0; i++)
 		children[i]->render(gc, resource_cache);
-	}
-	layout->render(gc, resource_cache);
-	for (size_t i = 0; i < children.size(); i++)
+	layout->render_layer_non_inline(gc, resource_cache);
+	layout->render_layer_floats(gc, resource_cache);
+	layout->render_layer_inline(gc, resource_cache);
+	layout->render_layer_positioned(gc, resource_cache);
+
+	while (i < children.size())
 	{
-		if (children[i]->level >= 0)
-		{
+		if (children[i]->level > 0)
 			children[i]->render(gc, resource_cache);
-		}
+		i++;
 	}
 }

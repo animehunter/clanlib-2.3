@@ -403,12 +403,14 @@ bool CL_CSSDocument2_Impl::read_selector_chain(CL_CSSTokenizer &tokenizer, CL_CS
 				CL_CSSSelectorLink2 combinator_link;
 				combinator_link.type = CL_CSSSelectorLink2::type_child_combinator;
 				out_selector_chain.links.push_back(combinator_link);
+				whitespace = false;
 			}
 			else if (token.type == CL_CSSToken::type_delim && token.value == "+")
 			{
 				CL_CSSSelectorLink2 combinator_link;
 				combinator_link.type = CL_CSSSelectorLink2::type_next_sibling_combinator;
 				out_selector_chain.links.push_back(combinator_link);
+				whitespace = false;
 			}
 			else if (whitespace)
 			{

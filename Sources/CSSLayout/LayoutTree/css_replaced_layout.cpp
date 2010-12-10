@@ -241,11 +241,6 @@ void CL_CSSReplacedLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCur
 	cursor.y += height.value;
 }
 
-void CL_CSSReplacedLayout::render(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
-{
-	render_non_content(gc, resources);
-}
-
 void CL_CSSReplacedLayout::set_component_geometry()
 {
 	if (component)
@@ -267,4 +262,25 @@ int CL_CSSReplacedLayout::get_first_line_baseline()
 int CL_CSSReplacedLayout::get_last_line_baseline()
 {
 	return get_first_line_baseline();
+}
+
+void CL_CSSReplacedLayout::render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+{
+	render_non_content(gc, resources);
+}
+
+void CL_CSSReplacedLayout::render_layer_non_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+{
+}
+
+void CL_CSSReplacedLayout::render_layer_floats(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+{
+}
+
+void CL_CSSReplacedLayout::render_layer_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+{
+}
+
+void CL_CSSReplacedLayout::render_layer_positioned(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+{
 }

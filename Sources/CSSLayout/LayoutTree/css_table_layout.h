@@ -47,7 +47,12 @@ public:
 	void add_row(CL_CSSBoxElement *row_element);
 	void add_cell(CL_CSSLayoutTreeNode *cell_layout);
 
-	void render(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
+	void render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
+	void render_layer_non_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
+	void render_layer_floats(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
+	void render_layer_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
+	void render_layer_positioned(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
+
 	void set_component_geometry();
 	int get_first_line_baseline();
 	int get_last_line_baseline();

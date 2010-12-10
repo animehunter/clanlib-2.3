@@ -34,6 +34,7 @@
 #include "css_inline_layout.h"
 #include "css_layout_cursor.h"
 #include "css_block_formatting_context.h"
+#include "css_stacking_context.h"
 #include "../css_resource_cache.h"
 #include "../BoxTree/css_box_element.h"
 #include "../BoxTree/css_box_text.h"
@@ -98,22 +99,6 @@ void CL_CSSTableLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor
 	layout_cells(gc, cursor);
 	position_cells(cursor);
 	height.value = cl_max(height.value, cursor.y-start_y);
-}
-
-void CL_CSSTableLayout::render(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
-{
-	render_non_content(gc, resources);
-	for (size_t row = 0; row < rows.size(); row++)
-	{
-		for (size_t cell = 0; cell < columns.size(); cell++)
-		{
-			if (columns[cell].rows.size() > row && columns[cell].rows[row])
-			{
-				render_cell_non_content(gc, resources, row, cell);
-				columns[cell].rows[row]->render(gc, resources);
-			}
-		}
-	}
 }
 
 CL_Rect CL_CSSTableLayout::get_cell_border_box(size_t row, size_t col)
@@ -587,4 +572,121 @@ void CL_CSSTableLayout::position_cells(CL_CSSLayoutCursor &cursor)
 	if (!rows.empty())
 		y += size_grid.get_non_content_height(rows.size());
 	cursor.y += y;
+}
+
+void CL_CSSTableLayout::render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+{
+	render_non_content(gc, resources);
+	for (size_t row = 0; row < rows.size(); row++)
+	{
+		for (size_t cell = 0; cell < columns.size(); cell++)
+		{
+			if (columns[cell].rows.size() > row && columns[cell].rows[row])
+			{
+				render_cell_non_content(gc, resources, row, cell);
+			}
+		}
+	}
+}
+
+void CL_CSSTableLayout::render_layer_non_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+{
+	for (size_t row = 0; row < rows.size(); row++)
+	{
+		for (size_t cell = 0; cell < columns.size(); cell++)
+		{
+			if (columns[cell].rows.size() > row && columns[cell].rows[row])
+			{
+				CL_CSSLayoutTreeNode *cell_node = columns[cell].rows[row];
+				bool is_same_stacking_context = (stacking_context == cell_node->get_stacking_context());
+				bool is_positioned = (cell_node->get_element_node()->computed_properties.position.type != CL_CSSBoxPosition::type_static);
+				bool is_float = cell_node->get_element_node()->is_float();
+				if (is_same_stacking_context && !is_positioned && !is_float)
+					cell_node->render_layer_non_inline(gc, resources);
+			}
+		}
+	}
+}
+
+void CL_CSSTableLayout::render_layer_floats(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+{
+	for (size_t row = 0; row < rows.size(); row++)
+	{
+		for (size_t cell = 0; cell < columns.size(); cell++)
+		{
+			if (columns[cell].rows.size() > row && columns[cell].rows[row])
+			{
+				CL_CSSLayoutTreeNode *cell_node = columns[cell].rows[row];
+				bool is_same_stacking_context = (stacking_context == cell_node->get_stacking_context());
+				bool is_positioned = (cell_node->get_element_node()->computed_properties.position.type != CL_CSSBoxPosition::type_static);
+				bool is_float = cell_node->get_element_node()->is_float();
+				if (is_same_stacking_context && !is_positioned)
+				{
+					if (is_float)
+					{
+						cell_node->render_layer_background(gc, resources);
+						cell_node->render_layer_non_inline(gc, resources);
+						cell_node->render_layer_floats(gc, resources);
+						cell_node->render_layer_inline(gc, resources);
+					}
+					else
+					{
+						cell_node->render_layer_floats(gc, resources);
+					}
+				}
+			}
+		}
+	}
+}
+
+void CL_CSSTableLayout::render_layer_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+{
+	for (size_t row = 0; row < rows.size(); row++)
+	{
+		for (size_t cell = 0; cell < columns.size(); cell++)
+		{
+			if (columns[cell].rows.size() > row && columns[cell].rows[row])
+			{
+				CL_CSSLayoutTreeNode *cell_node = columns[cell].rows[row];
+				bool is_same_stacking_context = (stacking_context == cell_node->get_stacking_context());
+				bool is_positioned = (cell_node->get_element_node()->computed_properties.position.type != CL_CSSBoxPosition::type_static);
+				bool is_float = cell_node->get_element_node()->is_float();
+				if (is_same_stacking_context && !is_positioned && !is_float)
+					cell_node->render_layer_inline(gc, resources);
+			}
+		}
+	}
+}
+
+void CL_CSSTableLayout::render_layer_positioned(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+{
+	for (size_t row = 0; row < rows.size(); row++)
+	{
+		for (size_t cell = 0; cell < columns.size(); cell++)
+		{
+			if (columns[cell].rows.size() > row && columns[cell].rows[row])
+			{
+				CL_CSSLayoutTreeNode *cell_node = columns[cell].rows[row];
+				bool is_same_stacking_context = (stacking_context == cell_node->get_stacking_context());
+				bool is_positioned = (cell_node->get_element_node()->computed_properties.position.type != CL_CSSBoxPosition::type_static);
+				bool is_float = cell_node->get_element_node()->is_float();
+				int level = cell_node->get_stacking_context()->get_level();
+				if (is_same_stacking_context)
+				{
+					if (is_positioned)
+					{
+						cell_node->render_layer_background(gc, resources);
+						cell_node->render_layer_non_inline(gc, resources);
+						cell_node->render_layer_floats(gc, resources);
+						cell_node->render_layer_inline(gc, resources);
+					}
+					cell_node->render_layer_positioned(gc, resources);
+				}
+				else if (!is_same_stacking_context && level == 0)
+				{
+					cell_node->get_stacking_context()->render(gc, resources);
+				}
+			}
+		}
+	}
 }

@@ -35,6 +35,7 @@
 #include "css_layout_cursor.h"
 #include "css_block_formatting_context.h"
 #include "css_block_layout.h"
+#include "css_stacking_context.h"
 #include "../css_resource_cache.h"
 #include "../BoxTree/css_box_element.h"
 #include "../BoxTree/css_box_text.h"
@@ -73,88 +74,6 @@ void CL_CSSInlineLayout::set_content_expanding_width()
 		{
 			objects[i].layout->containing_width.value = width.value;
 			objects[i].layout->set_expanding_width(width.value - objects[i].layout->margin.left - objects[i].layout->margin.right - objects[i].layout->border.left - objects[i].layout->border.right - objects[i].layout->padding.left - objects[i].layout->padding.right);
-		}
-	}
-}
-
-void CL_CSSInlineLayout::render(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
-{
-	render_non_content(gc, resources);
-	int pos_x = formatting_context->get_x();
-	int pos_y = formatting_context->get_y();
-	for (size_t i = 0; i < line_boxes.size(); i++)
-	{
-		for (size_t j = 0; j < line_boxes[i].segments.size(); j++)
-		{
-			CL_CSSInlineLineSegment &segment = line_boxes[i].segments[j];
-			if (objects[segment.object_index].layout)
-			{
-				objects[segment.object_index].layout->render(gc, resources);
-			}
-			else
-			{
-				CL_CSSBoxText *text = dynamic_cast<CL_CSSBoxText*>(objects[segment.object_index].node);
-				const CL_CSSBoxProperties &properties = text->get_properties();
-				if (properties.visibility.type == CL_CSSBoxVisibility::type_visible)
-				{
-					CL_Font &font = resources->get_font(gc, properties);
-					CL_FontMetrics metrics = font.get_font_metrics(gc);
-
-					/*CL_Draw::line(
-						gc,
-						pos_x+line_boxes[i].box.left + segment.left,
-						pos_y+line_boxes[i].box.top + line_boxes[i].ascent,
-						pos_x+line_boxes[i].box.left + segment.right,
-						pos_y+line_boxes[i].box.top + line_boxes[i].ascent, CL_Colorf::black);*/
-
-					size_t sel_start = text->processed_selection_start;
-					size_t sel_end = text->processed_selection_end;
-					sel_start = cl_max(sel_start, segment.text_start);
-					sel_end = cl_min(sel_end, segment.text_end);
-
-					if (sel_start < sel_end)
-					{
-						int width1 = font.get_text_size(gc, text->processed_text.substr(segment.text_start, sel_start-segment.text_start)).width;
-						int width2 = font.get_text_size(gc, text->processed_text.substr(sel_start, sel_end-sel_start)).width;
-						//int width3 = font.get_text_size(gc, text->processed_text.substr(sel_end, segment.text_end-sel_end)).width;
-						CL_Rectf b = line_boxes[i].box;
-						b.translate(pos_x + segment.left, pos_y);
-						b.left += width1;
-						b.right = b.left + width2;
-						CL_Draw::fill(gc, b, CL_Colorf::blueviolet);
-
-						font.draw_text(
-							gc,
-							pos_x+line_boxes[i].box.left + segment.left,
-							pos_y+line_boxes[i].box.top + line_boxes[i].ascent - segment.baseline_offset,
-							text->processed_text.substr(segment.text_start, sel_start-segment.text_start),
-							properties.color.color);
-
-						font.draw_text(
-							gc,
-							pos_x+line_boxes[i].box.left + segment.left + width1,
-							pos_y+line_boxes[i].box.top + line_boxes[i].ascent - segment.baseline_offset,
-							text->processed_text.substr(sel_start, sel_end-sel_start),
-							CL_Colorf::white);
-
-						font.draw_text(
-							gc,
-							pos_x+line_boxes[i].box.left + segment.left + width1 + width2,
-							pos_y+line_boxes[i].box.top + line_boxes[i].ascent - segment.baseline_offset,
-							text->processed_text.substr(sel_end, segment.text_end-sel_end),
-							properties.color.color);
-					}
-					else
-					{
-						font.draw_text(
-							gc,
-							pos_x+line_boxes[i].box.left + segment.left,
-							pos_y+line_boxes[i].box.top + line_boxes[i].ascent - segment.baseline_offset,
-							text->processed_text.substr(segment.text_start, segment.text_end-segment.text_start),
-							properties.color.color);
-					}
-				}
-			}
 		}
 	}
 }
@@ -891,4 +810,184 @@ bool CL_CSSInlineLayout::find_content_box(CL_CSSBoxElement *element, CL_Rect &ou
 	}
 
 	return false;
+}
+
+void CL_CSSInlineLayout::render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+{
+	render_non_content(gc, resources);
+}
+
+void CL_CSSInlineLayout::render_layer_non_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+{
+	for (size_t i = 0; i < line_boxes.size(); i++)
+	{
+		for (size_t j = 0; j < line_boxes[i].segments.size(); j++)
+		{
+			CL_CSSInlineLineSegment &segment = line_boxes[i].segments[j];
+			if (objects[segment.object_index].layout)
+			{
+				CL_CSSLayoutTreeNode *object_node = objects[segment.object_index].layout;
+				bool is_same_stacking_context = (stacking_context == object_node->get_stacking_context());
+				bool is_positioned = (object_node->get_element_node()->computed_properties.position.type != CL_CSSBoxPosition::type_static);
+				bool is_float = object_node->get_element_node()->is_float();
+				if (is_same_stacking_context && !is_positioned && !is_float)
+				{
+					object_node->render_layer_background(gc, resources);
+					object_node->render_layer_non_inline(gc, resources);
+				}
+			}
+		}
+	}
+}
+
+void CL_CSSInlineLayout::render_layer_floats(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+{
+	for (size_t i = 0; i < line_boxes.size(); i++)
+	{
+		for (size_t j = 0; j < line_boxes[i].segments.size(); j++)
+		{
+			CL_CSSInlineLineSegment &segment = line_boxes[i].segments[j];
+			if (objects[segment.object_index].layout)
+			{
+				CL_CSSLayoutTreeNode *object_node = objects[segment.object_index].layout;
+				bool is_same_stacking_context = (stacking_context == object_node->get_stacking_context());
+				bool is_positioned = (object_node->get_element_node()->computed_properties.position.type != CL_CSSBoxPosition::type_static);
+				bool is_float = object_node->get_element_node()->is_float();
+				if (is_same_stacking_context && !is_positioned)
+				{
+					if (is_float)
+					{
+						object_node->render_layer_background(gc, resources);
+						object_node->render_layer_non_inline(gc, resources);
+						object_node->render_layer_floats(gc, resources);
+						object_node->render_layer_inline(gc, resources);
+					}
+					else
+					{
+						object_node->render_layer_floats(gc, resources);
+					}
+				}
+			}
+		}
+	}
+}
+
+void CL_CSSInlineLayout::render_layer_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+{
+	int pos_x = formatting_context->get_x();
+	int pos_y = formatting_context->get_y();
+	for (size_t i = 0; i < line_boxes.size(); i++)
+	{
+		for (size_t j = 0; j < line_boxes[i].segments.size(); j++)
+		{
+			CL_CSSInlineLineSegment &segment = line_boxes[i].segments[j];
+			if (objects[segment.object_index].layout)
+			{
+				CL_CSSLayoutTreeNode *object_node = objects[segment.object_index].layout;
+				bool is_same_stacking_context = (stacking_context == object_node->get_stacking_context());
+				bool is_positioned = (object_node->get_element_node()->computed_properties.position.type != CL_CSSBoxPosition::type_static);
+				bool is_float = object_node->get_element_node()->is_float();
+				if (is_same_stacking_context && !is_positioned && !is_float)
+					object_node->render_layer_inline(gc, resources);
+			}
+			else
+			{
+				CL_CSSBoxText *text = dynamic_cast<CL_CSSBoxText*>(objects[segment.object_index].node);
+				const CL_CSSBoxProperties &properties = text->get_properties();
+				if (properties.visibility.type == CL_CSSBoxVisibility::type_visible)
+				{
+					CL_Font &font = resources->get_font(gc, properties);
+					CL_FontMetrics metrics = font.get_font_metrics(gc);
+
+					/*CL_Draw::line(
+						gc,
+						pos_x+line_boxes[i].box.left + segment.left,
+						pos_y+line_boxes[i].box.top + line_boxes[i].ascent,
+						pos_x+line_boxes[i].box.left + segment.right,
+						pos_y+line_boxes[i].box.top + line_boxes[i].ascent, CL_Colorf::black);*/
+
+					size_t sel_start = text->processed_selection_start;
+					size_t sel_end = text->processed_selection_end;
+					sel_start = cl_max(sel_start, segment.text_start);
+					sel_end = cl_min(sel_end, segment.text_end);
+
+					if (sel_start < sel_end)
+					{
+						int width1 = font.get_text_size(gc, text->processed_text.substr(segment.text_start, sel_start-segment.text_start)).width;
+						int width2 = font.get_text_size(gc, text->processed_text.substr(sel_start, sel_end-sel_start)).width;
+						//int width3 = font.get_text_size(gc, text->processed_text.substr(sel_end, segment.text_end-sel_end)).width;
+						CL_Rectf b = line_boxes[i].box;
+						b.translate(pos_x + segment.left, pos_y);
+						b.left += width1;
+						b.right = b.left + width2;
+						CL_Draw::fill(gc, b, CL_Colorf::blueviolet);
+
+						font.draw_text(
+							gc,
+							pos_x+line_boxes[i].box.left + segment.left,
+							pos_y+line_boxes[i].box.top + line_boxes[i].ascent - segment.baseline_offset,
+							text->processed_text.substr(segment.text_start, sel_start-segment.text_start),
+							properties.color.color);
+
+						font.draw_text(
+							gc,
+							pos_x+line_boxes[i].box.left + segment.left + width1,
+							pos_y+line_boxes[i].box.top + line_boxes[i].ascent - segment.baseline_offset,
+							text->processed_text.substr(sel_start, sel_end-sel_start),
+							CL_Colorf::white);
+
+						font.draw_text(
+							gc,
+							pos_x+line_boxes[i].box.left + segment.left + width1 + width2,
+							pos_y+line_boxes[i].box.top + line_boxes[i].ascent - segment.baseline_offset,
+							text->processed_text.substr(sel_end, segment.text_end-sel_end),
+							properties.color.color);
+					}
+					else
+					{
+						font.draw_text(
+							gc,
+							pos_x+line_boxes[i].box.left + segment.left,
+							pos_y+line_boxes[i].box.top + line_boxes[i].ascent - segment.baseline_offset,
+							text->processed_text.substr(segment.text_start, segment.text_end-segment.text_start),
+							properties.color.color);
+					}
+				}
+			}
+		}
+	}
+}
+
+void CL_CSSInlineLayout::render_layer_positioned(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+{
+	for (size_t i = 0; i < line_boxes.size(); i++)
+	{
+		for (size_t j = 0; j < line_boxes[i].segments.size(); j++)
+		{
+			CL_CSSInlineLineSegment &segment = line_boxes[i].segments[j];
+			if (objects[segment.object_index].layout)
+			{
+				CL_CSSLayoutTreeNode *object_node = objects[segment.object_index].layout;
+				bool is_same_stacking_context = (stacking_context == object_node->get_stacking_context());
+				bool is_positioned = (object_node->get_element_node()->computed_properties.position.type != CL_CSSBoxPosition::type_static);
+				bool is_float = object_node->get_element_node()->is_float();
+				int level = object_node->get_stacking_context()->get_level();
+				if (is_same_stacking_context)
+				{
+					if (is_positioned)
+					{
+						object_node->render_layer_background(gc, resources);
+						object_node->render_layer_non_inline(gc, resources);
+						object_node->render_layer_floats(gc, resources);
+						object_node->render_layer_inline(gc, resources);
+					}
+					object_node->render_layer_positioned(gc, resources);
+				}
+				else if (!is_same_stacking_context && level == 0)
+				{
+					object_node->get_stacking_context()->render(gc, resources);
+				}
+			}
+		}
+	}
 }

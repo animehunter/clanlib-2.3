@@ -54,11 +54,16 @@ public:
 	};
 
 	void prepare(CL_CSSBlockFormattingContext *current_formatting_context, CL_CSSStackingContext *current_stacking_context);
-	virtual void render(CL_GraphicContext &gc, CL_CSSResourceCache *resources) = 0;
 	virtual void set_component_geometry() = 0;
 	virtual int get_first_line_baseline() = 0;
 	virtual int get_last_line_baseline() = 0;
 	virtual bool find_content_box(CL_CSSBoxElement *element, CL_Rect &out_rect) { return false; }
+
+	virtual void render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources) = 0;
+	virtual void render_layer_non_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources) = 0;
+	virtual void render_layer_floats(CL_GraphicContext &gc, CL_CSSResourceCache *resources) = 0;
+	virtual void render_layer_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources) = 0;
+	virtual void render_layer_positioned(CL_GraphicContext &gc, CL_CSSResourceCache *resources) = 0;
 
 	void layout_formatting_root(CL_GraphicContext &gc, CL_CSSResourceCache *resources, LayoutStrategy strategy = normal_strategy);
 	void set_root_block_position(int x, int y);

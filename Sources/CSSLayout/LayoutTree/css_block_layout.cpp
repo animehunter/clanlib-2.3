@@ -67,21 +67,6 @@ void CL_CSSBlockLayout::set_content_expanding_width()
 	}
 }
 
-void CL_CSSBlockLayout::render(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache)
-{
-	render_non_content(gc, resource_cache);
-
-	for (size_t i = 0; i < children.size(); i++)
-	{
-//		if (children[i]->get_element_node()->computed_properties.position.type == CL_CSSBoxPosition::type_static ||
-//			children[i]->get_element_node()->computed_properties.position.type == CL_CSSBoxPosition::type_relative)
-		{
-			if (stacking_context == children[i]->get_stacking_context())
-				children[i]->render(gc, resource_cache);
-		}
-	}
-}
-
 void CL_CSSBlockLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy)
 {
 	for (size_t i = 0; i < children.size(); i++)
@@ -294,4 +279,88 @@ bool CL_CSSBlockLayout::find_content_box(CL_CSSBoxElement *element, CL_Rect &out
 		}
 	}
 	return false;
+}
+
+void CL_CSSBlockLayout::render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+{
+	render_non_content(gc, resources);
+}
+
+void CL_CSSBlockLayout::render_layer_non_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+{
+	for (size_t i = 0; i < children.size(); i++)
+	{
+		bool is_same_stacking_context = (stacking_context == children[i]->get_stacking_context());
+		bool is_positioned = (children[i]->get_element_node()->computed_properties.position.type != CL_CSSBoxPosition::type_static);
+		bool is_float = children[i]->get_element_node()->is_float();
+		if (is_same_stacking_context && !is_positioned && !is_float)
+		{
+			children[i]->render_layer_background(gc, resources);
+			children[i]->render_layer_non_inline(gc, resources);
+		}
+	}
+}
+
+void CL_CSSBlockLayout::render_layer_floats(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+{
+	for (size_t i = 0; i < children.size(); i++)
+	{
+		bool is_same_stacking_context = (stacking_context == children[i]->get_stacking_context());
+		bool is_positioned = (children[i]->get_element_node()->computed_properties.position.type != CL_CSSBoxPosition::type_static);
+		bool is_float = children[i]->get_element_node()->is_float();
+		if (is_same_stacking_context && !is_positioned)
+		{
+			if (is_float)
+			{
+				children[i]->render_layer_background(gc, resources);
+				children[i]->render_layer_non_inline(gc, resources);
+				children[i]->render_layer_floats(gc, resources);
+				children[i]->render_layer_inline(gc, resources);
+			}
+			else
+			{
+				children[i]->render_layer_floats(gc, resources);
+			}
+		}
+	}
+}
+
+void CL_CSSBlockLayout::render_layer_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+{
+	for (size_t i = 0; i < children.size(); i++)
+	{
+		bool is_same_stacking_context = (stacking_context == children[i]->get_stacking_context());
+		bool is_positioned = (children[i]->get_element_node()->computed_properties.position.type != CL_CSSBoxPosition::type_static);
+		bool is_float = children[i]->get_element_node()->is_float();
+		if (is_same_stacking_context && !is_positioned && !is_float)
+		{
+			children[i]->render_layer_inline(gc, resources);
+		}
+	}
+}
+
+void CL_CSSBlockLayout::render_layer_positioned(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+{
+	for (size_t i = 0; i < children.size(); i++)
+	{
+		bool is_same_stacking_context = (stacking_context == children[i]->get_stacking_context());
+		bool is_positioned = (children[i]->get_element_node()->computed_properties.position.type != CL_CSSBoxPosition::type_static);
+		bool is_float = children[i]->get_element_node()->is_float();
+		int level = children[i]->get_stacking_context()->get_level();
+		if (is_same_stacking_context)
+		{
+			if (is_positioned)
+			{
+				children[i]->render_layer_background(gc, resources);
+				children[i]->render_layer_non_inline(gc, resources);
+				children[i]->render_layer_floats(gc, resources);
+				children[i]->render_layer_inline(gc, resources);
+			}
+			children[i]->render_layer_positioned(gc, resources);
+		}
+		else if (!is_same_stacking_context && level == 0)
+		{
+			children[i]->get_stacking_context()->render(gc, resources);
+		}
+	}
 }

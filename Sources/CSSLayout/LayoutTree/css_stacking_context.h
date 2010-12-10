@@ -37,6 +37,7 @@ public:
 	CL_CSSStackingContext(CL_CSSLayoutTreeNode *layout);
 	~CL_CSSStackingContext();
 	bool operator <(const CL_CSSStackingContext &other) const;
+	int get_level() const { return level; }
 	void push_back(CL_CSSStackingContext *child);
 	void sort();
 	void render(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache);
