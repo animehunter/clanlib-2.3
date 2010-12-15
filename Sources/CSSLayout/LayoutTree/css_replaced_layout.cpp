@@ -228,12 +228,12 @@ void CL_CSSReplacedLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCur
 	{
 		if (width.expanding)
 			width.value = intrinsic.width;
-
-		if (height.use_content && intrinsic.has_height)
-			height.value = intrinsic.height;
-		else if (height.use_content && intrinsic.has_ratio)
-			height.value = width.value * intrinsic.ratio;
 	}
+
+	if (height.use_content && intrinsic.has_height)
+		height.value = intrinsic.height;
+	else if (height.use_content && intrinsic.has_ratio)
+		height.value = width.value * intrinsic.ratio;
 
 	cursor.apply_margin();
 	box = CL_Rect(cl_used_to_actual(cursor.x), cl_used_to_actual(cursor.y), cl_used_to_actual(cursor.x+width.value), cl_used_to_actual(cursor.y+height.value));

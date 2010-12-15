@@ -131,7 +131,7 @@ size_t HTMLTokenizer::read_name(size_t p, CL_String &out_string)
 			if (!is_tag_name_continued(p2))
 				break;
 		}
-		out_string = data.substr(p, p2-p);
+		out_string = CL_StringHelp::text_to_lower(data.substr(p, p2-p));
 		return p2;
 	}
 	else
