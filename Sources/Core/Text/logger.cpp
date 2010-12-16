@@ -57,13 +57,14 @@ CL_Mutex CL_Logger::mutex;
 void CL_Logger::enable()
 {
 	CL_MutexSection mutex_lock(&CL_Logger::mutex);
-	instances.push_back(this);
+	if (std::find(instances.begin(), instances.end(), this) == instances.end())
+		instances.push_back(this);
 }
-	
+
 void CL_Logger::disable()
 {
 	CL_MutexSection mutex_lock(&CL_Logger::mutex);
-	std::vector<CL_Logger*>::iterator il = std::find(instances.begin(),instances.end(),this);
+	std::vector<CL_Logger*>::iterator il = std::find(instances.begin(), instances.end(), this);
 	if(il != instances.end())
 		instances.erase(il);
 }
