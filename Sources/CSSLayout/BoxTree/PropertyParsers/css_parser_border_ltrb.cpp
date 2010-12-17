@@ -45,25 +45,25 @@ void CL_CSSParserBorderLTRB::parse(CL_CSSBoxProperties &properties, const CL_Str
 	CL_CSSBoxBorderWidth *width_prop = 0;
 	CL_CSSBoxBorderStyle *style_prop = 0;
 	CL_CSSBoxBorderColor *color_prop = 0;
-	if (equals(name, "border-top-width"))
+	if (equals(name, "border-top"))
 	{
 		width_prop = &properties.border_width_top;
 		style_prop = &properties.border_style_top;
 		color_prop = &properties.border_color_top;
 	}
-	else if (equals(name, "border-right-width"))
+	else if (equals(name, "border-right"))
 	{
 		width_prop = &properties.border_width_right;
 		style_prop = &properties.border_style_right;
 		color_prop = &properties.border_color_right;
 	}
-	else if (equals(name, "border-bottom-width"))
+	else if (equals(name, "border-bottom"))
 	{
 		width_prop = &properties.border_width_bottom;
 		style_prop = &properties.border_style_bottom;
 		color_prop = &properties.border_color_bottom;
 	}
-	else if (equals(name, "border-left-width"))
+	else if (equals(name, "border-left"))
 	{
 		width_prop = &properties.border_width_left;
 		style_prop = &properties.border_style_left;
@@ -71,6 +71,7 @@ void CL_CSSParserBorderLTRB::parse(CL_CSSBoxProperties &properties, const CL_Str
 	}
 	else
 	{
+		debug_parse_error(name, tokens);
 		return;
 	}
 
@@ -176,6 +177,7 @@ void CL_CSSParserBorderLTRB::parse(CL_CSSBoxProperties &properties, const CL_Str
 				}
 				else
 				{
+					debug_parse_error(name, tokens);
 					return;
 				}
 			}
@@ -190,11 +192,13 @@ void CL_CSSParserBorderLTRB::parse(CL_CSSBoxProperties &properties, const CL_Str
 				}
 				else
 				{
+					debug_parse_error(name, tokens);
 					return;
 				}
 			}
 			else
 			{
+				debug_parse_error(name, tokens);
 				return;
 			}
 		}

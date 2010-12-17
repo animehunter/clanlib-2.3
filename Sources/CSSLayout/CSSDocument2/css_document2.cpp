@@ -634,6 +634,16 @@ bool CL_CSSDocument2_Impl::read_property_value(CL_CSSTokenizer &tokenizer, CL_CS
 		property.get_value_tokens().pop_back();
 		property.get_value_tokens().pop_back();
 	}
+	else if (tokens_size >= 3 &&
+		property.get_value_tokens()[tokens_size-3].type == CL_CSSToken::type_delim && property.get_value_tokens()[tokens_size-3].value == "!" &&
+		property.get_value_tokens()[tokens_size-2].type == CL_CSSToken::type_whitespace &&
+		property.get_value_tokens()[tokens_size-1].type == CL_CSSToken::type_ident && equals(property.get_value_tokens()[tokens_size-1].value, "important"))
+	{
+		property.set_important(true);
+		property.get_value_tokens().pop_back();
+		property.get_value_tokens().pop_back();
+		property.get_value_tokens().pop_back();
+	}
 
 	// Remove any possible whitespace at the beginning of the property:
 	while (!property.get_value_tokens().empty() && property.get_value_tokens().front().type == CL_CSSToken::type_whitespace)
@@ -788,6 +798,17 @@ CL_CSSDocument2_Impl::HTMLUrl::HTMLUrl(const CL_String &url, const HTMLUrl &base
 			base_directory = base.path.substr(0, last_slash + 1);
 		}
 		path = base_directory + path;
+	}
+
+	while (true)
+	{
+		CL_String::size_type p = path.find("/../");
+		if (p == 0 || p == CL_String::npos)
+			break;
+		CL_String::size_type p2 = path.rfind('/', p-1);
+		if (p2 == CL_String::npos)
+			break;
+		path = path.substr(0, p2) + path.substr(p+3);
 	}
 }
 

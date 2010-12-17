@@ -62,4 +62,23 @@ void CL_CSSParserBottom::parse(CL_CSSBoxProperties &properties, const CL_String 
 		properties.bottom.type = CL_CSSBoxBottom::type_percentage;
 		properties.bottom.percentage = CL_StringHelp::text_to_float(token.value);
 	}
+	else if (token.type == CL_CSSToken::type_delim && token.value == "-")
+	{
+		token = next_token(pos, tokens);
+		if (is_length(token) && pos == tokens.size())
+		{
+			CL_CSSBoxLength length;
+			if (parse_length(token, length))
+			{
+				length.value = -length.value;
+				properties.bottom.type = CL_CSSBoxBottom::type_length;
+				properties.bottom.length = length;
+			}
+		}
+		else if (token.type == CL_CSSToken::type_percentage && pos == tokens.size())
+		{
+			properties.bottom.type = CL_CSSBoxBottom::type_percentage;
+			properties.bottom.percentage = -CL_StringHelp::text_to_float(token.value);
+		}
+	}
 }

@@ -72,6 +72,7 @@ void CL_CSSParserMargin::parse(CL_CSSBoxProperties &properties, const CL_String 
 			}
 			else
 			{
+				debug_parse_error(name, tokens);
 				return;
 			}
 		}
@@ -80,12 +81,42 @@ void CL_CSSParserMargin::parse(CL_CSSBoxProperties &properties, const CL_String 
 			margin_widths[count].type = CL_CSSBoxMarginWidth::type_percentage;
 			margin_widths[count].percentage = CL_StringHelp::text_to_float(token.value);
 		}
+		else if (token.type == CL_CSSToken::type_delim && token.value == "-")
+		{
+			token = next_token(pos, tokens);
+			if (is_length(token))
+			{
+				CL_CSSBoxLength length;
+				if (parse_length(token, length))
+				{
+					length.value = -length.value;
+					margin_widths[count].type = CL_CSSBoxMarginWidth::type_length;
+					margin_widths[count].length = length;
+				}
+				else
+				{
+					debug_parse_error(name, tokens);
+					return;
+				}
+			}
+			else if (token.type == CL_CSSToken::type_percentage)
+			{
+				margin_widths[count].type = CL_CSSBoxMarginWidth::type_percentage;
+				margin_widths[count].percentage = -CL_StringHelp::text_to_float(token.value);
+			}
+			else
+			{
+				debug_parse_error(name, tokens);
+				return;
+			}
+		}
 		else if (token.type == CL_CSSToken::type_null)
 		{
 			break;
 		}
 		else
 		{
+			debug_parse_error(name, tokens);
 			return;
 		}
 	}

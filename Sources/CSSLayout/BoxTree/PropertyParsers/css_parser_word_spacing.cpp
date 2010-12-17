@@ -57,4 +57,18 @@ void CL_CSSParserWordSpacing::parse(CL_CSSBoxProperties &properties, const CL_St
 			properties.word_spacing.length = length;
 		}
 	}
+	else if (token.type == CL_CSSToken::type_delim && token.value == "-")
+	{
+		token = next_token(pos, tokens);
+		if (is_length(token) && pos == tokens.size())
+		{
+			CL_CSSBoxLength length;
+			if (parse_length(token, length))
+			{
+				length.value = -length.value;
+				properties.word_spacing.type = CL_CSSBoxWordSpacing::type_length;
+				properties.word_spacing.length = length;
+			}
+		}
+	}
 }

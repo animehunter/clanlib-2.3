@@ -68,10 +68,15 @@ void CL_CSSParserBorderColor::parse(CL_CSSBoxProperties &properties, const CL_St
 						properties.border_color_right.type = CL_CSSBoxBorderColor::type_inherit;
 						properties.border_color_bottom.type = CL_CSSBoxBorderColor::type_inherit;
 					}
+					else
+					{
+						debug_parse_error(name, tokens);
+					}
 					return;
 				}
 				else
 				{
+					debug_parse_error(name, tokens);
 					return;
 				}
 			}
@@ -81,6 +86,7 @@ void CL_CSSParserBorderColor::parse(CL_CSSBoxProperties &properties, const CL_St
 			}
 			else
 			{
+				debug_parse_error(name, tokens);
 				return;
 			}
 		}

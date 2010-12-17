@@ -51,10 +51,14 @@ void CL_CSSParserBorderSpacing::parse(CL_CSSBoxProperties &properties, const CL_
 	else if (is_length(token))
 	{
 		if (!parse_length(token, length1))
+		{
+			debug_parse_error(name, tokens);
 			return;
+		}
 	}
 	else
 	{
+		debug_parse_error(name, tokens);
 		return;
 	}
 

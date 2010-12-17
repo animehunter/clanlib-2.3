@@ -77,5 +77,24 @@ void CL_CSSParserMarginLTRB::parse(CL_CSSBoxProperties &properties, const CL_Str
 			width->type = CL_CSSBoxMarginWidth::type_percentage;
 			width->percentage = CL_StringHelp::text_to_float(token.value);
 		}
+		else if (token.type == CL_CSSToken::type_delim && token.value == "-")
+		{
+			token = next_token(pos, tokens);
+			if (is_length(token) && pos == tokens.size())
+			{
+				CL_CSSBoxLength length;
+				if (parse_length(token, length))
+				{
+					length.value = -length.value;
+					width->type = CL_CSSBoxMarginWidth::type_length;
+					width->length = length;
+				}
+			}
+			else if (token.type == CL_CSSToken::type_percentage && pos == tokens.size())
+			{
+				width->type = CL_CSSBoxMarginWidth::type_percentage;
+				width->percentage = -CL_StringHelp::text_to_float(token.value);
+			}
+		}
 	}
 }

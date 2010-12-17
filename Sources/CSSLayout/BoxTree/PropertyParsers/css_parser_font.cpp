@@ -37,7 +37,7 @@ std::vector<CL_String> CL_CSSParserFont::get_names()
 	return names;
 }
 
-void CL_CSSParserFont::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens)
+void CL_CSSParserFont::parse(CL_CSSBoxProperties &properties, const CL_String &propname, const std::vector<CL_CSSToken> &tokens)
 {
 	CL_CSSBoxFontStyle style;
 	CL_CSSBoxFontVariant variant;
@@ -189,7 +189,10 @@ void CL_CSSParserFont::parse(CL_CSSBoxProperties &properties, const CL_String &n
 	}
 
 	if (pos == tokens.size())
+	{
+		debug_parse_error(propname, tokens);
 		return;
+	}
 
 	if (token.type == CL_CSSToken::type_ident)
 	{
@@ -214,7 +217,10 @@ void CL_CSSParserFont::parse(CL_CSSBoxProperties &properties, const CL_String &n
 		else if (equals(token.value, "inherit"))
 			size.type = CL_CSSBoxFontSize::type_inherit;
 		else
+		{
+			debug_parse_error(propname, tokens);
 			return;
+		}
 	}
 	else if (is_length(token))
 	{
@@ -226,6 +232,7 @@ void CL_CSSParserFont::parse(CL_CSSBoxProperties &properties, const CL_String &n
 		}
 		else
 		{
+			debug_parse_error(propname, tokens);
 			return;
 		}
 	}
@@ -236,6 +243,7 @@ void CL_CSSParserFont::parse(CL_CSSBoxProperties &properties, const CL_String &n
 	}
 	else
 	{
+		debug_parse_error(propname, tokens);
 		return;
 	}
 
@@ -251,7 +259,10 @@ void CL_CSSParserFont::parse(CL_CSSBoxProperties &properties, const CL_String &n
 			else if (equals(token.value, "inherit"))
 				line_height.type = CL_CSSBoxLineHeight::type_inherit;
 			else
+			{
+				debug_parse_error(propname, tokens);
 				return;
+			}
 		}
 		else if (token.type == CL_CSSToken::type_number)
 		{
@@ -268,6 +279,7 @@ void CL_CSSParserFont::parse(CL_CSSBoxProperties &properties, const CL_String &n
 			}
 			else
 			{
+				debug_parse_error(propname, tokens);
 				return;
 			}
 		}
@@ -278,6 +290,7 @@ void CL_CSSParserFont::parse(CL_CSSBoxProperties &properties, const CL_String &n
 		}
 		else
 		{
+			debug_parse_error(propname, tokens);
 			return;
 		}
 
@@ -357,7 +370,10 @@ void CL_CSSParserFont::parse(CL_CSSBoxProperties &properties, const CL_String &n
 					break;
 				token = next_token(pos, tokens);
 				if (token.type != CL_CSSToken::type_delim || token.value != ",")
+				{
+					debug_parse_error(propname, tokens);
 					return;
+				}
 				token = next_token(pos, tokens);
 			}
 		}
@@ -372,11 +388,15 @@ void CL_CSSParserFont::parse(CL_CSSBoxProperties &properties, const CL_String &n
 				break;
 			token = next_token(pos, tokens);
 			if (token.type != CL_CSSToken::type_delim || token.value != ",")
+			{
+				debug_parse_error(propname, tokens);
 				return;
+			}
 			token = next_token(pos, tokens);
 		}
 		else
 		{
+			debug_parse_error(propname, tokens);
 			return;
 		}
 	}

@@ -63,6 +63,7 @@ void CL_CSSParserPadding::parse(CL_CSSBoxProperties &properties, const CL_String
 			}
 			else
 			{
+				debug_parse_error(name, tokens);
 				return;
 			}
 		}
@@ -71,12 +72,42 @@ void CL_CSSParserPadding::parse(CL_CSSBoxProperties &properties, const CL_String
 			padding_widths[count].type = CL_CSSBoxPaddingWidth::type_percentage;
 			padding_widths[count].percentage = CL_StringHelp::text_to_float(token.value);
 		}
+		else if (token.type == CL_CSSToken::type_delim && token.value == "-")
+		{
+			token = next_token(pos, tokens);
+			if (is_length(token))
+			{
+				CL_CSSBoxLength length;
+				if (parse_length(token, length))
+				{
+					length.value = -length.value;
+					padding_widths[count].type = CL_CSSBoxPaddingWidth::type_length;
+					padding_widths[count].length = length;
+				}
+				else
+				{
+					debug_parse_error(name, tokens);
+					return;
+				}
+			}
+			else if (token.type == CL_CSSToken::type_percentage)
+			{
+				padding_widths[count].type = CL_CSSBoxPaddingWidth::type_percentage;
+				padding_widths[count].percentage = -CL_StringHelp::text_to_float(token.value);
+			}
+			else
+			{
+				debug_parse_error(name, tokens);
+				return;
+			}
+		}
 		else if (token.type == CL_CSSToken::type_null)
 		{
 			break;
 		}
 		else
 		{
+			debug_parse_error(name, tokens);
 			return;
 		}
 	}

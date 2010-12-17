@@ -57,4 +57,18 @@ void CL_CSSParserLetterSpacing::parse(CL_CSSBoxProperties &properties, const CL_
 			properties.letter_spacing.length = length;
 		}
 	}
+	else if (token.type == CL_CSSToken::type_delim && token.value == "-")
+	{
+		token = next_token(pos, tokens);
+		if (is_length(token) && pos == tokens.size())
+		{
+			CL_CSSBoxLength length;
+			if (parse_length(token, length))
+			{
+				length.value = -length.value;
+				properties.letter_spacing.type = CL_CSSBoxLetterSpacing::type_length;
+				properties.letter_spacing.length = length;
+			}
+		}
+	}
 }

@@ -76,4 +76,23 @@ void CL_CSSParserVerticalAlign::parse(CL_CSSBoxProperties &properties, const CL_
 		properties.vertical_align.type = CL_CSSBoxVerticalAlign::type_percentage;
 		properties.vertical_align.percentage = CL_StringHelp::text_to_float(token.value);
 	}
+	else if (token.type == CL_CSSToken::type_delim && token.value == "-")
+	{
+		token = next_token(pos, tokens);
+		if (is_length(token) && pos == tokens.size())
+		{
+			CL_CSSBoxLength length;
+			if (parse_length(token, length))
+			{
+				length.value = -length.value;
+				properties.vertical_align.type = CL_CSSBoxVerticalAlign::type_length;
+				properties.vertical_align.length = length;
+			}
+		}
+		else if (token.type == CL_CSSToken::type_percentage && pos == tokens.size())
+		{
+			properties.vertical_align.type = CL_CSSBoxVerticalAlign::type_percentage;
+			properties.vertical_align.percentage = -CL_StringHelp::text_to_float(token.value);
+		}
+	}
 }

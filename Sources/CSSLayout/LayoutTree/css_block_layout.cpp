@@ -156,6 +156,12 @@ void CL_CSSBlockLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor
 
 void CL_CSSBlockLayout::layout_absolute_and_fixed_content(CL_GraphicContext &gc, CL_CSSResourceCache *resources, CL_Rect containing_block, const CL_Size &viewport_size)
 {
+	if (get_element_node()->computed_properties.position.type != CL_CSSBoxPosition::type_static)
+	{
+		CL_Rect rect = get_padding_box();
+		containing_block = rect;
+	}
+
 	for (size_t i = 0; i < children.size(); i++)
 	{
 		if (children[i]->get_element_node()->computed_properties.position.type == CL_CSSBoxPosition::type_absolute ||

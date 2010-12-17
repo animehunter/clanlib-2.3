@@ -29,6 +29,7 @@
 #include "CSSLayout/precomp.h"
 #include "css_property_parser.h"
 #include "API/CSSLayout/css_box_length.h"
+#include "API/Core/Text/console.h"
 
 CL_CSSToken CL_CSSPropertyParser::next_token(size_t &pos, const std::vector<CL_CSSToken> &tokens, bool skip_whitespace)
 {
@@ -370,4 +371,44 @@ CL_CSSPropertyParser::ColorType CL_CSSPropertyParser::colors[] =
 bool CL_CSSPropertyParser::equals(const CL_String &s1, const CL_String &s2)
 {
 	return CL_StringHelp::compare(s1, s2, true) == 0;
+}
+
+void CL_CSSPropertyParser::debug_parse_error(const CL_String &name, const std::vector<CL_CSSToken> &tokens)
+{
+	CL_String s = cl_format("Parse error for %1:", name);
+	for (size_t i = 0; i < tokens.size(); i++)
+	{
+		switch (tokens[i].type)
+		{
+		case CL_CSSToken::type_null: s += " null"; break;
+		case CL_CSSToken::type_ident: s += cl_format(" ident(%1)", tokens[i].value); break;
+		case CL_CSSToken::type_atkeyword: s += cl_format(" atkeyword(%1)", tokens[i].value); break;
+		case CL_CSSToken::type_string: s += cl_format(" string(%1)", tokens[i].value); break;
+		case CL_CSSToken::type_invalid: s += cl_format(" invalid(%1)", tokens[i].value); break;
+		case CL_CSSToken::type_hash: s += cl_format(" hash(%1)", tokens[i].value); break;
+		case CL_CSSToken::type_number: s += cl_format(" number(%1)", tokens[i].value); break;
+		case CL_CSSToken::type_percentage: s += cl_format(" percentage(%1)", tokens[i].value); break;
+		case CL_CSSToken::type_dimension: s += cl_format(" dimension(%1,%2)", tokens[i].value, tokens[i].dimension); break;
+		case CL_CSSToken::type_uri: s += cl_format(" uri(%1)", tokens[i].value); break;
+		case CL_CSSToken::type_unicode_range: s += cl_format(" unicode-range(%1)", tokens[i].value); break;
+		case CL_CSSToken::type_cdo: s += " cdo"; break;
+		case CL_CSSToken::type_cdc: s += " cdc"; break;
+		case CL_CSSToken::type_colon: s += " :"; break;
+		case CL_CSSToken::type_semi_colon: s += " ;"; break;
+		case CL_CSSToken::type_curly_brace_begin: s += " {"; break;
+		case CL_CSSToken::type_curly_brace_end: s += " }"; break;
+		case CL_CSSToken::type_bracket_begin: s += " ("; break;
+		case CL_CSSToken::type_bracket_end: s += " )"; break;
+		case CL_CSSToken::type_square_bracket_begin: s += " ["; break;
+		case CL_CSSToken::type_square_bracket_end: s += " ]"; break;
+		case CL_CSSToken::type_whitespace: s += " whitespace"; break;
+		case CL_CSSToken::type_comment: s += " comment"; break;
+		case CL_CSSToken::type_function: s += cl_format(" function(%1)", tokens[i].value); break;
+		case CL_CSSToken::type_includes: s += cl_format(" includes(%1)", tokens[i].value); break;
+		case CL_CSSToken::type_dashmatch: s += cl_format(" dashmatch(%1)", tokens[i].value); break;
+		case CL_CSSToken::type_delim: s += cl_format(" delim(%1)", tokens[i].value); break;
+		default: break;
+		}
+	}
+	CL_Console::write_line(s);
 }

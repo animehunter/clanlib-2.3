@@ -143,6 +143,7 @@ void CL_CSSParserListStyle::parse(CL_CSSBoxProperties &properties, const CL_Stri
 				}
 				else
 				{
+					debug_parse_error(name, tokens);
 					return;
 				}
 			}
@@ -158,6 +159,7 @@ void CL_CSSParserListStyle::parse(CL_CSSBoxProperties &properties, const CL_Stri
 			}
 			else
 			{
+				debug_parse_error(name, tokens);
 				return;
 			}
 		}
@@ -169,6 +171,7 @@ void CL_CSSParserListStyle::parse(CL_CSSBoxProperties &properties, const CL_Stri
 		}
 		else
 		{
+			debug_parse_error(name, tokens);
 			return;
 		}
 	}

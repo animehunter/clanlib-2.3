@@ -46,6 +46,7 @@ protected:
 	bool parse_integer(const CL_String &value, int &out_int);
 	bool parse_color(const std::vector<CL_CSSToken> &tokens, size_t &in_out_pos, CL_Colorf &out_color);
 	static bool equals(const CL_String &s1, const CL_String &s2);
+	void debug_parse_error(const CL_String &name, const std::vector<CL_CSSToken> &tokens);
 
 private:
 	struct ColorType

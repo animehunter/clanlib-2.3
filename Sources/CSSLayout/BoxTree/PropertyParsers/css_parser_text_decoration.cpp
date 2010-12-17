@@ -72,6 +72,7 @@ void CL_CSSParserTextDecoration::parse(CL_CSSBoxProperties &properties, const CL
 				}
 				else
 				{
+					debug_parse_error(name, tokens);
 					return;
 				}
 

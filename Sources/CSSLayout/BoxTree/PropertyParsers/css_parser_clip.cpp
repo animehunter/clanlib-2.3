@@ -72,7 +72,10 @@ void CL_CSSParserClip::parse(CL_CSSBoxProperties &properties, const CL_String &n
 			if (is_length(token))
 			{
 				if (!parse_length(token, rect[dir]))
+				{
+					debug_parse_error(name, tokens);
 					return;
+				}
 			}
 			else if (token.type == CL_CSSToken::type_ident && equals(token.value, "auto"))
 			{
@@ -80,6 +83,7 @@ void CL_CSSParserClip::parse(CL_CSSBoxProperties &properties, const CL_String &n
 			}
 			else
 			{
+				debug_parse_error(name, tokens);
 				return;
 			}
 		}

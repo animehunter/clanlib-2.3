@@ -197,11 +197,13 @@ void CL_CSSParserBackground::parse(CL_CSSBoxProperties &properties, const CL_Str
 					}
 					else
 					{
+						debug_parse_error(name, tokens);
 						return;
 					}
 				}
 				else
 				{
+					debug_parse_error(name, tokens);
 					return;
 				}
 			}
@@ -237,11 +239,13 @@ void CL_CSSParserBackground::parse(CL_CSSBoxProperties &properties, const CL_Str
 					}
 					else
 					{
+						debug_parse_error(name, tokens);
 						return;
 					}
 				}
 				else
 				{
+					debug_parse_error(name, tokens);
 					return;
 				}
 			}
@@ -268,11 +272,81 @@ void CL_CSSParserBackground::parse(CL_CSSBoxProperties &properties, const CL_Str
 				}
 				else
 				{
+					debug_parse_error(name, tokens);
 					return;
+				}
+			}
+			else if (token.type == CL_CSSToken::type_delim && token.value == "-")
+			{
+				token = next_token(pos, tokens);
+				if (is_length(token))
+				{
+					CL_CSSBoxLength length;
+					if (parse_length(token, length))
+					{
+						length.value = -length.value;
+						if (center_specified)
+						{
+							bgposition.type_x = CL_CSSBoxBackgroundPosition::type1_center;
+							x_specified = true;
+							center_specified = false;
+						}
+
+						if (!x_specified && !y_specified)
+						{
+							bgposition.type_x = CL_CSSBoxBackgroundPosition::type1_length;
+							bgposition.length_x = length;
+							x_specified = true;
+						}
+						else if (x_specified && !y_specified)
+						{
+							bgposition.type_y = CL_CSSBoxBackgroundPosition::type2_length;
+							bgposition.length_y = length;
+							y_specified = true;
+						}
+						else
+						{
+							debug_parse_error(name, tokens);
+							return;
+						}
+					}
+					else
+					{
+						debug_parse_error(name, tokens);
+						return;
+					}
+				}
+				else if (token.type == CL_CSSToken::type_percentage)
+				{
+					if (center_specified)
+					{
+						bgposition.type_x = CL_CSSBoxBackgroundPosition::type1_center;
+						x_specified = true;
+						center_specified = false;
+					}
+
+					if (!x_specified && !y_specified)
+					{
+						bgposition.type_x = CL_CSSBoxBackgroundPosition::type1_percentage;
+						bgposition.percentage_x = -CL_StringHelp::text_to_float(token.value);
+						x_specified = true;
+					}
+					else if (x_specified && !y_specified)
+					{
+						bgposition.type_y = CL_CSSBoxBackgroundPosition::type2_percentage;
+						bgposition.percentage_y = -CL_StringHelp::text_to_float(token.value);
+						y_specified = true;
+					}
+					else
+					{
+						debug_parse_error(name, tokens);
+						return;
+					}
 				}
 			}
 			else
 			{
+				debug_parse_error(name, tokens);
 				return;
 			}
 		}

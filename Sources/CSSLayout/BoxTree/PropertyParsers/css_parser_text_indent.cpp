@@ -59,4 +59,23 @@ void CL_CSSParserTextIndent::parse(CL_CSSBoxProperties &properties, const CL_Str
 		properties.text_indent.type = CL_CSSBoxTextIndent::type_percentage;
 		properties.text_indent.percentage = CL_StringHelp::text_to_float(token.value);
 	}
+	else if (token.type == CL_CSSToken::type_delim && token.value == "-")
+	{
+		token = next_token(pos, tokens);
+		if (is_length(token) && pos == tokens.size())
+		{
+			CL_CSSBoxLength length;
+			if (parse_length(token, length))
+			{
+				length.value = -length.value;
+				properties.text_indent.type = CL_CSSBoxTextIndent::type_length;
+				properties.text_indent.length = length;
+			}
+		}
+		else if (token.type == CL_CSSToken::type_percentage && pos == tokens.size())
+		{
+			properties.text_indent.type = CL_CSSBoxTextIndent::type_percentage;
+			properties.text_indent.percentage = -CL_StringHelp::text_to_float(token.value);
+		}
+	}
 }

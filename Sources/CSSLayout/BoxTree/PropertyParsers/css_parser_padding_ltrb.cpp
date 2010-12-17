@@ -75,5 +75,24 @@ void CL_CSSParserPaddingLTRB::parse(CL_CSSBoxProperties &properties, const CL_St
 			width->type = CL_CSSBoxPaddingWidth::type_percentage;
 			width->percentage = CL_StringHelp::text_to_float(token.value);
 		}
+		else if (token.type == CL_CSSToken::type_delim && token.value == "-")
+		{
+			token = next_token(pos, tokens);
+			if (is_length(token) && pos == tokens.size())
+			{
+				CL_CSSBoxLength length;
+				if (parse_length(token, length))
+				{
+					length.value = -length.value;
+					width->type = CL_CSSBoxPaddingWidth::type_length;
+					width->length = length;
+				}
+			}
+			else if (token.type == CL_CSSToken::type_percentage && pos == tokens.size())
+			{
+				width->type = CL_CSSBoxPaddingWidth::type_percentage;
+				width->percentage = -CL_StringHelp::text_to_float(token.value);
+			}
+		}
 	}
 }

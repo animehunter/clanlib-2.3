@@ -69,6 +69,7 @@ void CL_CSSParserBorderWidth::parse(CL_CSSBoxProperties &properties, const CL_St
 			}
 			else
 			{
+				debug_parse_error(name, tokens);
 				return;
 			}
 		}
@@ -82,6 +83,7 @@ void CL_CSSParserBorderWidth::parse(CL_CSSBoxProperties &properties, const CL_St
 			}
 			else
 			{
+				debug_parse_error(name, tokens);
 				return;
 			}
 		}
@@ -91,6 +93,7 @@ void CL_CSSParserBorderWidth::parse(CL_CSSBoxProperties &properties, const CL_St
 		}
 		else
 		{
+			debug_parse_error(name, tokens);
 			return;
 		}
 	}

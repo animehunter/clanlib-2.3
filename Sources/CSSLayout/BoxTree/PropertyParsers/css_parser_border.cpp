@@ -149,6 +149,7 @@ void CL_CSSParserBorder::parse(CL_CSSBoxProperties &properties, const CL_String 
 				}
 				else
 				{
+					debug_parse_error(name, tokens);
 					return;
 				}
 			}
@@ -163,11 +164,13 @@ void CL_CSSParserBorder::parse(CL_CSSBoxProperties &properties, const CL_String 
 				}
 				else
 				{
+					debug_parse_error(name, tokens);
 					return;
 				}
 			}
 			else
 			{
+				debug_parse_error(name, tokens);
 				return;
 			}
 		}

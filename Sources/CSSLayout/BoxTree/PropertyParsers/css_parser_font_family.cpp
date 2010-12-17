@@ -37,7 +37,7 @@ std::vector<CL_String> CL_CSSParserFontFamily::get_names()
 	return names;
 }
 
-void CL_CSSParserFontFamily::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens)
+void CL_CSSParserFontFamily::parse(CL_CSSBoxProperties &properties, const CL_String &propname, const std::vector<CL_CSSToken> &tokens)
 {
 	CL_CSSBoxFontFamily family;
 	family.type = CL_CSSBoxFontFamily::type_names;
@@ -48,7 +48,10 @@ void CL_CSSParserFontFamily::parse(CL_CSSBoxProperties &properties, const CL_Str
 	while (true)
 	{
 		if (token.type != CL_CSSToken::type_ident && token.type != CL_CSSToken::type_string)
+		{
+			debug_parse_error(propname, tokens);
 			return;
+		}
 
 		CL_CSSBoxFontFamilyName name;
 		if (equals(token.value, "serif"))
@@ -118,7 +121,10 @@ void CL_CSSParserFontFamily::parse(CL_CSSBoxProperties &properties, const CL_Str
 				break;
 			token = next_token(pos, tokens);
 			if (token.type != CL_CSSToken::type_delim || token.value != ",")
+			{
+				debug_parse_error(propname, tokens);
 				return;
+			}
 			token = next_token(pos, tokens);
 		}
 	}

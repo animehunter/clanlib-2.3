@@ -67,6 +67,17 @@ HTMLUrl::HTMLUrl(const CL_String &url, const HTMLUrl &base)
 		}
 		path = base_directory + path;
 	}
+
+	while (true)
+	{
+		CL_String::size_type p = path.find("/../");
+		if (p == 0 || p == CL_String::npos)
+			break;
+		CL_String::size_type p2 = path.rfind('/', p-1);
+		if (p2 == CL_String::npos)
+			break;
+		path = path.substr(0, p2) + path.substr(p+3);
+	}
 }
 
 CL_String HTMLUrl::read_scheme()

@@ -55,15 +55,8 @@ CSSView::CSSView(CL_GUIComponent *parent)
 	//page.load("http://www.dr.dk/nyheder/");
 	//page.load("http://politiken.dk/erhverv/ECE1134488/nemid-nedslider-ansatte-i-borgerservice/");
 	//page.load("http://nyhederne.tv2.dk/");
+	//page.load("http://www.w3.org/Style/CSS/Test/CSS1/current/test5526c.htm");
 	load_html("htmlpage.html", "htmlpage.css", page.pageurl);
-
-	//load_html("clanlib.html", "clanlib.css");
-	//load_html("acid1.xml", "acid1.css");
-	//load_html("slashdot.html", "slashdot.css");
-	//load_html("politiken.html", "politiken.css");
-	//load_html("test.xml", "test.css");
-	//load_html("zengarden-sample.html", "zengarden-sample.css");
-	//load_html("zengarden-sample.html", "zengarden-sample2.css");
 
 	on_resized();
 }

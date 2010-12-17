@@ -47,6 +47,13 @@ CL_CSSTokenizer_Impl::CL_CSSTokenizer_Impl(const CL_String &text)
 {
 }
 
+void CL_CSSTokenizer_Impl::peek(CL_CSSToken &out_token)
+{
+	size_t cur_pos = pos;
+	read(out_token);
+	pos = cur_pos;
+}
+
 void CL_CSSTokenizer_Impl::read(CL_CSSToken &token)
 {
 	token.type = CL_CSSToken::type_null;
@@ -104,6 +111,7 @@ void CL_CSSTokenizer_Impl::read(CL_CSSToken &token)
 		read_comment(token);
 		break;
 	case 'u':
+	case 'U':
 		read_uri(token);
 		// read_unicode_range(token);
 		break;

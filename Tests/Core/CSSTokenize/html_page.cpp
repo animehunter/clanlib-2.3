@@ -88,13 +88,14 @@ CL_String HTMLPage::load_css(const CL_String &csstext, const CL_String &base_url
 CL_Image HTMLPage::load_image(CL_GraphicContext &gc, const CL_String &image_url)
 {
 	HTMLUrl url(image_url, pageurl);
+	CL_Console::write_line("Downloading image: %1", url.to_string());
 	CL_String8 request;
 	request = cl_format("GET %1 HTTP/1.1\r\n", url.path+url.query);
 	request += cl_format("Host: %1\r\nConnection: close\r\nReferer: %2\r\nAccept: image/png, image/jpeg\r\nUser-Agent: CSSTokenize/0.1\r\n\r\n", url.host, pageurl.to_string());
 
 	CL_TCPConnection connection(CL_SocketName(url.host, url.port));
-	connection.send(request.data(), request.length(), true);
 	connection.set_nodelay(true);
+	connection.send(request.data(), request.length(), true);
 
 	CL_String response;
 	while (connection.get_read_event().wait(15000))
@@ -154,6 +155,7 @@ CL_Image HTMLPage::load_image(CL_GraphicContext &gc, const CL_String &image_url)
 	}
 	else
 	{
+		CL_Console::write_line("Unknown image type: %1", CL_String8(buffer.get_data(), buffer.get_size()));
 		return CL_Image();
 	}
 }
@@ -161,6 +163,7 @@ CL_Image HTMLPage::load_image(CL_GraphicContext &gc, const CL_String &image_url)
 CL_String HTMLPage::download_url(const CL_String &page_url, const CL_String &refererer_url)
 {
 	HTMLUrl url(page_url, refererer_url);
+	CL_Console::write_line("Downloading URL: %1", url.to_string());
 	CL_String8 request;
 	request = cl_format("GET %1 HTTP/1.1\r\n", url.path+url.query);
 	if (refererer_url.empty())
@@ -170,8 +173,8 @@ CL_String HTMLPage::download_url(const CL_String &page_url, const CL_String &ref
 	//MessageBoxW(0, CL_StringHelp::utf8_to_ucs2(cl_format("GET %1 HTTP/1.1\r\n", url.path+url.query)).c_str(), L"Download URL", MB_OK);;
 
 	CL_TCPConnection connection(CL_SocketName(url.host, url.port));
-	connection.send(request.data(), request.length(), true);
 	connection.set_nodelay(true);
+	connection.send(request.data(), request.length(), true);
 
 	CL_String response;
 	while (connection.get_read_event().wait(15000))

@@ -96,10 +96,15 @@ void CL_CSSParserBorderStyle::parse(CL_CSSBoxProperties &properties, const CL_St
 					properties.border_style_right.type = CL_CSSBoxBorderStyle::type_inherit;
 					properties.border_style_bottom.type = CL_CSSBoxBorderStyle::type_inherit;
 				}
+				else
+				{
+					debug_parse_error(name, tokens);
+				}
 				return;
 			}
 			else
 			{
+				debug_parse_error(name, tokens);
 				return;
 			}
 		}
@@ -109,6 +114,7 @@ void CL_CSSParserBorderStyle::parse(CL_CSSBoxProperties &properties, const CL_St
 		}
 		else
 		{
+			debug_parse_error(name, tokens);
 			return;
 		}
 	}
