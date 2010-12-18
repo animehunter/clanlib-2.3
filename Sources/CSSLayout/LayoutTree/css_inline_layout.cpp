@@ -812,9 +812,9 @@ bool CL_CSSInlineLayout::find_content_box(CL_CSSBoxElement *element, CL_Rect &ou
 	return false;
 }
 
-void CL_CSSInlineLayout::render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+void CL_CSSInlineLayout::render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources, bool root)
 {
-	render_non_content(gc, resources);
+	render_non_content(gc, resources, root);
 }
 
 void CL_CSSInlineLayout::render_layer_non_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
@@ -832,7 +832,7 @@ void CL_CSSInlineLayout::render_layer_non_inline(CL_GraphicContext &gc, CL_CSSRe
 				bool is_float = object_node->get_element_node()->is_float();
 				if (is_same_stacking_context && !is_positioned && !is_float)
 				{
-					object_node->render_layer_background(gc, resources);
+					object_node->render_layer_background(gc, resources, false);
 					object_node->render_layer_non_inline(gc, resources);
 				}
 			}
@@ -857,7 +857,7 @@ void CL_CSSInlineLayout::render_layer_floats(CL_GraphicContext &gc, CL_CSSResour
 				{
 					if (is_float)
 					{
-						object_node->render_layer_background(gc, resources);
+						object_node->render_layer_background(gc, resources, false);
 						object_node->render_layer_non_inline(gc, resources);
 						object_node->render_layer_floats(gc, resources);
 						object_node->render_layer_inline(gc, resources);
@@ -976,7 +976,7 @@ void CL_CSSInlineLayout::render_layer_positioned(CL_GraphicContext &gc, CL_CSSRe
 				{
 					if (is_positioned)
 					{
-						object_node->render_layer_background(gc, resources);
+						object_node->render_layer_background(gc, resources, false);
 						object_node->render_layer_non_inline(gc, resources);
 						object_node->render_layer_floats(gc, resources);
 						object_node->render_layer_inline(gc, resources);

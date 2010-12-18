@@ -335,7 +335,7 @@ void CL_CSSTokenizer_Impl::read_comment(CL_CSSToken &token)
 	if (pos+4 <= doc.length() && doc[pos] == '/' && doc[pos+1] == '*')
 	{
 		size_t end_pos = pos+3;
-		while (end_pos < doc.length() && doc[end_pos] != '/' && doc[end_pos-1] != '*')
+		while (end_pos < doc.length() && !(doc[end_pos] == '/' && doc[end_pos-1] == '*'))
 			end_pos++;
 		if (end_pos < doc.length())
 		{

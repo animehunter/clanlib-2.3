@@ -87,7 +87,7 @@ void CL_CSSLayoutTree::layout(CL_GraphicContext &gc, CL_CSSResourceCache *resour
 
 void CL_CSSLayoutTree::render(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache)
 {
-	root_stacking_context->render(gc, resource_cache);
+	root_stacking_context->render(gc, resource_cache, true);
 }
 
 CL_CSSInlineLayout *CL_CSSLayoutTree::find_inline_layout(CL_CSSBoxText *text_node)

@@ -574,9 +574,9 @@ void CL_CSSTableLayout::position_cells(CL_CSSLayoutCursor &cursor)
 	cursor.y += y;
 }
 
-void CL_CSSTableLayout::render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+void CL_CSSTableLayout::render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources, bool root)
 {
-	render_non_content(gc, resources);
+	render_non_content(gc, resources, root);
 	for (size_t row = 0; row < rows.size(); row++)
 	{
 		for (size_t cell = 0; cell < columns.size(); cell++)
@@ -624,7 +624,7 @@ void CL_CSSTableLayout::render_layer_floats(CL_GraphicContext &gc, CL_CSSResourc
 				{
 					if (is_float)
 					{
-						cell_node->render_layer_background(gc, resources);
+						cell_node->render_layer_background(gc, resources, false);
 						cell_node->render_layer_non_inline(gc, resources);
 						cell_node->render_layer_floats(gc, resources);
 						cell_node->render_layer_inline(gc, resources);
@@ -675,7 +675,7 @@ void CL_CSSTableLayout::render_layer_positioned(CL_GraphicContext &gc, CL_CSSRes
 				{
 					if (is_positioned)
 					{
-						cell_node->render_layer_background(gc, resources);
+						cell_node->render_layer_background(gc, resources, false);
 						cell_node->render_layer_non_inline(gc, resources);
 						cell_node->render_layer_floats(gc, resources);
 						cell_node->render_layer_inline(gc, resources);

@@ -44,12 +44,12 @@ CSSView::CSSView(CL_GUIComponent *parent)
 	scrollbar->func_scroll().set(this, &CSSView::on_scroll);
 
 	//page.load("http://en.wikipedia.org/wiki/ClanLib");
-	page.load("http://www.csszengarden.com/");
+	//page.load("http://www.csszengarden.com/");
 	//page.load("http://www.csszengarden.com/?cssfile=/210/210.css&page=0");
 	//page.load("http://www.csszengarden.com/?cssfile=/207/207.css&page=0");
 	//page.load("http://www.csszengarden.com/?cssfile=/211/211.css&page=0");
 	//page.load("http://www.csszengarden.com/?cssfile=/209/209.css&page=0");
-	//page.load("http://www.csszengarden.com/?cssfile=/206/206.css&page=0");
+	page.load("http://www.csszengarden.com/?cssfile=/206/206.css&page=0");
 	//page.load("http://codegrind.net/2010/11/01/clanlib-tutorial-part-4-server-as-a-service/");
 	//page.load("http://clanlib.org/wiki/Main_Page");
 	//page.load("http://www.dr.dk/nyheder/");
@@ -190,6 +190,12 @@ void CSSView::load_html(const CL_String &html_filename, const CL_String &css_fil
 				element = layout.create_element();
 			}
 			element.set_name(cl_format("%1.%2", token.name, dom_element.get_attribute("class")));
+
+			if (token.name == "body")
+			{
+				if (!layout.get_html_body_element().is_null())
+					layout.set_html_body_element(element);
+			}
 
 			CL_DomSelectNode select_node(dom_element);
 			element.apply_properties(css_document.select(&select_node));

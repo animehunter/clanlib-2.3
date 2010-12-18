@@ -39,7 +39,7 @@ public:
 	CL_CSSReplacedLayout(CL_CSSBoxObject *object);
 	~CL_CSSReplacedLayout();
 
-	void render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
+	void render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources, bool root);
 	void render_layer_non_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
 	void render_layer_floats(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
 	void render_layer_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources);

@@ -162,6 +162,30 @@ CL_CSSLayoutElement CL_CSSLayout::get_root_element()
 	}
 }
 
+void CL_CSSLayout::set_html_body_element(CL_CSSLayoutElement element)
+{
+	impl->throw_if_disposed();
+	impl->clear();
+	if (!element.is_null() && element.get_parent().is_null())
+		impl->box_tree.set_html_body_element(static_cast<CL_CSSBoxElement*>(element.impl->box_node));
+}
+
+CL_CSSLayoutElement CL_CSSLayout::get_html_body_element()
+{
+	impl->throw_if_disposed();
+	CL_CSSBoxElement *html_body = impl->box_tree.get_html_body_element();
+	if (html_body)
+	{
+		CL_SharedPtr<CL_CSSLayoutNode_Impl> node_impl = impl->alloc_node_impl();
+		node_impl->box_node = html_body;
+		return CL_CSSLayoutNode(node_impl).to_element();
+	}
+	else
+	{
+		return CL_CSSLayoutElement();
+	}
+}
+
 CL_CSSLayoutObject CL_CSSLayout::create_object()
 {
 	impl->throw_if_disposed();

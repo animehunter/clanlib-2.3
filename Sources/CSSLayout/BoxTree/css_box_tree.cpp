@@ -36,7 +36,7 @@
 #include "API/CSSLayout/css_property_list2.h"
 
 CL_CSSBoxTree::CL_CSSBoxTree()
-: root_element(0), selection_start(0), selection_end(0), selection_start_text_offset(0), selection_end_text_offset(0)
+: root_element(0), html_body_element(0), selection_start(0), selection_end(0), selection_start_text_offset(0), selection_end_text_offset(0)
 {
 }
 
@@ -49,6 +49,11 @@ void CL_CSSBoxTree::set_root_element(CL_CSSBoxElement *new_root_element)
 {
 	clear();
 	root_element = new_root_element;
+}
+
+void CL_CSSBoxTree::set_html_body_element(CL_CSSBoxElement *new_html_body_element)
+{
+	html_body_element = new_html_body_element;
 }
 
 void CL_CSSBoxTree::create(const CL_DomNode &node)
@@ -67,6 +72,7 @@ void CL_CSSBoxTree::prepare(CL_CSSResourceCache *resource_cache)
 {
 	clean();
 	compute_element(root_element, resource_cache);
+	propagate_html_body();
 	convert_run_in_blocks(root_element);
 	CL_CSSWhitespaceEraser::remove_whitespace(root_element);
 	create_anonymous_blocks(root_element, resource_cache);
@@ -175,6 +181,24 @@ void CL_CSSBoxTree::compute_element(CL_CSSBoxElement *element, CL_CSSResourceCac
 		if (cur_element)
 			compute_element(cur_element, resource_cache);
 		cur = cur->get_next_sibling();
+	}
+}
+
+void CL_CSSBoxTree::propagate_html_body()
+{
+	if (html_body_element && root_element != html_body_element)
+	{
+		if (root_element->computed_properties.background_image.type == CL_CSSBoxBackgroundImage::type_none &&
+			root_element->computed_properties.background_color.type == CL_CSSBoxBackgroundColor::type_transparent)
+		{
+			root_element->computed_properties.background_color = html_body_element->computed_properties.background_color;
+			root_element->computed_properties.background_image = html_body_element->computed_properties.background_image;
+			root_element->computed_properties.background_repeat = html_body_element->computed_properties.background_repeat;
+			root_element->computed_properties.background_attachment = html_body_element->computed_properties.background_attachment;
+			root_element->computed_properties.background_position = html_body_element->computed_properties.background_position;
+			html_body_element->computed_properties.background_color.type = CL_CSSBoxBackgroundColor::type_transparent;
+			html_body_element->computed_properties.background_image.type = CL_CSSBoxBackgroundImage::type_none;
+		}
 	}
 }
 

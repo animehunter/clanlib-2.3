@@ -64,10 +64,10 @@ void CL_CSSStackingContext::sort()
 	std::sort(children.begin(), children.end());
 }
 
-void CL_CSSStackingContext::render(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache)
+void CL_CSSStackingContext::render(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, bool root)
 {
 	size_t i;
-	layout->render_layer_background(gc, resource_cache);
+	layout->render_layer_background(gc, resource_cache, root);
 	for (i = 0; i < children.size() && children[i]->level < 0; i++)
 		children[i]->render(gc, resource_cache);
 	layout->render_layer_non_inline(gc, resource_cache);

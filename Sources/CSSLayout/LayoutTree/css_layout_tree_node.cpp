@@ -851,12 +851,12 @@ int CL_CSSLayoutTreeNode::get_block_height() const
 	return cl_used_to_actual(margin.top + border.top + padding.top + height.value + padding.bottom + border.bottom + margin.bottom);
 }
 
-void CL_CSSLayoutTreeNode::render_non_content(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache)
+void CL_CSSLayoutTreeNode::render_non_content(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, bool root)
 {
 	if (element_node->computed_properties.visibility.type == CL_CSSBoxVisibility::type_visible &&
 		element_node->computed_properties.display.type != CL_CSSBoxDisplay::type_table_cell)
 	{
-		render_background(gc, resource_cache);
+		render_background(gc, resource_cache, root);
 		render_border(gc);
 
 		if (element_node->computed_properties.display.type == CL_CSSBoxDisplay::type_list_item &&
@@ -890,9 +890,12 @@ CL_Rect CL_CSSLayoutTreeNode::get_padding_box() const
 	return padding_rect;
 }
 
-void CL_CSSLayoutTreeNode::render_background(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache)
+void CL_CSSLayoutTreeNode::render_background(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, bool root)
 {
 	CL_Rect padding_box = get_padding_box();
+	if (root)
+		padding_box = CL_Rect(0, 0, containing_width.value, containing_height.value);
+
 	if (element_node->computed_properties.background_color.type == CL_CSSBoxBackgroundColor::type_color)
 		CL_Draw::fill(gc, padding_box, element_node->computed_properties.background_color.color);
 

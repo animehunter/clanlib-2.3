@@ -61,6 +61,9 @@ public:
 	void set_root_element(CL_CSSLayoutElement element);
 	CL_CSSLayoutElement get_root_element();
 
+	void set_html_body_element(CL_CSSLayoutElement element);
+	CL_CSSLayoutElement get_html_body_element();
+
 	CL_CSSLayoutObject create_object();
 	CL_CSSLayoutElement create_element(const CL_String &name = CL_String());
 	CL_CSSLayoutText create_text(const CL_String &text);

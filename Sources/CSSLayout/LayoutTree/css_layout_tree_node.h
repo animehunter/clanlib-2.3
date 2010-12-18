@@ -59,7 +59,7 @@ public:
 	virtual int get_last_line_baseline() = 0;
 	virtual bool find_content_box(CL_CSSBoxElement *element, CL_Rect &out_rect) { return false; }
 
-	virtual void render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources) = 0;
+	virtual void render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources, bool root) = 0;
 	virtual void render_layer_non_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources) = 0;
 	virtual void render_layer_floats(CL_GraphicContext &gc, CL_CSSResourceCache *resources) = 0;
 	virtual void render_layer_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources) = 0;
@@ -119,9 +119,9 @@ protected:
 	CL_CSSUsedValue get_css_padding_width(const CL_CSSBoxPaddingWidth &padding_width, CL_CSSUsedWidth containing_width);
 	CL_CSSUsedValue get_css_padding_height(const CL_CSSBoxPaddingWidth &padding_width, CL_CSSUsedHeight containing_height);
 
-	void render_non_content(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache);
+	void render_non_content(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, bool root);
 	void render_border(CL_GraphicContext &gc);
-	void render_background(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache);
+	void render_background(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, bool root);
 	CL_Rect get_border_box() const;
 	CL_Rect get_padding_box() const;
 

@@ -48,7 +48,7 @@ public:
 	CL_CSSBlockLayout(CL_CSSBoxElement *element_node);
 	~CL_CSSBlockLayout();
 
-	void render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
+	void render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources, bool root);
 	void render_layer_non_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
 	void render_layer_floats(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
 	void render_layer_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources);

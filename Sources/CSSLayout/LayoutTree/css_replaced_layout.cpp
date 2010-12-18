@@ -264,9 +264,9 @@ int CL_CSSReplacedLayout::get_last_line_baseline()
 	return get_first_line_baseline();
 }
 
-void CL_CSSReplacedLayout::render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+void CL_CSSReplacedLayout::render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources, bool root)
 {
-	render_non_content(gc, resources);
+	render_non_content(gc, resources, root);
 }
 
 void CL_CSSReplacedLayout::render_layer_non_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
