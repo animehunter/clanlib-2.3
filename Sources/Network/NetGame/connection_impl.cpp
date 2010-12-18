@@ -148,7 +148,6 @@ void CL_NetGameConnection_Impl::connection_main()
 					else if (new_send_queue[i].type == Message::type_disconnect)
 					{
 						connection.disconnect_graceful();
-						site->add_network_event(CL_NetGameNetworkEvent(base, CL_NetGameNetworkEvent::client_disconnected));
 						return;
 					}
 				}

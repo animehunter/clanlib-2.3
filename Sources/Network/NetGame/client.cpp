@@ -52,6 +52,8 @@ void CL_NetGameClient::connect(const CL_String &server, const CL_String &port)
 
 void CL_NetGameClient::disconnect()
 {
+	if (impl->connection.get() != 0)
+		impl->connection->disconnect();
 	impl->connection.reset();
 	impl->events.clear();
 }
