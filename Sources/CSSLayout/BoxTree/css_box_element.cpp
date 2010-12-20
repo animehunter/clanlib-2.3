@@ -132,3 +132,8 @@ bool CL_CSSBoxElement::is_fixed() const
 {
 	return computed_properties.position.type == CL_CSSBoxPosition::type_fixed;
 }
+
+bool CL_CSSBoxElement::is_display_none() const
+{
+	return computed_properties.display.type == CL_CSSBoxDisplay::type_none;
+}

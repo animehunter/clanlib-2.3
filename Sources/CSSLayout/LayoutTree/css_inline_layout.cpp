@@ -205,9 +205,12 @@ void CL_CSSInlineLayout::create_line_boxes(CL_GraphicContext &gc, CL_CSSLayoutCu
 			apply_line_box_alignment(line);
 			update_line_box_height(gc, cursor.resources, line);
 			if (!line.segments.empty())
+			{
 				layout_cursor.apply_written_width(line.box.left+line.segments.back().right);
-			if (!line.segments.empty())
+				if (strategy != normal_strategy)
+					width.value = cl_max(width.value, line.segments.back().right);
 				line_boxes.push_back(line);
+			}
 			line_start_cursor = cursor;
 			y = line.box.bottom;
 		}
@@ -459,10 +462,6 @@ void CL_CSSInlineLayout::create_block_segment(CL_GraphicContext &gc, CL_CSSLayou
 	start_of_line = false;
 	text_width += objects[object_index].layout->get_block_width();
 
-/*	CL_CSSLayoutCursor block_cursor = layout_cursor;
-	block_cursor.x = 0;
-	block_cursor.y = 0;
-	block_cursor.margin_y = 0;*/
 	objects[object_index].layout->layout_formatting_root(gc, layout_cursor.resources);
 
 	CL_CSSInlineLineSegment segment;
@@ -643,9 +642,14 @@ bool CL_CSSInlineLayout::should_break_at_end_of_spaces(const CL_CSSBoxWhiteSpace
 	return whitespace.type != CL_CSSBoxWhiteSpace::type_pre || whitespace.type == CL_CSSBoxWhiteSpace::type_nowrap;
 }
 
-bool CL_CSSInlineLayout::margin_collapses()
+bool CL_CSSInlineLayout::margin_top_collapses()
 {
-	return CL_CSSLayoutTreeNode::margin_collapses() && is_empty();
+	return CL_CSSLayoutTreeNode::margin_top_collapses() && is_empty();
+}
+
+bool CL_CSSInlineLayout::margin_bottom_collapses()
+{
+	return CL_CSSLayoutTreeNode::margin_bottom_collapses() && is_empty();
 }
 
 void CL_CSSInlineLayout::set_component_geometry()

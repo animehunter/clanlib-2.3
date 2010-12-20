@@ -35,6 +35,12 @@
 CL_CSSBoxNodeWalker::CL_CSSBoxNodeWalker(CL_CSSBoxNode *node, bool allow_upwards_walking)
 : cur(node), level(allow_upwards_walking ? 4096 : 0)
 {
+	if (cur)
+	{
+		CL_CSSBoxElement *cur_element = dynamic_cast<CL_CSSBoxElement*>(cur);
+		if (cur_element && cur_element->is_display_none())
+			cur = 0;
+	}
 }
 
 bool CL_CSSBoxNodeWalker::is_node() const
@@ -80,7 +86,7 @@ CL_CSSBoxObject *CL_CSSBoxNodeWalker::get_object() const
 bool CL_CSSBoxNodeWalker::next(bool traverse_children)
 {
 	CL_CSSBoxNode *next = 0;
-	if (traverse_children && is_element() && get_element()->computed_properties.display.type != CL_CSSBoxDisplay::type_none)
+	if (traverse_children && is_element() && !get_element()->is_display_none())
 		next = cur->get_first_child();
 	if (next)
 		level++;

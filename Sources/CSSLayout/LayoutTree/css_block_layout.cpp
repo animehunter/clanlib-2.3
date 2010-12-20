@@ -82,17 +82,18 @@ void CL_CSSBlockLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor
 				children[i]->get_element_node()->is_table() ||
 				children[i]->is_replaced())
 			{
+				int box_y = cursor.y+cursor.margin_y;
 				if (children[i]->get_element_node()->computed_properties.clear.type == CL_CSSBoxClear::type_left || children[i]->get_element_node()->computed_properties.clear.type == CL_CSSBoxClear::type_both)
 				{
 					int clear_left = formatting_context->find_left_clearance();
 					if (cursor.y+cursor.margin_y < clear_left)
-						cursor.y = clear_left-cursor.margin_y;
+						box_y = clear_left;
 				}
 				if (children[i]->get_element_node()->computed_properties.clear.type == CL_CSSBoxClear::type_right || children[i]->get_element_node()->computed_properties.clear.type == CL_CSSBoxClear::type_both)
 				{
 					int clear_right = formatting_context->find_right_clearance();
 					if (cursor.y+cursor.margin_y < clear_right)
-						cursor.y = clear_right-cursor.margin_y;
+						box_y = clear_right;
 				}
 
 
@@ -101,7 +102,7 @@ void CL_CSSBlockLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor
 				children[i]->layout_formatting_root(gc, cursor.resources, strategy);
 
 				CL_Rect float_box(0, 0, children[i]->get_block_width(), children[i]->get_block_height());
-				float_box.translate(cursor.x, cursor.y+cursor.margin_y);
+				float_box.translate(cursor.x, box_y);
 				/*if (strategy == preferred_strategy && used.undetermined_width)
 				{
 					if (children[i]->get_element_node()->computed_properties.float_box.type == CL_CSSBoxFloat::type_left)
@@ -149,8 +150,13 @@ void CL_CSSBlockLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor
 				children[i]->containing_height = height;
 				children[i]->layout_normal(gc, cursor, strategy);
 			}
+			if (strategy != normal_strategy)
+				width.value = cl_max(width.value, cl_actual_to_used(children[i]->get_block_width()));
 		}
 	}
+
+	if (strategy != normal_strategy)
+		cursor.apply_written_width(width.value);
 }
 
 
@@ -179,6 +185,16 @@ bool CL_CSSBlockLayout::add_content_margin_top(CL_CSSLayoutCursor &cursor)
 	for (size_t i = 0; i < children.size(); i++)
 	{
 		if (children[i]->add_margin_top(cursor))
+			return true;
+	}
+	return false;
+}
+
+bool CL_CSSBlockLayout::add_content_margin_bottom(CL_CSSLayoutCursor &cursor)
+{
+	for (size_t i = children.size(); i > 0; i--)
+	{
+		if (children[i-1]->add_margin_bottom(cursor))
 			return true;
 	}
 	return false;

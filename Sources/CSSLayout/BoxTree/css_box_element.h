@@ -51,4 +51,5 @@ public:
 	bool is_table_cell() const;
 	bool is_absolute() const;
 	bool is_fixed() const;
+	bool is_display_none() const;
 };

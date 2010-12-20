@@ -49,13 +49,14 @@ CSSView::CSSView(CL_GUIComponent *parent)
 	//page.load("http://www.csszengarden.com/?cssfile=/207/207.css&page=0");
 	//page.load("http://www.csszengarden.com/?cssfile=/211/211.css&page=0");
 	//page.load("http://www.csszengarden.com/?cssfile=/209/209.css&page=0");
-	page.load("http://www.csszengarden.com/?cssfile=/206/206.css&page=0");
+	//page.load("http://www.csszengarden.com/?cssfile=/206/206.css&page=0");
 	//page.load("http://codegrind.net/2010/11/01/clanlib-tutorial-part-4-server-as-a-service/");
-	//page.load("http://clanlib.org/wiki/Main_Page");
+	page.load("http://clanlib.org/wiki/Main_Page");
 	//page.load("http://www.dr.dk/nyheder/");
 	//page.load("http://politiken.dk/erhverv/ECE1134488/nemid-nedslider-ansatte-i-borgerservice/");
 	//page.load("http://nyhederne.tv2.dk/");
 	//page.load("http://www.w3.org/Style/CSS/Test/CSS1/current/test5526c.htm");
+
 	load_html("htmlpage.html", "htmlpage.css", page.pageurl);
 
 	on_resized();
@@ -193,7 +194,7 @@ void CSSView::load_html(const CL_String &html_filename, const CL_String &css_fil
 
 			if (token.name == "body")
 			{
-				if (!layout.get_html_body_element().is_null())
+				if (layout.get_html_body_element().is_null())
 					layout.set_html_body_element(element);
 			}
 

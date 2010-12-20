@@ -163,7 +163,7 @@ CL_CSSTableLayout *CL_CSSLayoutTree::create_table_level_layout(CL_CSSBoxElement 
 	while (cur)
 	{
 		CL_CSSBoxElement *child_element = dynamic_cast<CL_CSSBoxElement*>(cur);
-		if (child_element && child_element->is_table_row())
+		if (child_element && child_element->is_table_row() && !child_element->is_display_none())
 		{
 			table->add_row(child_element);
 			CL_CSSBoxNode *cur_cell = cur->get_first_child();
@@ -197,7 +197,7 @@ CL_CSSBlockLayout *CL_CSSLayoutTree::create_block_level_layout(CL_CSSBoxElement 
 	while (cur)
 	{
 		CL_CSSBoxElement *child_element = dynamic_cast<CL_CSSBoxElement*>(cur);
-		if (child_element)
+		if (child_element && !child_element->is_display_none())
 		{
 			CL_CSSLayoutTreeNode *child_layout = create_layout(child_element);
 			if (child_layout)
@@ -221,7 +221,11 @@ CL_CSSInlineLayout *CL_CSSLayoutTree::create_inline_level_layout(CL_CSSBoxElemen
 		}
 		else if (cur_node.is_element())
 		{
-			if (cur_node.get_element()->is_block_level() || cur_node.get_element()->is_inline_block_level())
+			if (cur_node.get_element()->is_display_none())
+			{
+				cur_node.next(false);
+			}
+			else if (cur_node.get_element()->is_block_level() || cur_node.get_element()->is_inline_block_level())
 			{
 				inline_layout->push_back(cur_node.get(), create_layout(cur_node.get_element()));
 				cur_node.next(false);

@@ -71,7 +71,8 @@ public:
 	const std::vector<CL_CSSInlineLineBox> &get_line_boxes() const { return line_boxes; }
 
 private:
-	bool margin_collapses();
+	bool margin_top_collapses();
+	bool margin_bottom_collapses();
 	void prepare_children();
 	void layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy);
 	void create_line_boxes(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy);
