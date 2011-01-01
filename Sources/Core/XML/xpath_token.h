@@ -79,7 +79,7 @@ public:
 		operator_greater,
 		operator_greater_equal,
 		operator_assign,
-		operator_parenthesis_end,
+		operator_parenthesis_end
 	};
 
 	struct Value
