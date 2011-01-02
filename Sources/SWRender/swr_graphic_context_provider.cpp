@@ -49,9 +49,15 @@
 // CL_SWRenderGraphicContextProvider Construction:
 
 CL_SWRenderGraphicContextProvider::CL_SWRenderGraphicContextProvider(CL_SWRenderDisplayWindowProvider *window)
-: window(window), current_prim_array(0), modelview_matrix(CL_Mat4f::identity()), is_sprite_program(false)
+: window(window), current_prim_array(0), modelview_matrix(CL_Mat4f::identity()), current_program_provider(0), is_sprite_program(false)
 {
 	canvas.reset(new CL_PixelCanvas(window->get_viewport().get_size()));
+	program_object_standard = CL_ProgramObject_SWRender(&cl_software_program_standard, false);
+	program_object_standard.bind_attribute_location(0, "Position");
+	program_object_standard.bind_attribute_location(1, "Color0");
+	program_object_standard.bind_attribute_location(2, "TexCoord0");
+	program_object_standard.bind_attribute_location(3, "TexIndex0");
+	set_program_object(cl_program_single_texture);
 }
 
 CL_SWRenderGraphicContextProvider::~CL_SWRenderGraphicContextProvider()
@@ -64,7 +70,7 @@ CL_SWRenderGraphicContextProvider::~CL_SWRenderGraphicContextProvider()
 
 int CL_SWRenderGraphicContextProvider::get_max_attributes()
 {
-	return 4;
+	return num_attribute_fetchers;
 }
 
 CL_Size CL_SWRenderGraphicContextProvider::get_max_texture_size() const
@@ -149,23 +155,22 @@ CL_PixelBufferProvider *CL_SWRenderGraphicContextProvider::alloc_pixel_buffer()
 
 void CL_SWRenderGraphicContextProvider::set_program_object(CL_StandardProgram standard_program)
 {
-	if (standard_program == cl_program_sprite)
-		is_sprite_program = true;
-	else
-		is_sprite_program = false;
+	set_program_object(program_object_standard, cl_program_matrix_all_standard);
+	is_sprite_program = (standard_program == cl_program_sprite);
 }
 
 void CL_SWRenderGraphicContextProvider::set_program_object(const CL_ProgramObject &program, int program_matrix_flags)
 {
 	CL_ProgramObject_SWRender swr_program(program);
 	is_sprite_program = swr_program.is_sprite_program();
-	canvas->set_program_object(swr_program);
+	current_program_provider = static_cast<CL_SWRenderProgramObjectProvider *>(swr_program.get_provider());
+	if (program_matrix_flags & cl_program_matrix_modelview)
+		current_program_provider->get_program()->set_uniform_matrix("cl_ModelView", modelview_matrix);
 }
 
 void CL_SWRenderGraphicContextProvider::reset_program_object()
 {
-	is_sprite_program = false;
-	canvas->reset_program_object();
+	set_program_object(cl_program_sprite);
 }
 
 void CL_SWRenderGraphicContextProvider::set_texture(int unit_index, const CL_Texture &texture)
@@ -231,10 +236,9 @@ void CL_SWRenderGraphicContextProvider::draw_primitives(CL_PrimitivesType type, 
 void CL_SWRenderGraphicContextProvider::set_primitives_array(const CL_PrimitivesArrayData * const prim_array)
 {
 	current_prim_array = prim_array;
-	pos_fetcher.bind(current_prim_array, 0);
-	color_fetcher.bind(current_prim_array, 1);
-	tex_fetcher.bind(current_prim_array, 2);
-	tex_index_fetcher.bind(current_prim_array, 3);
+
+	for (int i = 0; i < num_attribute_fetchers; i++)
+		attribute_fetchers[i].bind(current_prim_array, i);
 }
 
 void CL_SWRenderGraphicContextProvider::draw_primitives_array(CL_PrimitivesType type, int offset, int num_vertices)
@@ -245,30 +249,6 @@ void CL_SWRenderGraphicContextProvider::draw_primitives_array(CL_PrimitivesType 
 
 		if (is_sprite_program)
 		{
-/*
-			static CL_Vec4f default_pos(0.0f, 0.0f, 1.0f, 1.0f);
-			static CL_Vec4f default_color(1.0f, 1.0f, 1.0f, 1.0f);
-			static CL_Vec4f default_tex_coord(0.0f, 0.0f, 0.0f, 0.0f);
-			static CL_Vec4f default_sampler(0.0f, 0.0f, 0.0f, 0.0f);
-
-			int indexes[3] = { index1, index2, index3 };
-			CL_Vec4f pos[3];
-			CL_Vec4f primary_color[3];
-			CL_Vec2f tex_coords[3];
-			CL_Vec1f sampler_index;
-
-			pos_fetcher->fetch(pos, indexes, 3, default_pos);
-			color_fetcher->fetch(primary_color, indexes, 3, default_color);
-			tex_fetcher->fetch(tex_coords, indexes, 3, default_tex_coord);
-			tex_index_fetcher->fetch(&sampler_index, indexes, 1, default_sampler);
-
-			CL_Vec2f screen_pos[3];
-			for (int v=0; v<3; v++)
-				screen_pos[v] = pixel_canvas->transform(pos[v]);
-
-			pixel_canvas->draw_sprite(screen_pos, primary_color, tex_coords, sampler_index.x);
-*/
-
 			for (int i = offset; i+2 < end_vertices; i+=6)
 				draw_sprite(i+0, i+1, i+2);
 		}
@@ -408,17 +388,16 @@ void CL_SWRenderGraphicContextProvider::primitives_array_freed(const CL_Primitiv
 
 void CL_SWRenderGraphicContextProvider::reset_primitives_array()
 {
-	pos_fetcher.clear();
-	tex_fetcher.clear();
-	color_fetcher.clear();
-	tex_index_fetcher.clear();
+	for (int i = 0; i < num_attribute_fetchers; i++)
+		attribute_fetchers[i].clear();
+
 	current_prim_array = 0;
 }
 
 void CL_SWRenderGraphicContextProvider::draw_pixels(CL_GraphicContext &gc, float x, float y, float zoom_x, float zoom_y, const CL_PixelBuffer &pixel_buffer, const CL_Rect &src_rect, const CL_Colorf &color)
 {
 	CL_Vec4f pos(x, y, 1.0, 1.0);
-	CL_Vec2f screen_pos = canvas->transform(pos);
+	CL_Vec2f screen_pos = cl_software_program_standard.transform(pos);
 
 	CL_Rect dest(CL_Point((int)screen_pos.x,(int)screen_pos.y),CL_Size((int)(src_rect.get_width()*zoom_x),(int)(src_rect.get_height()*zoom_y)));
 	canvas->draw_pixels(dest, pixel_buffer, src_rect, color);
@@ -427,7 +406,7 @@ void CL_SWRenderGraphicContextProvider::draw_pixels(CL_GraphicContext &gc, float
 void CL_SWRenderGraphicContextProvider::draw_pixels_bicubic(float x, float y, int zoom_number, int zoom_denominator, const CL_PixelBuffer &pixels)
 {
 	CL_Vec4f pos(x, y, 1.0, 1.0);
-	CL_Vec2f screen_pos = canvas->transform(pos);
+	CL_Vec2f screen_pos = cl_software_program_standard.transform(pos);
 	canvas->draw_pixels_bicubic((int)screen_pos.x,(int)screen_pos.y, zoom_number, zoom_denominator, pixels);
 }
 
@@ -469,12 +448,13 @@ void CL_SWRenderGraphicContextProvider::set_viewport(const CL_Rectf &viewport)
 
 void CL_SWRenderGraphicContextProvider::set_projection(const CL_Mat4f &matrix)
 {
+	current_program_provider->get_program()->set_uniform_matrix("cl_Projection", matrix);
 }
 
 void CL_SWRenderGraphicContextProvider::set_modelview(const CL_Mat4f &matrix)
 {
 	modelview_matrix = matrix;
-	canvas->set_modelview(matrix);
+	current_program_provider->get_program()->set_uniform_matrix("cl_ModelView", matrix);
 }
 
 void CL_SWRenderGraphicContextProvider::on_window_resized()
@@ -487,98 +467,45 @@ void CL_SWRenderGraphicContextProvider::on_window_resized()
 
 void CL_SWRenderGraphicContextProvider::draw_triangle(int index1, int index2, int index3)
 {
-	static CL_Vec4f default_pos(0.0f, 0.0f, 1.0f, 1.0f);
-	static CL_Vec4f default_color(1.0f, 1.0f, 1.0f, 1.0f);
-	static CL_Vec4f default_tex_coord(0.0f, 0.0f, 0.0f, 0.0f);
-	static CL_Vec4f default_sampler(0.0f, 0.0f, 0.0f, 0.0f);
-
 	int indexes[3] = { index1, index2, index3 };
-	CL_Vec4f pos[3];
-	CL_Vec4f primary_color[3];
-	CL_Vec2f tex_coords[3];
-	CL_Vec1f sampler_index;
+	const std::vector<int> &bind_locations = current_program_provider->get_bind_locations();
+	const std::vector<CL_Vec4f> &attribute_defaults = current_program_provider->get_attribute_defaults();
+	std::vector<CL_Vec4f> &current_attribute_values = current_program_provider->get_current_attribute_values();
 
-	pos_fetcher->fetch(pos, indexes, 3, default_pos);
-	color_fetcher->fetch(primary_color, indexes, 3, default_color);
-	tex_fetcher->fetch(tex_coords, indexes, 3, default_tex_coord);
-	tex_index_fetcher->fetch(&sampler_index, indexes, 1, default_sampler);
+	for (size_t i = 0; i < bind_locations.size(); i++)
+		attribute_fetchers[bind_locations[i]]->fetch(&current_attribute_values[i*3], indexes, 3, attribute_defaults[i]);
 
-	CL_Vec2f screen_pos[3];
-	for (int v=0; v<3; v++)
-		screen_pos[v] = canvas->transform(pos[v]);
-
-	canvas->draw_triangle(screen_pos, primary_color, tex_coords, sampler_index.x);
+	std::auto_ptr<CL_PixelCommand> command(current_program_provider->get_program()->draw_triangle(canvas->get_pipeline(), current_attribute_values));
+	if (command.get())
+		canvas->queue_command(command);
 }
 
 void CL_SWRenderGraphicContextProvider::draw_sprite(int index1, int index2, int index3)
 {
-	static CL_Vec4f default_pos(0.0f, 0.0f, 1.0f, 1.0f);
-	static CL_Vec4f default_color(1.0f, 1.0f, 1.0f, 1.0f);
-	static CL_Vec4f default_tex_coord(0.0f, 0.0f, 0.0f, 0.0f);
-	static CL_Vec4f default_sampler(0.0f, 0.0f, 0.0f, 0.0f);
-
 	int indexes[3] = { index1, index2, index3 };
-	CL_Vec4f pos[3];
-	CL_Vec4f primary_color[3];
-	CL_Vec2f tex_coords[3];
-	CL_Vec1f sampler_index;
+	const std::vector<int> &bind_locations = current_program_provider->get_bind_locations();
+	const std::vector<CL_Vec4f> &attribute_defaults = current_program_provider->get_attribute_defaults();
+	std::vector<CL_Vec4f> &current_attribute_values = current_program_provider->get_current_attribute_values();
 
-	pos_fetcher->fetch(pos, indexes, 3, default_pos);
-	color_fetcher->fetch(primary_color, indexes, 3, default_color);
-	tex_fetcher->fetch(tex_coords, indexes, 3, default_tex_coord);
-	tex_index_fetcher->fetch(&sampler_index, indexes, 1, default_sampler);
+	for (size_t i = 0; i < bind_locations.size(); i++)
+		attribute_fetchers[bind_locations[i]]->fetch(&current_attribute_values[i*3], indexes, 3, attribute_defaults[i]);
 
-	CL_Vec2f screen_pos[3];
-	for (int v=0; v<3; v++)
-		screen_pos[v] = canvas->transform(pos[v]);
-
-	// Check for non-rotated sprite
-	if (   ( (int) screen_pos[0].y == (int) (screen_pos[1].y) )
-		&& ( (int) screen_pos[0].x == (int) (screen_pos[2].x) ) )
-	{
-		canvas->draw_sprite(screen_pos, primary_color, tex_coords, sampler_index.x);
-	}
-	else
-	{
-		// Rotated Sprite.
-		canvas->draw_triangle(screen_pos, primary_color, tex_coords, sampler_index.x);
-		CL_Vec2f alt_screen_pos[3];
-		alt_screen_pos[0] = screen_pos[1];
-		alt_screen_pos[1].x = screen_pos[1].x + (screen_pos[2].x - screen_pos[0].x);
-		alt_screen_pos[1].y = screen_pos[1].y + (screen_pos[2].y - screen_pos[0].y);
-		alt_screen_pos[2] = screen_pos[2];
-
-		CL_Vec2f alt_tex_coords[3];
-		alt_tex_coords[0] = tex_coords[1];
-		alt_tex_coords[1].x = tex_coords[1].x + (tex_coords[2].x - tex_coords[0].x);
-		alt_tex_coords[1].y = tex_coords[1].y + (tex_coords[2].y - tex_coords[0].y);
-		alt_tex_coords[2] = tex_coords[2];
-
-		canvas->draw_triangle(alt_screen_pos, primary_color, alt_tex_coords, sampler_index.x);
-	}
+	std::auto_ptr<CL_PixelCommand> command(current_program_provider->get_program()->draw_sprite(canvas->get_pipeline(), current_attribute_values));
+	if (command.get())
+		canvas->queue_command(command);
 }
 
 void CL_SWRenderGraphicContextProvider::draw_line(int index1, int index2)
 {
-	static CL_Vec4f default_pos(0.0f, 0.0f, 1.0f, 1.0f);
-	static CL_Vec4f default_color(1.0f, 1.0f, 1.0f, 1.0f);
-	static CL_Vec4f default_tex_coord(0.0f, 0.0f, 0.0f, 0.0f);
-	static CL_Vec4f default_sampler(0.0f, 0.0f, 0.0f, 0.0f);
-
 	int indexes[2] = { index1, index2 };
-	CL_Vec4f pos[2];
-	CL_Vec4f primary_color[2];
-	CL_Vec2f tex_coords[2];
-	CL_Vec1f sampler_index;
+	const std::vector<int> &bind_locations = current_program_provider->get_bind_locations();
+	const std::vector<CL_Vec4f> &attribute_defaults = current_program_provider->get_attribute_defaults();
+	std::vector<CL_Vec4f> &current_attribute_values = current_program_provider->get_current_attribute_values();
 
-	pos_fetcher->fetch(pos, indexes, 2, default_pos);
-	color_fetcher->fetch(primary_color, indexes, 2, default_color);
-	tex_fetcher->fetch(tex_coords, indexes, 2, default_tex_coord);
-	tex_index_fetcher->fetch(&sampler_index, indexes, 1, default_sampler);
+	for (size_t i = 0; i < bind_locations.size(); i++)
+		attribute_fetchers[bind_locations[i]]->fetch(&current_attribute_values[i*2], indexes, 2, attribute_defaults[i]);
 
-	CL_Vec2f screen_pos[2];
-	for (int v=0; v<2; v++)
-		screen_pos[v] = canvas->transform(pos[v]);
-
-	canvas->draw_line(screen_pos, primary_color, tex_coords, sampler_index.x);
+	std::auto_ptr<CL_PixelCommand> command(current_program_provider->get_program()->draw_line(canvas->get_pipeline(), current_attribute_values));
+	if (command.get())
+		canvas->queue_command(command);
 }

@@ -31,12 +31,15 @@
 
 #include "API/Display/TargetProviders/graphic_context_provider.h"
 #include "API/Display/Font/font.h"
+#include "API/SWRender/swr_program_object.h"
 #include "vertex_attribute_fetcher.h"
+#include "software_program_standard.h"
 #include <map>
 
 class CL_PixelCanvas;
 class CL_PixelCommand;
 class CL_SWRenderDisplayWindowProvider;
+class CL_SWRenderProgramObjectProvider;
 
 class CL_SWRenderGraphicContextProvider : public CL_GraphicContextProvider
 {
@@ -122,11 +125,12 @@ private:
 	std::auto_ptr<CL_PixelCanvas> canvas;
 	std::map<int, CL_Texture> bound_textures;
 	const CL_PrimitivesArrayData * current_prim_array;
-	VertexAttributeFetcherPtr pos_fetcher;
-	VertexAttributeFetcherPtr tex_fetcher;
-	VertexAttributeFetcherPtr color_fetcher;
-	VertexAttributeFetcherPtr tex_index_fetcher;
 	CL_Mat4f modelview_matrix;
+	CL_SWRenderProgramObjectProvider *current_program_provider;
 	bool is_sprite_program;
+	static const int num_attribute_fetchers = 32;
+	VertexAttributeFetcherPtr attribute_fetchers[num_attribute_fetchers];
+	CL_SoftwareProgram_Standard cl_software_program_standard;
+	CL_ProgramObject_SWRender program_object_standard;
 /// \}
 };
