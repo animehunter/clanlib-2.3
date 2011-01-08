@@ -235,7 +235,8 @@ void CL_CSSReplacedLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCur
 	else if (height.use_content && intrinsic.has_ratio)
 		height.value = width.value * intrinsic.ratio;
 
-	cursor.apply_margin();
+	if (height.value > 0.0f)
+		cursor.apply_margin();
 	box = CL_Rect(cl_used_to_actual(cursor.x), cl_used_to_actual(cursor.y), cl_used_to_actual(cursor.x+width.value), cl_used_to_actual(cursor.y+height.value));
 	cursor.apply_written_width(cursor.x + box.right);
 	cursor.y += height.value;

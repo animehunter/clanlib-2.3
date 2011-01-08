@@ -80,7 +80,7 @@ public:
 	virtual void calculate_content_top_down_sizes() { }
 	virtual void set_content_expanding_width() { }
 	bool add_margin_top(CL_CSSLayoutCursor &cursor);
-	bool add_margin_bottom(CL_CSSLayoutCursor &cursor);
+	virtual bool is_empty() const { return false; }
 	int get_block_width() const;
 	int get_block_height() const;
 	virtual bool is_replaced() const { return false; }
@@ -112,10 +112,7 @@ public:
 protected:
 	virtual void prepare_children() = 0;
 	virtual void layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy) = 0;
-	virtual bool margin_top_collapses();
-	virtual bool margin_bottom_collapses();
 	virtual bool add_content_margin_top(CL_CSSLayoutCursor &cursor) { return false; }
-	virtual bool add_content_margin_bottom(CL_CSSLayoutCursor &cursor) { return false; }
 
 	CL_CSSUsedValue get_css_margin_width(const CL_CSSBoxMarginWidth &margin_width, CL_CSSUsedWidth containing_width);
 	CL_CSSUsedValue get_css_margin_height(const CL_CSSBoxMarginWidth &margin_width, CL_CSSUsedHeight containing_height);

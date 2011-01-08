@@ -51,6 +51,7 @@ public:
 
 	void push_back(CL_CSSBoxNode *box_node, CL_CSSLayoutTreeNode *layout_node = 0);
 	bool is_empty() const;
+	bool add_content_margin_top(CL_CSSLayoutCursor &cursor);
 
 	void render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources, bool root);
 	void render_layer_non_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
@@ -71,8 +72,6 @@ public:
 	const std::vector<CL_CSSInlineLineBox> &get_line_boxes() const { return line_boxes; }
 
 private:
-	bool margin_top_collapses();
-	bool margin_bottom_collapses();
 	void prepare_children();
 	void layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy);
 	void create_line_boxes(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy);

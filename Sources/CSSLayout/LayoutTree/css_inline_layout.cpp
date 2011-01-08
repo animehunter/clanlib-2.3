@@ -80,7 +80,31 @@ void CL_CSSInlineLayout::set_content_expanding_width()
 
 bool CL_CSSInlineLayout::is_empty() const
 {
-	return objects.empty();
+	if (height.use_content)
+	{
+		switch (element_node->computed_properties.white_space.type)
+		{
+		case CL_CSSBoxWhiteSpace::type_normal:
+			for (size_t i = 0; i < objects.size(); i++)
+			{
+				CL_CSSBoxText *text = dynamic_cast<CL_CSSBoxText*>(objects[i].node);
+				if (objects[i].layout || (text && text->text.find_first_not_of(" \t\r\n") != CL_String::npos))
+					return false;
+			}
+			return true;
+		default:
+			return objects.empty();
+		}
+	}
+	else
+	{
+		return height.value == 0.0f;
+	}
+}
+
+bool CL_CSSInlineLayout::add_content_margin_top(CL_CSSLayoutCursor &cursor)
+{
+	return !is_empty();
 }
 
 void CL_CSSInlineLayout::push_back(CL_CSSBoxNode *box_node, CL_CSSLayoutTreeNode *layout_node)
@@ -640,16 +664,6 @@ void CL_CSSInlineLayout::create_linebreak_opportunities()
 bool CL_CSSInlineLayout::should_break_at_end_of_spaces(const CL_CSSBoxWhiteSpace &whitespace)
 {
 	return whitespace.type != CL_CSSBoxWhiteSpace::type_pre || whitespace.type == CL_CSSBoxWhiteSpace::type_nowrap;
-}
-
-bool CL_CSSInlineLayout::margin_top_collapses()
-{
-	return CL_CSSLayoutTreeNode::margin_top_collapses() && is_empty();
-}
-
-bool CL_CSSInlineLayout::margin_bottom_collapses()
-{
-	return CL_CSSLayoutTreeNode::margin_bottom_collapses() && is_empty();
 }
 
 void CL_CSSInlineLayout::set_component_geometry()

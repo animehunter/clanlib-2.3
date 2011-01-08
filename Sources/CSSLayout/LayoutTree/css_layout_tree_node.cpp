@@ -674,7 +674,6 @@ void CL_CSSLayoutTreeNode::layout_formatting_root_helper(CL_GraphicContext &gc, 
 	cursor.resources = resources;
 	add_content_margin_top(cursor);
 	layout_content(gc, cursor, strategy);
-	add_content_margin_bottom(cursor);
 	cursor.apply_margin();
 
 	if (strategy == preferred_strategy)
@@ -708,20 +707,25 @@ void CL_CSSLayoutTreeNode::layout_formatting_root_helper(CL_GraphicContext &gc, 
 void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy)
 {
 	float old_x = cursor.x;
-
 	cursor.x += margin.left + border.left + padding.left;
+
 	add_margin_top(cursor);
 
-	// Note: this may have to be added to add_margin_top
-	if (element_node->computed_properties.min_height.type == CL_CSSBoxMinHeight::type_length)
-		cursor.apply_margin();
-	else if (element_node->computed_properties.min_height.type == CL_CSSBoxMinHeight::type_percentage && !containing_height.use_content)
-		cursor.apply_margin();
-
 	if (border.top > 0 || padding.top > 0)
+	{
 		cursor.apply_margin();
+		cursor.y += border.top+padding.top;
+	}
+/*
+	float min_height = 0.0f;
+	if (element_node->computed_properties.min_height.type == CL_CSSBoxMinHeight::type_length)
+		min_height = element_node->computed_properties.min_height.length.value;
+	else if (element_node->computed_properties.min_height.type == CL_CSSBoxMinHeight::type_percentage)
+		min_height = element_node->computed_properties.min_height.percentage * containing_height.value / 100.0f;
 
-	cursor.y += border.top+padding.top;
+	if (min_height > 0.0f)
+		cursor.apply_margin();
+*/
 
 	if (element_node->computed_properties.clear.type == CL_CSSBoxClear::type_left || element_node->computed_properties.clear.type == CL_CSSBoxClear::type_both)
 	{
@@ -746,9 +750,6 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCurs
 
 	if (height.use_content)
 	{
-		if (border.bottom > 0 || padding.bottom > 0)
-			cursor.apply_margin();
-
 		height.value = cl_max(0.0f, cursor.y - content_box.top);
 
 		if (element_node->computed_properties.max_height.type == CL_CSSBoxMaxHeight::type_length)
@@ -769,16 +770,12 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCurs
 			height.value = cl_max(height.value, element_node->computed_properties.min_height.percentage * containing_height.value / 100.0f);
 		}
 
-		content_box.bottom = content_box.top+height.value; // content_box.bottom = cursor.y;
-		cursor.y = content_box.top + height.value;
+		content_box.bottom = content_box.top+height.value;
 	}
 	else
 	{
-//		float inner_margin_y = cursor.y+cursor.margin_y;
-//		cursor.y = content_box.top + height.value;
-//		cursor.margin_y = cl_max(0.0f, inner_margin_y-cursor.y);
 		cursor.y = content_box.top + height.value;
-		add_content_margin_bottom(cursor);
+		cursor.add_margin(margin.bottom);
 	}
 
 	if (strategy != normal_strategy)
@@ -788,81 +785,53 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCurs
 	}
 
 	if (border.bottom > 0 || padding.bottom > 0)
+	{
 		cursor.apply_margin();
+		cursor.y += border.bottom+padding.bottom;
+	}
 
-	cursor.y += border.bottom+padding.bottom;
-	//cursor.add_margin(margin.bottom);
-	add_margin_bottom(cursor);
-
+	cursor.add_margin(margin.bottom);
 	cursor.x = old_x;
 }
 
 bool CL_CSSLayoutTreeNode::add_margin_top(CL_CSSLayoutCursor &cursor)
 {
-	if (element_node->computed_properties.float_box.type != CL_CSSBoxFloat::type_none ||
-		element_node->computed_properties.position.type == CL_CSSBoxPosition::type_absolute ||
-		element_node->computed_properties.position.type == CL_CSSBoxPosition::type_fixed)
+/*	if (element_node->name.find("body") != CL_String::npos)
+	{
+		Sleep(1);
+	}
+*/
+	if (element_node->is_inline_block_level() ||
+		element_node->is_float() ||
+		element_node->is_table() ||
+		element_node->is_table_cell() ||
+		element_node->is_absolute() ||
+		element_node->is_fixed())
 	{
 		return false;
 	}
 	else
 	{
 		cursor.add_margin(margin.top);
-		if (margin_top_collapses())
-		{
-			if (add_content_margin_top(cursor))
-				return true;
 
-			if (border.bottom != 0 || padding.bottom != 0)
-				return true;
-
-			cursor.add_margin(margin.bottom);
-			return false;
-		}
-		else
-		{
+		if (border.top > 0 || padding.top > 0)
 			return true;
-		}
-	}
-}
 
-bool CL_CSSLayoutTreeNode::add_margin_bottom(CL_CSSLayoutCursor &cursor)
-{
-	if (element_node->computed_properties.float_box.type != CL_CSSBoxFloat::type_none ||
-		element_node->computed_properties.position.type == CL_CSSBoxPosition::type_absolute ||
-		element_node->computed_properties.position.type == CL_CSSBoxPosition::type_fixed)
-	{
+		if (add_content_margin_top(cursor))
+			return true;
+
+		float min_height = 0.0f;
+		if (element_node->computed_properties.min_height.type == CL_CSSBoxMinHeight::type_length)
+			min_height = element_node->computed_properties.min_height.length.value;
+		else if (element_node->computed_properties.min_height.type == CL_CSSBoxMinHeight::type_percentage)
+			min_height = element_node->computed_properties.min_height.percentage * containing_height.value / 100.0f;
+
+		if (min_height > 0.0f || border.bottom > 0.0f || padding.bottom > 0.0f)
+			return true;
+
+		cursor.add_margin(margin.top + margin.bottom); // Margins are adjoining
 		return false;
 	}
-	else
-	{
-		cursor.add_margin(margin.bottom);
-		if (margin_bottom_collapses())
-		{
-			if (add_content_margin_bottom(cursor))
-				return true;
-
-			if (border.top != 0 || padding.top != 0)
-				return true;
-
-			cursor.add_margin(margin.top);
-			return false;
-		}
-		else
-		{
-			return true;
-		}
-	}
-}
-
-bool CL_CSSLayoutTreeNode::margin_top_collapses()
-{
-	return border.top == 0 && padding.top == 0 && height.value == 0 && !height.use_content;
-}
-
-bool CL_CSSLayoutTreeNode::margin_bottom_collapses()
-{
-	return border.bottom == 0 && padding.bottom == 0 && height.value == 0 && !height.use_content;
 }
 
 void CL_CSSLayoutTreeNode::set_formatting_context(CL_CSSBlockFormattingContext *new_formatting_context, bool is_root)
