@@ -27,18 +27,22 @@
 */
 
 #include "GUI/precomp.h"
+#include "API/GUI/gui_manager.h"
 #include "API/GUI/Components/message_box.h"
+#include "API/Display/screen_info.h"
 #include "message_box_component.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // cl_message_box function:
 
-CL_MessageBoxResult cl_message_box( 
-	CL_GUIComponent *owner,
+template<typename T>
+CL_MessageBoxResult cl_message_box_impl( 
+	T *owner,
 	CL_String title, 
 	CL_String detail_text, 
 	CL_MessageBoxButtons buttons,
-	CL_MessageBoxIcon icon)
+	CL_MessageBoxIcon icon,
+	const CL_Rect owner_geometry)
 {
 	CL_GUITopLevelDescription desc;
 	desc.set_title(title);
@@ -64,7 +68,6 @@ CL_MessageBoxResult cl_message_box(
 	CL_Point cont_br =  disp_win.client_to_screen(client.get_bottom_right());
 	CL_Point decorations_bottom_right = win_br - cont_br;
 
-	CL_Rect owner_geometry = owner->get_window_geometry();
 
 	CL_Rect win_geometry;
 	int wing_width = decorations_top_left.x + content_size.width + decorations_bottom_right.x;
@@ -83,4 +86,28 @@ CL_MessageBoxResult cl_message_box(
 	CL_MessageBoxResult reason = CL_MessageBoxResult(window.exec());
 
 	return reason;
+}
+
+CL_MessageBoxResult cl_message_box( 
+	CL_GUIComponent *owner,
+	CL_String title, 
+	CL_String detail_text, 
+	CL_MessageBoxButtons buttons,
+	CL_MessageBoxIcon icon)
+{
+	CL_Rect owner_geometry = owner->get_window_geometry();
+	return cl_message_box_impl(owner, title, detail_text, buttons, icon, owner_geometry);
+}
+
+CL_MessageBoxResult cl_message_box(
+	CL_GUIManager *gui_manager,
+	CL_String title,
+	CL_String detail_text,
+	CL_MessageBoxButtons buttons,
+	CL_MessageBoxIcon icon)
+{
+	CL_ScreenInfo screen_info;
+	int primary_screen_index = 0;
+	std::vector<CL_Rect> screens = screen_info.get_screen_geometries(primary_screen_index);
+	return cl_message_box_impl(gui_manager, title, detail_text, buttons, icon, screens[primary_screen_index]);
 }

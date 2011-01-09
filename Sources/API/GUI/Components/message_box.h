@@ -69,4 +69,11 @@ CL_MessageBoxResult cl_message_box(
 	CL_MessageBoxButtons buttons,
 	CL_MessageBoxIcon icon);
 
+CL_MessageBoxResult cl_message_box(
+	CL_GUIManager *gui_manager,
+	CL_String title,
+	CL_String detail_text,
+	CL_MessageBoxButtons buttons,
+	CL_MessageBoxIcon icon);
+
 /// \}
