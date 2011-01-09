@@ -1010,6 +1010,20 @@ void CL_CSSLayoutTreeNode::render_background(CL_GraphicContext &gc, CL_CSSResour
 			gc.pop_cliprect();
 		}
 	}
+
+/*	if (formatting_context_root)
+	{
+		//CL_Draw::box(gc, get_border_box(), CL_Colorf::deepskyblue);
+		for (size_t i = 0; i < formatting_context->left_floats.size(); i++)
+		{
+			CL_Rect box = formatting_context->left_floats[i].box;
+			if (!formatting_context_root)
+				box.translate(formatting_context->get_x(), formatting_context->get_y());
+			else if (formatting_context->get_parent())
+				box.translate(formatting_context->get_parent()->get_x(), formatting_context->get_parent()->get_y());
+			CL_Draw::box(gc, box, CL_Colorf::deepskyblue);
+		}
+	}*/
 }
 
 void CL_CSSLayoutTreeNode::render_border(CL_GraphicContext &gc)
