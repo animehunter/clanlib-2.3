@@ -848,7 +848,7 @@ void CL_CSSLayoutTreeNode::establish_stacking_context_if_needed(CL_CSSStackingCo
 	{
 		stacking_context = new CL_CSSStackingContext(this);
 		stacking_context_root = true;
-		stacking_context->push_back(current_stacking_context);
+		current_stacking_context->push_back(stacking_context);
 	}
 	else
 	{
