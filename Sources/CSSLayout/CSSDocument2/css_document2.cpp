@@ -394,7 +394,7 @@ bool CL_CSSDocument2_Impl::read_selector_chain(CL_CSSTokenizer &tokenizer, CL_CS
 			{
 				while (token.type == CL_CSSToken::type_whitespace)
 					tokenizer.read(token, true);
-				if (token.type != CL_CSSToken::type_curly_brace_begin)
+				if (token.type != CL_CSSToken::type_curly_brace_begin && !(token.type == CL_CSSToken::type_delim && token.value == ","))
 					whitespace = true;
 			}
 

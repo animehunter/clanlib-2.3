@@ -891,7 +891,7 @@ void CL_CSSLayoutTreeNode::render_non_content(CL_GraphicContext &gc, CL_CSSResou
 CL_Rect CL_CSSLayoutTreeNode::get_border_box() const
 {
 	CL_Rect border_rect = get_padding_box();
-	border_rect.expand(border.left, border.top, border.right, border.bottom);
+	border_rect.expand(cl_used_to_actual(border.left), cl_used_to_actual(border.top), cl_used_to_actual(border.right), cl_used_to_actual(border.bottom));
 	return border_rect;
 }
 
@@ -902,7 +902,7 @@ CL_Rect CL_CSSLayoutTreeNode::get_padding_box() const
 		padding_rect.translate(formatting_context->get_x(), formatting_context->get_y());
 	else if (formatting_context->get_parent())
 		padding_rect.translate(formatting_context->get_parent()->get_x(), formatting_context->get_parent()->get_y());
-	padding_rect.expand(padding.left, padding.top, padding.right, padding.bottom);
+	padding_rect.expand(cl_used_to_actual(padding.left), cl_used_to_actual(padding.top), cl_used_to_actual(padding.right), cl_used_to_actual(padding.bottom));
 	return padding_rect;
 }
 
@@ -926,6 +926,10 @@ void CL_CSSLayoutTreeNode::render_background(CL_GraphicContext &gc, CL_CSSResour
 
 	if (element_node->computed_properties.background_image.type == CL_CSSBoxBackgroundImage::type_uri)
 	{
+		/*if (element_node->computed_properties.background_image.url.find("right_bg.gif") != CL_String::npos)
+		{
+			Sleep(1);
+		}*/
 		CL_Image &image = resource_cache->get_image(gc, element_node->computed_properties.background_image.url);
 		if (!image.is_null())
 		{
@@ -964,7 +968,7 @@ void CL_CSSLayoutTreeNode::render_background(CL_GraphicContext &gc, CL_CSSResour
 			case CL_CSSBoxBackgroundPosition::type2_percentage:
 				y = cl_used_to_actual(padding_box.top + (padding_box.get_height()-image.get_height()) * element_node->computed_properties.background_position.percentage_y / 100.0f);
 				break;
-			case CL_CSSBoxBackgroundPosition::type1_length:
+			case CL_CSSBoxBackgroundPosition::type2_length:
 				y = cl_used_to_actual(padding_box.top + element_node->computed_properties.background_position.length_y.value);
 				break;
 			}
@@ -980,28 +984,38 @@ void CL_CSSLayoutTreeNode::render_background(CL_GraphicContext &gc, CL_CSSResour
 			}
 			else if (element_node->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_repeat_x)
 			{
-				int start_x = (x-paint_box.left)%image.get_width();
-				if (start_x > 0)
-					start_x -= image.get_width();
+				int start_x;
+				if (x >= paint_box.left)
+					start_x = paint_box.left - (x-paint_box.left)%image.get_width();
+				else
+					start_x = paint_box.left - (paint_box.left-x)%image.get_width();
+
 				for (x = start_x; x < paint_box.right; x += image.get_width())
 					image.draw(gc, x, y);
 			}
 			else if (element_node->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_repeat_y)
 			{
-				int start_y = (y-paint_box.top)%image.get_height();
-				if (start_y > 0)
-					start_y -= image.get_height();
+				int start_y;
+				if (y >= paint_box.top)
+					start_y = paint_box.top - (y-paint_box.top)%image.get_height();
+				else
+					start_y = paint_box.top - (paint_box.top-y)%image.get_height();
+
 				for (y = start_y; y < paint_box.bottom; y += image.get_height())
 					image.draw(gc, x, y);
 			}
 			else if (element_node->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_repeat)
 			{
-				int start_x = (x-paint_box.left)%image.get_width();
-				if (start_x > 0)
-					start_x -= image.get_width();
-				int start_y = (y-paint_box.top)%image.get_height();
-				if (start_y > 0)
-					start_y -= image.get_height();
+				int start_x, start_y;
+				if (x >= paint_box.left)
+					start_x = paint_box.left - (x-paint_box.left)%image.get_width();
+				else
+					start_x = paint_box.left - (paint_box.left-x)%image.get_width();
+
+				if (y >= paint_box.top)
+					start_y = paint_box.top - (y-paint_box.top)%image.get_height();
+				else
+					start_y = paint_box.top - (paint_box.top-y)%image.get_height();
 
 				for (y = start_y; y < paint_box.bottom; y += image.get_height())
 					for (x = start_x; x < paint_box.right; x += image.get_width())
