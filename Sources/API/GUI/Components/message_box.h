@@ -37,8 +37,6 @@
 #include "../../Display/Render/graphic_context.h"
 #include "window.h"
 
-class CL_MessageBox_Impl;
-
 enum CL_MessageBoxResult
 {
 	cl_mb_result_yes,
@@ -64,7 +62,7 @@ enum CL_MessageBoxIcon
 	cl_mb_icon_question,
 };
 
-CL_MessageBoxResult CL_MessageBox(
+CL_MessageBoxResult cl_message_box(
 	CL_GUIComponent *owner,
 	CL_String title,
 	CL_String detail_text,

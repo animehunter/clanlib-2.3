@@ -31,10 +31,9 @@
 #include "message_box_component.h"
 
 /////////////////////////////////////////////////////////////////////////////
-// CL_MessageBox function:
+// cl_message_box function:
 
-
-CL_MessageBoxResult CL_MessageBox( 
+CL_MessageBoxResult cl_message_box( 
 	CL_GUIComponent *owner,
 	CL_String title, 
 	CL_String detail_text, 
