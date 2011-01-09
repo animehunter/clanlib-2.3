@@ -137,6 +137,9 @@ public:
 	/// \brief Returns true if the window is a tool window.
 	bool is_tool_window() const;
 
+	/// \brief Returns true if the window is a dialog window.
+	bool is_dialog() const;
+
 	/// \brief Returns true if the window is initially visible.
 	bool is_visible() const;
 
@@ -201,6 +204,9 @@ public:
 
 	/// \brief Flags the window to be a tool window to the windowing system.
 	void set_tool_window(bool value = true);
+
+	/// \brief Flags the window to be a dialog window to the windowing system.
+	void set_dialog_window(bool value = true);
 
 	/// \brief Enables a drop shadow effect on the window.
 	void set_drop_shadow(bool value = true);

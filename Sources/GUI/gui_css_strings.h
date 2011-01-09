@@ -49,6 +49,13 @@ namespace CssStr
 		const CL_StringRef type_name = "groupbox";
 	}
 
+	namespace MessageBox
+	{
+		const CL_StringRef type_name = "messagebox";
+		const CL_StringRef button_area_height = "button-area-height";
+		const CL_StringRef part_icon = "icon";
+	}
+
 	namespace Frame
 	{
 		const CL_StringRef type_name = "frame";

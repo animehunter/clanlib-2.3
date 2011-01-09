@@ -1800,21 +1800,27 @@ void CL_Win32Window::get_styles_from_description(const CL_DisplayWindowDescripti
 	style = 0;
 	ex_style = 0;
 
-	if (desc.is_fullscreen() || !desc.get_decorations() || !desc.has_caption())
+	if (desc.is_fullscreen() || desc.is_dialog() || !desc.get_decorations() || !desc.has_caption())
 		style |= WS_POPUP;
 
-	if (desc.get_allow_resize() && !desc.is_fullscreen())
+	if (desc.get_allow_resize() && !desc.is_fullscreen() && !desc.is_dialog())
 		style |= WS_SIZEBOX;
 
 	if (desc.has_caption() && desc.get_decorations())
 	{
 		style |= WS_CAPTION;
+
 		if (desc.has_sysmenu())
+		{
 			style |= WS_SYSMENU;
-		if (desc.has_minimize_button())
-			style |= WS_MINIMIZEBOX;
-		if (desc.has_maximize_button())
-			style |= WS_MAXIMIZEBOX;
+		}
+		if (!desc.is_dialog())
+		{
+			if (desc.has_minimize_button())
+				style |= WS_MINIMIZEBOX;
+			if (desc.has_maximize_button())
+				style |= WS_MAXIMIZEBOX;
+		}
 	}
 
 	if (desc.is_layered())
@@ -1829,6 +1835,12 @@ void CL_Win32Window::get_styles_from_description(const CL_DisplayWindowDescripti
 
 	if (desc.is_tool_window())
 		ex_style |= WS_EX_TOOLWINDOW;
+
+	if (desc.is_dialog())
+	{
+		ex_style |= WS_EX_DLGMODALFRAME;
+		ex_style |= WS_EX_WINDOWEDGE;
+	}
 }
 
 RECT CL_Win32Window::get_window_geometry_from_description(const CL_DisplayWindowDescription &desc, DWORD style, DWORD ex_style)

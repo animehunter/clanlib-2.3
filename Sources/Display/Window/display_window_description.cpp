@@ -182,6 +182,11 @@ bool CL_DisplayWindowDescription::is_tool_window() const
 	return impl->tool_window;
 }
 
+bool CL_DisplayWindowDescription::is_dialog() const
+{
+	return impl->dialog_window;
+}
+
 bool CL_DisplayWindowDescription::is_topmost() const
 {
 	return impl->topmost;
@@ -284,6 +289,11 @@ void CL_DisplayWindowDescription::set_visible(bool value)
 void CL_DisplayWindowDescription::set_tool_window(bool value)
 {
 	impl->tool_window = value;
+}
+
+void CL_DisplayWindowDescription::set_dialog_window(bool value)
+{
+	impl->dialog_window = value;
 }
 
 void CL_DisplayWindowDescription::set_drop_shadow(bool value)

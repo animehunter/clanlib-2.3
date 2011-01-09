@@ -72,6 +72,7 @@
 #include "GUI/Components/listview_column_data.h"
 #include "GUI/Components/main_window.h"
 #include "GUI/Components/menubar.h"
+#include "GUI/Components/message_box.h"
 #include "GUI/Components/openfiledialog.h"
 #include "GUI/Components/popupmenu.h"
 #include "GUI/Components/progressbar.h"
