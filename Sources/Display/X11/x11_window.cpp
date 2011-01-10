@@ -51,7 +51,7 @@
 #include <X11/Xatom.h>
 #include <cstdio>
 #include "../Window/input_context_impl.h"
-
+#include <X11/XKBlib.h>
 #include <dlfcn.h>
 
 CL_X11Window::CL_X11Window()
@@ -697,6 +697,10 @@ void CL_X11Window::create_new_window(XVisualInfo *visual, const CL_DisplayWindow
 	ic.clear();
 	ic.add_keyboard(keyboard);
 	ic.add_mouse(mouse);
+
+	// Make auto repeat keys detectable
+	Bool supports_detectable_autorepeat;
+	XkbSetDetectableAutoRepeat(disp,1,&supports_detectable_autorepeat);
 
 	// Go looking for joysticks:
 	setup_joysticks();
