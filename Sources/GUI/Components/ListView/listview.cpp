@@ -97,6 +97,16 @@ CL_ListView::~CL_ListView()
 /////////////////////////////////////////////////////////////////////////////
 // CL_ListView Attributes:
 
+int CL_ListView::get_scroll_position()
+{
+	return impl->scrollbar->get_position();
+}
+
+int CL_ListView::get_scroll_max_position()
+{
+	return impl->scrollbar->get_max();
+}
+
 CL_ListView *CL_ListView::get_named_item(CL_GUIComponent *reference_component, const CL_StringRef &id)
 {
 	CL_ListView *object = NULL;
@@ -156,6 +166,12 @@ CL_ListViewDisplayMode CL_ListView::get_display_mode() const
 
 /////////////////////////////////////////////////////////////////////////////
 // CL_ListView Operations:
+
+void CL_ListView::set_scroll_position(int pos)
+{
+	impl->scrollbar->set_position(pos);
+	impl->on_scroll();
+}
 
 CL_ListViewItem CL_ListView::create_item()
 {

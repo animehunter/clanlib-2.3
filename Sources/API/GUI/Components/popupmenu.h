@@ -158,6 +158,11 @@ public:
 
 	/// \brief Returns the index of the item that matches the start or the string furthest.
 	int find_item(const CL_StringRef &text, bool case_sensitive = false);
+	
+	/// \brief Delete all menu items
+	///
+	/// \param class_name = String Ref
+	void clear();
 
 /// \}
 /// \name Implementation

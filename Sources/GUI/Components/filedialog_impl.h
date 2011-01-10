@@ -182,7 +182,7 @@ public:
 				}
 */			}
 
-			filenames.push_back(filename_buffer);
+			filenames.push_back(CL_StringHelp::ucs2_to_utf8(filename_buffer));
 		}
 
 		return success;

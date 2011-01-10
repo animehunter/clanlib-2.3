@@ -31,6 +31,7 @@
 
 #include "API/GUI/Components/popupmenu.h"
 #include "API/Display/Image/pixel_buffer.h"
+#include "GUI/Components/Menus/menu_modal_loop.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CL_PopupMenu_Impl Class:
@@ -47,4 +48,6 @@ public:
 	CL_String class_name;
 	int joiner_width;
 	CL_Callback_v0 func_close;
+
+	std::auto_ptr<CL_MenuModalLoop> menu_ptr;
 };
