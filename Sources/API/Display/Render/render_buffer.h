@@ -86,6 +86,8 @@ public:
 /// \{
 
 public:
+	/// \brief Equality operator
+	bool operator==(const CL_RenderBuffer &other) const;
 
 /// \}
 /// \name Implementation

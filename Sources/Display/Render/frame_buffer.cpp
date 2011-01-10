@@ -91,6 +91,11 @@ CL_FrameBufferBindTarget CL_FrameBuffer::get_bind_target() const
 /////////////////////////////////////////////////////////////////////////////
 // CL_FrameBuffer Operations:
 
+bool CL_FrameBuffer::operator==(const CL_FrameBuffer &other) const
+{
+	return impl == other.impl;
+}
+
 void CL_FrameBuffer::attach_color_buffer(int attachment_index, const CL_RenderBuffer &render_buffer)
 {
 	impl->provider->attach_color_buffer(attachment_index, render_buffer);

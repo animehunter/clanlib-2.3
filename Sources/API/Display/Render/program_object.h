@@ -316,6 +316,9 @@ public:
 /// \{
 
 public:
+	/// \brief Equality operator
+	bool operator==(const CL_ProgramObject &other) const;
+
 	/// \brief Add shader to program object.
 	void attach(const CL_ShaderObject &obj);
 

@@ -429,6 +429,11 @@ int CL_ProgramObject::get_uniform_location(const CL_StringRef &name) const
 /////////////////////////////////////////////////////////////////////////////
 // CL_ProgramObject Operations:
 
+bool CL_ProgramObject::operator==(const CL_ProgramObject &other) const
+{
+	return impl == other.impl;
+}
+
 void CL_ProgramObject::attach(const CL_ShaderObject &obj)
 {
 	if (obj.is_null())

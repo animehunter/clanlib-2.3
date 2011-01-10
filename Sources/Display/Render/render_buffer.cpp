@@ -84,6 +84,11 @@ const CL_Size &CL_RenderBuffer::get_size() const
 /////////////////////////////////////////////////////////////////////////////
 // CL_RenderBuffer Operations:
 
+bool CL_RenderBuffer::operator==(const CL_RenderBuffer &other) const
+{
+	return impl == other.impl;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // CL_RenderBuffer Implementation:
 

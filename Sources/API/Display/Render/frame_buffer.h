@@ -112,6 +112,9 @@ public:
 /// \name Operations
 /// \{
 public:
+	/// \brief Equality operator
+	bool operator==(const CL_FrameBuffer &other) const;
+
 	/// \brief Attach color buffer
 	///
 	/// \param attachment_index = value
