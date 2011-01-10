@@ -989,7 +989,7 @@ void CL_ListView_Impl::on_before_edit_item(CL_InputEvent &e)
 
 	if (e.type == CL_InputEvent::pressed)
 	{
-		if (e.id == CL_KEY_RETURN)
+		if (e.id == CL_KEY_RETURN || e.id == CL_KEY_NUMPAD_ENTER)
 		{
 			CL_String col_id = header->get_first_column().get_column_id();
 			CL_String new_text = lineedit->get_text();

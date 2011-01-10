@@ -292,7 +292,7 @@ void CL_MenuModalLoop::on_keyboard_input(CL_InputEvent e)
 	}
 	else if (e.type == CL_InputEvent::released)
 	{
-		if (e.id == CL_KEY_ENTER)
+		if (e.id == CL_KEY_ENTER || e.id == CL_KEY_NUMPAD_ENTER)
 		{
 			CL_PopupMenuItem pmi = window->get_selected_item();
 			end();

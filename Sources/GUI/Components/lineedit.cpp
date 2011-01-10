@@ -424,7 +424,7 @@ void CL_LineEdit_Impl::on_process_message(CL_GUIMessage &msg)
 		{
 			if (!func_enter_pressed.is_null() && 
 				e.type == CL_InputEvent::pressed &&
-				(e.id == CL_KEY_ENTER || e.id == CL_KEY_RETURN))
+				(e.id == CL_KEY_ENTER || e.id == CL_KEY_RETURN || e.id == CL_KEY_NUMPAD_ENTER))
 			{
 				func_enter_pressed.invoke();
 				msg.set_consumed();
@@ -450,7 +450,7 @@ void CL_LineEdit_Impl::on_process_message(CL_GUIMessage &msg)
 
 			if (e.type == CL_InputEvent::pressed) // || e.repeat_count > 1) 
 			{
-				if (e.id == CL_KEY_ENTER || e.id == CL_KEY_ESCAPE || e.id == CL_KEY_TAB)
+				if (e.id == CL_KEY_ENTER || e.id == CL_KEY_ESCAPE || e.id == CL_KEY_TAB || e.id == CL_KEY_NUMPAD_ENTER)
 				{
 					// Do not consume these.
 					return;

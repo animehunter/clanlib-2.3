@@ -837,7 +837,7 @@ void CL_GUIManager_Impl::process_standard_gui_keys(CL_GUIMessage &message)
 				focus_comp->focus_previous();
 			}
 		}
-		else if ((e.id == CL_KEY_ENTER || e.id == CL_KEY_RETURN) && e.type == CL_InputEvent::released)
+		else if ((e.id == CL_KEY_ENTER || e.id == CL_KEY_RETURN || e.id == CL_KEY_NUMPAD_ENTER) && e.type == CL_InputEvent::released)
 		{
 			CL_GUIComponent *comp = input.get_target();
 			if (comp)

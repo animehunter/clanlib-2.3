@@ -309,6 +309,7 @@ void CL_ComboBox_Impl::on_process_message(CL_GUIMessage &msg)
 				!msg.is_consumed() &&
 				e.id != CL_KEY_TAB && 
 				e.id != CL_KEY_ENTER && 
+				e.id != CL_KEY_NUMPAD_ENTER &&
 				e.id != CL_KEY_ESCAPE &&
 				msg.get_data("No Loop Hack").is_null())
 			{
