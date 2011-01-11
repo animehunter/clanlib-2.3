@@ -162,7 +162,7 @@ void CL_CSSInlineLayout::create_line_boxes(CL_GraphicContext &gc, CL_CSSLayoutCu
 {
 	create_linebreak_opportunities();
 	line_boxes.clear();
-	int y = cl_used_to_actual(layout_cursor.y + layout_cursor.margin_y);
+	int y = cl_used_to_actual(layout_cursor.y + layout_cursor.get_total_margin());
 	CL_CSSInlineLineBoxCursor line_start_cursor;
 	line_start_cursor.resources = layout_cursor.resources;
 	while (line_start_cursor.object_index < objects.size())

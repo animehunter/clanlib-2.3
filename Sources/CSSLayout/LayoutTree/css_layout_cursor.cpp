@@ -30,22 +30,31 @@
 #include "css_layout_cursor.h"
 
 CL_CSSLayoutCursor::CL_CSSLayoutCursor()
-: x(0), y(0), margin_y(0), max_written_width(0), resources(0)
+: x(0), y(0), margin_y(0), negative_margin_y(0), max_written_width(0), resources(0)
 {
 }
 
 void CL_CSSLayoutCursor::add_margin(float extra_margin_y)
 {
-	margin_y = cl_max(margin_y, extra_margin_y);
+	if (extra_margin_y > 0.0f)
+		margin_y = cl_max(margin_y, extra_margin_y);
+	else
+		negative_margin_y = cl_min(negative_margin_y, extra_margin_y);
 }
 
 void CL_CSSLayoutCursor::apply_margin()
 {
-	y += margin_y;
+	y += margin_y + negative_margin_y;
 	margin_y = 0;
+	negative_margin_y = 0;
 }
 
 void CL_CSSLayoutCursor::apply_written_width(float x)
 {
 	max_written_width = cl_max(max_written_width, x);
+}
+
+float CL_CSSLayoutCursor::get_total_margin() const
+{
+	return margin_y + negative_margin_y;
 }

@@ -39,10 +39,14 @@ public:
 	void add_margin(float margin_y);
 	void apply_margin();
 	void apply_written_width(float x);
+	float get_total_margin() const;
 
 	float x;
 	float y;
+private:
 	float margin_y;
+	float negative_margin_y;
+public:
 	float max_written_width;
 	CL_CSSResourceCache *resources;
 };

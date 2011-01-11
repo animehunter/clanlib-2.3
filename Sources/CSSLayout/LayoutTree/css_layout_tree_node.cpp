@@ -730,24 +730,29 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCurs
 	if (element_node->computed_properties.clear.type == CL_CSSBoxClear::type_left || element_node->computed_properties.clear.type == CL_CSSBoxClear::type_both)
 	{
 		int clear_left = formatting_context->find_left_clearance();
-		if (cursor.y+cursor.margin_y < clear_left)
-			cursor.y = clear_left-cursor.margin_y;
+		if (cursor.y+cursor.get_total_margin() < clear_left)
+			cursor.y = clear_left-cursor.get_total_margin();
 	}
 	if (element_node->computed_properties.clear.type == CL_CSSBoxClear::type_right || element_node->computed_properties.clear.type == CL_CSSBoxClear::type_both)
 	{
 		int clear_right = formatting_context->find_right_clearance();
-		if (cursor.y+cursor.margin_y < clear_right)
-			cursor.y = clear_right-cursor.margin_y;
+		if (cursor.y+cursor.get_total_margin() < clear_right)
+			cursor.y = clear_right-cursor.get_total_margin();
 	}
 
 	content_box.left = cursor.x;
-	content_box.top = cursor.y+cursor.margin_y;
+	content_box.top = cursor.y+cursor.get_total_margin();
 	content_box.right = content_box.left+width.value;
 	content_box.bottom = content_box.top+height.value;
 	cursor.apply_written_width(content_box.right);
 
 	layout_content(gc, cursor, strategy);
-
+/*
+	if (element_node->name.find("intro") != CL_String::npos)
+	{
+		Sleep(1);
+	}
+*/
 	if (height.use_content)
 	{
 		height.value = cl_max(0.0f, cursor.y - content_box.top);
@@ -774,6 +779,8 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCurs
 	}
 	else
 	{
+		if (height.value > 0.0f)
+			cursor.apply_margin();
 		cursor.y = content_box.top + height.value;
 		cursor.add_margin(margin.bottom);
 	}

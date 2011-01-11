@@ -104,7 +104,7 @@ void CL_CSSBlockLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor
 
 void CL_CSSBlockLayout::layout_float(CL_CSSLayoutCursor &cursor, size_t i, CL_GraphicContext & gc, LayoutStrategy strategy)
 {
-	int box_y = cl_used_to_actual(cursor.y+cursor.margin_y);
+	int box_y = cl_used_to_actual(cursor.y+cursor.get_total_margin());
 	if (children[i]->get_element_node()->computed_properties.clear.type == CL_CSSBoxClear::type_left || children[i]->get_element_node()->computed_properties.clear.type == CL_CSSBoxClear::type_both)
 	{
 		int clear_left = formatting_context->find_left_clearance();
