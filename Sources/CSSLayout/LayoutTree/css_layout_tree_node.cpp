@@ -748,7 +748,7 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCurs
 
 	layout_content(gc, cursor, strategy);
 /*
-	if (element_node->name.find("intro") != CL_String::npos)
+	if (element_node->name.find("ul") != CL_String::npos)
 	{
 		Sleep(1);
 	}

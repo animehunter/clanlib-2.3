@@ -43,6 +43,7 @@
 class CL_CSSDocument2_Impl
 {
 public:
+	CL_CSSDocument2_Impl() : next_origin(0) { }
 	std::vector<CL_CSSRulesetMatch2> select_rulesets(CL_CSSSelectNode2 *node, const CL_String &pseudo_element);
 	bool try_match_chain(const CL_CSSSelectorChain2 &chain, CL_CSSSelectNode2 *node, size_t chain_index);
 	bool try_match_link(const CL_CSSSelectorLink2 &link, const CL_CSSSelectNode2 *node);
@@ -78,6 +79,7 @@ public:
 
 	CL_String base_uri;
 	std::vector<CL_CSSRuleset2> rulesets;
+	int next_origin;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -340,6 +342,7 @@ void CL_CSSDocument2_Impl::read_stylesheet(CL_CSSTokenizer &tokenizer)
 			read_statement(tokenizer, token);
 		}
 	}
+	next_origin++;
 }
 
 void CL_CSSDocument2_Impl::read_at_rule(CL_CSSTokenizer &tokenizer, CL_CSSToken &token)
@@ -518,7 +521,7 @@ bool CL_CSSDocument2_Impl::read_selector_chain(CL_CSSTokenizer &tokenizer, CL_CS
 
 void CL_CSSDocument2_Impl::read_statement(CL_CSSTokenizer &tokenizer, CL_CSSToken &token)
 {
-	CL_CSSRuleset2 ruleset;
+	CL_CSSRuleset2 ruleset(next_origin);
 	while (true)
 	{
 		CL_CSSSelectorChain2 selector_chain;
