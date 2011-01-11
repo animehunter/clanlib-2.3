@@ -740,6 +740,8 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCurs
 			cursor.y = clear_right-cursor.get_total_margin();
 	}
 
+	float before_content_y = cursor.y;
+
 	content_box.left = cursor.x;
 	content_box.top = cursor.y+cursor.get_total_margin();
 	content_box.right = content_box.left+width.value;
@@ -755,7 +757,15 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCurs
 */
 	if (height.use_content)
 	{
-		height.value = cl_max(0.0f, cursor.y - content_box.top);
+		if (cursor.y == before_content_y)
+		{
+			height.value = 0.0f;
+		}
+		else
+		{
+			cursor.apply_margin();
+			height.value = cl_max(0.0f, cursor.y - content_box.top);
+		}
 
 		if (element_node->computed_properties.max_height.type == CL_CSSBoxMaxHeight::type_length)
 		{
