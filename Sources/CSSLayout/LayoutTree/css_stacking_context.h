@@ -48,4 +48,12 @@ private:
 	std::vector<CL_CSSStackingContext *> children;
 	int tree_order;
 	int next_child_tree_order;
+
+	struct SortPred
+	{
+		bool operator()(CL_CSSStackingContext *a, CL_CSSStackingContext *b)
+		{
+			return (*a) < (*b);
+		}
+	};
 };

@@ -747,14 +747,14 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCurs
 	content_box.right = content_box.left+width.value;
 	content_box.bottom = content_box.top+height.value;
 	cursor.apply_written_width(content_box.right);
-
-	layout_content(gc, cursor, strategy);
 /*
-	if (element_node->name.find("ul") != CL_String::npos)
+	if (element_node->name.find("participation") != CL_String::npos)
 	{
 		Sleep(1);
 	}
 */
+	layout_content(gc, cursor, strategy);
+
 	if (height.use_content)
 	{
 		if (cursor.y == before_content_y)

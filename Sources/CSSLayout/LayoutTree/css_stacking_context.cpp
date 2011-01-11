@@ -61,7 +61,7 @@ void CL_CSSStackingContext::push_back(CL_CSSStackingContext *child)
 
 void CL_CSSStackingContext::sort()
 {
-	std::sort(children.begin(), children.end());
+	std::sort(children.begin(), children.end(), SortPred());
 	for (size_t i = 0; i < children.size(); i++)
 		children[i]->sort();
 }

@@ -191,9 +191,9 @@ CL_Rect CL_CSSBlockFormattingContext::find_line_box(int left, int right, int y, 
 		CL_Rect left_box = find_relevant_left_box(box);
 		CL_Rect right_box = find_relevant_right_box(box, right);
 		if (!is_null(left_box))
-			box.left = left_box.right;
+			box.left = cl_max(box.left, left_box.right);
 		if (!is_null(right_box))
-			box.right = right_box.left;
+			box.right = cl_min(box.right, right_box.left);
 		if (box.get_width() >= minimum_width || (is_null(left_box) && is_null(right_box)))
 			return box;
 
