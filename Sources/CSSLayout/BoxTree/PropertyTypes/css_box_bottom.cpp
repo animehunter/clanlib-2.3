@@ -50,8 +50,6 @@ void CL_CSSBoxBottom::compute(CL_CSSBoxTop &top, CL_CSSBoxBottom &bottom, const 
 		{
 			top.type = CL_CSSBoxTop::type_auto;
 		}
-		if (top.type == CL_CSSBoxTop::type_length)
-			top.length = layout->compute_length(top.length, em_size, ex_size);
 	}
 
 	if (bottom.type == type_inherit)
@@ -66,9 +64,12 @@ void CL_CSSBoxBottom::compute(CL_CSSBoxTop &top, CL_CSSBoxBottom &bottom, const 
 		{
 			bottom.type = type_auto;
 		}
-		if (bottom.type == type_length)
-			bottom.length = layout->compute_length(bottom.length, em_size, ex_size);
 	}
+
+	if (top.type == CL_CSSBoxTop::type_length)
+		top.length = layout->compute_length(top.length, em_size, ex_size);
+	if (bottom.type == type_length)
+		bottom.length = layout->compute_length(bottom.length, em_size, ex_size);
 
 	if (position.type == CL_CSSBoxPosition::type_static)
 	{

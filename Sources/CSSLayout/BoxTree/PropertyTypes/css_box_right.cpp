@@ -51,8 +51,6 @@ void CL_CSSBoxRight::compute(CL_CSSBoxLeft &left, CL_CSSBoxRight &right, const C
 		{
 			left.type = CL_CSSBoxLeft::type_auto;
 		}
-		if (left.type == CL_CSSBoxLeft::type_length)
-			left.length = layout->compute_length(left.length, em_size, ex_size);
 	}
 
 	if (right.type == type_inherit)
@@ -67,9 +65,13 @@ void CL_CSSBoxRight::compute(CL_CSSBoxLeft &left, CL_CSSBoxRight &right, const C
 		{
 			right.type = type_auto;
 		}
-		if (right.type == type_length)
-			right.length = layout->compute_length(right.length, em_size, ex_size);
 	}
+
+	if (left.type == CL_CSSBoxLeft::type_length)
+		left.length = layout->compute_length(left.length, em_size, ex_size);
+
+	if (right.type == type_length)
+		right.length = layout->compute_length(right.length, em_size, ex_size);
 
 	if (position.type == CL_CSSBoxPosition::type_static)
 	{
