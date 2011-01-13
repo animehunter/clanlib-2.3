@@ -93,7 +93,7 @@ void CL_CSSBlockLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor
 				children[i]->containing_height = height;
 				children[i]->layout_normal(gc, cursor, strategy);
 			}
-			if (strategy != normal_strategy)
+			if (strategy != normal_strategy && width.expanding)
 				width.value = cl_max(width.value, cl_actual_to_used(children[i]->get_block_width()));
 		}
 	}
