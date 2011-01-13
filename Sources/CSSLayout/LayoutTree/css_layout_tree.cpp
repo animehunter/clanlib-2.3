@@ -159,26 +159,31 @@ CL_CSSTableLayout *CL_CSSLayoutTree::create_table_level_layout(CL_CSSBoxElement 
 {
 	CL_CSSTableLayout *table = new CL_CSSTableLayout(element);
 
-	CL_CSSBoxNode *cur = element->get_first_child();
-	while (cur)
+	CL_CSSBoxNodeWalker walker(element->get_first_child(), false);
+	while (walker.is_node())
 	{
-		CL_CSSBoxElement *child_element = dynamic_cast<CL_CSSBoxElement*>(cur);
-		if (child_element && child_element->is_table_row() && !child_element->is_display_none())
+		if (walker.is_element())
 		{
-			table->add_row(child_element);
-			CL_CSSBoxNode *cur_cell = cur->get_first_child();
-			while (cur_cell)
+			if (walker.get_element()->is_table_row())
 			{
-				CL_CSSBoxElement *cell_element = dynamic_cast<CL_CSSBoxElement*>(cur_cell);
-				if (cell_element && cell_element->is_table_cell())
-				{
-					CL_CSSLayoutTreeNode *cell_layout = create_layout(cell_element);
-					if (cell_layout)
-						table->add_cell(cell_layout);
-					cur_cell = cur_cell->get_next_sibling();
-				}
+				table->add_row(walker.get_element());
+				walker.next(true);
 			}
-			cur = cur->get_next_sibling();
+			else if (walker.get_element()->is_table_cell())
+			{
+				CL_CSSLayoutTreeNode *cell_layout = create_layout(walker.get_element());
+				if (cell_layout)
+					table->add_cell(cell_layout);
+				walker.next(false);
+			}
+			else
+			{
+				walker.next(true);
+			}
+		}
+		else
+		{
+			walker.next(true);
 		}
 	}
 

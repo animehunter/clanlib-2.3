@@ -331,35 +331,17 @@ void CL_CSSBoxTree::convert_run_in_blocks(CL_CSSBoxElement *element)
 
 void CL_CSSBoxTree::filter_table(CL_CSSBoxElement *element, CL_CSSResourceCache *resource_cache)
 {
-	CL_CSSBoxNode *cur = element->get_first_child();
-	while (cur)
+	CL_CSSBoxNodeWalker walker(element->get_first_child(), false);
+	while (walker.is_node())
 	{
-		CL_CSSBoxElement *child_element = dynamic_cast<CL_CSSBoxElement*>(cur);
-		if (child_element && child_element->is_table_row())
+		if (walker.is_element() && walker.get_element()->is_table_cell())
 		{
-			CL_CSSBoxNode *cur_cell = cur->get_first_child();
-			while (cur_cell)
-			{
-				CL_CSSBoxElement *cell_element = dynamic_cast<CL_CSSBoxElement*>(cur_cell);
-				if (cell_element && cell_element->is_table_cell())
-				{
-					create_anonymous_blocks(cell_element, resource_cache);
-					cur_cell = cur_cell->get_next_sibling();
-				}
-				else
-				{
-					CL_CSSBoxNode *d = cur_cell;
-					cur_cell = cur_cell->get_next_sibling();
-					d->remove();
-				}
-			}
-			cur = cur->get_next_sibling();
+			create_anonymous_blocks(walker.get_element(), resource_cache);
+			walker.next(false);
 		}
 		else
 		{
-			CL_CSSBoxNode *d = cur;
-			cur = cur->get_next_sibling();
-			d->remove();
+			walker.next(true);
 		}
 	}
 }
