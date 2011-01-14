@@ -77,7 +77,18 @@ void CL_CSSBlockLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor
 		if (children[i]->get_element_node()->computed_properties.position.type == CL_CSSBoxPosition::type_absolute ||
 			children[i]->get_element_node()->computed_properties.position.type == CL_CSSBoxPosition::type_fixed)
 		{
-			// We layout absolute and fixed elements later since they may rely on the calculated height of the normal flow.
+			// We layout absolute or fixed elements later since they may rely on the calculated height of the normal flow.
+
+			children[i]->static_position.left = cursor.x;
+			children[i]->static_position.top = cursor.y + cursor.get_total_margin();
+			children[i]->static_position.right = children[i]->static_position.left;
+			children[i]->static_position.bottom = children[i]->static_position.top;
+			children[i]->calc_preferred(gc, cursor.resources);
+			children[i]->calculate_top_down_sizes();
+			children[i]->set_expanding_width(children[i]->preferred_width);
+			children[i]->layout_formatting_root_helper(gc, cursor.resources, normal_strategy);
+			children[i]->static_position.right = children[i]->static_position.left + children[i]->width.value;
+			children[i]->static_position.bottom = children[i]->static_position.top + children[i]->height.value;
 		}
 		else
 		{

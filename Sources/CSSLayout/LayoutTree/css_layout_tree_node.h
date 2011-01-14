@@ -108,6 +108,7 @@ public:
 	bool min_width_calculated;
 
 	CL_Rect content_box;
+	LTRB static_position;
 
 protected:
 	virtual void prepare_children() = 0;

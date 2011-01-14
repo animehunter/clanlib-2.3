@@ -105,8 +105,6 @@ CL_CSSUsedValue CL_CSSLayoutTreeNode::get_css_padding_height(const CL_CSSBoxPadd
 
 void CL_CSSLayoutTreeNode::calculate_absolute_sizes()
 {
-	LTRB static_position;
-
 	margin.left = get_css_margin_width(element_node->computed_properties.margin_width_left, containing_width);
 	margin.right = get_css_margin_width(element_node->computed_properties.margin_width_right, containing_width);
 	border.left = element_node->computed_properties.border_width_left.length.value;
@@ -482,8 +480,6 @@ void CL_CSSLayoutTreeNode::layout_absolute_or_fixed(CL_GraphicContext &gc, CL_CS
 	else
 		layout_formatting_root_helper(gc, resources, normal_strategy);
 
-	LTRB static_position;
-
 	CL_CSSUsedValue left = 0.0f;
 	if (element_node->computed_properties.left.type == CL_CSSBoxLeft::type_length)
 		left = element_node->computed_properties.left.length.value;
@@ -502,12 +498,12 @@ void CL_CSSLayoutTreeNode::layout_absolute_or_fixed(CL_GraphicContext &gc, CL_CS
 	{
 		if (element_node->computed_properties.direction.type == CL_CSSBoxDirection::type_ltr)
 		{
-			left = static_position.left;
+			left = formatting_context->get_parent()->get_x() + static_position.left - containing_block.left;
 			right = containing_width.value - border.left - border.right - padding.left - padding.right - margin.left - margin.right - width.value - left;
 		}
 		else
 		{
-			right = static_position.right;
+			right = formatting_context->get_parent()->get_x() + static_position.right - containing_block.left;
 			left = containing_width.value - border.left - border.right - padding.left - padding.right - margin.left - margin.right - width.value - right;
 		}
 	}
@@ -525,12 +521,12 @@ void CL_CSSLayoutTreeNode::layout_absolute_or_fixed(CL_GraphicContext &gc, CL_CS
 		{
 			if (element_node->computed_properties.direction.type == CL_CSSBoxDirection::type_ltr)
 			{
-				left = static_position.left;
+				left = formatting_context->get_parent()->get_x() + static_position.left - containing_block.left;
 				right = containing_width.value - border.left - border.right - padding.left - padding.right - margin.left - margin.right - width.value - left;
 			}
 			else
 			{
-				right = static_position.right;
+				right = formatting_context->get_parent()->get_x() + static_position.right - containing_block.left;
 				left = containing_width.value - border.left - border.right - padding.left - padding.right - margin.left - margin.right - width.value - right;
 			}
 		}
@@ -571,7 +567,7 @@ void CL_CSSLayoutTreeNode::layout_absolute_or_fixed(CL_GraphicContext &gc, CL_CS
 		element_node->computed_properties.bottom.type == CL_CSSBoxBottom::type_auto &&
 		element_node->computed_properties.height.type == CL_CSSBoxHeight::type_auto)
 	{
-		top = static_position.top;
+		top = formatting_context->get_parent()->get_y() + static_position.top - containing_block.top;
 		bottom = containing_height.value - border.top - border.bottom - padding.top - padding.bottom - margin.top - margin.bottom - height.value - top;
 	}
 	else
@@ -586,7 +582,7 @@ void CL_CSSLayoutTreeNode::layout_absolute_or_fixed(CL_GraphicContext &gc, CL_CS
 			element_node->computed_properties.bottom.type == CL_CSSBoxBottom::type_auto &&
 			element_node->computed_properties.height.type != CL_CSSBoxHeight::type_auto) // rule #2
 		{
-			top = static_position.top;
+			top = formatting_context->get_parent()->get_y() + static_position.top - containing_block.top;
 			bottom = containing_height.value - border.top - border.bottom - padding.top - padding.bottom - margin.top - margin.bottom - height.value - top;
 		}
 		else if (element_node->computed_properties.height.type == CL_CSSBoxHeight::type_auto &&
@@ -609,11 +605,13 @@ void CL_CSSLayoutTreeNode::layout_absolute_or_fixed(CL_GraphicContext &gc, CL_CS
 		}
 	}
 
-
-
-
 	int x = containing_block.left + cl_used_to_actual(left);
 	int y = containing_block.top + cl_used_to_actual(top);
+	if (element_node->is_absolute() && formatting_context->get_parent())
+	{
+		x -= formatting_context->get_parent()->get_x();
+		y -= formatting_context->get_parent()->get_y();
+	}
 	set_root_block_position(x, y);
 }
 

@@ -211,7 +211,10 @@ CL_String CL_CSSLayoutNode_Impl::print_node(CL_CSSBoxNode *node, int indent)
 
 	if (element)
 	{
-		output_string += cl_format("%1 { display: %2; float: %3; width: %4 }\r\n", element->name, to_string(element->computed_properties.display), to_string(element->computed_properties.float_box), to_string(element->computed_properties.width));
+		//if (element->computed_properties.font_family.names.empty())
+			output_string += cl_format("%1 { display: %2; float: %3; width: %4 }\r\n", element->name, to_string(element->computed_properties.display), to_string(element->computed_properties.float_box), to_string(element->computed_properties.width));
+		//else
+		//	output_string += cl_format("%1 { font-family: %2 }\r\n", element->name, element->computed_properties.font_family.names[0].name);
 	}
 	else if (text)
 	{
