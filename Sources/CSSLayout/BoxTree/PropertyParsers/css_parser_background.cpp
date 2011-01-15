@@ -353,9 +353,9 @@ void CL_CSSParserBackground::parse(CL_CSSBoxProperties &properties, const CL_Str
 	}
 
 	bgposition.type = CL_CSSBoxBackgroundPosition::type_value;
-	if (!x_specified)
+	if (!x_specified && y_specified)
 		bgposition.type_x = CL_CSSBoxBackgroundPosition::type1_center;
-	else if (!y_specified)
+	else if (x_specified && !y_specified)
 		bgposition.type_y = CL_CSSBoxBackgroundPosition::type2_center;
 
 	properties.background_color = bgcolor;
