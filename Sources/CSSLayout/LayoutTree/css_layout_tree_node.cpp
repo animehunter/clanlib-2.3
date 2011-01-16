@@ -51,7 +51,7 @@ CL_CSSLayoutTreeNode::~CL_CSSLayoutTreeNode()
 
 void CL_CSSLayoutTreeNode::prepare(CL_CSSBlockFormattingContext *current_formatting_context, CL_CSSStackingContext *current_stacking_context)
 {
-	if (current_formatting_context == 0 || element_node->is_inline_block_level() || element_node->is_float() || element_node->is_table() || element_node->is_table_cell() || is_replaced() || element_node->is_absolute())
+	if (current_formatting_context == 0 || element_node->is_inline_block_level() || element_node->is_float() || element_node->is_table() || element_node->is_table_cell() || is_replaced() || element_node->is_absolute() || !element_node->is_overflow_visible())
 		set_formatting_context(new CL_CSSBlockFormattingContext(current_formatting_context), true);
 	else if (element_node->is_fixed())
 		set_formatting_context(new CL_CSSBlockFormattingContext(0), true);
@@ -746,7 +746,7 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCurs
 	content_box.bottom = content_box.top+height.value;
 	cursor.apply_written_width(content_box.right);
 /*
-	if (element_node->name.find("participation") != CL_String::npos)
+	if (element_node->name.find("foo") != CL_String::npos)
 	{
 		Sleep(1);
 	}
@@ -761,8 +761,7 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCurs
 		}
 		else
 		{
-			cursor.apply_margin();
-			height.value = cl_max(0.0f, cursor.y - content_box.top);
+			height.value = cl_max(0.0f, cursor.y + cursor.get_total_margin() - content_box.top);
 		}
 
 		if (element_node->computed_properties.max_height.type == CL_CSSBoxMaxHeight::type_length)
@@ -790,8 +789,8 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCurs
 		if (height.value > 0.0f)
 			cursor.apply_margin();
 		cursor.y = content_box.top + height.value;
-		cursor.add_margin(margin.bottom);
 	}
+
 
 	if (strategy != normal_strategy)
 	{
