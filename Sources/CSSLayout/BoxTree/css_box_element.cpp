@@ -137,3 +137,8 @@ bool CL_CSSBoxElement::is_display_none() const
 {
 	return computed_properties.display.type == CL_CSSBoxDisplay::type_none;
 }
+
+bool CL_CSSBoxElement::is_overflow_visible() const
+{
+	return computed_properties.overflow.type == CL_CSSBoxOverflow::type_visible;
+}

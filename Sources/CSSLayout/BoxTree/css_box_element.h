@@ -52,4 +52,5 @@ public:
 	bool is_absolute() const;
 	bool is_fixed() const;
 	bool is_display_none() const;
+	bool is_overflow_visible() const;
 };

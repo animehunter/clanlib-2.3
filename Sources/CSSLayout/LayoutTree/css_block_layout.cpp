@@ -94,6 +94,7 @@ void CL_CSSBlockLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor
 		{
 			if (children[i]->get_element_node()->is_float() ||
 				children[i]->get_element_node()->is_table() ||
+				!children[i]->get_element_node()->is_overflow_visible() ||
 				children[i]->is_replaced())
 			{
 				layout_float(cursor, i, gc, strategy);
