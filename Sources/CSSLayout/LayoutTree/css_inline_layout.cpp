@@ -197,7 +197,7 @@ void CL_CSSInlineLayout::create_line_boxes(CL_GraphicContext &gc, CL_CSSLayoutCu
 		{
 			CL_CSSInlineLineBoxCursor cursor = line_start_cursor;
 			CL_CSSInlineLineBox line;
-			place_line_box(line, layout_cursor, y);
+			place_line_box(line, layout_cursor, y, 0);
 
 			int x = 0;
 			bool start_of_line = true;
@@ -208,6 +208,8 @@ void CL_CSSInlineLayout::create_line_boxes(CL_GraphicContext &gc, CL_CSSLayoutCu
 				if (stop_at_block_level(cursor, next_linebreak))
 					break;
 				int text_width = find_width(gc, cursor, next_linebreak, start_of_line);
+				if (start_of_line)
+					place_line_box(line, layout_cursor, y, text_width);
 				bool fits_on_line = x+text_width <= line.box.get_width();
 				if (!fits_on_line && start_of_line)
 				{
@@ -230,7 +232,7 @@ void CL_CSSInlineLayout::create_line_boxes(CL_GraphicContext &gc, CL_CSSLayoutCu
 					{
 						cursor = line_start_cursor;
 						line = CL_CSSInlineLineBox();
-						place_line_box(line, layout_cursor, y);
+						place_line_box(line, layout_cursor, y, 0);
 						x = 0;
 						start_of_line = true;
 						continue;
@@ -268,9 +270,9 @@ void CL_CSSInlineLayout::create_line_boxes(CL_GraphicContext &gc, CL_CSSLayoutCu
 	}
 }
 
-void CL_CSSInlineLayout::place_line_box(CL_CSSInlineLineBox &line, CL_CSSLayoutCursor &layout_cursor, int y)
+void CL_CSSInlineLayout::place_line_box(CL_CSSInlineLineBox &line, CL_CSSLayoutCursor &layout_cursor, int y, int minimum_width)
 {
-	line.box = formatting_context->find_line_box(layout_cursor.x, layout_cursor.x+width.value, y, 1, 0);
+	line.box = formatting_context->find_line_box(layout_cursor.x, layout_cursor.x+width.value, y, 1, minimum_width);
 	if (line_boxes.empty())
 		apply_text_indent(layout_cursor, line);
 }

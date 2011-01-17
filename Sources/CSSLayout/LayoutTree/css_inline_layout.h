@@ -76,7 +76,7 @@ private:
 	void layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy);
 	void create_line_boxes(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy);
 	void layout_inline_blocks(CL_GraphicContext &gc, CL_CSSLayoutCursor &layout_cursor, LayoutStrategy strategy);
-	void place_line_box(CL_CSSInlineLineBox &line, CL_CSSLayoutCursor &layout_cursor, int y);
+	void place_line_box(CL_CSSInlineLineBox &line, CL_CSSLayoutCursor &layout_cursor, int y, int minimum_width);
 	void apply_text_indent(CL_CSSLayoutCursor &layout_cursor, CL_CSSInlineLineBox &line);
 	void apply_expanding_width(CL_GraphicContext &gc, CL_CSSLayoutCursor &layout_cursor, CL_CSSInlineLineBox &line);
 	void create_linebreak_opportunities();
