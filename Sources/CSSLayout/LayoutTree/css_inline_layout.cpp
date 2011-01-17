@@ -413,7 +413,10 @@ void CL_CSSInlineLayout::update_line_box_height(CL_GraphicContext &gc, CL_CSSRes
 		line_height = cl_max(line_height, cl_used_to_actual(element_node->computed_properties.line_height.percentage * block_line_height / 100.0f));
 	}
 
+	CL_CSSActualValue delta = line_height - (line.ascent + line.descent);
 	line.box.bottom = line.box.top + line_height;
+	line.ascent += delta/2;
+	line.descent += (delta+1)/2;
 }
 
 int CL_CSSInlineLayout::find_width(CL_GraphicContext &gc, const CL_CSSInlineLineBoxCursor &start, const CL_CSSInlineLineBoxCursor &end, bool start_of_line)
