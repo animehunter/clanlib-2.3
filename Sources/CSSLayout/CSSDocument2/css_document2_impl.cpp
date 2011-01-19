@@ -41,7 +41,6 @@ std::vector<CL_CSSRulesetMatch2> CL_CSSDocument2_Impl::select_rulesets(CL_CSSSel
 			const CL_CSSSelectorChain2 &chain = cur_ruleset.selectors[j];
 			if (equals(chain.pseudo_element, pseudo_element))
 			{
-				node->reset();
 				bool matches = try_match_chain(chain, node, chain.links.size());
 				if (matches)
 				{
@@ -57,6 +56,8 @@ std::vector<CL_CSSRulesetMatch2> CL_CSSDocument2_Impl::select_rulesets(CL_CSSSel
 
 bool CL_CSSDocument2_Impl::try_match_chain(const CL_CSSSelectorChain2 &chain, CL_CSSSelectNode2 *node, size_t chain_index)
 {
+	bool matches = false;
+	node->push();
 	if (chain_index > 0)
 	{
 		const CL_CSSSelectorLink2 &link = chain.links[chain_index-1];
@@ -64,48 +65,39 @@ bool CL_CSSDocument2_Impl::try_match_chain(const CL_CSSSelectorChain2 &chain, CL
 		{
 			if (node->parent())
 			{
-				bool matches = try_match_chain(chain, node, chain_index-1);
-				return matches;
-			}
-			else
-			{
-				return false;
+				matches = try_match_chain(chain, node, chain_index-1);
 			}
 		}
 		else if (link.type == CL_CSSSelectorLink2::type_descendant_combinator)
 		{
 			while (node->parent())
 			{
-				bool matches = try_match_chain(chain, node, chain_index-1);
+				matches = try_match_chain(chain, node, chain_index-1);
 				if (matches)
-					return true;
+					break;
 			}
-			return false;
 		}
 		else if (link.type == CL_CSSSelectorLink2::type_next_sibling_combinator)
 		{
 			if (node->prev_sibling())
 			{
-				bool matches = try_match_chain(chain, node, chain_index-1);
-				return matches;
-			}
-			else
-			{
-				return false;
+				matches = try_match_chain(chain, node, chain_index-1);
 			}
 		}
 		else
 		{
 			if (try_match_link(link, node))
-				return try_match_chain(chain, node, chain_index-1);
-			else
-				return false;
+			{
+				matches = try_match_chain(chain, node, chain_index-1);
+			}
 		}
 	}
 	else
 	{
-		return true;
+		matches = true;
 	}
+	node->pop();
+	return matches;
 }
 
 bool CL_CSSDocument2_Impl::try_match_link(const CL_CSSSelectorLink2 &link, const CL_CSSSelectNode2 *node)

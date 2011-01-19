@@ -34,14 +34,16 @@ class CL_API_CSSLAYOUT CL_DomSelectNode : public CL_CSSSelectNode2
 {
 public:
 	CL_DomSelectNode(const CL_DomElement &element);
-	void reset();
 	bool parent();
 	bool prev_sibling();
+	void push();
+	void pop();
 
 private:
 	void update();
 
 	CL_DomElement dom_element;
 	CL_DomElement pos;
-	bool is_reset;
+	bool is_modified;
+	std::vector<CL_DomElement> saved_elements;
 };

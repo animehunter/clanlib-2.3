@@ -42,9 +42,10 @@ class CL_API_CSSLAYOUT CL_CSSSelectNode2
 public:
 	CL_CSSSelectNode2() : child_index(0) { }
 	virtual ~CL_CSSSelectNode2() { }
-	virtual void reset() = 0;
 	virtual bool parent() = 0;
 	virtual bool prev_sibling() = 0;
+	virtual void push() = 0;
+	virtual void pop() = 0;
 
 	CL_String name;
 	CL_String lang;

@@ -437,7 +437,15 @@ CL_DomNode &CL_DomNode::operator =(const CL_DomNode &copy)
 
 bool CL_DomNode::operator ==(const CL_DomNode &other) const
 {
-	return (impl == other.impl);
+	if (impl.is_null() || other.is_null())
+		return impl.is_null() == other.is_null();
+	else
+		return impl->node_index == other.impl->node_index;
+}
+
+bool CL_DomNode::operator !=(const CL_DomNode &other) const
+{
+	return !(*this == other);
 }
 
 void CL_DomNode::normalize()
