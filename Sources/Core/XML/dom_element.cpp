@@ -100,8 +100,19 @@ CL_DomString CL_DomElement::get_attribute(const CL_DomString &name) const
 {
 	if (impl)
 	{
-		CL_DomAttr attribute = get_attributes().get_named_item(name).to_attr();
-		return attribute.get_value();
+		CL_DomDocument_Generic *doc_impl = (CL_DomDocument_Generic *) impl->owner_document.get();
+		const CL_DomTreeNode *tree_node = impl->get_tree_node();
+		unsigned int cur_index = tree_node->first_attribute;
+		const CL_DomTreeNode *cur_attribute = tree_node->get_first_attribute(doc_impl);
+		while (cur_attribute)
+		{
+			if (cur_attribute->get_node_name() == name)
+				return cur_attribute->get_node_value();
+
+			cur_index = cur_attribute->next_sibling;
+			cur_attribute = cur_attribute->get_next_sibling(doc_impl);
+		}
+		return CL_DomString();
 	}
 	return CL_DomString();
 }
@@ -110,8 +121,19 @@ CL_DomString CL_DomElement::get_attribute(const CL_DomString &name, const CL_Dom
 {
 	if (impl)
 	{
-		CL_DomAttr attribute = get_attributes().get_named_item(name).to_attr();
-		return attribute.is_attr() ? attribute.get_value() : default_value;
+		CL_DomDocument_Generic *doc_impl = (CL_DomDocument_Generic *) impl->owner_document.get();
+		const CL_DomTreeNode *tree_node = impl->get_tree_node();
+		unsigned int cur_index = tree_node->first_attribute;
+		const CL_DomTreeNode *cur_attribute = tree_node->get_first_attribute(doc_impl);
+		while (cur_attribute)
+		{
+			if (cur_attribute->get_node_name() == name)
+				return cur_attribute->get_node_value();
+
+			cur_index = cur_attribute->next_sibling;
+			cur_attribute = cur_attribute->get_next_sibling(doc_impl);
+		}
+		return default_value;
 	}
 	return default_value;
 }
@@ -122,8 +144,24 @@ CL_DomString CL_DomElement::get_attribute_ns(
 {
 	if (impl)
 	{
-		CL_DomAttr attribute = get_attributes().get_named_item_ns(namespace_uri, local_name).to_attr();
-		return attribute.get_value();
+		CL_DomDocument_Generic *doc_impl = (CL_DomDocument_Generic *) impl->owner_document.get();
+		const CL_DomTreeNode *tree_node = impl->get_tree_node();
+		unsigned int cur_index = tree_node->first_attribute;
+		const CL_DomTreeNode *cur_attribute = tree_node->get_first_attribute(doc_impl);
+		while (cur_attribute)
+		{
+			CL_StringRef lname = cur_attribute->get_node_name();
+			CL_StringRef::size_type lpos = lname.find_first_of(':');
+			if (lpos != CL_StringRef::npos)
+				lname = lname.substr(lpos + 1);
+
+			if (cur_attribute->get_namespace_uri() == namespace_uri && lname == local_name)
+				return cur_attribute->get_node_value();
+
+			cur_index = cur_attribute->next_sibling;
+			cur_attribute = cur_attribute->get_next_sibling(doc_impl);
+		}
+		return CL_DomString();
 	}
 	return CL_DomString();
 }
@@ -135,10 +173,26 @@ CL_DomString CL_DomElement::get_attribute_ns(
 {
 	if (impl)
 	{
-		CL_DomAttr attribute = get_attributes().get_named_item_ns(namespace_uri, local_name).to_attr();
-		return attribute.is_attr() ? attribute.get_value() : default_value;
+		CL_DomDocument_Generic *doc_impl = (CL_DomDocument_Generic *) impl->owner_document.get();
+		const CL_DomTreeNode *tree_node = impl->get_tree_node();
+		unsigned int cur_index = tree_node->first_attribute;
+		const CL_DomTreeNode *cur_attribute = tree_node->get_first_attribute(doc_impl);
+		while (cur_attribute)
+		{
+			CL_StringRef lname = cur_attribute->get_node_name();
+			CL_StringRef::size_type lpos = lname.find_first_of(':');
+			if (lpos != CL_StringRef::npos)
+				lname = lname.substr(lpos + 1);
+
+			if (cur_attribute->get_namespace_uri() == namespace_uri && lname == local_name)
+				return cur_attribute->get_node_value();
+
+			cur_index = cur_attribute->next_sibling;
+			cur_attribute = cur_attribute->get_next_sibling(doc_impl);
+		}
+		return default_value;
 	}
-	return CL_DomString();
+	return default_value;
 }
 
 void CL_DomElement::set_attribute(const CL_DomString &name, const CL_DomString &value)

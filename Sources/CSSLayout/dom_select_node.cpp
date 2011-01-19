@@ -30,15 +30,19 @@
 #include "API/CSSLayout/dom_select_node.h"
 
 CL_DomSelectNode::CL_DomSelectNode(const CL_DomElement &element)
-: dom_element(element)
+: dom_element(element), is_reset(false)
 {
 	reset();
 }
 
 void CL_DomSelectNode::reset()
 {
-	pos = dom_element;
-	update();
+	if (!is_reset)
+	{
+		is_reset = true;
+		pos = dom_element;
+		update();
+	}
 }
 
 bool CL_DomSelectNode::parent()
@@ -46,6 +50,7 @@ bool CL_DomSelectNode::parent()
 	CL_DomNode parent_node = pos.get_parent_node();
 	if (parent_node.is_element())
 	{
+		is_reset = false;
 		pos = parent_node.to_element();
 		update();
 		return true;
@@ -60,10 +65,11 @@ bool CL_DomSelectNode::prev_sibling()
 {
 	CL_DomNode prev_node = pos.get_previous_sibling();
 	while (!prev_node.is_null() && !prev_node.is_element())
-		prev_node = pos.get_previous_sibling();
+		prev_node = prev_node.get_previous_sibling();
 
 	if (prev_node.is_element())
 	{
+		is_reset = false;
 		pos = prev_node.to_element();
 		update();
 		return true;

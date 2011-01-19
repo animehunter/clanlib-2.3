@@ -43,4 +43,5 @@ private:
 
 	CL_DomElement dom_element;
 	CL_DomElement pos;
+	bool is_reset;
 };
