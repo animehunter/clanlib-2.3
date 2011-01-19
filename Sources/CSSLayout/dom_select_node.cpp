@@ -32,27 +32,51 @@
 CL_DomSelectNode::CL_DomSelectNode(const CL_DomElement &element)
 : dom_element(element)
 {
-	name = element.get_tag_name();
-	id = element.get_attribute("id");
-	std::vector<CL_String> classes = CL_StringHelp::split_text(element.get_attribute("class"), " ");
-	for (size_t i = 0; i < classes.size(); i++)
-		element_classes.push_back(classes[i]);
+	reset();
 }
 
-CL_CSSSelectNode2 *CL_DomSelectNode::get_parent()
+void CL_DomSelectNode::reset()
 {
-	CL_DomElement parent_node = dom_element.get_parent_node().to_element();
-	if (!parent_node.is_null())
-		return new CL_DomSelectNode(parent_node);
-	else
-		return 0;
+	pos = dom_element;
+	update();
 }
 
-CL_CSSSelectNode2 *CL_DomSelectNode::get_prev_sibling()
+bool CL_DomSelectNode::parent()
 {
-	CL_DomElement prev_node = dom_element.get_previous_sibling().to_element();
-	if (!prev_node.is_null())
-		return new CL_DomSelectNode(prev_node);
+	CL_DomNode parent_node = pos.get_parent_node();
+	if (parent_node.is_element())
+	{
+		pos = parent_node.to_element();
+		update();
+		return true;
+	}
 	else
-		return 0;
+	{
+		return false;
+	}
+}
+
+bool CL_DomSelectNode::prev_sibling()
+{
+	CL_DomNode prev_node = pos.get_previous_sibling();
+	while (!prev_node.is_null() && !prev_node.is_element())
+		prev_node = pos.get_previous_sibling();
+
+	if (prev_node.is_element())
+	{
+		pos = prev_node.to_element();
+		update();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void CL_DomSelectNode::update()
+{
+	name = pos.get_tag_name();
+	id = pos.get_attribute("id");
+	element_classes = CL_StringHelp::split_text(pos.get_attribute("class"), " ");
 }

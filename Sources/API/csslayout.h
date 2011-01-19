@@ -48,6 +48,7 @@
 #include "CSSLayout/css_select_node2.h"
 #include "CSSLayout/dom_select_node.h"
 #include "CSSLayout/css_box_properties.h"
+#include "CSSLayout/html_url.h"
 
 #ifdef __cplusplus_cli
 #pragma managed(pop)

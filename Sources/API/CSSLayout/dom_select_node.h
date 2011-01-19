@@ -34,9 +34,13 @@ class CL_API_CSSLAYOUT CL_DomSelectNode : public CL_CSSSelectNode2
 {
 public:
 	CL_DomSelectNode(const CL_DomElement &element);
-	CL_CSSSelectNode2 *get_parent();
-	CL_CSSSelectNode2 *get_prev_sibling();
+	void reset();
+	bool parent();
+	bool prev_sibling();
 
 private:
+	void update();
+
 	CL_DomElement dom_element;
+	CL_DomElement pos;
 };
