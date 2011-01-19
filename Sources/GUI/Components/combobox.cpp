@@ -64,6 +64,7 @@ public:
 	void on_resized();
 	void on_style_changed();
 	void on_lineedit_message(CL_GUIMessage &msg);
+	void on_lineedit_enter_pressed();
 	void on_btn_arrow_clicked();
 	void on_lineedit_text_edited(CL_InputEvent &event);
 	bool on_lineedit_unhandled_event(CL_InputEvent &event);
@@ -76,6 +77,7 @@ public:
 	CL_Callback_v0 func_dropdown_closed;
 	CL_Callback_v0 func_before_edit_changed;
 	CL_Callback_v0 func_after_edit_changed;
+	CL_Callback_v0 func_enter_pressed;
 	CL_Callback_v1<int> func_item_selected;
 	CL_Callback_v1<int> func_selection_changed;
 	CL_Callback_1<bool, CL_InputEvent> func_lineedit_unhandled_event;
@@ -228,6 +230,11 @@ CL_Callback_v0 &CL_ComboBox::func_dropdown_closed()
 	return impl->func_dropdown_closed;
 }
 
+CL_Callback_v0 &CL_ComboBox::func_enter_pressed()
+{
+	return impl->func_enter_pressed;
+}
+
 CL_Callback_v0 &CL_ComboBox::func_before_edit_changed()
 {
 	return impl->func_before_edit_changed;
@@ -314,6 +321,12 @@ void CL_ComboBox_Impl::on_process_message(CL_GUIMessage &msg)
 					component->set_selected_item(selected_item);
 					func_item_selected.invoke(selected_item);
 				}
+				msg.set_consumed();
+			}
+			else if (e.id == CL_KEY_ENTER || e.id == CL_KEY_RETURN || e.id == CL_KEY_NUMPAD_ENTER)
+			{
+				if (!func_enter_pressed.is_null())
+					func_enter_pressed.invoke();
 				msg.set_consumed();
 			}
 			else if (editable && 
@@ -429,6 +442,7 @@ void CL_ComboBox_Impl::create_components()
 	CL_GraphicContext &gc = component->get_gc();
 
 	lineedit->func_after_edit_changed().set(this, &CL_ComboBox_Impl::on_lineedit_text_edited);
+	lineedit->func_enter_pressed().set(this, &CL_ComboBox_Impl::on_lineedit_enter_pressed);
 	lineedit->func_filter_message().set(this, &CL_ComboBox_Impl::on_lineedit_message);
 }
 
@@ -443,6 +457,12 @@ void CL_ComboBox_Impl::on_btn_arrow_clicked()
 		popup_menu.set_minimum_width(g.get_width());
 
 	popup_menu.start(component, component->component_to_screen_coords(g.get_bottom_left()));
+}
+
+void CL_ComboBox_Impl::on_lineedit_enter_pressed()
+{
+	if (!func_enter_pressed.is_null())
+		func_enter_pressed.invoke();
 }
 
 void CL_ComboBox_Impl::on_lineedit_text_edited(CL_InputEvent &event)
