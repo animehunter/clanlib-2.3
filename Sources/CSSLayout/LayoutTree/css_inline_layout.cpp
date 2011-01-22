@@ -518,17 +518,21 @@ void CL_CSSInlineLayout::create_block_segment(CL_GraphicContext &gc, CL_CSSLayou
 	CL_CSSInlineLineSegment segment;
 	segment.object_index = object_index;
 	segment.height = objects[object_index].layout->get_block_height();
-	segment.ascent = objects[object_index].layout->margin.top + objects[object_index].layout->border.top + objects[object_index].layout->padding.top;
-	segment.ascent += objects[object_index].layout->get_last_line_baseline();
-	if (segment.ascent == -1)
+	int last_line_baseline = objects[object_index].layout->get_last_line_baseline();
+	if (last_line_baseline == -1)
 	{
 		segment.ascent = segment.height;
 		segment.descent = 0;
 	}
 	else
 	{
-		segment.descent = segment.height-segment.ascent;
+		segment.ascent = last_line_baseline;
+		segment.descent = segment.height-last_line_baseline;
 	}
+
+	segment.ascent += objects[object_index].layout->margin.top + objects[object_index].layout->border.top + objects[object_index].layout->padding.top;
+	segment.descent += objects[object_index].layout->margin.bottom + objects[object_index].layout->border.bottom + objects[object_index].layout->padding.bottom;
+
 	segment.left = line.segments.empty() ? 0 : line.segments.back().right;
 	segment.right = segment.left + objects[object_index].layout->get_block_width();
 	segment.baseline_offset = 0; // find_baseline_offset(gc, layout_cursor.resources, objects[object_index].node);
@@ -714,10 +718,7 @@ int CL_CSSInlineLayout::get_first_line_baseline()
 	}
 	else
 	{
-		int baseline = line_boxes.front().box.top + line_boxes.front().ascent;
-		if (formatting_context_root)
-			baseline += formatting_context->get_local_y();
-		return baseline;
+		return line_boxes.front().box.top + line_boxes.front().ascent;
 	}
 }
 
@@ -729,10 +730,7 @@ int CL_CSSInlineLayout::get_last_line_baseline()
 	}
 	else
 	{
-		int baseline = line_boxes.back().box.top + line_boxes.back().ascent;
-		if (formatting_context_root)
-			baseline += formatting_context->get_local_y();
-		return baseline;
+		return line_boxes.back().box.top + line_boxes.back().ascent;
 	}
 }
 

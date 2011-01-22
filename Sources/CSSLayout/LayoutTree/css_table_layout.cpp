@@ -217,6 +217,9 @@ int CL_CSSTableLayout::get_first_line_baseline()
 			if (columns[cell].rows.size() > row && columns[cell].rows[row])
 			{
 				int baseline = columns[cell].rows[row]->get_first_line_baseline();
+				if (baseline != -1)
+					baseline += columns[cell].rows[row]->get_formatting_context()->get_local_y();
+
 				if (first_line_baseline == -1)
 					first_line_baseline = baseline;
 				else if (baseline != -1)
@@ -224,8 +227,6 @@ int CL_CSSTableLayout::get_first_line_baseline()
 			}
 		}
 	}
-	if (first_line_baseline != -1 && formatting_context_root)
-		first_line_baseline += formatting_context->get_local_y();
 	return first_line_baseline;
 }
 
@@ -239,6 +240,9 @@ int CL_CSSTableLayout::get_last_line_baseline()
 			if (columns[cell].rows.size() > row && columns[cell].rows[row])
 			{
 				int baseline = columns[cell].rows[row]->get_last_line_baseline();
+				if (baseline != -1)
+					baseline += columns[cell].rows[row]->get_formatting_context()->get_local_y();
+
 				if (last_line_baseline == -1)
 					last_line_baseline = baseline;
 				else if (baseline != -1)
@@ -246,8 +250,6 @@ int CL_CSSTableLayout::get_last_line_baseline()
 			}
 		}
 	}
-	if (last_line_baseline != -1 && formatting_context_root)
-		last_line_baseline += formatting_context->get_local_y();
 	return last_line_baseline;
 }
 

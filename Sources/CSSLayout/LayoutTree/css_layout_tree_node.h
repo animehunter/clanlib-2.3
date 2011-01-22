@@ -110,6 +110,9 @@ public:
 	CL_Rect content_box;
 	LTRB static_position;
 
+	bool is_formatting_context_root() const { return formatting_context_root; }
+	CL_CSSBlockFormattingContext *get_formatting_context() { return formatting_context; }
+
 protected:
 	virtual void prepare_children() = 0;
 	virtual void layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy) = 0;

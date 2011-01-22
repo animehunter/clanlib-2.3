@@ -254,10 +254,7 @@ void CL_CSSReplacedLayout::set_component_geometry()
 
 int CL_CSSReplacedLayout::get_first_line_baseline()
 {
-	int baseline = box.bottom;
-	if (formatting_context_root)
-		baseline += formatting_context->get_local_y();
-	return baseline;
+	return box.bottom;
 }
 
 int CL_CSSReplacedLayout::get_last_line_baseline()

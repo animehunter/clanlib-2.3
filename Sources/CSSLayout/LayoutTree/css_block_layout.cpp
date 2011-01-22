@@ -236,13 +236,14 @@ int CL_CSSBlockLayout::get_first_line_baseline()
 	for (size_t i = 0; i < children.size(); i++)
 	{
 		int baseline = children[i]->get_first_line_baseline();
+		if (baseline != -1 && children[i]->is_formatting_context_root())
+			baseline += children[i]->get_formatting_context()->get_local_y();
+
 		if (first_line_baseline == -1)
 			first_line_baseline = baseline;
 		else if (baseline != -1)
 			first_line_baseline = cl_min(first_line_baseline, baseline);
 	}
-	if (first_line_baseline != -1 && formatting_context_root)
-		first_line_baseline += formatting_context->get_local_y();
 	return first_line_baseline;
 }
 
@@ -252,13 +253,14 @@ int CL_CSSBlockLayout::get_last_line_baseline()
 	for (size_t i = 0; i < children.size(); i++)
 	{
 		int baseline = children[i]->get_last_line_baseline();
+		if (baseline != -1 && children[i]->is_formatting_context_root())
+			baseline += children[i]->get_formatting_context()->get_local_y();
+
 		if (last_line_baseline == -1)
 			last_line_baseline = baseline;
 		else if (baseline != -1)
 			last_line_baseline = cl_max(last_line_baseline, baseline);
 	}
-	if (last_line_baseline != -1 && formatting_context_root)
-		last_line_baseline += formatting_context->get_local_y();
 	return last_line_baseline;
 }
 
