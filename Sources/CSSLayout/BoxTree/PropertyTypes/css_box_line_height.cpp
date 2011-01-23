@@ -55,7 +55,7 @@ void CL_CSSBoxLineHeight::compute(const CL_CSSBoxLineHeight *parent, CL_CSSResou
 	if (type == type_percentage)
 	{
 		type = type_length;
-		length = CL_CSSBoxLength(percentage, CL_CSSBoxLength::type_em);
+		length = CL_CSSBoxLength(percentage / 100.0f, CL_CSSBoxLength::type_em);
 	}
 
 	if (type == type_length)
