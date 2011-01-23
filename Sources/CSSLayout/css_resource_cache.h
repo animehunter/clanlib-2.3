@@ -61,6 +61,12 @@ public:
 	CL_Image &get_image(CL_GraphicContext &gc, const CL_String &url);
 
 private:
+#ifdef WIN32
+	int enum_font_families_callback(const LOGFONTW *fontinfo, const TEXTMETRICW *textmetrics, DWORD font_type);
+	static int CALLBACK static_enum_font_families_callback(const LOGFONTW *fontinfo, const TEXTMETRICW *textmetrics, DWORD font_type, LPARAM lparam);
+#endif
+
 	std::map<CL_String, CL_Font> font_cache;
 	std::map<CL_String, CL_Image> image_cache;
+	std::map<CL_String, bool> font_families;
 };

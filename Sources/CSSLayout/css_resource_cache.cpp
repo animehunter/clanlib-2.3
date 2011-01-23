@@ -33,16 +33,52 @@
 
 CL_CSSResourceCache::CL_CSSResourceCache()
 {
+#ifdef WIN32
+	HDC screen_dc = GetDC(0);
+	LOGFONT logfont = { 0 };
+	logfont.lfFaceName[0] = 0;
+	logfont.lfCharSet = DEFAULT_CHARSET;
+	logfont.lfPitchAndFamily = DEFAULT_PITCH;
+	BOOL result = EnumFontFamiliesEx(screen_dc, &logfont, &static_enum_font_families_callback, (LPARAM)this, 0);
+	ReleaseDC(0, screen_dc);
+#endif
 }
 
 CL_CSSResourceCache::~CL_CSSResourceCache()
 {
 }
 
+#ifdef WIN32
+int CL_CSSResourceCache::enum_font_families_callback(const LOGFONTW *fontinfo, const TEXTMETRICW *textmetrics, DWORD font_type)
+{
+	CL_String name = CL_StringHelp::ucs2_to_utf8(fontinfo->lfFaceName);
+	CL_String search_name = CL_StringHelp::text_to_lower(name);
+	font_families[search_name] = true;
+	return 1;
+}
+
+int CL_CSSResourceCache::static_enum_font_families_callback(const LOGFONTW *fontinfo, const TEXTMETRICW *textmetrics, DWORD font_type, LPARAM lparam)
+{
+	return reinterpret_cast<CL_CSSResourceCache*>(lparam)->enum_font_families_callback(fontinfo, textmetrics, font_type);
+}
+#endif
+
 CL_Font &CL_CSSResourceCache::get_font(CL_GraphicContext &gc, const CL_CSSBoxProperties &properties)
 {
 	int font_size = cl_used_to_actual(properties.font_size.length.value);
-	CL_String font_name = properties.font_family.names[0].name;
+	CL_String font_name;
+	for (size_t i = 0; i < properties.font_family.names.size(); i++)
+	{
+		CL_String search_name = CL_StringHelp::text_to_lower(properties.font_family.names[i].name);
+		if (font_families.find(search_name) != font_families.end())
+		{
+			font_name = properties.font_family.names[i].name;
+			break;
+		}
+	}
+	if (font_name.empty())
+		font_name = get_default_font();
+
 	int font_weight = 400;
 	switch (properties.font_weight.type)
 	{
