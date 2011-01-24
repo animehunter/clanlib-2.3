@@ -125,7 +125,7 @@ CL_Rect CL_CSSTableLayout::get_cell_border_box(size_t row, size_t col)
 	bottom += columns[col].rows[row]->border.bottom;
 
 	CL_Rect box(cl_used_to_actual(left),cl_used_to_actual(top),cl_used_to_actual(right),cl_used_to_actual(bottom));
-	box.translate(formatting_context->get_x(), formatting_context->get_y());
+	box.translate(cl_used_to_actual(relative_x) + formatting_context->get_x(), cl_used_to_actual(relative_y) + formatting_context->get_y());
 	return box;
 }
 
@@ -514,6 +514,8 @@ void CL_CSSTableLayout::layout_cells(CL_GraphicContext & gc, CL_CSSLayoutCursor 
 					CL_CSSUsedValue width = columns[cell].cell_width - columns[cell].rows[row]->padding.left - columns[cell].rows[row]->padding.right;
 					columns[cell].rows[row]->calculate_top_down_sizes();
 					columns[cell].rows[row]->set_expanding_width(width);
+					columns[cell].rows[row]->relative_x = relative_x + columns[cell].rows[row]->get_local_relative_x();
+					columns[cell].rows[row]->relative_y = relative_y + columns[cell].rows[row]->get_local_relative_y();
 					columns[cell].rows[row]->layout_formatting_root_helper(gc, cursor.resources, normal_strategy);
 					CL_CSSUsedValue cell_height = columns[cell].rows[row]->height.value + columns[cell].rows[row]->padding.top + columns[cell].rows[row]->padding.bottom;
 					rows[row].height = cl_max(rows[row].height, cell_height);

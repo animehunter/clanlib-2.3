@@ -80,6 +80,8 @@ public:
 	virtual void calculate_content_top_down_sizes() { }
 	virtual void set_content_expanding_width() { }
 	bool add_margin_top(CL_CSSLayoutCursor &cursor);
+	CL_CSSUsedValue get_local_relative_x() const;
+	CL_CSSUsedValue get_local_relative_y() const;
 	virtual bool is_empty() const { return false; }
 	int get_block_width() const;
 	int get_block_height() const;
@@ -106,6 +108,7 @@ public:
 	CL_CSSUsedValue min_width;
 	bool preferred_width_calculated;
 	bool min_width_calculated;
+	CL_CSSUsedValue relative_x, relative_y;
 
 	CL_Rect content_box;
 	LTRB static_position;

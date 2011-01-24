@@ -83,6 +83,8 @@ void CL_CSSBlockLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor
 			children[i]->static_position.top = cursor.y + cursor.get_total_margin();
 			children[i]->static_position.right = children[i]->static_position.left;
 			children[i]->static_position.bottom = children[i]->static_position.top;
+			children[i]->relative_x = relative_x + children[i]->get_local_relative_x();
+			children[i]->relative_y = relative_y + children[i]->get_local_relative_y();
 			children[i]->calc_preferred(gc, cursor.resources);
 			children[i]->calculate_top_down_sizes();
 			children[i]->set_expanding_width(children[i]->preferred_width);
@@ -131,6 +133,8 @@ void CL_CSSBlockLayout::layout_float(CL_CSSLayoutCursor &cursor, size_t i, CL_Gr
 
 	children[i]->containing_width = width;
 	children[i]->containing_height = height;
+	children[i]->relative_x = relative_x + children[i]->get_local_relative_x();
+	children[i]->relative_y = relative_y + children[i]->get_local_relative_y();
 	children[i]->layout_formatting_root(gc, cursor.resources, strategy);
 
 	CL_Rect float_box(0, 0, children[i]->get_block_width(), children[i]->get_block_height());
@@ -190,6 +194,8 @@ void CL_CSSBlockLayout::layout_absolute_and_fixed_content(CL_GraphicContext &gc,
 		if (children[i]->get_element_node()->computed_properties.position.type == CL_CSSBoxPosition::type_absolute ||
 			children[i]->get_element_node()->computed_properties.position.type == CL_CSSBoxPosition::type_fixed)
 		{
+			children[i]->relative_x = relative_x + children[i]->get_local_relative_x();
+			children[i]->relative_y = relative_y + children[i]->get_local_relative_y();
 			children[i]->layout_absolute_or_fixed(gc, resources, containing_block, viewport_size);
 		}
 

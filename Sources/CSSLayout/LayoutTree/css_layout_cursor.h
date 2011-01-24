@@ -43,6 +43,8 @@ public:
 
 	float x;
 	float y;
+	float relative_x;
+	float relative_y;
 private:
 	float margin_y;
 	float negative_margin_y;

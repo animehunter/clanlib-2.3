@@ -513,6 +513,8 @@ void CL_CSSInlineLayout::create_block_segment(CL_GraphicContext &gc, CL_CSSLayou
 	start_of_line = false;
 	text_width += objects[object_index].layout->get_block_width();
 
+	objects[object_index].layout->relative_x = relative_x + objects[object_index].layout->get_local_relative_x();
+	objects[object_index].layout->relative_y = relative_y + objects[object_index].layout->get_local_relative_y();
 	objects[object_index].layout->layout_formatting_root(gc, layout_cursor.resources);
 
 	CL_CSSInlineLineSegment segment;
@@ -917,8 +919,8 @@ void CL_CSSInlineLayout::render_layer_floats(CL_GraphicContext &gc, CL_CSSResour
 
 void CL_CSSInlineLayout::render_layer_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
 {
-	int pos_x = formatting_context->get_x();
-	int pos_y = formatting_context->get_y();
+	int pos_x = cl_used_to_actual(relative_x) + formatting_context->get_x();
+	int pos_y = cl_used_to_actual(relative_y) + formatting_context->get_y();
 	for (size_t i = 0; i < line_boxes.size(); i++)
 	{
 		for (size_t j = 0; j < line_boxes[i].segments.size(); j++)

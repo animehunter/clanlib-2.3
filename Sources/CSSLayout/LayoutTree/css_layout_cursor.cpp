@@ -30,7 +30,7 @@
 #include "css_layout_cursor.h"
 
 CL_CSSLayoutCursor::CL_CSSLayoutCursor()
-: x(0), y(0), margin_y(0), negative_margin_y(0), max_written_width(0), resources(0)
+: x(0), y(0), relative_x(0), relative_y(0), margin_y(0), negative_margin_y(0), max_written_width(0), resources(0)
 {
 }
 

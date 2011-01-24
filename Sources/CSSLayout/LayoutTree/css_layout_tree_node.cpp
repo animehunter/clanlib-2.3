@@ -37,7 +37,8 @@
 
 CL_CSSLayoutTreeNode::CL_CSSLayoutTreeNode(CL_CSSBoxElement *element_node)
 : preferred_width(0.0f), min_width(0.0f), preferred_width_calculated(false), min_width_calculated(false),
-  element_node(element_node), formatting_context(0), formatting_context_root(false), stacking_context(0), stacking_context_root(false)
+  relative_x(0.0f), relative_y(0.0f), element_node(element_node), formatting_context(0),
+  formatting_context_root(false), stacking_context(0), stacking_context_root(false)
 {
 }
 
@@ -705,7 +706,14 @@ void CL_CSSLayoutTreeNode::layout_formatting_root_helper(CL_GraphicContext &gc, 
 void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy)
 {
 	float old_x = cursor.x;
+	float old_relative_x = cursor.relative_x;
+	float old_relative_y = cursor.relative_y;
 	cursor.x += margin.left + border.left + padding.left;
+	cursor.relative_x += get_local_relative_x();
+	cursor.relative_y += get_local_relative_y();
+
+	relative_x = cursor.relative_x;
+	relative_y = cursor.relative_y;
 
 	add_margin_top(cursor);
 
@@ -806,6 +814,42 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCurs
 
 	cursor.add_margin(margin.bottom);
 	cursor.x = old_x;
+	cursor.relative_x = old_relative_x;
+	cursor.relative_y = old_relative_y;
+}
+
+CL_CSSUsedValue CL_CSSLayoutTreeNode::get_local_relative_x() const
+{
+	if (element_node->computed_properties.position.type == CL_CSSBoxPosition::type_relative)
+	{
+		if (element_node->computed_properties.left.type == CL_CSSBoxLeft::type_length)
+			return element_node->computed_properties.left.length.value;
+		else if (element_node->computed_properties.left.type == CL_CSSBoxLeft::type_percentage && !containing_width.expanding)
+			return element_node->computed_properties.left.percentage / 100.0f * containing_width.value;
+		else
+			return 0.0f;
+	}
+	else
+	{
+		return 0.0f;
+	}
+}
+
+CL_CSSUsedValue CL_CSSLayoutTreeNode::get_local_relative_y() const
+{
+	if (element_node->computed_properties.position.type == CL_CSSBoxPosition::type_relative)
+	{
+		if (element_node->computed_properties.top.type == CL_CSSBoxTop::type_length)
+			return element_node->computed_properties.top.length.value;
+		else if (element_node->computed_properties.top.type == CL_CSSBoxTop::type_percentage && !containing_height.use_content)
+			return element_node->computed_properties.top.percentage / 100.0f * containing_height.value;
+		else
+			return 0.0f;
+	}
+	else
+	{
+		return 0.0f;
+	}
 }
 
 bool CL_CSSLayoutTreeNode::add_margin_top(CL_CSSLayoutCursor &cursor)
@@ -897,7 +941,7 @@ void CL_CSSLayoutTreeNode::render_non_content(CL_GraphicContext &gc, CL_CSSResou
 			CL_Size offset = font.get_text_size(gc, bullet);
 			offset.width += 8;
 			// to do: find baseline of first item
-			font.draw_text(gc, formatting_context->get_x() + content_box.left-offset.width, formatting_context->get_y() + content_box.top + (int)(font.get_font_metrics(gc).get_ascent()), bullet, element_node->computed_properties.color.color);
+			font.draw_text(gc, cl_used_to_actual(relative_x) + formatting_context->get_x() + content_box.left-offset.width, cl_used_to_actual(relative_y) + formatting_context->get_y() + content_box.top + (int)(font.get_font_metrics(gc).get_ascent()), bullet, element_node->computed_properties.color.color);
 		}
 	}
 }
