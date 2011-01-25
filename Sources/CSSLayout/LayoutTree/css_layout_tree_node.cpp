@@ -665,6 +665,11 @@ void CL_CSSLayoutTreeNode::set_expanding_width(CL_CSSUsedValue expanding_width)
 
 void CL_CSSLayoutTreeNode::layout_formatting_root_helper(CL_GraphicContext &gc, CL_CSSResourceCache *resources, LayoutStrategy strategy)
 {
+/*	if (element_node->name.find("#navigation") != CL_String::npos)
+	{
+		Sleep(1);
+	}*/
+
 	formatting_context->clear();
 
 	CL_CSSLayoutCursor cursor;

@@ -128,7 +128,7 @@ void CL_CSSInlineLayout::layout_inline_blocks(CL_GraphicContext &gc, CL_CSSLayou
 		for (size_t j = 0; j < line_boxes[i].segments.size(); j++)
 		{
 			CL_CSSInlineObject &object = objects[line_boxes[i].segments[j].object_index];
-			if (object.layout)
+			if (object.layout && !object.layout->get_element_node()->is_block_level())
 			{
 				object.layout->set_root_block_position(line_boxes[i].box.left + line_boxes[i].segments[j].left, line_boxes[i].box.top + line_boxes[i].ascent - line_boxes[i].segments[j].ascent - line_boxes[i].segments[j].baseline_offset);
 			}
@@ -169,28 +169,39 @@ void CL_CSSInlineLayout::create_line_boxes(CL_GraphicContext &gc, CL_CSSLayoutCu
 	{
 		if (objects[line_start_cursor.object_index].layout && objects[line_start_cursor.object_index].layout->get_element_node()->is_block_level())
 		{
-			/*
-			CL_CSSInlineLineBoxCursor cursor = line_start_cursor;
-			cursor.object_index++;
+			if (objects[line_start_cursor.object_index].layout->get_element_node()->computed_properties.position.type != CL_CSSBoxPosition::type_absolute &&
+				objects[line_start_cursor.object_index].layout->get_element_node()->computed_properties.position.type != CL_CSSBoxPosition::type_fixed)
+			{
+				layout_cursor.apply_margin();
+				if (!line_boxes.empty())
+					layout_cursor.y = line_boxes.back().box.bottom;
 
-			bool start_of_line = true;
-			int text_width = 0;
+				CL_CSSInlineLineBox line;
+				line.box = CL_Rect(layout_cursor.x, y, layout_cursor.x+width.value, y);
 
-			CL_CSSInlineLineBox line;
-			place_line_box(line, layout_cursor, y);
-			create_line_segments(gc, layout_cursor, line_start_cursor, cursor, line, start_of_line, text_width);
-			apply_expanding_width(gc, layout_cursor, line);
-			apply_line_box_alignment(line);
-			update_line_box_height(gc, cursor.resources, line);
-			layout_cursor.apply_written_width(line.box.left+line.segments.back().right);
-			if (strategy != normal_strategy)
-				width.value = cl_max(width.value, line.segments.back().right);
-			line_boxes.push_back(line);
+				objects[line_start_cursor.object_index].layout->containing_width = width;
+				objects[line_start_cursor.object_index].layout->containing_height = height;
+				objects[line_start_cursor.object_index].layout->layout_normal(gc, layout_cursor, strategy);
+				if (strategy != normal_strategy && width.expanding)
+					width.value = cl_max(width.value, cl_actual_to_used(objects[line_start_cursor.object_index].layout->get_block_width()));
 
-			line_start_cursor = cursor;
-			y = line.box.bottom;
-			*/
-			// To do: layout block level at the current line box position
+				layout_cursor.apply_margin();
+				y = cl_used_to_actual(layout_cursor.y + layout_cursor.get_total_margin());
+
+				CL_CSSInlineLineSegment segment;
+				segment.ascent = line.box.get_height();
+				segment.descent = 0;
+				segment.object_index = line_start_cursor.object_index;
+				segment.left = 0;
+				segment.right = objects[line_start_cursor.object_index].layout->get_block_width();
+
+				line.box.bottom = y;
+				line.ascent = segment.ascent;
+				line.descent = segment.descent;
+				line.segments.push_back(segment);
+				line_boxes.push_back(line);
+			}
+
 			line_start_cursor.object_index++;
 		}
 		else
