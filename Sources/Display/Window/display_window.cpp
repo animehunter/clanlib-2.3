@@ -97,6 +97,8 @@ HWND CL_DisplayWindow::get_hwnd() const
 {
 	return impl->provider->get_hwnd();
 }
+#elif defined(__APPLE__)
+	// nothing
 #else
 Display *CL_DisplayWindow::get_display() const
 {

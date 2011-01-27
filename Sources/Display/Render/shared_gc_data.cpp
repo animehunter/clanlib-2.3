@@ -117,7 +117,7 @@ void CL_SharedGCData::add_ref()
 		cl_sharedgc_tls_index_created = true;
 	}
 	
-	CL_ThreadTempStackPool *cl_sharedgc = (CL_SharedGCData *) pthread_getspecific(cl_sharedgc_tls_index);
+	CL_SharedGCData *cl_sharedgc = (CL_SharedGCData *) pthread_getspecific(cl_sharedgc_tls_index);
 	if (cl_sharedgc == 0)
 	{
 		cl_sharedgc = new CL_SharedGCData;
