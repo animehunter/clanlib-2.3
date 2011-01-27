@@ -50,7 +50,7 @@ public:
 	: CL_Exception(message), code(0)
 	{
 	}
-	~CL_WebserviceException() throw() {}
+	virtual ~CL_WebserviceException() throw() {}
 
 public:
 	int code;

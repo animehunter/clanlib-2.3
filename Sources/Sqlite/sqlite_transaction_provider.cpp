@@ -95,7 +95,7 @@ void CL_SqliteTransactionProvider::rollback()
 		{
 			connection->execute_non_query(command.get());
 		}
-		catch (CL_Exception e)
+		catch (const CL_Exception &e)
 		{
 			// In some situations a rollback will fail. From the sqlite documentation:
 			//

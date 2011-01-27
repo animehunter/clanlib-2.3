@@ -54,7 +54,7 @@ void CL_FileHelp::copy_file(const CL_String &from, const CL_String &to, bool cop
 			CL_File input_file(to);
 			throw CL_Exception("Destination file already exists");
 		}
-		catch (CL_Exception error) {
+		catch (const CL_Exception&) {
 		}
 	}
 
