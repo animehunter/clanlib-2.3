@@ -100,12 +100,12 @@ public:
 	/// \brief Get Marquee box width
 	///
 	/// \return marquee_box_width
-	int CL_ProgressBar::get_marquee_box_width() const;
+	int get_marquee_box_width() const;
 
 	/// \brief Get Marquee step size
 	///
 	/// \return marquee_step_size
-	int CL_ProgressBar::get_marquee_step_size() const;
+	int get_marquee_step_size() const;
 
 /// \}
 /// \name Operations
