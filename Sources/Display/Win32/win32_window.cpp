@@ -1,3 +1,4 @@
+
 /*
 **  ClanLib SDK
 **  Copyright (c) 1997-2011 The ClanLib Team
@@ -59,6 +60,11 @@
 #ifdef fun_and_games_with_vista
 #include <dwmapi.h>
 #pragma comment(lib, "dwmapi.lib")
+#endif
+
+#ifdef __MINGW32__
+#include <wingdi.h>
+#include <excpt.h>
 #endif
 
 CL_Win32Window::CL_Win32Window()
@@ -365,7 +371,7 @@ public:
 private:
 	bool enabled;
 };
-
+#ifdef _MSC_VER
 LONG cl_grr(PEXCEPTION_POINTERS info)
 {
 	// The point of this function is to prevent something within Windows from eating access violations
@@ -405,22 +411,39 @@ LONG cl_grr(PEXCEPTION_POINTERS info)
 	UnhandledExceptionFilter(info);
 	return EXCEPTION_CONTINUE_SEARCH;
 }
-
+#else
+EXCEPTION_DISPOSITION cl_grr;
+#endif
 LRESULT CL_Win32Window::static_window_try_proc(
 	HWND wnd,
 	UINT msg,
 	WPARAM wparam,
 	LPARAM lparam)
+#ifdef _MSC_VER
 {
 	__try
 	{
 		return static_window_proc(wnd, msg, wparam, lparam);
-	} __except(cl_grr(exception_info()))
+	}
+	__except(cl_grr(exception_info()))
 	{
 		// A special thanks to whoever at Microsoft chose to eat access violations during WM_PAINT calls.
 		return DefWindowProc(wnd, msg, wparam, lparam);
 	}
 }
+#else
+{
+	__try1(cl_grr)
+	{
+		return static_window_proc(wnd, msg, wparam, lparam);
+	}
+	__except1
+	{
+		// A special thanks to whoever at Microsoft chose to eat access violations during WM_PAINT calls.
+		return DefWindowProc(wnd, msg, wparam, lparam);
+	}
+}
+#endif
 
 LRESULT CL_Win32Window::static_window_proc(
 	HWND wnd,

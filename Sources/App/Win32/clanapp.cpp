@@ -29,6 +29,9 @@
 #include <ctype.h>
 #include <windows.h>
 #include <vector>
+#if defined UNICODE && !defined _UNICODE
+#define _UNICODE
+#endif
 #include <tchar.h>
 #include "API/Core/System/setup_core.h"
 #include "API/App/clanapp.h"
