@@ -156,6 +156,7 @@ public:
 #elif defined(__APPLE__)
 	// nothing
 #else
+#else
 	/// \brief Returns the X11 display handle.
 	virtual Display *get_display() const = 0;
 
