@@ -451,6 +451,14 @@ void CL_CSSLayoutTreeNode::set_root_block_position(int x, int y)
 	formatting_context->set_position(content_box.left, content_box.top);
 }
 
+void CL_CSSLayoutTreeNode::set_root_content_position(int x, int y)
+{
+	if (!formatting_context_root)
+		throw CL_Exception("CL_CSSLayoutTreeNode::set_root_content_position misuse");
+	content_box = CL_Rect(CL_Point(x, y), content_box.get_size());
+	formatting_context->set_position(content_box.left, content_box.top);
+}
+
 void CL_CSSLayoutTreeNode::calc_preferred(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
 {
 	if (!preferred_width_calculated)

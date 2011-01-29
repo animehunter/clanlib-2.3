@@ -115,30 +115,18 @@ void CL_CSSTableSizeGrid::apply_collapsed_border(size_t row, size_t col, CL_CSSU
 	}
 }
 
-void CL_CSSTableSizeGrid::apply_separate_table_border(CL_CSSUsedValue border_left, CL_CSSUsedValue border_top, CL_CSSUsedValue border_right, CL_CSSUsedValue border_bottom, CL_CSSUsedValue padding_left, CL_CSSUsedValue padding_top, CL_CSSUsedValue padding_right, CL_CSSUsedValue padding_bottom)
+void CL_CSSTableSizeGrid::apply_separate_table_border(CL_CSSUsedValue border_left, CL_CSSUsedValue border_top, CL_CSSUsedValue border_right, CL_CSSUsedValue border_bottom)
 {
 	if (cols() > 0)
 	{
-		non_content_widths[0] = non_content_widths[0] + border_left + padding_left;
-		non_content_widths[cols()] = non_content_widths[cols()] + border_right + padding_right;
+		non_content_widths[0] = non_content_widths[0] + border_left;
+		non_content_widths[cols()] = non_content_widths[cols()] + border_right;
 	}
 	if (rows() > 0)
 	{
-		non_content_heights[0] = non_content_heights[0] + border_top + padding_top;
-		non_content_heights[rows()] = non_content_heights[rows()] + border_bottom + padding_bottom;
+		non_content_heights[0] = non_content_heights[0] + border_top;
+		non_content_heights[rows()] = non_content_heights[rows()] + border_bottom;
 	}
-}
-
-void CL_CSSTableSizeGrid::apply_separate_border_width(size_t col, CL_CSSUsedValue border_left, CL_CSSUsedValue border_right)
-{
-	non_content_widths[col] = non_content_widths[col] + border_left;
-	non_content_widths[col+1] = non_content_widths[col+1] + border_right;
-}
-
-void CL_CSSTableSizeGrid::apply_separate_border_height(size_t row, CL_CSSUsedValue border_top, CL_CSSUsedValue border_bottom)
-{
-	non_content_heights[row] = non_content_heights[row] + border_top;
-	non_content_heights[row+1] = non_content_heights[row+1] + border_bottom;
 }
 
 void CL_CSSTableSizeGrid::apply_separate_spacing(CL_CSSUsedValue spacing_width, CL_CSSUsedValue spacing_height)
