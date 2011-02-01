@@ -36,6 +36,14 @@ CL_JPEGBitReader::CL_JPEGBitReader(CL_JPEGFileReader *reader)
 	buffer.resize(16*1024);
 }
 
+void CL_JPEGBitReader::reset()
+{
+	length = 0;
+	pos = 0;
+	bitpos = 0;
+	buffer.resize(16*1024);
+}
+
 unsigned int CL_JPEGBitReader::get_bit()
 {
 	if (bitpos == 8)

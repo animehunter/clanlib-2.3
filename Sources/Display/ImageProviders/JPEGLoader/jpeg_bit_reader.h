@@ -35,6 +35,7 @@ class CL_JPEGBitReader
 public:
 	CL_JPEGBitReader(CL_JPEGFileReader *reader);
 
+	void reset();
 	unsigned int get_bit();
 	unsigned int get_bits(int count);
 

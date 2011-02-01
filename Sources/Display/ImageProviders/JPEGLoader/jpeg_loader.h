@@ -50,8 +50,8 @@ private:
 
 	void process_dnl(CL_JPEGFileReader &reader);
 	void process_sos(CL_JPEGFileReader &reader);
-	void process_sos_sequential(CL_JPEGStartOfScan &start_of_scan, std::vector<int> component_to_sof, CL_JPEGBitReader &bit_reader);
-	void process_sos_progressive(CL_JPEGStartOfScan &start_of_scan, std::vector<int> component_to_sof, CL_JPEGBitReader &bit_reader);
+	void process_sos_sequential(CL_JPEGStartOfScan &start_of_scan, std::vector<int> component_to_sof, CL_JPEGFileReader &reader);
+	void process_sos_progressive(CL_JPEGStartOfScan &start_of_scan, std::vector<int> component_to_sof, CL_JPEGFileReader &reader);
 	void process_dqt(CL_JPEGFileReader &reader);
 	void process_dht(CL_JPEGFileReader &reader);
 	void process_sof(CL_JPEGMarker marker, CL_JPEGFileReader &reader);

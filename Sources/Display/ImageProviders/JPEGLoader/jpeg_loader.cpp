@@ -180,7 +180,6 @@ void CL_JPEGLoader::process_dqt(CL_JPEGFileReader &reader)
 void CL_JPEGLoader::process_sos(CL_JPEGFileReader &reader)
 {
 	CL_JPEGStartOfScan start_of_scan = reader.read_sos();
-	CL_JPEGBitReader bit_reader(&reader);
 
 	std::vector<int > component_to_sof;
 	for (size_t c = 0; c < start_of_scan.components.size(); c++)
@@ -205,9 +204,9 @@ void CL_JPEGLoader::process_sos(CL_JPEGFileReader &reader)
 	}
 
 	if (progressive)
-		process_sos_progressive(start_of_scan, component_to_sof, bit_reader);
+		process_sos_progressive(start_of_scan, component_to_sof, reader);
 	else
-		process_sos_sequential(start_of_scan, component_to_sof, bit_reader);
+		process_sos_sequential(start_of_scan, component_to_sof, reader);
 
 	scan_count++;
 }
@@ -237,10 +236,24 @@ int CL_JPEGLoader::zigzag_map[64] =
 	7*8+6, 7*8+7
 };
 
-void CL_JPEGLoader::process_sos_sequential(CL_JPEGStartOfScan &start_of_scan, std::vector<int> component_to_sof, CL_JPEGBitReader &bit_reader)
+void CL_JPEGLoader::process_sos_sequential(CL_JPEGStartOfScan &start_of_scan, std::vector<int> component_to_sof, CL_JPEGFileReader &reader)
 {
+	CL_JPEGBitReader bit_reader(&reader);
+	int restart_counter = 0;
 	for (int mcu_block = 0; mcu_block < mcu_width*mcu_height; mcu_block++)
 	{
+		if (restart_interval != 0 && restart_counter == restart_interval)
+		{
+			CL_JPEGMarker marker = reader.read_marker();
+			if (marker < marker_rst0 || marker > marker_rst7)
+			{
+				throw CL_Exception("Restart marker missing between JPEG entropy data");
+			}
+			restart_counter = 0;
+			bit_reader.reset();
+		}
+		restart_counter++;
+
 		for (size_t c = 0; c < start_of_scan.components.size(); c++)
 		{
 			int c_sof = component_to_sof[c];
@@ -287,12 +300,26 @@ void CL_JPEGLoader::process_sos_sequential(CL_JPEGStartOfScan &start_of_scan, st
 	}
 }
 
-void CL_JPEGLoader::process_sos_progressive(CL_JPEGStartOfScan &start_of_scan, std::vector<int> component_to_sof, CL_JPEGBitReader &bit_reader)
+void CL_JPEGLoader::process_sos_progressive(CL_JPEGStartOfScan &start_of_scan, std::vector<int> component_to_sof, CL_JPEGFileReader &reader)
 {
+	CL_JPEGBitReader bit_reader(&reader);
+	int restart_counter = 0;
 	if (start_of_scan.start_dct_coefficient == 0 && start_of_scan.end_dct_coefficient == 0)
 	{
 		for (int mcu_block = 0; mcu_block < mcu_width*mcu_height; mcu_block++)
 		{
+			if (restart_interval != 0 && restart_counter == restart_interval)
+			{
+				CL_JPEGMarker marker = reader.read_marker();
+				if (marker < marker_rst0 || marker > marker_rst7)
+				{
+					throw CL_Exception("Restart marker missing between JPEG entropy data");
+				}
+				restart_counter = 0;
+				bit_reader.reset();
+			}
+			restart_counter++;
+
 			for (size_t c = 0; c < start_of_scan.components.size(); c++)
 			{
 				int c_sof = component_to_sof[c];
@@ -327,6 +354,8 @@ void CL_JPEGLoader::process_sos_progressive(CL_JPEGStartOfScan &start_of_scan, s
 	}
 	else
 	{
+		// To do: Implement restart_interval for progressive scans.
+
 		int c_sof = component_to_sof[0];
 		const CL_JPEGHuffmanTable &ac_table = huffman_ac_tables[start_of_scan.components[0].ac_table_selector];
 		int scale_x = start_of_frame.components[c_sof].horz_sampling_factor;
