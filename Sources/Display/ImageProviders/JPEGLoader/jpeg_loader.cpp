@@ -250,6 +250,8 @@ void CL_JPEGLoader::process_sos_sequential(CL_JPEGStartOfScan &start_of_scan, st
 				throw CL_Exception("Restart marker missing between JPEG entropy data");
 			}
 			restart_counter = 0;
+			for (size_t i = 0; i < last_dc_values.size(); i++)
+				last_dc_values[i] = 0;
 			bit_reader.reset();
 		}
 		restart_counter++;
@@ -316,6 +318,8 @@ void CL_JPEGLoader::process_sos_progressive(CL_JPEGStartOfScan &start_of_scan, s
 					throw CL_Exception("Restart marker missing between JPEG entropy data");
 				}
 				restart_counter = 0;
+				for (size_t i = 0; i < last_dc_values.size(); i++)
+					last_dc_values[i] = 0;
 				bit_reader.reset();
 			}
 			restart_counter++;
