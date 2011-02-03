@@ -199,26 +199,44 @@ void CL_RenderBatch2D::flush(CL_GraphicContext &gc)
 	if (position > 0)
 	{
 		gc.set_modelview(CL_Mat4f::identity());
-		CL_BlendMode blend_mode;
-		blend_mode.set_blend_color(constant_color);
-		if (use_glyph_program)
-			blend_mode.set_blend_function(cl_blend_constant_color, cl_blend_one_minus_src_color, cl_blend_zero, cl_blend_one);
-		else
-			blend_mode.set_blend_function(cl_blend_src_alpha, cl_blend_one_minus_src_alpha, cl_blend_one, cl_blend_one_minus_src_alpha);
 		gc.set_program_object(cl_program_sprite);
-		gc.set_blend_mode(blend_mode);
-		for (int i = 0; i < num_current_textures; i++)
-			gc.set_texture(i, current_textures[i]);
-		CL_PrimitivesArray prim_array(gc);
-		prim_array.set_attributes(0, &vertices[0].position, sizeof(SpriteVertex));
-		prim_array.set_attributes(1, &vertices[0].color, sizeof(SpriteVertex));
-		prim_array.set_attributes(2, &vertices[0].texcoord, sizeof(SpriteVertex));
-		prim_array.set_attributes(3, &vertices[0].texindex, sizeof(SpriteVertex));
-		gc.draw_primitives(cl_triangles, position, prim_array);
-		for (int i = 0; i < num_current_textures; i++)
-			gc.reset_texture(i);
+
+		if (use_glyph_program)
+		{
+			CL_BlendMode old_blend_mode = gc.get_blend_mode();
+			CL_BlendMode blend_mode;
+			blend_mode.set_blend_color(constant_color);
+			blend_mode.set_blend_function(cl_blend_constant_color, cl_blend_one_minus_src_color, cl_blend_zero, cl_blend_one);
+			gc.set_blend_mode(blend_mode);
+
+			for (int i = 0; i < num_current_textures; i++)
+				gc.set_texture(i, current_textures[i]);
+			CL_PrimitivesArray prim_array(gc);
+			prim_array.set_attributes(0, &vertices[0].position, sizeof(SpriteVertex));
+			prim_array.set_attributes(1, &vertices[0].color, sizeof(SpriteVertex));
+			prim_array.set_attributes(2, &vertices[0].texcoord, sizeof(SpriteVertex));
+			prim_array.set_attributes(3, &vertices[0].texindex, sizeof(SpriteVertex));
+			gc.draw_primitives(cl_triangles, position, prim_array);
+			for (int i = 0; i < num_current_textures; i++)
+				gc.reset_texture(i);
+
+			gc.set_blend_mode(old_blend_mode);
+		}
+		else
+		{
+			for (int i = 0; i < num_current_textures; i++)
+				gc.set_texture(i, current_textures[i]);
+			CL_PrimitivesArray prim_array(gc);
+			prim_array.set_attributes(0, &vertices[0].position, sizeof(SpriteVertex));
+			prim_array.set_attributes(1, &vertices[0].color, sizeof(SpriteVertex));
+			prim_array.set_attributes(2, &vertices[0].texcoord, sizeof(SpriteVertex));
+			prim_array.set_attributes(3, &vertices[0].texindex, sizeof(SpriteVertex));
+			gc.draw_primitives(cl_triangles, position, prim_array);
+			for (int i = 0; i < num_current_textures; i++)
+				gc.reset_texture(i);
+		}
+
 		gc.reset_program_object();
-		gc.reset_blend_mode();
 		gc.set_modelview(modelview);
 		position = 0;
 		for (int i = 0; i < num_current_textures; i++)
