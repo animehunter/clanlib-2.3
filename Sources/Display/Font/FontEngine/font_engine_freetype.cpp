@@ -402,16 +402,19 @@ CL_FontPixelBuffer CL_FontEngine_Freetype::get_font_glyph(int glyph, bool anti_a
 				}
 				if (src_byte & 0x80)	// Bit set
 				{
-					*(dest_data++) = 255;
+					*(dest_data++) = 255;	// Alpha
+					*(dest_data++)= src_blue;
+					*(dest_data++)= src_green;
+					*(dest_data++)= src_red;	
 				}
 				else
 				{
-					*(dest_data++) = 0;
+					*(dest_data++) = 255;		// Alpha
+					*(dest_data++)= 0;
+					*(dest_data++)= 0;
+					*(dest_data++)= 0;
 				}
 				src_byte = src_byte << 1;
-				*(dest_data++)= src_blue;
-				*(dest_data++)= src_green;
-				*(dest_data++)= src_red;
 			}
 			pixel_data += dest_pitch;
 			src_data += src_pitch;
