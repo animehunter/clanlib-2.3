@@ -28,12 +28,14 @@
 
 #pragma once
 
+class CL_CSSBoxNode;
 class CL_CSSBoxElement;
 class CL_CSSBoxObject;
 class CL_CSSBoxText;
 class CL_CSSLayoutTreeNode;
 class CL_CSSBlockLayout;
 class CL_CSSInlineLayout;
+class CL_CSSInlineGeneratedBox;
 class CL_CSSReplacedLayout;
 class CL_CSSTableLayout;
 class CL_CSSResourceCache;
@@ -51,14 +53,15 @@ public:
 	void layout(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, const CL_Size &viewport);
 	void render(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache);
 	CL_CSSLayoutHitTestResult hit_test(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, const CL_Point &pos);
-	CL_CSSInlineLayout *find_inline_layout(CL_CSSBoxText *text_node);
-	CL_Rect get_cursor_box(CL_GraphicContext &gc, CL_CSSResourceCache *resources, CL_CSSBoxText *text_node, CL_String::size_type pos);
+	//CL_CSSInlineLayout *find_inline_layout(CL_CSSBoxText *text_node);
+	//CL_Rect get_cursor_box(CL_GraphicContext &gc, CL_CSSResourceCache *resources, CL_CSSBoxText *text_node, CL_String::size_type pos);
 	CL_Rect get_content_box(CL_CSSBoxElement *element);
 
 private:
 	CL_CSSLayoutTreeNode *create_layout(CL_CSSBoxElement *element);
 	CL_CSSBlockLayout *create_block_level_layout(CL_CSSBoxElement *element);
 	CL_CSSInlineLayout *create_inline_level_layout(CL_CSSBoxElement *element);
+	CL_CSSInlineGeneratedBox *create_inline_generated_box(CL_CSSBoxNode *cur);
 	CL_CSSReplacedLayout *create_replaced_level_layout(CL_CSSBoxObject *object);
 	CL_CSSTableLayout *create_table_level_layout(CL_CSSBoxElement *element);
 

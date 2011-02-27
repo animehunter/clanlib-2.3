@@ -35,7 +35,6 @@
 #include "css_layout_tree_node.h"
 #include "css_block_layout.h"
 #include "css_inline_layout.h"
-#include "css_inline_object.h"
 #include "css_replaced_layout.h"
 #include "css_table_layout.h"
 #include "css_layout_cursor.h"
@@ -90,7 +89,7 @@ void CL_CSSLayoutTree::render(CL_GraphicContext &gc, CL_CSSResourceCache *resour
 {
 	root_stacking_context->render(gc, resource_cache, true);
 }
-
+/*
 CL_CSSInlineLayout *CL_CSSLayoutTree::find_inline_layout(CL_CSSBoxText *text_node)
 {
 	CL_CSSBlockLayout *block_layout = dynamic_cast<CL_CSSBlockLayout*>(root_layout);
@@ -111,12 +110,12 @@ CL_CSSInlineLayout *CL_CSSLayoutTree::find_inline_layout(CL_CSSBoxText *text_nod
 		return 0;
 	}
 }
-
+*/
 CL_CSSLayoutHitTestResult CL_CSSLayoutTree::hit_test(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, const CL_Point &pos)
 {
 	return root_layout->hit_test(gc, resource_cache, pos);
 }
-
+/*
 CL_Rect CL_CSSLayoutTree::get_cursor_box(CL_GraphicContext &gc, CL_CSSResourceCache *resources, CL_CSSBoxText *text_node, CL_String::size_type pos)
 {
 	CL_CSSInlineLayout *inline_layout = find_inline_layout(text_node);
@@ -129,7 +128,7 @@ CL_Rect CL_CSSLayoutTree::get_cursor_box(CL_GraphicContext &gc, CL_CSSResourceCa
 		return CL_Rect();
 	}
 }
-
+*/
 CL_Rect CL_CSSLayoutTree::get_content_box(CL_CSSBoxElement *element)
 {
 	CL_Rect rect;
@@ -217,35 +216,59 @@ CL_CSSBlockLayout *CL_CSSLayoutTree::create_block_level_layout(CL_CSSBoxElement 
 CL_CSSInlineLayout *CL_CSSLayoutTree::create_inline_level_layout(CL_CSSBoxElement *element)
 {
 	CL_CSSInlineLayout *inline_layout = new CL_CSSInlineLayout(element);
-	CL_CSSBoxNodeWalker cur_node(element->get_first_child());
-	while (cur_node.is_node())
+
+	CL_CSSBoxNode *cur = element->get_first_child();
+	while (cur)
 	{
-		if (cur_node.is_object())
-		{
-			inline_layout->push_back(cur_node.get(), create_replaced_level_layout(cur_node.get_object()));
-			cur_node.next(false);
-		}
-		else if (cur_node.is_element())
-		{
-			if (cur_node.get_element()->is_display_none())
-			{
-				cur_node.next(false);
-			}
-			else if (cur_node.get_element()->is_block_level() || cur_node.get_element()->is_inline_block_level())
-			{
-				inline_layout->push_back(cur_node.get(), create_layout(cur_node.get_element()));
-				cur_node.next(false);
-			}
-			else
-			{
-				cur_node.next(true);
-			}
-		}
-		else if (cur_node.is_text())
-		{
-			inline_layout->push_back(cur_node.get());
-			cur_node.next(true);
-		}
+		CL_CSSInlineGeneratedBox *generated_box = create_inline_generated_box(cur);
+		if (generated_box)
+			inline_layout->add_box(generated_box);
+		cur = cur->get_next_sibling();
 	}
+
 	return inline_layout;
+}
+
+CL_CSSInlineGeneratedBox *CL_CSSLayoutTree::create_inline_generated_box(CL_CSSBoxNode *cur)
+{
+	CL_CSSBoxElement *element = dynamic_cast<CL_CSSBoxElement*>(cur);
+	if (element && element->is_display_none())
+	{
+		return 0;
+	}
+	else
+	{
+		CL_CSSInlineGeneratedBox *generated_box = new CL_CSSInlineGeneratedBox();
+		generated_box->box_node = cur;
+
+		CL_CSSBoxText *text = dynamic_cast<CL_CSSBoxText*>(cur);
+		if (text)
+		{
+			generated_box->text_start = 0;
+			generated_box->text_end = text->processed_text.length();
+		}
+
+		CL_CSSBoxElement *cur_element = dynamic_cast<CL_CSSBoxElement*>(cur);
+		if (dynamic_cast<CL_CSSBoxObject*>(cur))
+		{
+			generated_box->layout_node = create_replaced_level_layout(dynamic_cast<CL_CSSBoxObject*>(element));
+		}
+		else if (cur_element && (cur_element->is_block_level() || cur_element->is_inline_block_level()))
+		{
+			generated_box->layout_node = create_layout(cur_element);
+		}
+		else
+		{
+			cur = cur->get_first_child();
+			while (cur)
+			{
+				CL_CSSInlineGeneratedBox *child_generated_box = create_inline_generated_box(cur);
+				if (child_generated_box)
+					generated_box->add_box(child_generated_box);
+				cur = cur->get_next_sibling();
+			}
+		}
+
+		return generated_box;
+	}
 }

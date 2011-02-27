@@ -274,7 +274,7 @@ CL_CSSLayoutHitTestResult CL_CSSTableLayout::hit_test(CL_GraphicContext &gc, CL_
 	}
 	return CL_CSSLayoutHitTestResult();
 }
-
+/*
 CL_CSSInlineLayout *CL_CSSTableLayout::find_inline_layout(CL_CSSBoxText *text_node)
 {
 	for (size_t row = 0; row < rows.size(); row++)
@@ -305,7 +305,7 @@ CL_CSSInlineLayout *CL_CSSTableLayout::find_inline_layout(CL_CSSBoxText *text_no
 	}
 	return 0;
 }
-
+*/
 void CL_CSSTableLayout::prepare_children()
 {
 	for (size_t row = 0; row < rows.size(); row++)

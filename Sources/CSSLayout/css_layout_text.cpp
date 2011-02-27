@@ -32,9 +32,6 @@
 #include "css_layout_impl.h"
 #include "BoxTree/css_box_text.h"
 #include "LayoutTree/css_inline_layout.h"
-#include "LayoutTree/css_inline_object.h"
-#include "LayoutTree/css_inline_line_box.h"
-#include "LayoutTree/css_inline_line_segment.h"
 
 CL_CSSLayoutText::CL_CSSLayoutText()
 {
@@ -53,7 +50,7 @@ void CL_CSSLayoutText::set_text(const CL_String &text)
 	if (!is_null())
 		static_cast<CL_CSSBoxText*>(impl->box_node)->set_text(text);
 }
-
+/*
 std::vector<CL_CSSLayoutText::LineSpan> CL_CSSLayoutText::get_line_spans()
 {
 	std::vector<LineSpan> line_spans;
@@ -107,7 +104,7 @@ CL_Rect CL_CSSLayoutText::get_cursor_box(CL_GraphicContext &gc, CL_String::size_
 		return CL_Rect();
 	}
 }
-
+*/
 CL_CSSLayoutText::CL_CSSLayoutText(const CL_SharedPtr<CL_CSSLayoutNode_Impl> &impl)
 : CL_CSSLayoutNode(impl)
 {

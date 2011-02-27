@@ -59,7 +59,7 @@ public:
 	int get_last_line_baseline();
 	bool find_content_box(CL_CSSBoxElement *element, CL_Rect &out_rect);
 
-	CL_CSSInlineLayout *find_inline_layout(CL_CSSBoxText *text_node);
+	//CL_CSSInlineLayout *find_inline_layout(CL_CSSBoxText *text_node);
 	CL_CSSLayoutHitTestResult hit_test(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, const CL_Point &pos) const;
 
 	void calculate_content_top_down_sizes();
