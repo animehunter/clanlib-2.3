@@ -128,6 +128,10 @@ private:
 	CL_CSSInlineGeneratedBox *begin_tree(CL_CSSInlinePosition start, CL_CSSInlineGeneratedBox *line);
 	void generate_block_line(CL_CSSInlinePosition pos);
 	void layout_line(CL_CSSInlineGeneratedBox *line, CL_Rect &line_box, CL_GraphicContext &gc, CL_CSSResourceCache *resources);
+	void align_line(CL_CSSInlineGeneratedBox *line, CL_GraphicContext &gc, CL_CSSResourceCache *resources, bool last_line);
+	int find_word_count(CL_CSSInlineGeneratedBox *line);
+	void split_text(CL_CSSInlineGeneratedBox *box, size_t text_pos, CL_GraphicContext &gc, CL_CSSResourceCache *resources);
+	void expand_box(CL_CSSInlineGeneratedBox *box, CL_CSSActualValue extra);
 	void layout_block_line(CL_CSSInlineGeneratedBox *line, CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy);
 	bool is_empty_line(CL_CSSInlinePosition start, CL_CSSInlinePosition end) const;
 	CL_CSSInlinePosition begin() const;

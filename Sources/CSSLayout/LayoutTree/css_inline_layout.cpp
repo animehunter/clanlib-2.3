@@ -368,6 +368,12 @@ void CL_CSSInlineLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCurso
 			line_start_pos = line_end_pos;
 		}
 	}
+
+	for (size_t i = 0; i < lines.size(); i++)
+	{
+		bool last_line = (i+1 == lines.size());
+		align_line(lines[i], gc, cursor.resources, last_line);
+	}
 }
 
 void CL_CSSInlineLayout::layout_absolute_and_fixed_content(CL_GraphicContext &gc, CL_CSSResourceCache *resources, CL_Rect containing_block, const CL_Size &viewport_size)
@@ -1078,7 +1084,8 @@ void CL_CSSInlineLayout::layout_line(CL_CSSInlineGeneratedBox *line, CL_Rect &li
 			cur->parent->ascent = cl_max(cur->parent->ascent, cur->ascent);
 			cur->parent->descent = cl_max(cur->parent->descent, cur->descent);
 			cur->parent->height = cl_max(cur->parent->height, cur->height);
-			cur->width = font.get_text_size(gc, text->processed_text.substr(cur->text_start, cur->text_end-cur->text_start)).width;
+			CL_String t = text->processed_text.substr(cur->text_start, cur->text_end-cur->text_start);
+			cur->width = font.get_text_size(gc, t).width;
 			x += cur->width;
 		}
 		else if (element)
@@ -1189,23 +1196,36 @@ void CL_CSSInlineLayout::layout_line(CL_CSSInlineGeneratedBox *line, CL_Rect &li
 		break;
 	}
 
-	CL_CSSActualValue line_width = x - line_box.left;
+	//CL_CSSActualValue line_width = x - line_box.left;
+	//CL_CSSActualValue extra_total = cl_max(0, line_box.get_width() - line_width);
+	line->width = line_box.get_width();
 	line_box.bottom = line->y + line->height;
+}
 
+void CL_CSSInlineLayout::align_line(CL_CSSInlineGeneratedBox *line, CL_GraphicContext &gc, CL_CSSResourceCache *resources, bool last_line)
+{
+	CL_CSSActualValue segments_width = line->last_child->x + line->last_child->width - line->first_child->x;
+	CL_CSSActualValue extra_total = cl_max(0, line->width - segments_width);
 	CL_CSSActualValue offset_x = 0;
-	if (get_element_node()->computed_properties.text_align.type == CL_CSSBoxTextAlign::type_right || get_element_node()->computed_properties.text_align.type == CL_CSSBoxTextAlign::type_center)
+	int word_count = 0;
+	int word_index = 0;
+	if (get_element_node()->computed_properties.text_align.type == CL_CSSBoxTextAlign::type_right)
 	{
-		offset_x = cl_max(0, line_box.get_width() - line_width);
-		if (get_element_node()->computed_properties.text_align.type == CL_CSSBoxTextAlign::type_center)
-			offset_x /= 2;
+		offset_x = extra_total;
 	}
-	else if (get_element_node()->computed_properties.text_align.type == CL_CSSBoxTextAlign::type_justify)
+	else if (get_element_node()->computed_properties.text_align.type == CL_CSSBoxTextAlign::type_center)
 	{
-		// To do: Need a word count so extra space can be inserted between words instead.
+		offset_x = extra_total / 2;
+	}
+	else if (get_element_node()->computed_properties.text_align.type == CL_CSSBoxTextAlign::type_justify && !last_line)
+	{
+		word_count = find_word_count(line);
 	}
 
+	bool start_of_line = true;
+	bool prev_space = true;
 	int baseline_y = line->y + (line->height - line->ascent - line->descent) / 2 + line->ascent;
-	cur = line->first_child;
+	CL_CSSInlineGeneratedBox *cur = line->first_child;
 	while (cur)
 	{
 		cur->x += offset_x;
@@ -1213,6 +1233,42 @@ void CL_CSSInlineLayout::layout_line(CL_CSSInlineGeneratedBox *line, CL_Rect &li
 		if (cur->layout_node && (cur->layout_node->is_replaced() || cur->layout_node->get_element_node()->is_inline_block_level()))
 		{
 			cur->layout_node->set_root_block_position(cur->x, cur->y);
+		}
+
+		if (word_count != 0)
+		{
+			CL_CSSBoxNode *node = cur->box_node;
+			CL_CSSBoxText *text = dynamic_cast<CL_CSSBoxText*>(node);
+			if (text)
+			{
+				for (size_t j = cur->text_start; j < cur->text_end; j++)
+				{
+					if (text->processed_text[j] == ' ')
+					{
+						prev_space = true;
+					}
+					else
+					{
+						if (prev_space && !start_of_line)
+						{
+							split_text(cur, j, gc, resources);
+							cur = cur->next_sibling;
+
+							CL_CSSActualValue v1 = extra_total * word_index / word_count;
+							CL_CSSActualValue v2 = extra_total * (word_index + 1) / word_count;
+							CL_CSSActualValue word_offset_x = v2-v1;
+							word_index++;
+
+							cur->x += word_offset_x;
+							if (cur->parent)
+								expand_box(cur->parent, word_offset_x);
+							offset_x += word_offset_x;
+						}
+						prev_space = false;
+						start_of_line = false;
+					}
+				}
+			}
 		}
 
 		if (cur->first_child)
@@ -1235,6 +1291,103 @@ void CL_CSSInlineLayout::layout_line(CL_CSSInlineGeneratedBox *line, CL_Rect &li
 			}
 		}
 	}
+}
+
+void CL_CSSInlineLayout::split_text(CL_CSSInlineGeneratedBox *box, size_t text_pos, CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+{
+	// Duplicate box:
+	{
+		std::auto_ptr<CL_CSSInlineGeneratedBox> box2(new CL_CSSInlineGeneratedBox());
+		box2->box_node = box->box_node;
+		box2->x = box->x;
+		box2->y = box->y;
+		box2->width = box->width;
+		box2->height = box->height;
+		box2->ascent = box->ascent;
+		box2->descent = box->descent;
+		box2->baseline_offset = box->baseline_offset;
+		box2->text_start = text_pos;
+		box2->text_end = box->text_end;
+		box->text_end = text_pos;
+
+		box2->parent = box->parent;
+		box2->next_sibling = box->next_sibling;
+		box->next_sibling = box2.get();
+		if (box->parent && box->parent->last_child == box)
+			box->parent->last_child = box2.get();
+		box2.release();
+	}
+
+	CL_CSSInlineGeneratedBox *box2 = box->next_sibling;
+
+	CL_CSSBoxText *text = dynamic_cast<CL_CSSBoxText *>(box->box_node);
+
+	const CL_CSSBoxProperties &properties = text->get_properties();
+	CL_Font font = resources->get_font(gc, properties);
+
+	box->width = font.get_text_size(gc, text->processed_text.substr(box->text_start, box->text_end-box->text_start)).width;
+	box2->width = font.get_text_size(gc, text->processed_text.substr(box2->text_start, box2->text_end-box2->text_start)).width;
+	box2->x += box->width;
+}
+
+void CL_CSSInlineLayout::expand_box(CL_CSSInlineGeneratedBox *box, CL_CSSActualValue extra)
+{
+	while (box->parent)
+	{
+		box->width += extra;
+		box = box->parent;
+	}
+}
+
+int CL_CSSInlineLayout::find_word_count(CL_CSSInlineGeneratedBox *line)
+{
+	bool start_of_line = true;
+	int word_count = 0;
+	bool prev_space = true;
+	CL_CSSInlineGeneratedBox *cur = line;
+	while (cur)
+	{
+		CL_CSSBoxNode *node = cur->box_node;
+		CL_CSSBoxText *text = dynamic_cast<CL_CSSBoxText*>(node);
+		if (text)
+		{
+			for (size_t j = cur->text_start; j < cur->text_end; j++)
+			{
+				if (text->processed_text[j] == ' ')
+				{
+					prev_space = true;
+				}
+				else
+				{
+					if (prev_space && !start_of_line)
+						word_count++;
+					prev_space = false;
+					start_of_line = false;
+				}
+			}
+		}
+
+		if (cur->first_child)
+		{
+			cur = cur->first_child;
+		}
+		else if (cur->next_sibling)
+		{
+			cur = cur->next_sibling;
+		}
+		else
+		{
+			while (cur && !cur->next_sibling)
+			{
+				cur = cur->parent;
+			}
+			if (cur)
+			{
+				cur = cur->next_sibling;
+			}
+		}
+	}
+	return word_count;
 }
 
 void CL_CSSInlineLayout::layout_block_line(CL_CSSInlineGeneratedBox *line, CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy)
