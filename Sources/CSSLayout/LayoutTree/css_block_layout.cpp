@@ -139,17 +139,15 @@ void CL_CSSBlockLayout::layout_float(CL_CSSLayoutCursor &cursor, size_t i, CL_Gr
 
 	CL_Rect float_box(0, 0, children[i]->get_block_width(), children[i]->get_block_height());
 	float_box.translate(cursor.x, box_y);
-	if (strategy == preferred_strategy && width.expanding)
+	if (strategy != normal_strategy && width.expanding)
 	{
 		if (children[i]->get_element_node()->computed_properties.float_box.type == CL_CSSBoxFloat::type_left)
 		{
-			float_box = formatting_context->float_left(float_box, cursor.x+1000000, this);
+			float_box = formatting_context->float_left(float_box, cursor.x+1000000);
 		}
 		else if (children[i]->get_element_node()->computed_properties.float_box.type == CL_CSSBoxFloat::type_right)
 		{
-			// This is wrong.. the width must be dynamically expanded as needed
-			float_box.translate(width.value-float_box.get_width(), 0);
-			float_box = formatting_context->float_right(float_box, cursor.x+width.value, this);
+			float_box = formatting_context->float_right_shrink_to_fit(float_box, cursor.x+1000000);
 		}
 		else
 		{
@@ -162,12 +160,12 @@ void CL_CSSBlockLayout::layout_float(CL_CSSLayoutCursor &cursor, size_t i, CL_Gr
 	{
 		if (children[i]->get_element_node()->computed_properties.float_box.type == CL_CSSBoxFloat::type_left)
 		{
-			float_box = formatting_context->float_left(float_box, cursor.x+width.value, this);
+			float_box = formatting_context->float_left(float_box, cursor.x+width.value);
 		}
 		else if (children[i]->get_element_node()->computed_properties.float_box.type == CL_CSSBoxFloat::type_right)
 		{
 			float_box.translate(width.value-float_box.get_width(), 0);
-			float_box = formatting_context->float_right(float_box, cursor.x+width.value, this);
+			float_box = formatting_context->float_right(float_box, cursor.x+width.value);
 		}
 		else
 		{

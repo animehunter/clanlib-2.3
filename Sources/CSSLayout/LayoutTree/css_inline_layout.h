@@ -41,6 +41,7 @@ public:
 	~CL_CSSInlineGeneratedBox();
 
 	void add_box(CL_CSSInlineGeneratedBox *child);
+	bool is_block_line() const { return first_child == 0; }
 
 	bool opening, closing;
 	size_t text_start, text_end;

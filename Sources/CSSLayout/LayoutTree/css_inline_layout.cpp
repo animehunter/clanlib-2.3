@@ -216,21 +216,6 @@ bool CL_CSSInlineLayout::is_empty() const
 	if (height.use_content)
 	{
 		return is_empty_line(begin(), end());
-		/*
-		switch (element_node->computed_properties.white_space.type)
-		{
-		case CL_CSSBoxWhiteSpace::type_normal:
-			for (size_t i = 0; i < objects.size(); i++)
-			{
-				CL_CSSBoxText *text = dynamic_cast<CL_CSSBoxText*>(objects[i].node);
-				if (objects[i].layout || (text && text->text.find_first_not_of(" \t\r\n") != CL_String::npos))
-					return false;
-			}
-			return true;
-		default:
-			return boxes.first_child == 0;
-		}
-		*/
 	}
 	else
 	{
@@ -372,7 +357,13 @@ void CL_CSSInlineLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCurso
 	for (size_t i = 0; i < lines.size(); i++)
 	{
 		bool last_line = (i+1 == lines.size());
-		align_line(lines[i], gc, cursor.resources, last_line);
+		if (!lines[i]->is_block_line())
+			align_line(lines[i], gc, cursor.resources, last_line);
+	}
+
+	for (size_t i = 0; i < floats.size(); i++)
+	{
+		cursor.apply_written_width(floats[i]->get_formatting_context()->get_local_x() + floats[i]->get_block_width());
 	}
 }
 
@@ -815,17 +806,15 @@ bool CL_CSSInlineLayout::place_floats(CL_CSSInlinePosition start, CL_CSSInlinePo
 			CL_Rect float_box(0, 0, cur->layout_node->get_block_width(), cur->layout_node->get_block_height());
 			float_box.translate(x, y);
 
-			if (strategy == preferred_strategy && width.expanding)
+			if (strategy != normal_strategy && width.expanding)
 			{
 				if (cur->layout_node->get_element_node()->computed_properties.float_box.type == CL_CSSBoxFloat::type_left)
 				{
-					float_box = formatting_context->float_left(float_box, x+1000000, this);
+					float_box = formatting_context->float_left(float_box, x+1000000);
 				}
 				else if (cur->layout_node->get_element_node()->computed_properties.float_box.type == CL_CSSBoxFloat::type_right)
 				{
-					// This is wrong.. the width must be dynamically expanded as needed
-					float_box.translate(width.value-float_box.get_width(), 0);
-					float_box = formatting_context->float_right(float_box, x+width.value, this);
+					float_box = formatting_context->float_right_shrink_to_fit(float_box, x+width.value);
 				}
 				cur->layout_node->set_root_block_position(float_box.left, float_box.top);
 			}
@@ -833,12 +822,12 @@ bool CL_CSSInlineLayout::place_floats(CL_CSSInlinePosition start, CL_CSSInlinePo
 			{
 				if (cur->layout_node->get_element_node()->computed_properties.float_box.type == CL_CSSBoxFloat::type_left)
 				{
-					float_box = formatting_context->float_left(float_box, x+width.value, this);
+					float_box = formatting_context->float_left(float_box, x+width.value);
 				}
 				else if (cur->layout_node->get_element_node()->computed_properties.float_box.type == CL_CSSBoxFloat::type_right)
 				{
 					float_box.translate(width.value-float_box.get_width(), 0);
-					float_box = formatting_context->float_right(float_box, x+width.value, this);
+					float_box = formatting_context->float_right(float_box, x+width.value);
 				}
 				cur->layout_node->set_root_block_position(float_box.left, float_box.top);
 			}

@@ -980,6 +980,7 @@ CL_Rect CL_CSSLayoutTreeNode::get_padding_box() const
 void CL_CSSLayoutTreeNode::render_background(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, bool root)
 {
 	CL_Rect padding_box = get_padding_box();
+	padding_box.translate(relative_x, relative_y);
 	CL_Rect paint_box;
 	if (root)
 	{
@@ -1114,6 +1115,7 @@ void CL_CSSLayoutTreeNode::render_background(CL_GraphicContext &gc, CL_CSSResour
 void CL_CSSLayoutTreeNode::render_border(CL_GraphicContext &gc)
 {
 	CL_Rect border_box = get_border_box();
+	border_box.translate(relative_x, relative_y);
 	if (element_node->computed_properties.border_style_top.type == CL_CSSBoxBorderStyle::type_solid)
 	{
 		CL_Draw::fill(
