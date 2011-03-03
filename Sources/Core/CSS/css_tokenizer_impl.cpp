@@ -434,40 +434,66 @@ void CL_CSSTokenizer_Impl::read_dashmatch(CL_CSSToken &token)
 size_t CL_CSSTokenizer_Impl::read_nmstart(size_t p, CL_String::char_type &out_c)
 {
 	out_c = '?';
-	if (p+1 <= doc.length())
+	if ((p < doc.length()) && (doc[p] == '_' ||
+		(doc[p] >= 'a' && doc[p] <= 'z') ||
+		(doc[p] >= 'A' && doc[p] <= 'Z') ||
+		((unsigned char)doc[p]) > 177))
 	{
-		if (doc[p] == '_' ||
-			(doc[p] >= 'a' && doc[p] <= 'z') ||
-			(doc[p] >= 'A' && doc[p] <= 'Z') ||
-#ifdef __APPLE__
-			(unsigned char)(doc[p]) > 177)
-#else
-			doc[p] > 177)
-#endif
-		{
-			out_c = doc[p];
-			return 1;
-		}
+		out_c = doc[p];
+		return 1;
 	}
-	else if (p+2 <= doc.length() && doc[p] == '\\')
+	else if (p+1 < doc.length() && doc[p] == '\\')
 	{
 		if ((doc[p+1] >= '0' && doc[p+1] <= '9') ||
-			(doc[p+1] >= 'a' && doc[p+1] <= 'z') ||
-			(doc[p+1] >= 'A' && doc[p+1] <= 'Z'))
+			(doc[p+1] >= 'a' && doc[p+1] <= 'f') ||
+			(doc[p+1] >= 'A' && doc[p+1] <= 'F'))
 		{
-			// unicode number
-			// todo: find the actual length
-			out_c = '?';
-			return 2;
+			unsigned int unicode_char = 0;
+			size_t p1 = p+1;
+			size_t p2 = p1;
+			while (p2 < doc.length() && p2-p1 < 6)
+			{
+				if (doc[p+1] >= '0' && doc[p+1] <= '9')
+				{
+					unicode_char <<= 4;
+					unicode_char += (unsigned int)(doc[p+1]-'0');
+				}
+				else if (doc[p+1] >= 'a' && doc[p+1] <= 'f')
+				{
+					unicode_char <<= 4;
+					unicode_char += (unsigned int)(doc[p+1]-'a')+10;
+				}
+				else if (doc[p+1] >= 'A' && doc[p+1] <= 'F')
+				{
+					unicode_char <<= 4;
+					unicode_char += (unsigned int)(doc[p+1]-'A')+10;
+				}
+				else
+				{
+					break;
+				}
+				p2++;
+			}
+
+			if (p2 + 1 < doc.length() && doc[p2] == '\r' && doc[p2+1] == '\n')
+			{
+				p2+=2;
+			}
+			else if (p2 < doc.length() && (doc[p2] == '\r' || doc[p2] == '\n' || doc[p2] == '\t' || doc[p2] == '\f'))
+			{
+				p2++;
+			}
+
+			// To do: return the char as utf-8
+			out_c = (CL_String::char_type)unicode_char;
+			return p2-p1;
 		}
-		else if (doc[p+1] != ' ' &&
-			doc[p+1] != '\r' &&
+		else if (doc[p+1] != '\r' &&
 			doc[p+1] != '\n' &&
 			doc[p+1] != '\t' &&
 			doc[p+1] != '\f')
 		{
-			// escape
-			out_c = '?';
+			out_c = doc[p+1];
 			return 2;
 		}
 	}
@@ -521,7 +547,7 @@ size_t CL_CSSTokenizer_Impl::read_string(size_t p, CL_String &out_str, CL_String
 				out_str.append(1, '\n');
 				end_pos += 3;
 			}
-			else if (doc[end_pos+1] == '\n')
+			else if (doc[end_pos+1] == '\n' || doc[end_pos+1] == '\f')
 			{
 				out_str.append(1, '\n');
 				end_pos += 2;

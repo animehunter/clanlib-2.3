@@ -28,6 +28,8 @@
 
 #include "CSSLayout/precomp.h"
 #include "API/CSSLayout/dom_select_node.h"
+#include "API/Core/XML/dom_named_node_map.h"
+#include "API/Core/XML/dom_attr.h"
 
 CL_DomSelectNode::CL_DomSelectNode(const CL_DomElement &element)
 : dom_element(element), pos(element)
@@ -73,6 +75,16 @@ void CL_DomSelectNode::update()
 	name = pos.get_tag_name();
 	id = pos.get_attribute("id");
 	element_classes = CL_StringHelp::split_text(pos.get_attribute("class"), " ");
+	attributes.clear();
+	CL_DomNamedNodeMap dom_attributes = pos.get_attributes();
+	for (int i = 0; i < dom_attributes.get_length(); i++)
+	{
+		CL_DomAttr attr = dom_attributes.item(i).to_attr();
+		CL_CSSSelectAttribute2 attribute;
+		attribute.name = attr.get_name();
+		attribute.value = attr.get_value();
+		attributes.push_back(attribute);
+	}
 }
 
 void CL_DomSelectNode::push()

@@ -150,12 +150,63 @@ bool CL_CSSDocument2_Impl::try_match_link(const CL_CSSSelectorLink2 &link, const
 		bool found = false;
 		for (size_t t = 0; t < node->attributes.size(); t++)
 		{
-			if (link.attribute_selectors[k].type == CL_CSSAttributeSelector2::type_set &&
-				equals(link.attribute_selectors[k].name, node->attributes[t].name) &&
-				equals(link.attribute_selectors[k].value, node->attributes[t].value))
+			if (equals(link.attribute_selectors[k].name, node->attributes[t].name))
 			{
-				found = true;
-				break;
+				switch (link.attribute_selectors[k].type)
+				{
+				case CL_CSSAttributeSelector2::type_set:
+					found = true;
+					break;
+
+				case CL_CSSAttributeSelector2::type_exact_value:
+					if (equals(link.attribute_selectors[k].value, node->attributes[t].value))
+						found = true;
+					break;
+
+				case CL_CSSAttributeSelector2::type_space_separated_value:
+					{
+						std::vector<CL_String> values = CL_StringHelp::split_text(node->attributes[t].value, " ");
+						for (size_t p = 0; p < values.size(); p++)
+						{
+							if (equals(link.attribute_selectors[k].value, values[p]))
+							{
+								found = true;
+								break;
+							}
+						}
+					}
+					break;
+
+				case CL_CSSAttributeSelector2::type_hyphen_separated_value:
+					{
+						std::vector<CL_String> values = CL_StringHelp::split_text(node->attributes[t].value, "-");
+						for (size_t p = 0; p < values.size(); p++)
+						{
+							if (equals(link.attribute_selectors[k].value, values[p]))
+							{
+								found = true;
+								break;
+							}
+						}
+					}
+					break;
+
+				case CL_CSSAttributeSelector2::type_lang_value:
+					{
+						CL_String::size_type len = link.attribute_selectors[k].value.length();
+						if (equals(link.attribute_selectors[k].value, node->attributes[t].value) ||
+							(node->attributes[t].value.length() >= len+1 &&
+							node->attributes[t].value[len] == '-' &&
+							equals(link.attribute_selectors[k].value, node->attributes[t].value.substr(0, len))))
+						{
+							found = true;
+						}
+					}
+					break;
+				}
+
+				if (found)
+					break;
 			}
 		}
 		if (!found)
@@ -287,6 +338,7 @@ bool CL_CSSDocument2_Impl::read_selector_chain(CL_CSSTokenizer &tokenizer, CL_CS
 		}
 		else if (token.type == CL_CSSToken::type_hash ||
 			token.type == CL_CSSToken::type_colon ||
+			token.type == CL_CSSToken::type_square_bracket_begin ||
 			(token.type == CL_CSSToken::type_delim && token.value == "."))
 		{
 			// Implicit Universal Selector
@@ -342,11 +394,66 @@ bool CL_CSSDocument2_Impl::read_selector_chain(CL_CSSTokenizer &tokenizer, CL_CS
 					return false;
 				}
 			}
-			/*else if (token.type == CL_CSSToken::type_square_bracket_begin)
+			else if (token.type == CL_CSSToken::type_square_bracket_begin)
 			{
-				if (read_attribute_selector(tokenizer, token, selector_link) == false)
+				CL_CSSAttributeSelector2 attribute;
+
+				tokenizer.read(token, true);
+				if (token.type == CL_CSSToken::type_ident)
+				{
+					attribute.name = token.value;
+				}
+				else
+				{
 					return false;
-			}*/
+				}
+
+				tokenizer.read(token, true);
+
+				bool read_value = true;
+				if (token.type == CL_CSSToken::type_includes)
+				{
+					attribute.type = CL_CSSAttributeSelector2::type_space_separated_value;
+				}
+				else if (token.type == CL_CSSToken::type_dashmatch)
+				{
+					attribute.type = CL_CSSAttributeSelector2::type_lang_value;
+				}
+				else if (token.type == CL_CSSToken::type_delim && token.value == "=")
+				{
+					attribute.type = CL_CSSAttributeSelector2::type_exact_value;
+				}
+				else if (token.type == CL_CSSToken::type_square_bracket_end)
+				{
+					attribute.type = CL_CSSAttributeSelector2::type_set;
+					read_value = false;
+				}
+				else
+				{
+					return false;
+				}
+
+				if (read_value)
+				{
+					tokenizer.read(token, true);
+					if (token.type == CL_CSSToken::type_ident || token.type == CL_CSSToken::type_string)
+					{
+						attribute.value = token.value;
+					}
+					else
+					{
+						return false;
+					}
+
+					tokenizer.read(token, true);
+					if (token.type != CL_CSSToken::type_square_bracket_end)
+					{
+						return false;
+					}
+				}
+
+				selector_link.attribute_selectors.push_back(attribute);
+			}
 			else
 			{
 				break;
