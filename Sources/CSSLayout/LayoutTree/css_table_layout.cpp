@@ -569,7 +569,7 @@ void CL_CSSTableLayout::position_cells(CL_CSSLayoutCursor &cursor)
 
 			x += size_grid.get_width(cell);
 		}
-		cursor.apply_written_width(cursor.x + size_grid.get_table_width());
+		//cursor.apply_written_width(cursor.x + size_grid.get_table_width());
 		y += size_grid.get_height(row);
 	}
 	if (!rows.empty())

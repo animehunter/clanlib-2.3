@@ -51,7 +51,6 @@ public:
 
 	CL_CSSBoxLength compute_length(const CL_CSSBoxLength &length, float em_size, float ex_size);
 	std::vector<CL_String> get_default_quotes();
-	CL_String get_default_font();
 	CL_Colorf get_default_color();
 	CL_CSSBoxLength get_font_table_size(int size);
 	CL_CSSBoxLength get_font_table_smaller(float em_size);

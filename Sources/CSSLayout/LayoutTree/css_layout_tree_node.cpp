@@ -285,6 +285,7 @@ void CL_CSSLayoutTreeNode::calculate_static_sizes()
 {
 	bool is_table_cell = element_node->computed_properties.display.type == CL_CSSBoxDisplay::type_table_cell;
 	bool is_float = element_node->computed_properties.float_box.type != CL_CSSBoxFloat::type_none;
+	bool is_overflow_visible = element_node->is_overflow_visible();
 
 	margin.left = get_css_margin_width(element_node->computed_properties.margin_width_left, containing_width);
 	margin.right = get_css_margin_width(element_node->computed_properties.margin_width_right, containing_width);
@@ -313,7 +314,7 @@ void CL_CSSLayoutTreeNode::calculate_static_sizes()
 	}
 	else if (element_node->computed_properties.width.type == CL_CSSBoxWidth::type_auto)
 	{
-		if (containing_width.expanding || is_table_cell || is_float)
+		if (containing_width.expanding || is_table_cell || is_float || !is_overflow_visible)
 		{
 			width.value = 0.0f;
 			width.expanding = true;
@@ -643,7 +644,7 @@ void CL_CSSLayoutTreeNode::layout_shrink_to_fit(CL_GraphicContext &gc, CL_CSSRes
 	layout_formatting_root_helper(gc, resources, normal_strategy);
 }
 
-void CL_CSSLayoutTreeNode::layout_formatting_root(CL_GraphicContext &gc, CL_CSSResourceCache *resources, LayoutStrategy strategy)
+void CL_CSSLayoutTreeNode::layout_float(CL_GraphicContext &gc, CL_CSSResourceCache *resources, LayoutStrategy strategy)
 {
 	if (strategy == normal_strategy && element_node->is_shrink_to_fit())
 	{
@@ -690,18 +691,12 @@ void CL_CSSLayoutTreeNode::layout_formatting_root_helper(CL_GraphicContext &gc, 
 
 	if (strategy == preferred_strategy)
 	{
-		if (element_node->computed_properties.width.type == CL_CSSBoxWidth::type_auto)
-			preferred_width = cursor.max_written_width;
-		else
-			preferred_width = width.value;
+		preferred_width = width.value;
 		preferred_width_calculated = true;
 	}
 	else if (strategy == minimum_strategy)
 	{
-		if (element_node->computed_properties.width.type == CL_CSSBoxWidth::type_auto)
-			min_width = cursor.max_written_width;
-		else
-			min_width = width.value;
+		min_width = width.value;
 		min_width_calculated = true;
 	}
 
@@ -765,7 +760,6 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCurs
 	content_box.top = cursor.y+cursor.get_total_margin();
 	content_box.right = content_box.left+width.value;
 	content_box.bottom = content_box.top+height.value;
-	cursor.apply_written_width(content_box.right);
 /*
 	if (element_node->name.find("foo") != CL_String::npos)
 	{
@@ -816,7 +810,6 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCurs
 	if (strategy != normal_strategy)
 	{
 		content_box.right = content_box.left+width.value;
-		cursor.apply_written_width(content_box.right);
 	}
 
 	if (border.bottom > 0 || padding.bottom > 0)

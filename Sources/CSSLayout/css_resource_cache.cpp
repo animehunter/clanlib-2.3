@@ -69,15 +69,39 @@ CL_Font &CL_CSSResourceCache::get_font(CL_GraphicContext &gc, const CL_CSSBoxPro
 	CL_String font_name;
 	for (size_t i = 0; i < properties.font_family.names.size(); i++)
 	{
-		CL_String search_name = CL_StringHelp::text_to_lower(properties.font_family.names[i].name);
-		if (font_families.find(search_name) != font_families.end())
+		bool matched = false;
+		CL_String search_name;
+		switch (properties.font_family.names[i].type)
 		{
-			font_name = properties.font_family.names[i].name;
+		case CL_CSSBoxFontFamilyName::type_family_name:
+			search_name = CL_StringHelp::text_to_lower(properties.font_family.names[i].name);
+			if (font_families.find(search_name) != font_families.end())
+			{
+				font_name = properties.font_family.names[i].name;
+				matched = true;
+			}
+			break;
+		default:
+		case CL_CSSBoxFontFamilyName::type_serif:
+		case CL_CSSBoxFontFamilyName::type_cursive:
+		case CL_CSSBoxFontFamilyName::type_fantasy:
+			font_name = "Times New Roman"; // Ugliest font on the planet.
+			matched = true;
+			break;
+		case CL_CSSBoxFontFamilyName::type_sans_serif:
+			font_name = "Arial";
+			matched = true;
+			break;
+		case CL_CSSBoxFontFamilyName::type_monospace:
+			font_name = "Courier New";
+			matched = true;
 			break;
 		}
+		if (matched)
+			break;
 	}
 	if (font_name.empty())
-		font_name = get_default_font();
+		font_name = "Times New Roman";
 
 	int font_weight = 400;
 	switch (properties.font_weight.type)
@@ -209,11 +233,6 @@ std::vector<CL_String> CL_CSSResourceCache::get_default_quotes()
 	return values;
 }
 
-CL_String CL_CSSResourceCache::get_default_font()
-{
-	return "Times New Roman";
-}
-
 CL_Colorf CL_CSSResourceCache::get_default_color()
 {
 	return CL_Colorf::black;
@@ -221,6 +240,7 @@ CL_Colorf CL_CSSResourceCache::get_default_color()
 
 CL_CSSBoxLength CL_CSSResourceCache::get_font_table_size(int size)
 {
+	// To do: Return 13px for Monospace font type (so defaults match Firefox)
 	return CL_CSSBoxLength(16.0f, CL_CSSBoxLength::type_px);
 }
 

@@ -65,7 +65,7 @@ public:
 	virtual void render_layer_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources) = 0;
 	virtual void render_layer_positioned(CL_GraphicContext &gc, CL_CSSResourceCache *resources) = 0;
 
-	void layout_formatting_root(CL_GraphicContext &gc, CL_CSSResourceCache *resources, LayoutStrategy strategy = normal_strategy);
+	void layout_float(CL_GraphicContext &gc, CL_CSSResourceCache *resources, LayoutStrategy strategy = normal_strategy);
 	void set_root_block_position(int x, int y);
 	void set_root_content_position(int x, int y);
 	virtual void layout_absolute_and_fixed_content(CL_GraphicContext &gc, CL_CSSResourceCache *resources, CL_Rect containing_block, const CL_Size &viewport_size) { }

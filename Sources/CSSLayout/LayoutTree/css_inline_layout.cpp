@@ -345,8 +345,7 @@ void CL_CSSInlineLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCurso
 				cursor.apply_margin();
 				cursor.y = cl_actual_to_used(line_box.bottom);
 
-				cursor.apply_written_width(line_box.left+used_width);
-				if (strategy != normal_strategy)
+				if (strategy != normal_strategy && width.expanding)
 					width.value = cl_max(width.value, line_box.left+used_width-cursor.x);
 			}
 
@@ -359,11 +358,6 @@ void CL_CSSInlineLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCurso
 		bool last_line = (i+1 == lines.size());
 		if (!lines[i]->is_block_line())
 			align_line(lines[i], gc, cursor.resources, last_line);
-	}
-
-	for (size_t i = 0; i < floats.size(); i++)
-	{
-		cursor.apply_written_width(floats[i]->get_formatting_context()->get_local_x() + floats[i]->get_block_width());
 	}
 }
 
@@ -832,6 +826,9 @@ bool CL_CSSInlineLayout::place_floats(CL_CSSInlinePosition start, CL_CSSInlinePo
 				cur->layout_node->set_root_block_position(float_box.left, float_box.top);
 			}
 
+			if (strategy != normal_strategy && width.expanding)
+				width.value = cl_max(width.value, float_box.right - x);
+
 			return true;
 		}
 
@@ -1011,7 +1008,7 @@ void CL_CSSInlineLayout::layout_inline_blocks_and_floats(CL_GraphicContext &gc, 
 			cur->floated = false;
 			cur->layout_node->relative_x = relative_x + cur->layout_node->get_local_relative_x();
 			cur->layout_node->relative_y = relative_y + cur->layout_node->get_local_relative_y();
-			cur->layout_node->layout_formatting_root(gc, resources, strategy);
+			cur->layout_node->layout_float(gc, resources, strategy);
 		}
 
 		if (cur->first_child)
@@ -1381,7 +1378,78 @@ int CL_CSSInlineLayout::find_word_count(CL_CSSInlineGeneratedBox *line)
 
 void CL_CSSInlineLayout::layout_block_line(CL_CSSInlineGeneratedBox *line, CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy)
 {
-	line->layout_node->layout_normal(gc, cursor, strategy);
+	if (line->layout_node->get_element_node()->is_overflow_visible())
+	{
+		line->layout_node->layout_normal(gc, cursor, strategy);
+	}
+	else
+	{
+		int box_y = cl_used_to_actual(cursor.y+cursor.get_total_margin());
+		if (line->layout_node->get_element_node()->computed_properties.clear.type == CL_CSSBoxClear::type_left || line->layout_node->get_element_node()->computed_properties.clear.type == CL_CSSBoxClear::type_both)
+		{
+			int clear_left = formatting_context->find_left_clearance();
+			box_y = cl_max(box_y, clear_left);
+		}
+		if (line->layout_node->get_element_node()->computed_properties.clear.type == CL_CSSBoxClear::type_right || line->layout_node->get_element_node()->computed_properties.clear.type == CL_CSSBoxClear::type_both)
+		{
+			int clear_right = formatting_context->find_right_clearance();
+			box_y = cl_max(box_y, clear_right);
+		}
+
+		line->layout_node->calculate_top_down_sizes();
+		if (strategy == normal_strategy)
+		{
+			int available_width = formatting_context->find_line_box(cursor.x, cursor.x + width.value, box_y, 1, cl_used_to_actual(line->layout_node->width.value)).get_width();
+			line->layout_node->set_expanding_width(cl_actual_to_used(available_width));
+		}
+		line->layout_node->layout_formatting_root_helper(gc, cursor.resources, strategy);
+
+		CL_Rect float_box(0, 0, line->layout_node->get_block_width(), line->layout_node->get_block_height());
+		float_box.translate(cursor.x, box_y);
+		if (strategy != normal_strategy && width.expanding)
+		{
+			if (line->layout_node->get_element_node()->computed_properties.float_box.type == CL_CSSBoxFloat::type_left)
+			{
+				float_box = formatting_context->float_left(float_box, cursor.x+1000000);
+			}
+			else if (line->layout_node->get_element_node()->computed_properties.float_box.type == CL_CSSBoxFloat::type_right)
+			{
+				float_box = formatting_context->float_right_shrink_to_fit(float_box, cursor.x+1000000);
+			}
+			else
+			{
+				float_box = formatting_context->place_left(float_box, cursor.x+1000000);
+				cursor.apply_margin();
+				cursor.y = float_box.bottom;
+			}
+		}
+		else
+		{
+			if (line->layout_node->get_element_node()->computed_properties.float_box.type == CL_CSSBoxFloat::type_left)
+			{
+				float_box = formatting_context->float_left(float_box, cursor.x+width.value);
+			}
+			else if (line->layout_node->get_element_node()->computed_properties.float_box.type == CL_CSSBoxFloat::type_right)
+			{
+				float_box.translate(width.value-float_box.get_width(), 0);
+				float_box = formatting_context->float_right(float_box, cursor.x+width.value);
+			}
+			else
+			{
+				float_box = formatting_context->place_left(float_box, cursor.x+width.value);
+				cursor.apply_margin();
+				cursor.y = float_box.bottom;
+			}
+		}
+
+		if (strategy != normal_strategy && width.expanding)
+			width.value = cl_max(width.value, float_box.right - cursor.x);
+
+		line->layout_node->set_root_block_position(float_box.left, float_box.top);
+
+		cursor.apply_margin();
+		cursor.y = float_box.bottom;
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////

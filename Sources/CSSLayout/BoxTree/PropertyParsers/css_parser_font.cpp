@@ -51,7 +51,7 @@ void CL_CSSParserFont::parse(CL_CSSBoxProperties &properties, const CL_String &p
 	size.type = CL_CSSBoxFontSize::type_medium;
 	line_height.type = CL_CSSBoxLineHeight::type_normal;
 	family.type = CL_CSSBoxFontFamily::type_names;
-	family.names.push_back(CL_CSSBoxFontFamilyName("Times New Roman"));
+	family.names.push_back(CL_CSSBoxFontFamilyName());
 
 	bool font_style_set = false;
 	bool font_variant_set = false;

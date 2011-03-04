@@ -111,9 +111,6 @@ void CL_CSSBlockLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor
 				width.value = cl_max(width.value, cl_actual_to_used(children[i]->get_block_width()));
 		}
 	}
-
-	if (strategy != normal_strategy)
-		cursor.apply_written_width(width.value);
 }
 
 void CL_CSSBlockLayout::layout_float(CL_CSSLayoutCursor &cursor, size_t i, CL_GraphicContext & gc, LayoutStrategy strategy)
@@ -135,7 +132,20 @@ void CL_CSSBlockLayout::layout_float(CL_CSSLayoutCursor &cursor, size_t i, CL_Gr
 	children[i]->containing_height = height;
 	children[i]->relative_x = relative_x + children[i]->get_local_relative_x();
 	children[i]->relative_y = relative_y + children[i]->get_local_relative_y();
-	children[i]->layout_formatting_root(gc, cursor.resources, strategy);
+	if (!children[i]->get_element_node()->is_overflow_visible())
+	{
+		children[i]->calculate_top_down_sizes();
+		if (strategy == normal_strategy)
+		{
+			int available_width = formatting_context->find_line_box(cursor.x, cursor.x + width.value, box_y, 1, cl_used_to_actual(children[i]->width.value)).get_width();
+			children[i]->set_expanding_width(cl_actual_to_used(available_width));
+		}
+		children[i]->layout_formatting_root_helper(gc, cursor.resources, strategy);
+	}
+	else
+	{
+		children[i]->layout_float(gc, cursor.resources, strategy);
+	}
 
 	CL_Rect float_box(0, 0, children[i]->get_block_width(), children[i]->get_block_height());
 	float_box.translate(cursor.x, box_y);
@@ -175,7 +185,9 @@ void CL_CSSBlockLayout::layout_float(CL_CSSLayoutCursor &cursor, size_t i, CL_Gr
 		}
 	}
 
-	cursor.apply_written_width(float_box.right);
+	if (strategy != normal_strategy && width.expanding)
+		width.value = cl_max(width.value, float_box.right - cursor.x);
+
 	children[i]->set_root_block_position(float_box.left, float_box.top);
 }
 

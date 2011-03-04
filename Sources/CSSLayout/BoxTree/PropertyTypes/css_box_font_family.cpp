@@ -51,13 +51,4 @@ void CL_CSSBoxFontFamily::compute(const CL_CSSBoxFontFamily *parent, CL_CSSResou
 			names.push_back(CL_CSSBoxFontFamilyName());
 		}
 	}
-
-	for (size_t i = 0; i < names.size(); i++)
-	{
-		if (names[i].type != CL_CSSBoxFontFamilyName::type_family_name)
-		{
-			names[i].type = CL_CSSBoxFontFamilyName::type_family_name;
-			names[i].name = layout->get_default_font();
-		}
-	}
 }
