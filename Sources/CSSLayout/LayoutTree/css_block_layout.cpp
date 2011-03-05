@@ -79,8 +79,8 @@ void CL_CSSBlockLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor
 		{
 			// We layout absolute or fixed elements later since they may rely on the calculated height of the normal flow.
 
-			children[i]->static_position.left = cursor.x;
-			children[i]->static_position.top = cursor.y + cursor.get_total_margin();
+			children[i]->static_position.left = cl_actual_to_used(cursor.x);
+			children[i]->static_position.top = cl_actual_to_used(cursor.y + cursor.get_total_margin());
 			children[i]->static_position.right = children[i]->static_position.left;
 			children[i]->static_position.bottom = children[i]->static_position.top;
 			children[i]->relative_x = relative_x + children[i]->get_local_relative_x();
@@ -137,7 +137,7 @@ void CL_CSSBlockLayout::layout_float(CL_CSSLayoutCursor &cursor, size_t i, CL_Gr
 		children[i]->calculate_top_down_sizes();
 		if (strategy == normal_strategy)
 		{
-			int available_width = formatting_context->find_line_box(cursor.x, cursor.x + width.value, box_y, 1, cl_used_to_actual(children[i]->width.value)).get_width();
+			CL_CSSActualValue available_width = formatting_context->find_line_box(cursor.x, cursor.x + cl_used_to_actual(width.value), box_y, 1, cl_used_to_actual(children[i]->width.value)).get_width();
 			children[i]->set_expanding_width(cl_actual_to_used(available_width));
 		}
 		children[i]->layout_formatting_root_helper(gc, cursor.resources, strategy);
@@ -170,23 +170,23 @@ void CL_CSSBlockLayout::layout_float(CL_CSSLayoutCursor &cursor, size_t i, CL_Gr
 	{
 		if (children[i]->get_element_node()->computed_properties.float_box.type == CL_CSSBoxFloat::type_left)
 		{
-			float_box = formatting_context->float_left(float_box, cursor.x+width.value);
+			float_box = formatting_context->float_left(float_box, cursor.x+cl_used_to_actual(width.value));
 		}
 		else if (children[i]->get_element_node()->computed_properties.float_box.type == CL_CSSBoxFloat::type_right)
 		{
 			float_box.translate(width.value-float_box.get_width(), 0);
-			float_box = formatting_context->float_right(float_box, cursor.x+width.value);
+			float_box = formatting_context->float_right(float_box, cursor.x+cl_used_to_actual(width.value));
 		}
 		else
 		{
-			float_box = formatting_context->place_left(float_box, cursor.x+width.value);
+			float_box = formatting_context->place_left(float_box, cursor.x+cl_used_to_actual(width.value));
 			cursor.apply_margin();
 			cursor.y = float_box.bottom;
 		}
 	}
 
 	if (strategy != normal_strategy && width.expanding)
-		width.value = cl_max(width.value, float_box.right - cursor.x);
+		width.value = cl_max(width.value, cl_actual_to_used(float_box.right - cursor.x));
 
 	children[i]->set_root_block_position(float_box.left, float_box.top);
 }

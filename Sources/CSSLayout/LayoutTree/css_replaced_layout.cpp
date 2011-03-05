@@ -237,8 +237,8 @@ void CL_CSSReplacedLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCur
 
 	if (height.value > 0.0f)
 		cursor.apply_margin();
-	box = CL_Rect(cl_used_to_actual(cursor.x), cl_used_to_actual(cursor.y), cl_used_to_actual(cursor.x+width.value), cl_used_to_actual(cursor.y+height.value));
-	cursor.y += height.value;
+	box = CL_Rect(cursor.x, cursor.y, cursor.x + cl_used_to_actual(width.value), cursor.y + cl_used_to_actual(height.value));
+	cursor.y += cl_used_to_actual(height.value);
 }
 
 void CL_CSSReplacedLayout::set_component_geometry()

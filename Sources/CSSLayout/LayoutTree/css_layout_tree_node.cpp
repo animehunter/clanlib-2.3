@@ -68,7 +68,7 @@ CL_CSSUsedValue CL_CSSLayoutTreeNode::get_css_margin_width(const CL_CSSBoxMargin
 	{
 	case CL_CSSBoxMarginWidth::type_auto: return 0.0f;
 	case CL_CSSBoxMarginWidth::type_length: return margin_width.length.value;
-	case CL_CSSBoxMarginWidth::type_percentage: return margin_width.percentage * containing_width.value / 100.0f;
+	case CL_CSSBoxMarginWidth::type_percentage: return containing_width.expanding ? 0.0f : margin_width.percentage * containing_width.value / 100.0f;
 	default: return 0.0f;
 	}
 }
@@ -78,7 +78,7 @@ CL_CSSUsedValue CL_CSSLayoutTreeNode::get_css_padding_width(const CL_CSSBoxPaddi
 	switch (padding_width.type)
 	{
 	case CL_CSSBoxPaddingWidth::type_length: return padding_width.length.value;
-	case CL_CSSBoxPaddingWidth::type_percentage: return padding_width.percentage * containing_width.value / 100.0f;
+	case CL_CSSBoxPaddingWidth::type_percentage: return containing_width.expanding ? 0.0f : padding_width.percentage * containing_width.value / 100.0f;
 	default: return 0.0f;
 	}
 }
@@ -89,7 +89,7 @@ CL_CSSUsedValue CL_CSSLayoutTreeNode::get_css_margin_height(const CL_CSSBoxMargi
 	{
 	case CL_CSSBoxMarginWidth::type_auto: return 0.0f;
 	case CL_CSSBoxMarginWidth::type_length: return margin_width.length.value;
-	case CL_CSSBoxMarginWidth::type_percentage: return margin_width.percentage * containing_height.value / 100.0f;
+	case CL_CSSBoxMarginWidth::type_percentage: return containing_height.use_content ? 0.0f : margin_width.percentage * containing_height.value / 100.0f;
 	default: return 0.0f;
 	}
 }
@@ -99,7 +99,7 @@ CL_CSSUsedValue CL_CSSLayoutTreeNode::get_css_padding_height(const CL_CSSBoxPadd
 	switch (padding_width.type)
 	{
 	case CL_CSSBoxPaddingWidth::type_length: return padding_width.length.value;
-	case CL_CSSBoxPaddingWidth::type_percentage: return padding_width.percentage * containing_height.value / 100.0f;
+	case CL_CSSBoxPaddingWidth::type_percentage: return containing_height.use_content ? 0.0f : padding_width.percentage * containing_height.value / 100.0f;
 	default: return 0.0f;
 	}
 }
@@ -285,7 +285,7 @@ void CL_CSSLayoutTreeNode::calculate_static_sizes()
 {
 	bool is_table_cell = element_node->computed_properties.display.type == CL_CSSBoxDisplay::type_table_cell;
 	bool is_float = element_node->computed_properties.float_box.type != CL_CSSBoxFloat::type_none;
-	bool is_overflow_visible = element_node->is_overflow_visible();
+	bool is_overflow_visible = (element_node->get_parent() == 0) || element_node->is_overflow_visible();
 
 	margin.left = get_css_margin_width(element_node->computed_properties.margin_width_left, containing_width);
 	margin.right = get_css_margin_width(element_node->computed_properties.margin_width_right, containing_width);
@@ -713,10 +713,10 @@ void CL_CSSLayoutTreeNode::layout_formatting_root_helper(CL_GraphicContext &gc, 
 
 void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy)
 {
-	float old_x = cursor.x;
-	float old_relative_x = cursor.relative_x;
-	float old_relative_y = cursor.relative_y;
-	cursor.x += margin.left + border.left + padding.left;
+	CL_CSSActualValue old_x = cursor.x;
+	CL_CSSUsedValue old_relative_x = cursor.relative_x;
+	CL_CSSUsedValue old_relative_y = cursor.relative_y;
+	cursor.x += cl_used_to_actual(margin.left) + cl_used_to_actual(border.left) + cl_used_to_actual(padding.left);
 	cursor.relative_x += get_local_relative_x();
 	cursor.relative_y += get_local_relative_y();
 
@@ -728,7 +728,7 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCurs
 	if (border.top > 0 || padding.top > 0)
 	{
 		cursor.apply_margin();
-		cursor.y += border.top+padding.top;
+		cursor.y += cl_used_to_actual(border.top) + cl_used_to_actual(padding.top);
 	}
 /*
 	float min_height = 0.0f;
@@ -743,23 +743,23 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCurs
 
 	if (element_node->computed_properties.clear.type == CL_CSSBoxClear::type_left || element_node->computed_properties.clear.type == CL_CSSBoxClear::type_both)
 	{
-		int clear_left = formatting_context->find_left_clearance();
+		CL_CSSActualValue clear_left = formatting_context->find_left_clearance();
 		if (cursor.y+cursor.get_total_margin() < clear_left)
 			cursor.y = clear_left-cursor.get_total_margin();
 	}
 	if (element_node->computed_properties.clear.type == CL_CSSBoxClear::type_right || element_node->computed_properties.clear.type == CL_CSSBoxClear::type_both)
 	{
-		int clear_right = formatting_context->find_right_clearance();
+		CL_CSSActualValue clear_right = formatting_context->find_right_clearance();
 		if (cursor.y+cursor.get_total_margin() < clear_right)
 			cursor.y = clear_right-cursor.get_total_margin();
 	}
 
-	float before_content_y = cursor.y;
+	CL_CSSActualValue before_content_y = cursor.y;
 
 	content_box.left = cursor.x;
 	content_box.top = cursor.y+cursor.get_total_margin();
-	content_box.right = content_box.left+width.value;
-	content_box.bottom = content_box.top+height.value;
+	content_box.right = content_box.left+cl_used_to_actual(width.value);
+	content_box.bottom = content_box.top+cl_used_to_actual(height.value);
 /*
 	if (element_node->name.find("foo") != CL_String::npos)
 	{
@@ -772,11 +772,11 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCurs
 	{
 		if (cursor.y == before_content_y)
 		{
-			height.value = 0.0f;
+			height.value = cl_actual_to_used(0);
 		}
 		else
 		{
-			height.value = cl_max(0.0f, cursor.y + cursor.get_total_margin() - content_box.top);
+			height.value = cl_actual_to_used(cl_max(0, cursor.y + cursor.get_total_margin() - content_box.top));
 		}
 
 		if (element_node->computed_properties.max_height.type == CL_CSSBoxMaxHeight::type_length)
@@ -797,25 +797,25 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCurs
 			height.value = cl_max(height.value, element_node->computed_properties.min_height.percentage * containing_height.value / 100.0f);
 		}
 
-		content_box.bottom = content_box.top+height.value;
+		content_box.bottom = content_box.top + cl_used_to_actual(height.value);
 	}
 	else
 	{
 		if (height.value > 0.0f)
 			cursor.apply_margin();
-		cursor.y = content_box.top + height.value;
+		cursor.y = content_box.top + cl_used_to_actual(height.value);
 	}
 
 
 	if (strategy != normal_strategy)
 	{
-		content_box.right = content_box.left+width.value;
+		content_box.right = content_box.left+cl_used_to_actual(width.value);
 	}
 
 	if (border.bottom > 0 || padding.bottom > 0)
 	{
 		cursor.apply_margin();
-		cursor.y += border.bottom+padding.bottom;
+		cursor.y += cl_used_to_actual(border.bottom) + cl_used_to_actual(padding.bottom);
 	}
 
 	cursor.add_margin(margin.bottom);
@@ -921,14 +921,26 @@ void CL_CSSLayoutTreeNode::establish_stacking_context_if_needed(CL_CSSStackingCo
 	}
 }
 
-int CL_CSSLayoutTreeNode::get_block_width() const
+CL_CSSActualValue CL_CSSLayoutTreeNode::get_block_width() const
 {
-	return cl_used_to_actual(margin.left + border.left + padding.left + width.value + padding.right + border.right + margin.right);
+	return cl_used_to_actual(margin.left) +
+		cl_used_to_actual(border.left) +
+		cl_used_to_actual(padding.left) +
+		cl_used_to_actual(width.value) +
+		cl_used_to_actual(padding.right) +
+		cl_used_to_actual(border.right) +
+		cl_used_to_actual(margin.right);
 }
 
-int CL_CSSLayoutTreeNode::get_block_height() const
+CL_CSSActualValue CL_CSSLayoutTreeNode::get_block_height() const
 {
-	return cl_used_to_actual(margin.top + border.top + padding.top + height.value + padding.bottom + border.bottom + margin.bottom);
+	return cl_used_to_actual(margin.top) +
+		cl_used_to_actual(border.top) +
+		cl_used_to_actual(padding.top) +
+		cl_used_to_actual(height.value) +
+		cl_used_to_actual(padding.bottom) +
+		cl_used_to_actual(border.bottom) +
+		cl_used_to_actual(margin.bottom);
 }
 
 void CL_CSSLayoutTreeNode::render_non_content(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, bool root)
@@ -977,7 +989,7 @@ void CL_CSSLayoutTreeNode::render_background(CL_GraphicContext &gc, CL_CSSResour
 	CL_Rect paint_box;
 	if (root)
 	{
-		paint_box = CL_Rect(0, 0, containing_width.value, containing_height.value);
+		paint_box = CL_Rect(0, 0, cl_used_to_actual(containing_width.value), cl_used_to_actual(containing_height.value));
 		CL_Vec4f offset = gc.get_modelview()*CL_Vec4f(0.0f, 0.0f, 1.0f, 1.0f);
 		paint_box.translate((int)(-offset.x+0.5f), (int)(-offset.y+0.5f+38));
 	}
@@ -985,7 +997,25 @@ void CL_CSSLayoutTreeNode::render_background(CL_GraphicContext &gc, CL_CSSResour
 	{
 		paint_box = padding_box;
 	}
+	render_background(gc, resource_cache, element_node, padding_box, paint_box);
 
+/*	if (formatting_context_root)
+	{
+		//CL_Draw::box(gc, get_border_box(), CL_Colorf::deepskyblue);
+		for (size_t i = 0; i < formatting_context->left_floats.size(); i++)
+		{
+			CL_Rect box = formatting_context->left_floats[i].box;
+			if (!formatting_context_root)
+				box.translate(formatting_context->get_x(), formatting_context->get_y());
+			else if (formatting_context->get_parent())
+				box.translate(formatting_context->get_parent()->get_x(), formatting_context->get_parent()->get_y());
+			CL_Draw::box(gc, box, CL_Colorf::deepskyblue);
+		}
+	}*/
+}
+
+void CL_CSSLayoutTreeNode::render_background(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, CL_CSSBoxElement *element_node, CL_Rect padding_box, CL_Rect paint_box)
+{
 	if (element_node->computed_properties.background_color.type == CL_CSSBoxBackgroundColor::type_color)
 		CL_Draw::fill(gc, paint_box, element_node->computed_properties.background_color.color);
 
@@ -1089,26 +1119,17 @@ void CL_CSSLayoutTreeNode::render_background(CL_GraphicContext &gc, CL_CSSResour
 			gc.pop_cliprect();
 		}
 	}
-
-/*	if (formatting_context_root)
-	{
-		//CL_Draw::box(gc, get_border_box(), CL_Colorf::deepskyblue);
-		for (size_t i = 0; i < formatting_context->left_floats.size(); i++)
-		{
-			CL_Rect box = formatting_context->left_floats[i].box;
-			if (!formatting_context_root)
-				box.translate(formatting_context->get_x(), formatting_context->get_y());
-			else if (formatting_context->get_parent())
-				box.translate(formatting_context->get_parent()->get_x(), formatting_context->get_parent()->get_y());
-			CL_Draw::box(gc, box, CL_Colorf::deepskyblue);
-		}
-	}*/
 }
 
 void CL_CSSLayoutTreeNode::render_border(CL_GraphicContext &gc)
 {
 	CL_Rect border_box = get_border_box();
 	border_box.translate(relative_x, relative_y);
+	render_border(gc, element_node, border_box, border.left, border.top, border.right, border.bottom);
+}
+
+void CL_CSSLayoutTreeNode::render_border(CL_GraphicContext &gc, CL_CSSBoxElement *element_node, CL_Rect border_box, CL_CSSUsedValue border_left, CL_CSSUsedValue border_top, CL_CSSUsedValue border_right, CL_CSSUsedValue border_bottom)
+{
 	if (element_node->computed_properties.border_style_top.type == CL_CSSBoxBorderStyle::type_solid)
 	{
 		CL_Draw::fill(
@@ -1116,7 +1137,7 @@ void CL_CSSLayoutTreeNode::render_border(CL_GraphicContext &gc)
 			(float)border_box.left,
 			(float)border_box.top,
 			(float)border_box.right,
-			(float)(border_box.top+border.top),
+			(float)(border_box.top+border_top),
 			element_node->computed_properties.border_color_top.color);
 	}
 	if (element_node->computed_properties.border_style_bottom.type == CL_CSSBoxBorderStyle::type_solid)
@@ -1124,7 +1145,7 @@ void CL_CSSLayoutTreeNode::render_border(CL_GraphicContext &gc)
 		CL_Draw::fill(
 			gc,
 			(float)border_box.left,
-			(float)(border_box.bottom-border.bottom),
+			(float)(border_box.bottom-border_bottom),
 			(float)border_box.right,
 			(float)border_box.bottom,
 			element_node->computed_properties.border_color_bottom.color);
@@ -1134,19 +1155,19 @@ void CL_CSSLayoutTreeNode::render_border(CL_GraphicContext &gc)
 		CL_Draw::fill(
 			gc,
 			(float)border_box.left,
-			(float)(border_box.top+border.top),
-			(float)(border_box.left+border.left),
-			(float)(border_box.bottom-border.bottom),
+			(float)(border_box.top+border_top),
+			(float)(border_box.left+border_left),
+			(float)(border_box.bottom-border_bottom),
 			element_node->computed_properties.border_color_left.color);
 	}
 	if (element_node->computed_properties.border_style_right.type == CL_CSSBoxBorderStyle::type_solid)
 	{
 		CL_Draw::fill(
 			gc,
-			(float)(border_box.right-border.right),
-			(float)(border_box.top+border.top),
+			(float)(border_box.right-border_right),
+			(float)(border_box.top+border_top),
 			(float)border_box.right,
-			(float)(border_box.bottom-border.bottom),
+			(float)(border_box.bottom-border_bottom),
 			element_node->computed_properties.border_color_right.color);
 	}
 }

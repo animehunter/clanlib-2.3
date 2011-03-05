@@ -85,6 +85,11 @@ void CL_DomSelectNode::update()
 		attribute.value = attr.get_value();
 		attributes.push_back(attribute);
 	}
+	pseudo_classes.clear();
+	if (pos.get_previous_sibling().is_null())
+		pseudo_classes.push_back("first-child");
+	if (pos.get_tag_name() == "a" || pos.get_tag_name() == "A")
+		pseudo_classes.push_back("link");
 }
 
 void CL_DomSelectNode::push()

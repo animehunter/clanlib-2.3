@@ -34,9 +34,9 @@ CL_CSSLayoutCursor::CL_CSSLayoutCursor()
 {
 }
 
-void CL_CSSLayoutCursor::add_margin(float extra_margin_y)
+void CL_CSSLayoutCursor::add_margin(CL_CSSUsedValue extra_margin_y)
 {
-	if (extra_margin_y > 0.0f)
+	if (extra_margin_y >= 0.0f)
 		margin_y = cl_max(margin_y, extra_margin_y);
 	else
 		negative_margin_y = cl_min(negative_margin_y, extra_margin_y);
@@ -44,12 +44,12 @@ void CL_CSSLayoutCursor::add_margin(float extra_margin_y)
 
 void CL_CSSLayoutCursor::apply_margin()
 {
-	y += margin_y + negative_margin_y;
+	y += get_total_margin();
 	margin_y = 0;
 	negative_margin_y = 0;
 }
 
-float CL_CSSLayoutCursor::get_total_margin() const
+CL_CSSActualValue CL_CSSLayoutCursor::get_total_margin() const
 {
-	return margin_y + negative_margin_y;
+	return cl_used_to_actual(margin_y + negative_margin_y);
 }
