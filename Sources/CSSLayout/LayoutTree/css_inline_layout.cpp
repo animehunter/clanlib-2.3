@@ -301,7 +301,10 @@ void CL_CSSInlineLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCurso
 						}
 					}
 
-					line_box = formatting_context->find_line_box(cursor.x + text_indent, cursor.x + cl_used_to_actual(width.value), y, 1, segment_width);
+					CL_CSSActualValue w = cl_used_to_actual(width.value);
+					if (width.expanding && strategy == preferred_strategy)
+						w = 1000000;
+					line_box = formatting_context->find_line_box(cursor.x + text_indent, cursor.x + w, y, 1, segment_width);
 					available_width = line_box.get_width();
 				}
 
@@ -425,7 +428,7 @@ void CL_CSSInlineLayout::render_layer_background(CL_GraphicContext &gc, CL_CSSRe
 			}
 			else if (element)
 			{
-				CL_Rect content(pos_x + cur->x, pos_y + cur->y, pos_x + cur->x + cur->width, pos_y + cur->y + cur->height);
+				CL_Rect content(pos_x + cur->x, pos_y + cur->y, pos_x + cur->x + cur->width, pos_y + cur->y + cur->ascent + cur->descent);
 
 				CL_Rect padding_box = content;
 				padding_box.expand(
@@ -865,7 +868,7 @@ bool CL_CSSInlineLayout::place_floats(CL_CSSInlinePosition start, CL_CSSInlinePo
 				}
 				else if (cur->layout_node->get_element_node()->computed_properties.float_box.type == CL_CSSBoxFloat::type_right)
 				{
-					float_box = formatting_context->float_right_shrink_to_fit(float_box, x+width.value);
+					float_box = formatting_context->float_right_shrink_to_fit(float_box, x+1000000);
 				}
 				cur->layout_node->set_root_block_position(float_box.left, float_box.top);
 			}
@@ -1062,6 +1065,7 @@ CL_CSSActualValue CL_CSSInlineLayout::get_width(CL_GraphicContext &gc, CL_CSSRes
 
 void CL_CSSInlineLayout::layout_inline_blocks_and_floats(CL_GraphicContext &gc, CL_CSSResourceCache *resources, LayoutStrategy strategy)
 {
+	floats.clear();
 	CL_CSSInlineGeneratedBox *cur = boxes.first_child;
 	while (cur)
 	{

@@ -725,6 +725,19 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCurs
 
 	add_margin_top(cursor);
 
+	if (element_node->computed_properties.clear.type == CL_CSSBoxClear::type_left || element_node->computed_properties.clear.type == CL_CSSBoxClear::type_both)
+	{
+		CL_CSSActualValue clear_left = formatting_context->find_left_clearance();
+		if (cursor.y+cursor.get_total_margin() < clear_left)
+			cursor.y = clear_left-cursor.get_total_margin();
+	}
+	if (element_node->computed_properties.clear.type == CL_CSSBoxClear::type_right || element_node->computed_properties.clear.type == CL_CSSBoxClear::type_both)
+	{
+		CL_CSSActualValue clear_right = formatting_context->find_right_clearance();
+		if (cursor.y+cursor.get_total_margin() < clear_right)
+			cursor.y = clear_right-cursor.get_total_margin();
+	}
+
 	if (border.top > 0 || padding.top > 0)
 	{
 		cursor.apply_margin();
@@ -740,19 +753,6 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCurs
 	if (min_height > 0.0f)
 		cursor.apply_margin();
 */
-
-	if (element_node->computed_properties.clear.type == CL_CSSBoxClear::type_left || element_node->computed_properties.clear.type == CL_CSSBoxClear::type_both)
-	{
-		CL_CSSActualValue clear_left = formatting_context->find_left_clearance();
-		if (cursor.y+cursor.get_total_margin() < clear_left)
-			cursor.y = clear_left-cursor.get_total_margin();
-	}
-	if (element_node->computed_properties.clear.type == CL_CSSBoxClear::type_right || element_node->computed_properties.clear.type == CL_CSSBoxClear::type_both)
-	{
-		CL_CSSActualValue clear_right = formatting_context->find_right_clearance();
-		if (cursor.y+cursor.get_total_margin() < clear_right)
-			cursor.y = clear_right-cursor.get_total_margin();
-	}
 
 	CL_CSSActualValue before_content_y = cursor.y;
 
@@ -999,18 +999,9 @@ void CL_CSSLayoutTreeNode::render_background(CL_GraphicContext &gc, CL_CSSResour
 	}
 	render_background(gc, resource_cache, element_node, padding_box, paint_box);
 
-/*	if (formatting_context_root)
+	/*if (formatting_context_root)
 	{
-		//CL_Draw::box(gc, get_border_box(), CL_Colorf::deepskyblue);
-		for (size_t i = 0; i < formatting_context->left_floats.size(); i++)
-		{
-			CL_Rect box = formatting_context->left_floats[i].box;
-			if (!formatting_context_root)
-				box.translate(formatting_context->get_x(), formatting_context->get_y());
-			else if (formatting_context->get_parent())
-				box.translate(formatting_context->get_parent()->get_x(), formatting_context->get_parent()->get_y());
-			CL_Draw::box(gc, box, CL_Colorf::deepskyblue);
-		}
+		CL_Draw::box(gc, padding_box, CL_Colorf::deepskyblue);
 	}*/
 }
 
