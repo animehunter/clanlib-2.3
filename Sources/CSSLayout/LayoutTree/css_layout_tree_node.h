@@ -113,6 +113,7 @@ public:
 
 	CL_Rect content_box;
 	LTRB static_position;
+	CL_CSSLayoutTreeNode *static_position_parent;
 
 	bool is_formatting_context_root() const { return formatting_context_root; }
 	CL_CSSBlockFormattingContext *get_formatting_context() { return formatting_context; }

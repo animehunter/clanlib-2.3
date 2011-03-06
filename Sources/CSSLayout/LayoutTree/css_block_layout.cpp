@@ -79,6 +79,7 @@ void CL_CSSBlockLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor
 		{
 			// We layout absolute or fixed elements later since they may rely on the calculated height of the normal flow.
 
+			children[i]->static_position_parent = this;
 			children[i]->static_position.left = cl_actual_to_used(cursor.x);
 			children[i]->static_position.top = cl_actual_to_used(cursor.y + cursor.get_total_margin());
 			children[i]->static_position.right = children[i]->static_position.left;

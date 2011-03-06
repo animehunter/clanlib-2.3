@@ -37,7 +37,7 @@
 
 CL_CSSLayoutTreeNode::CL_CSSLayoutTreeNode(CL_CSSBoxElement *element_node)
 : preferred_width(0.0f), min_width(0.0f), preferred_width_calculated(false), min_width_calculated(false),
-  relative_x(0.0f), relative_y(0.0f), element_node(element_node), formatting_context(0),
+  relative_x(0.0f), relative_y(0.0f), static_position_parent(0), element_node(element_node), formatting_context(0),
   formatting_context_root(false), stacking_context(0), stacking_context_root(false)
 {
 }
@@ -516,12 +516,14 @@ void CL_CSSLayoutTreeNode::layout_absolute_or_fixed(CL_GraphicContext &gc, CL_CS
 	{
 		if (element_node->computed_properties.direction.type == CL_CSSBoxDirection::type_ltr)
 		{
-			left = formatting_context->get_parent()->get_x() + static_position.left - containing_block.left;
+			CL_CSSActualValue offset_x = static_position_parent ? static_position_parent->formatting_context->get_x() : 0;
+			left = offset_x + static_position.left - containing_block.left;
 			right = containing_width.value - border.left - border.right - padding.left - padding.right - margin.left - margin.right - width.value - left;
 		}
 		else
 		{
-			right = formatting_context->get_parent()->get_x() + static_position.right - containing_block.left;
+			CL_CSSActualValue offset_x = static_position_parent ? static_position_parent->formatting_context->get_x() : 0;
+			right = offset_x + static_position.right - containing_block.left;
 			left = containing_width.value - border.left - border.right - padding.left - padding.right - margin.left - margin.right - width.value - right;
 		}
 	}
@@ -539,12 +541,14 @@ void CL_CSSLayoutTreeNode::layout_absolute_or_fixed(CL_GraphicContext &gc, CL_CS
 		{
 			if (element_node->computed_properties.direction.type == CL_CSSBoxDirection::type_ltr)
 			{
-				left = formatting_context->get_parent()->get_x() + static_position.left - containing_block.left;
+				CL_CSSActualValue offset_x = static_position_parent ? static_position_parent->formatting_context->get_x() : 0;
+				left = offset_x + static_position.left - containing_block.left;
 				right = containing_width.value - border.left - border.right - padding.left - padding.right - margin.left - margin.right - width.value - left;
 			}
 			else
 			{
-				right = formatting_context->get_parent()->get_x() + static_position.right - containing_block.left;
+				CL_CSSActualValue offset_x = static_position_parent ? static_position_parent->formatting_context->get_x() : 0;
+				right = offset_x + static_position.right - containing_block.left;
 				left = containing_width.value - border.left - border.right - padding.left - padding.right - margin.left - margin.right - width.value - right;
 			}
 		}
@@ -585,7 +589,8 @@ void CL_CSSLayoutTreeNode::layout_absolute_or_fixed(CL_GraphicContext &gc, CL_CS
 		element_node->computed_properties.bottom.type == CL_CSSBoxBottom::type_auto &&
 		element_node->computed_properties.height.type == CL_CSSBoxHeight::type_auto)
 	{
-		top = formatting_context->get_parent()->get_y() + static_position.top - containing_block.top;
+		CL_CSSActualValue offset_y = static_position_parent ? static_position_parent->formatting_context->get_y() : 0;
+		top = offset_y + static_position.top - containing_block.top;
 		bottom = containing_height.value - border.top - border.bottom - padding.top - padding.bottom - margin.top - margin.bottom - height.value - top;
 	}
 	else
@@ -600,7 +605,8 @@ void CL_CSSLayoutTreeNode::layout_absolute_or_fixed(CL_GraphicContext &gc, CL_CS
 			element_node->computed_properties.bottom.type == CL_CSSBoxBottom::type_auto &&
 			element_node->computed_properties.height.type != CL_CSSBoxHeight::type_auto) // rule #2
 		{
-			top = formatting_context->get_parent()->get_y() + static_position.top - containing_block.top;
+			CL_CSSActualValue offset_y = static_position_parent ? static_position_parent->formatting_context->get_y() : 0;
+			top = offset_y + static_position.top - containing_block.top;
 			bottom = containing_height.value - border.top - border.bottom - padding.top - padding.bottom - margin.top - margin.bottom - height.value - top;
 		}
 		else if (element_node->computed_properties.height.type == CL_CSSBoxHeight::type_auto &&
