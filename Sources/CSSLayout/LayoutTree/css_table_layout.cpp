@@ -410,12 +410,12 @@ void CL_CSSTableLayout::apply_non_content(CL_CSSTableSizeGrid &grid)
 {
 	if (element_node->computed_properties.border_collapse.type == CL_CSSBoxBorderCollapse::type_separate)
 	{
-		// grid.apply_separate_table_border(border.left, border.top, border.right, border.bottom);
+		grid.apply_separate_table_border(border.left, border.top, border.right, border.bottom);
+		grid.apply_separate_table_padding(padding.left, padding.top, padding.right, padding.bottom);
 		grid.apply_separate_spacing(element_node->computed_properties.border_spacing.length1.value, element_node->computed_properties.border_spacing.length2.value);
 	}
 	else
 	{
-		// bug: table border has already been applied by the parent but needs to be adjusted
 		grid.apply_collapsed_table_border(border.left, border.top, border.right, border.bottom);
 
 		for (size_t col = 0; col < columns.size(); col++)
@@ -532,7 +532,7 @@ void CL_CSSTableLayout::position_cells(CL_CSSLayoutCursor &cursor)
 	{
 		y += size_grid.get_non_content_height(row);
 
-		CL_CSSUsedValue x = padding.left;
+		CL_CSSUsedValue x = 0;
 		for (size_t cell = 0; cell < columns.size(); cell++)
 		{
 			x += size_grid.get_non_content_width(cell);
@@ -579,7 +579,21 @@ void CL_CSSTableLayout::position_cells(CL_CSSLayoutCursor &cursor)
 
 void CL_CSSTableLayout::render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources, bool root)
 {
-	render_non_content(gc, resources, root);
+	//render_non_content(gc, resources, root);
+
+	CL_Rect border_box = content_box;
+	if (!formatting_context_root)
+		border_box.translate(formatting_context->get_x(), formatting_context->get_y());
+	else if (formatting_context->get_parent())
+		border_box.translate(formatting_context->get_parent()->get_x(), formatting_context->get_parent()->get_y());
+	border_box.translate(cl_used_to_actual(relative_x), cl_used_to_actual(relative_y));
+
+	CL_Rect padding_box = border_box;
+	padding_box.shrink(cl_used_to_actual(border.left), cl_used_to_actual(border.top), cl_used_to_actual(border.right), cl_used_to_actual(border.bottom));
+
+	render_background(gc, resources, element_node, padding_box, padding_box);
+	render_border(gc, element_node, border_box, border.left, border.top, border.right, border.bottom);
+
 	for (size_t row = 0; row < rows.size(); row++)
 	{
 		for (size_t cell = 0; cell < columns.size(); cell++)

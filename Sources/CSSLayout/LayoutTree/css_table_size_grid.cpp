@@ -129,6 +129,20 @@ void CL_CSSTableSizeGrid::apply_separate_table_border(CL_CSSUsedValue border_lef
 	}
 }
 
+void CL_CSSTableSizeGrid::apply_separate_table_padding(CL_CSSUsedValue padding_left, CL_CSSUsedValue padding_top, CL_CSSUsedValue padding_right, CL_CSSUsedValue padding_bottom)
+{
+	if (cols() > 0)
+	{
+		non_content_widths[0] = non_content_widths[0] + padding_left;
+		non_content_widths[cols()] = non_content_widths[cols()] + padding_right;
+	}
+	if (rows() > 0)
+	{
+		non_content_heights[0] = non_content_heights[0] + padding_top;
+		non_content_heights[rows()] = non_content_heights[rows()] + padding_bottom;
+	}
+}
+
 void CL_CSSTableSizeGrid::apply_separate_spacing(CL_CSSUsedValue spacing_width, CL_CSSUsedValue spacing_height)
 {
 	for (size_t col = 1; col + 1 < non_content_widths.size(); col++)

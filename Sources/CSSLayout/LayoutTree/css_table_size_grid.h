@@ -43,6 +43,7 @@ public:
 	void apply_collapsed_table_border(CL_CSSUsedValue border_left, CL_CSSUsedValue border_top, CL_CSSUsedValue border_right, CL_CSSUsedValue border_bottom);
 	void apply_collapsed_border(size_t row, size_t col, CL_CSSUsedValue border_left, CL_CSSUsedValue border_top, CL_CSSUsedValue border_right, CL_CSSUsedValue border_bottom);
 	void apply_separate_table_border(CL_CSSUsedValue border_left, CL_CSSUsedValue border_top, CL_CSSUsedValue border_right, CL_CSSUsedValue border_bottom);
+	void apply_separate_table_padding(CL_CSSUsedValue padding_left, CL_CSSUsedValue padding_top, CL_CSSUsedValue padding_right, CL_CSSUsedValue padding_bottom);
 	void apply_separate_spacing(CL_CSSUsedValue spacing_width, CL_CSSUsedValue spacing_height);
 	void expand_table_width(CL_CSSUsedValue width);
 

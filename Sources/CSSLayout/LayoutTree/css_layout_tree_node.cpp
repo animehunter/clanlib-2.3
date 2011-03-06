@@ -448,7 +448,15 @@ void CL_CSSLayoutTreeNode::set_root_block_position(int x, int y)
 {
 	if (!formatting_context_root)
 		throw CL_Exception("CL_CSSLayoutTreeNode::set_root_block_position misuse");
-	content_box = CL_Rect(CL_Point(x+margin.left+border.left+padding.left, y+margin.top+border.top+padding.top), content_box.get_size());
+
+	if (element_node->is_table() || element_node->is_inline_table())
+	{
+		content_box = CL_Rect(CL_Point(x+margin.left, y+margin.top), content_box.get_size());
+	}
+	else
+	{
+		content_box = CL_Rect(CL_Point(x+margin.left+border.left+padding.left, y+margin.top+border.top+padding.top), content_box.get_size());
+	}
 	formatting_context->set_position(content_box.left, content_box.top);
 }
 
@@ -703,12 +711,12 @@ void CL_CSSLayoutTreeNode::layout_formatting_root_helper(CL_GraphicContext &gc, 
 	if (element_node->computed_properties.height.type == CL_CSSBoxHeight::type_auto)
 	{
 		height.value = cursor.y;
-		CL_CSSUsedValue left_float_height = formatting_context->find_left_clearance();
-		CL_CSSUsedValue right_float_height = formatting_context->find_right_clearance();
-		height.value = cl_max(height.value, cl_max(left_float_height, right_float_height));
+		CL_CSSActualValue left_float_height = formatting_context->find_left_clearance();
+		CL_CSSActualValue right_float_height = formatting_context->find_right_clearance();
+		height.value = cl_max(height.value, cl_actual_to_used(cl_max(left_float_height, right_float_height)));
 	}
 
-	content_box = CL_Size(width.value, height.value);
+	content_box = CL_Size(cl_used_to_actual(width.value), cl_used_to_actual(height.value));
 }
 
 void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy)
@@ -985,7 +993,7 @@ CL_Rect CL_CSSLayoutTreeNode::get_padding_box() const
 void CL_CSSLayoutTreeNode::render_background(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, bool root)
 {
 	CL_Rect padding_box = get_padding_box();
-	padding_box.translate(relative_x, relative_y);
+	padding_box.translate(cl_used_to_actual(relative_x), cl_used_to_actual(relative_y));
 	CL_Rect paint_box;
 	if (root)
 	{
