@@ -45,6 +45,13 @@ void CL_CSSParserFontFamily::parse(CL_CSSBoxProperties &properties, const CL_Str
 	size_t pos = 0;
 	CL_CSSToken token;
 	token = next_token(pos, tokens);
+
+	if (equals(token.value, "inherit") && tokens.size() == 1)
+	{
+		properties.font_family.type = CL_CSSBoxFontFamily::type_inherit;
+		return;
+	}
+
 	while (true)
 	{
 		if (token.type != CL_CSSToken::type_ident && token.type != CL_CSSToken::type_string)

@@ -428,28 +428,31 @@ void CL_CSSInlineLayout::render_layer_background(CL_GraphicContext &gc, CL_CSSRe
 			}
 			else if (element)
 			{
-				CL_Rect content(pos_x + cur->x, pos_y + cur->y, pos_x + cur->x + cur->width, pos_y + cur->y + cur->ascent + cur->descent);
+				if (element->computed_properties.visibility.type == CL_CSSBoxVisibility::type_visible)
+				{
+					CL_Rect content(pos_x + cur->x, pos_y + cur->y, pos_x + cur->x + cur->width, pos_y + cur->y + cur->ascent + cur->descent);
 
-				CL_Rect padding_box = content;
-				padding_box.expand(
-					cur->opening ? cl_used_to_actual(get_css_padding_width(element->computed_properties.padding_width_left, containing_width)) : 0,
-					cl_used_to_actual(get_css_padding_height(element->computed_properties.padding_width_top, containing_height)),
-					cur->closing ?  cl_used_to_actual(get_css_padding_width(element->computed_properties.padding_width_right, containing_width)) : 0,
-					cl_used_to_actual(get_css_padding_height(element->computed_properties.padding_width_bottom, containing_height)));
+					CL_Rect padding_box = content;
+					padding_box.expand(
+						cur->opening ? cl_used_to_actual(get_css_padding_width(element->computed_properties.padding_width_left, containing_width)) : 0,
+						cl_used_to_actual(get_css_padding_height(element->computed_properties.padding_width_top, containing_height)),
+						cur->closing ?  cl_used_to_actual(get_css_padding_width(element->computed_properties.padding_width_right, containing_width)) : 0,
+						cl_used_to_actual(get_css_padding_height(element->computed_properties.padding_width_bottom, containing_height)));
 
-				CL_Rect border_box = padding_box;
-				border_box.expand(
-					cur->opening ? cl_used_to_actual(element->computed_properties.border_width_left.length.value) : 0,
-					cl_used_to_actual(element->computed_properties.border_width_top.length.value),
-					cur->closing ? cl_used_to_actual(element->computed_properties.border_width_right.length.value) : 0,
-					cl_used_to_actual(element->computed_properties.border_width_bottom.length.value));
+					CL_Rect border_box = padding_box;
+					border_box.expand(
+						cur->opening ? cl_used_to_actual(element->computed_properties.border_width_left.length.value) : 0,
+						cl_used_to_actual(element->computed_properties.border_width_top.length.value),
+						cur->closing ? cl_used_to_actual(element->computed_properties.border_width_right.length.value) : 0,
+						cl_used_to_actual(element->computed_properties.border_width_bottom.length.value));
 
-				render_background(gc, resources, element, padding_box, padding_box);
-				render_border(gc, element, border_box,
-					cur->opening ? element->computed_properties.border_width_left.length.value : 0,
-					element->computed_properties.border_width_top.length.value,
-					cur->closing ? element->computed_properties.border_width_right.length.value : 0,
-					element->computed_properties.border_width_bottom.length.value);
+					render_background(gc, resources, element, padding_box, padding_box);
+					render_border(gc, element, border_box,
+						cur->opening ? element->computed_properties.border_width_left.length.value : 0,
+						element->computed_properties.border_width_top.length.value,
+						cur->closing ? element->computed_properties.border_width_right.length.value : 0,
+						element->computed_properties.border_width_bottom.length.value);
+				}
 			}
 
 			if (cur->first_child)
@@ -544,9 +547,12 @@ void CL_CSSInlineLayout::render_layer_inline(CL_GraphicContext &gc, CL_CSSResour
 			if (text)
 			{
 				const CL_CSSBoxProperties &properties = text->get_properties();
-				CL_Font font = resources->get_font(gc, properties);
-				CL_FontMetrics metrics = font.get_font_metrics(gc);
-				font.draw_text(gc, pos_x + cur->x, pos_y + cur->y + cl_used_to_actual(metrics.get_ascent()), text->processed_text.substr(cur->text_start, cur->text_end - cur->text_start), properties.color.color);
+				if (properties.visibility.type == CL_CSSBoxVisibility::type_visible)
+				{
+					CL_Font font = resources->get_font(gc, properties);
+					CL_FontMetrics metrics = font.get_font_metrics(gc);
+					font.draw_text(gc, pos_x + cur->x, pos_y + cur->y + cl_used_to_actual(metrics.get_ascent()), text->processed_text.substr(cur->text_start, cur->text_end - cur->text_start), properties.color.color);
+				}
 			}
 			else if (cur->layout_node)
 			{

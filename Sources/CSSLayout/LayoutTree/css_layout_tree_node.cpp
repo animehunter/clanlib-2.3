@@ -1068,7 +1068,7 @@ void CL_CSSLayoutTreeNode::render_background(CL_GraphicContext &gc, CL_CSSResour
 			}
 
 			CL_Vec4f offset = gc.get_modelview()*CL_Vec4f(0.0f, 0.0f, 1.0f, 1.0f);
-			CL_Rect b = padding_box;
+			CL_Rect b = paint_box;
 			b.translate((int)(offset.x+0.5f), (int)(offset.y+0.5f));
 
 			gc.push_cliprect(b);
