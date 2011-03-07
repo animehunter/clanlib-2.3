@@ -113,6 +113,7 @@ void CL_CSSBoxProperties::compute(const CL_CSSBoxProperties *parent, CL_CSSResou
 		text_decoration.compute(&parent->text_decoration, layout, em_size, ex_size);
 		text_indent.compute(&parent->text_indent, layout, em_size, ex_size);
 		text_transform.compute(&parent->text_transform, layout, em_size, ex_size);
+		text_align.compute(&parent->text_align, layout, em_size, ex_size);
 		font_family.compute(&parent->font_family, layout, em_size, ex_size);
 		font_style.compute(&parent->font_style, layout, em_size, ex_size);
 		font_variant.compute(&parent->font_variant, layout, em_size, ex_size);
@@ -200,6 +201,7 @@ void CL_CSSBoxProperties::compute(const CL_CSSBoxProperties *parent, CL_CSSResou
 		text_decoration.compute(0, layout, em_size, ex_size);
 		text_indent.compute(0, layout, em_size, ex_size);
 		text_transform.compute(0, layout, em_size, ex_size);
+		text_align.compute(0, layout, em_size, ex_size);
 		font_family.compute(0, layout, em_size, ex_size);
 		font_style.compute(0, layout, em_size, ex_size);
 		font_variant.compute(0, layout, em_size, ex_size);
