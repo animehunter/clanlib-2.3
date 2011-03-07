@@ -56,6 +56,12 @@ CL_Texture CL_SharedGCData::load_texture(CL_GraphicContext &gc, const CL_String 
 	return self->impl->load_texture(gc, filename, virtual_directory, import_desc);
 }
 
+bool CL_SharedGCData::add_texture(CL_Texture &texture, const CL_String &filename, const CL_VirtualDirectory &virtual_directory, const CL_ImageImportDescription &import_desc)
+{
+	CL_SharedGCData *self = get_instance();
+	return self->impl->add_texture(texture, filename, virtual_directory, import_desc);
+}
+
 void CL_SharedGCData::unload_texture(const CL_String &filename, const CL_VirtualDirectory &virtual_directory, const CL_ImageImportDescription &import_desc)
 {
 	CL_SharedGCData *self = get_instance();

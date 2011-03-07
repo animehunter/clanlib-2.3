@@ -171,6 +171,9 @@ public:
 	/// \brief Signal emitted when window is maximized.
 	CL_Signal_v0 &sig_window_maximized();
 
+	/// \brief Signal emitted when window is restored.
+	CL_Signal_v0 &sig_window_restored();
+
 	/// \brief Signal emitted after a window has been moved.
 	CL_Signal_v0 &sig_window_moved();
 

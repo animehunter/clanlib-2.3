@@ -176,6 +176,11 @@ CL_Signal_v0 &CL_DisplayWindow::sig_window_maximized()
 	return impl->sig_window_maximized;
 }
 
+CL_Signal_v0 &CL_DisplayWindow::sig_window_restored()
+{
+	return impl->sig_window_restored;
+}
+
 CL_Callback_v1<CL_Rect &> &CL_DisplayWindow::func_window_resize()
 {
 	return impl->func_window_resize;

@@ -35,6 +35,7 @@
 #include <tchar.h>
 #include "API/Core/System/setup_core.h"
 #include "API/App/clanapp.h"
+#include "API/Core/Text/string_help.h"
 
 #ifdef _MSC_VER
 #include <crtdbg.h>
@@ -82,7 +83,7 @@ int WINAPI WinMain(
 	// Initialize arguments and call clanapp main:
 	std::vector<CL_String> args;
 	for (int i=0; i<argc; i++)
-		args.push_back(argv[i]);
+		args.push_back(CL_StringHelp::ucs2_to_text(argv[i]));
 	retval = CL_ClanApplication::main(args);
 
 	// calc_commandline() doesn't clean up after itself. tsk tsk:

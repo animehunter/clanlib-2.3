@@ -70,7 +70,7 @@
 CL_Win32Window::CL_Win32Window()
 : hwnd(0), destroy_hwnd(true), current_cursor(0), large_icon(0), small_icon(0), cursor_set(false), cursor_hidden(false), site(0),
   directinput(0), direct8_module(0),
-  minimum_size(0,0), maximum_size(0xffff, 0xffff), layered(false), allow_dropshadow(false)
+  minimum_size(0,0), maximum_size(0xffff, 0xffff), layered(false), allow_dropshadow(false), minimized(false), maximized(false)
 {
 	memset(&paintstruct, 0, sizeof(PAINTSTRUCT));
 	keyboard = CL_InputDevice(new CL_InputDeviceProvider_Win32Keyboard(this));
@@ -693,16 +693,27 @@ LRESULT CL_Win32Window::window_proc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lp
 		case SIZE_MAXIMIZED:
 			if (site)
 				site->sig_window_maximized->invoke();
+			minimized = false;
+			maximized = true;
 			break;
 
 		// The window has been minimized.
 		case SIZE_MINIMIZED:
 			if (site)
 				site->sig_window_minimized->invoke();
+			minimized = true;
+			maximized = false;
 			break;
 
 		// The window has been resized, but neither the SIZE_MINIMIZED nor SIZE_MAXIMIZED value applies.
 		case SIZE_RESTORED:
+			if (minimized || maximized)
+			{
+				if (site)
+					site->sig_window_restored->invoke();
+				minimized = false;
+				maximized = false;
+			}
 			break;
 		}
 
@@ -858,6 +869,8 @@ void CL_Win32Window::create_new_window(const CL_DisplayWindowDescription &desc)
 	//	if (desc.is_layered()) // TODO: Make the RGB value optional
 	//		SetLayeredWindowAttributes(hwnd, RGB(0,0,0), 0, LWA_COLORKEY);
 
+		minimized = is_minimized();
+		maximized = is_maximized();
 	}
 
 	connect_window_input(desc);
@@ -895,6 +908,9 @@ void CL_Win32Window::modify_window(const CL_DisplayWindowDescription &desc)
 
 	ShowWindow(hwnd, desc.is_visible() ? SW_SHOW : SW_HIDE);
 	RedrawWindow(0, 0, 0, RDW_ALLCHILDREN|RDW_INVALIDATE);
+
+	minimized = is_minimized();
+	maximized = is_maximized();
 }
 
 void CL_Win32Window::received_keyboard_input(UINT msg, WPARAM wparam, LPARAM lparam)

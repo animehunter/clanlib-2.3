@@ -86,6 +86,9 @@ public:
 	/// \brief Pointer to window maximized signal.
 	CL_Signal_v0 *sig_window_maximized;
 
+	/// \brief Pointer to window restored signal.
+	CL_Signal_v0 *sig_window_restored;
+
 	/// \brief Pointer to window resize callback function.
 	CL_Callback_v1<CL_Rect &> *func_window_resize;
 
