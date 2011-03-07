@@ -520,10 +520,6 @@ void CL_OpenGLTextureProvider::set_texture_image2d(
 	throw_if_disposed();
 	CL_TextureStateTracker state_tracker(texture_type, handle, NULL);
 
-	CLint gl_internal_format;
-	CLenum gl_pixel_format;
-	CL_OpenGL::to_opengl_textureformat(image.get_format(), gl_internal_format, gl_pixel_format);
-
 /*
 	CL_UNPACK_SWAP_BYTES
 	CL_UNPACK_LSB_FIRST
@@ -557,6 +553,10 @@ void CL_OpenGLTextureProvider::set_texture_image2d(
 	if (!conv_needed)
 	{
 		// Upload to OpenGL:
+
+		CLint gl_internal_format;
+		CLenum gl_pixel_format;
+		CL_OpenGL::to_opengl_textureformat(image.get_format(), gl_internal_format, gl_pixel_format);
 
 		// change alignment
 		clPixelStorei(CL_UNPACK_ALIGNMENT, 1);
@@ -605,6 +605,10 @@ void CL_OpenGLTextureProvider::set_texture_image2d(
 		format = needs_alpha ? CL_RGBA : CL_RGB;
 
 		// Upload to OpenGL:
+
+		CLint gl_internal_format;
+		CLenum gl_pixel_format;
+		CL_OpenGL::to_opengl_textureformat(cl_rgba8ui, gl_internal_format, gl_pixel_format);
 
 		// change alignment
 		clPixelStorei(CL_UNPACK_ALIGNMENT, 1);
