@@ -493,10 +493,6 @@ void CL_CSSLayoutTreeNode::layout_absolute_or_fixed(CL_GraphicContext &gc, CL_CS
 	containing_height.value = containing_block.get_height();
 	containing_height.use_content = false;
 	calculate_top_down_sizes();
-	if (width.expanding)
-		layout_shrink_to_fit(gc, resources);
-	else
-		layout_formatting_root_helper(gc, resources, normal_strategy);
 
 	CL_CSSUsedValue left = 0.0f;
 	if (element_node->computed_properties.left.type == CL_CSSBoxLeft::type_length)
@@ -509,6 +505,24 @@ void CL_CSSLayoutTreeNode::layout_absolute_or_fixed(CL_GraphicContext &gc, CL_CS
 		right = element_node->computed_properties.right.length.value;
 	else if (element_node->computed_properties.right.type == CL_CSSBoxRight::type_percentage)
 		right = element_node->computed_properties.right.percentage * containing_width.value / 100.0f;
+
+	if (width.expanding)
+	{
+		CL_CSSUsedValue available_width = containing_width.value;
+		if (element_node->computed_properties.left.type == CL_CSSBoxLeft::type_auto)
+		{
+			available_width = containing_width.value - margin.left - border.left - padding.left - padding.right - border.right - margin.right - right;
+		}
+		else if (element_node->computed_properties.right.type == CL_CSSBoxLeft::type_auto)
+		{
+			available_width = containing_width.value - margin.left - border.left - padding.left - padding.right - border.right - margin.right - left;
+		}
+		layout_shrink_to_fit(gc, resources, available_width);
+	}
+	else
+	{
+		layout_formatting_root_helper(gc, resources, normal_strategy);
+	}
 
 	if (element_node->computed_properties.left.type == CL_CSSBoxLeft::type_auto &&
 		element_node->computed_properties.right.type == CL_CSSBoxRight::type_auto &&
@@ -639,10 +653,9 @@ void CL_CSSLayoutTreeNode::layout_absolute_or_fixed(CL_GraphicContext &gc, CL_CS
 	set_root_block_position(x, y);
 }
 
-void CL_CSSLayoutTreeNode::layout_shrink_to_fit(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+void CL_CSSLayoutTreeNode::layout_shrink_to_fit(CL_GraphicContext &gc, CL_CSSResourceCache *resources, CL_CSSUsedValue available_width)
 {
 	calc_preferred(gc, resources);
-	CL_CSSUsedValue available_width = containing_width.value;
 	CL_CSSUsedValue shrink_to_fit_width;
 	if (preferred_width > available_width + 0.1f)
 	{
@@ -662,7 +675,7 @@ void CL_CSSLayoutTreeNode::layout_float(CL_GraphicContext &gc, CL_CSSResourceCac
 {
 	if (strategy == normal_strategy && element_node->is_shrink_to_fit())
 	{
-		layout_shrink_to_fit(gc, resources);
+		layout_shrink_to_fit(gc, resources, containing_width.value);
 	}
 	else
 	{

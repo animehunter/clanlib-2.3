@@ -147,7 +147,7 @@ private:
 	void set_formatting_context(CL_CSSBlockFormattingContext *formatting_context, bool is_root);
 	void establish_stacking_context_if_needed(CL_CSSStackingContext *current_stacking_context);
 
-	void layout_shrink_to_fit(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
+	void layout_shrink_to_fit(CL_GraphicContext &gc, CL_CSSResourceCache *resources, CL_CSSUsedValue available_width);
 
 	void calculate_absolute_sizes();
 	void calculate_static_sizes();
