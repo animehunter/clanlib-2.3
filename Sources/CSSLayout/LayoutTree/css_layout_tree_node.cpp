@@ -711,6 +711,8 @@ void CL_CSSLayoutTreeNode::layout_formatting_root_helper(CL_GraphicContext &gc, 
 	CL_CSSLayoutCursor cursor;
 	cursor.x = 0;
 	cursor.y = 0;
+	cursor.relative_x = relative_x;
+	cursor.relative_y = relative_y;
 	cursor.resources = resources;
 	add_content_margin_top(cursor);
 	layout_content(gc, cursor, strategy);
