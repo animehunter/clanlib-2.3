@@ -196,11 +196,6 @@ void CL_JPEGLoader::process_sos(CL_JPEGFileReader &reader)
 		}
 		if (!found)
 			throw CL_Exception("Invalid JPEG file");
-
-		if (huffman_dc_tables[start_of_scan.components[c].dc_table_selector].tree.empty())
-			throw CL_Exception("Invalid JPEG file");
-		if (huffman_ac_tables[start_of_scan.components[c].ac_table_selector].tree.empty())
-			throw CL_Exception("Invalid JPEG file");
 	}
 
 	if (progressive)
@@ -209,6 +204,24 @@ void CL_JPEGLoader::process_sos(CL_JPEGFileReader &reader)
 		process_sos_sequential(start_of_scan, component_to_sof, reader);
 
 	scan_count++;
+}
+
+void CL_JPEGLoader::verify_dc_table_selector(const CL_JPEGStartOfScan &start_of_scan)
+{
+	for (size_t c = 0; c < start_of_scan.components.size(); c++)
+	{
+		if (huffman_dc_tables[start_of_scan.components[c].dc_table_selector].tree.empty())
+			throw CL_Exception("Invalid JPEG file");
+	}
+}
+
+void CL_JPEGLoader::verify_ac_table_selector(const CL_JPEGStartOfScan &start_of_scan)
+{
+	for (size_t c = 0; c < start_of_scan.components.size(); c++)
+	{
+		if (huffman_ac_tables[start_of_scan.components[c].ac_table_selector].tree.empty())
+			throw CL_Exception("Invalid JPEG file");
+	}
 }
 
 void CL_JPEGLoader::process_dnl(CL_JPEGFileReader &reader)
@@ -238,6 +251,9 @@ int CL_JPEGLoader::zigzag_map[64] =
 
 void CL_JPEGLoader::process_sos_sequential(CL_JPEGStartOfScan &start_of_scan, std::vector<int> component_to_sof, CL_JPEGFileReader &reader)
 {
+	verify_dc_table_selector(start_of_scan);
+	verify_ac_table_selector(start_of_scan);
+
 	CL_JPEGBitReader bit_reader(&reader);
 	int restart_counter = 0;
 	for (int mcu_block = 0; mcu_block < mcu_width*mcu_height; mcu_block++)
@@ -308,6 +324,8 @@ void CL_JPEGLoader::process_sos_progressive(CL_JPEGStartOfScan &start_of_scan, s
 	int restart_counter = 0;
 	if (start_of_scan.start_dct_coefficient == 0 && start_of_scan.end_dct_coefficient == 0)
 	{
+		verify_dc_table_selector(start_of_scan);
+
 		for (int mcu_block = 0; mcu_block < mcu_width*mcu_height; mcu_block++)
 		{
 			if (restart_interval != 0 && restart_counter == restart_interval)
@@ -359,6 +377,8 @@ void CL_JPEGLoader::process_sos_progressive(CL_JPEGStartOfScan &start_of_scan, s
 	else
 	{
 		// To do: Implement restart_interval for progressive scans.
+
+		verify_ac_table_selector(start_of_scan);
 
 		int c_sof = component_to_sof[0];
 		const CL_JPEGHuffmanTable &ac_table = huffman_ac_tables[start_of_scan.components[0].ac_table_selector];

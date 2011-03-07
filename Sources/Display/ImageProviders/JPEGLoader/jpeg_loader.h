@@ -55,6 +55,9 @@ private:
 	void process_dqt(CL_JPEGFileReader &reader);
 	void process_dht(CL_JPEGFileReader &reader);
 	void process_sof(CL_JPEGMarker marker, CL_JPEGFileReader &reader);
+	void verify_dc_table_selector(const CL_JPEGStartOfScan &start_of_scan);
+	void verify_ac_table_selector(const CL_JPEGStartOfScan &start_of_scan);
+
 	CL_JPEGStartOfFrame start_of_frame;
 	CL_JPEGHuffmanTable huffman_dc_tables[4];
 	CL_JPEGHuffmanTable huffman_ac_tables[4];
