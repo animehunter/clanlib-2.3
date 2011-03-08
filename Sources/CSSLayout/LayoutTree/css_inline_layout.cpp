@@ -1135,7 +1135,7 @@ void CL_CSSInlineLayout::layout_line(CL_CSSInlineGeneratedBox *line, CL_Rect &li
 				cur->height = cl_used_to_actual(properties.line_height.length.value);
 				break;
 			case CL_CSSBoxLineHeight::type_number:
-				cur->height = cl_used_to_actual(properties.line_height.number * (cur->ascent + cur->descent));
+				cur->height = cl_used_to_actual(properties.line_height.number * properties.font_size.length.value);
 				break;
 			}
 			cur->baseline_offset = baseline_offset;
@@ -1162,6 +1162,7 @@ void CL_CSSInlineLayout::layout_line(CL_CSSInlineGeneratedBox *line, CL_Rect &li
 				if (cur->opening)
 					x += cl_used_to_actual(get_css_margin_width(element->computed_properties.margin_width_left, containing_width)) + cl_used_to_actual(element->computed_properties.border_width_left.length.value) + cl_used_to_actual(get_css_padding_width(element->computed_properties.padding_width_left, containing_width));
 				cur->x = x;
+				cur->height = cl_used_to_actual(element->computed_properties.line_height.length.value);
 				switch (element->computed_properties.line_height.type)
 				{
 				default:
@@ -1171,13 +1172,7 @@ void CL_CSSInlineLayout::layout_line(CL_CSSInlineGeneratedBox *line, CL_Rect &li
 					cur->height = cl_used_to_actual(element->computed_properties.line_height.length.value);
 					break;
 				case CL_CSSBoxLineHeight::type_number:
-					{
-						CL_Font font = resources->get_font(gc, element->computed_properties);
-						CL_FontMetrics metrics = font.get_font_metrics(gc);
-						cur->ascent = cl_used_to_actual(metrics.get_ascent());
-						cur->descent = cl_used_to_actual(metrics.get_descent());
-						cur->height = cl_used_to_actual(element->computed_properties.line_height.number * (cur->ascent + cur->descent));
-					}
+					cur->height = cl_used_to_actual(element->computed_properties.line_height.number * element->computed_properties.font_size.length.value);
 					break;
 				}
 			}
@@ -1245,13 +1240,7 @@ void CL_CSSInlineLayout::layout_line(CL_CSSInlineGeneratedBox *line, CL_Rect &li
 		line->height = cl_max(line->height, cl_used_to_actual(get_element_node()->computed_properties.line_height.length.value));
 		break;
 	case CL_CSSBoxLineHeight::type_number:
-		{
-			CL_Font font = resources->get_font(gc, get_element_node()->computed_properties);
-			CL_FontMetrics metrics = font.get_font_metrics(gc);
-			CL_CSSActualValue ascent = cl_used_to_actual(metrics.get_ascent());
-			CL_CSSActualValue descent = cl_used_to_actual(metrics.get_descent());
-			line->height = cl_max(line->height, cl_used_to_actual(get_element_node()->computed_properties.line_height.number * (ascent + descent)));
-		}
+		line->height = cl_max(line->height, cl_used_to_actual(get_element_node()->computed_properties.line_height.number * get_element_node()->computed_properties.font_size.length.value));
 		break;
 	}
 
