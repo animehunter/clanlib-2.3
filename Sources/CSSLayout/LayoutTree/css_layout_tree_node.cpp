@@ -52,7 +52,7 @@ CL_CSSLayoutTreeNode::~CL_CSSLayoutTreeNode()
 
 void CL_CSSLayoutTreeNode::prepare(CL_CSSBlockFormattingContext *current_formatting_context, CL_CSSStackingContext *current_stacking_context)
 {
-	if (current_formatting_context == 0 || element_node->is_inline_block_level() || element_node->is_float() || element_node->is_table() || element_node->is_table_cell() || is_replaced() || element_node->is_absolute() || !element_node->is_overflow_visible())
+	if (current_formatting_context == 0 || element_node->is_inline_block_level() || element_node->is_float() || element_node->is_table() || element_node->is_table_cell() || is_replaced() || element_node->is_absolute() /*|| !element_node->is_overflow_visible()*/)
 		set_formatting_context(new CL_CSSBlockFormattingContext(current_formatting_context), true);
 	else if (element_node->is_fixed())
 		set_formatting_context(new CL_CSSBlockFormattingContext(0), true);
@@ -285,7 +285,7 @@ void CL_CSSLayoutTreeNode::calculate_static_sizes()
 {
 	bool is_table_cell = element_node->computed_properties.display.type == CL_CSSBoxDisplay::type_table_cell;
 	bool is_float = element_node->computed_properties.float_box.type != CL_CSSBoxFloat::type_none;
-	bool is_overflow_visible = (element_node->get_parent() == 0) || element_node->is_overflow_visible();
+	//bool is_overflow_visible = (element_node->get_parent() == 0) || element_node->is_overflow_visible();
 
 	margin.left = get_css_margin_width(element_node->computed_properties.margin_width_left, containing_width);
 	margin.right = get_css_margin_width(element_node->computed_properties.margin_width_right, containing_width);
@@ -314,7 +314,7 @@ void CL_CSSLayoutTreeNode::calculate_static_sizes()
 	}
 	else if (element_node->computed_properties.width.type == CL_CSSBoxWidth::type_auto)
 	{
-		if (containing_width.expanding || is_table_cell || is_float || !is_overflow_visible)
+		if (containing_width.expanding || is_table_cell || is_float /*|| !is_overflow_visible*/)
 		{
 			width.value = 0.0f;
 			width.expanding = true;

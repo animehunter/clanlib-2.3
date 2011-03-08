@@ -208,7 +208,7 @@ void CL_CSSBoxTree::create_anonymous_blocks(CL_CSSBoxElement *element, CL_CSSRes
 	{
 		filter_table(element, resource_cache);
 	}
-	else if (element->is_block_level() && element->has_block_level_children())
+/*	else if (element->is_block_level() && element->has_block_level_children())
 	{
 		CL_CSSBoxNode *cur = element->get_first_child();
 		CL_CSSBoxElement *anonymous = 0;
@@ -255,7 +255,7 @@ void CL_CSSBoxTree::create_anonymous_blocks(CL_CSSBoxElement *element, CL_CSSRes
 
 			cur = cur->get_next_sibling();
 		}
-	}
+	}*/
 }
 
 void CL_CSSBoxTree::convert_run_in_blocks(CL_CSSBoxElement *element)

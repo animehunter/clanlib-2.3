@@ -1630,7 +1630,7 @@ int CL_CSSInlineLayout::find_word_count(CL_CSSInlineGeneratedBox *line)
 
 void CL_CSSInlineLayout::layout_block_line(CL_CSSInlineGeneratedBox *line, CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy)
 {
-	if (line->layout_node->get_element_node()->is_overflow_visible() && !line->layout_node->get_element_node()->is_table() && !line->layout_node->is_replaced())
+	if (/*line->layout_node->get_element_node()->is_overflow_visible() && */!line->layout_node->get_element_node()->is_table() && !line->layout_node->is_replaced())
 	{
 		line->layout_node->layout_normal(gc, cursor, strategy);
 		if (strategy != normal_strategy && width.expanding)
@@ -1650,11 +1650,12 @@ void CL_CSSInlineLayout::layout_block_line(CL_CSSInlineGeneratedBox *line, CL_Gr
 			box_y = cl_max(box_y, clear_right);
 		}
 
-		if (strategy == normal_strategy)
-		{
-			CL_CSSActualValue available_width = formatting_context->find_line_box(cursor.x, cursor.x + cl_used_to_actual(width.value), box_y, 1, cl_used_to_actual(line->layout_node->width.value)).get_width();
-			line->layout_node->set_expanding_width(cl_actual_to_used(available_width));
-		}
+		CL_CSSActualValue w = cl_used_to_actual(width.value);
+		if (width.expanding && strategy == preferred_strategy)
+			w = 1000000;
+
+		CL_CSSActualValue available_width = formatting_context->find_line_box(cursor.x, cursor.x + w, box_y, 1, cl_used_to_actual(line->layout_node->min_width)).get_width();
+		line->layout_node->set_expanding_width(cl_actual_to_used(available_width));
 		line->layout_node->layout_formatting_root_helper(gc, cursor.resources, strategy);
 
 		CL_Rect float_box(0, 0, line->layout_node->get_block_width(), line->layout_node->get_block_height());
