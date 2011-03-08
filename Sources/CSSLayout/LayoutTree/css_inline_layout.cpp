@@ -206,10 +206,7 @@ bool CL_CSSInlineLayout::add_content_margin_top(CL_CSSLayoutCursor &cursor)
 			if (text->processed_text.substr(text_start, text_end - text_start).find_first_not_of(' ') != CL_String::npos)
 				return true;
 		}
-		else if (cur->layout_node &&
-			!cur->layout_node->get_element_node()->is_float() &&
-			!cur->layout_node->get_element_node()->is_absolute() &&
-			!cur->layout_node->get_element_node()->is_fixed())
+		else if (cur->layout_node)
 		{
 			if (cur->layout_node->add_margin_top(cursor))
 				return true;
@@ -1111,7 +1108,7 @@ bool CL_CSSInlineLayout::place_floats(CL_CSSInlinePosition start, CL_CSSInlinePo
 
 void CL_CSSInlineLayout::adjust_start_of_line_text_range(CL_CSSBoxText *text, size_t &text_start, size_t &text_end, bool &start_of_line) const
 {
-	if (start_of_line)
+	if (start_of_line && text_start < text_end)
 	{
 		const CL_CSSBoxProperties &properties = text->get_properties();
 		if (properties.white_space.type == CL_CSSBoxWhiteSpace::type_pre || properties.white_space.type == CL_CSSBoxWhiteSpace::type_pre_wrap)
@@ -1121,10 +1118,14 @@ void CL_CSSInlineLayout::adjust_start_of_line_text_range(CL_CSSBoxText *text, si
 		else
 		{
 			text_start = text->processed_text.find_first_not_of(' ', text_start);
-			if (text_start == CL_String::npos)
-				text_start = text->processed_text.length();
-			if (text_start < text_end && text_start < text->processed_text.length() && text->processed_text[text_start] != ' ')
+			if (text_start == CL_String::npos || text_start >= text_end)
+			{
+				text_start = text_end;
+			}
+			else if (text->processed_text[text_start] != ' ')
+			{
 				start_of_line = false;
+			}
 		}
 	}
 }
@@ -1151,9 +1152,10 @@ bool CL_CSSInlineLayout::is_empty_line(CL_CSSInlinePosition start, CL_CSSInlineP
 			if (text->processed_text.substr(text_start, text_end - text_start).find_first_not_of(' ') != CL_String::npos)
 				return false;
 		}
-		else if (cur.box->layout_node && (cur.box->layout_node->is_replaced() || cur.box->layout_node->get_element_node()->is_inline_block_level()))
+		else if (cur.box->layout_node && !cur.box->layout_node->get_element_node()->is_float())
 		{
-			return false;
+			if (!cur.box->layout_node->is_empty())
+				return false;
 		}
 
 		if (cur.box == end.box)

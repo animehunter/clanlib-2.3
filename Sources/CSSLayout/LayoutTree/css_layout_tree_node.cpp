@@ -742,6 +742,11 @@ void CL_CSSLayoutTreeNode::layout_formatting_root_helper(CL_GraphicContext &gc, 
 
 void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy)
 {
+/*	if (element_node->name.find("head") != CL_String::npos)
+	{
+		Sleep(1);
+	}*/
+
 	CL_CSSActualValue old_x = cursor.x;
 	CL_CSSUsedValue old_relative_x = cursor.relative_x;
 	CL_CSSUsedValue old_relative_y = cursor.relative_y;
@@ -789,12 +794,7 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCurs
 	content_box.top = cursor.y+cursor.get_total_margin();
 	content_box.right = content_box.left+cl_used_to_actual(width.value);
 	content_box.bottom = content_box.top+cl_used_to_actual(height.value);
-/*
-	if (element_node->name.find("foo") != CL_String::npos)
-	{
-		Sleep(1);
-	}
-*/
+
 	layout_content(gc, cursor, strategy);
 
 	if (height.use_content)
@@ -922,7 +922,7 @@ bool CL_CSSLayoutTreeNode::add_margin_top(CL_CSSLayoutCursor &cursor)
 		if (min_height > 0.0f || border.bottom > 0.0f || padding.bottom > 0.0f)
 			return true;
 
-		cursor.add_margin(margin.top + margin.bottom); // Margins are adjoining
+		cursor.add_margin(margin.bottom); // Margins are adjoining
 		return false;
 	}
 }
