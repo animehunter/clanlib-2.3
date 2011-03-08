@@ -33,7 +33,6 @@ class CL_CSSBoxElement;
 class CL_CSSBoxObject;
 class CL_CSSBoxText;
 class CL_CSSLayoutTreeNode;
-class CL_CSSBlockLayout;
 class CL_CSSInlineLayout;
 class CL_CSSInlineGeneratedBox;
 class CL_CSSReplacedLayout;
@@ -59,7 +58,6 @@ public:
 
 private:
 	CL_CSSLayoutTreeNode *create_layout(CL_CSSBoxElement *element);
-	CL_CSSBlockLayout *create_block_level_layout(CL_CSSBoxElement *element);
 	CL_CSSInlineLayout *create_inline_level_layout(CL_CSSBoxElement *element);
 	CL_CSSInlineGeneratedBox *create_inline_generated_box(CL_CSSBoxNode *cur);
 	CL_CSSReplacedLayout *create_replaced_level_layout(CL_CSSBoxObject *object);

@@ -28,8 +28,6 @@
 
 #pragma once
 
-class CL_CSSBlockLayout;
-
 class CL_CSSTableColumn
 {
 public:

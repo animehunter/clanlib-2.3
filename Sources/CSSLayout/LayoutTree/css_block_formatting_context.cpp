@@ -28,7 +28,6 @@
 
 #include "CSSLayout/precomp.h"
 #include "css_block_formatting_context.h"
-#include "css_block_layout.h"
 #include "css_layout_cursor.h"
 
 CL_CSSBlockFormattingContext::CL_CSSBlockFormattingContext(CL_CSSBlockFormattingContext *parent)

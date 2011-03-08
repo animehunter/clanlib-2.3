@@ -33,7 +33,6 @@
 #include "../BoxTree/css_box_text.h"
 #include "../BoxTree/css_box_node_walker.h"
 #include "css_layout_tree_node.h"
-#include "css_block_layout.h"
 #include "css_inline_layout.h"
 #include "css_replaced_layout.h"
 #include "css_table_layout.h"
@@ -144,8 +143,8 @@ CL_CSSLayoutTreeNode *CL_CSSLayoutTree::create_layout(CL_CSSBoxElement *element)
 			return create_replaced_level_layout(dynamic_cast<CL_CSSBoxObject*>(element));
 		else if (element->is_table() || element->is_inline_table())
 			return create_table_level_layout(element);
-		else if (element->has_block_level_children())
-			return create_block_level_layout(element);
+		//else if (element->has_block_level_children())
+		//	return create_block_level_layout(element);
 		else
 			return create_inline_level_layout(element);
 	}
@@ -193,24 +192,6 @@ CL_CSSTableLayout *CL_CSSLayoutTree::create_table_level_layout(CL_CSSBoxElement 
 CL_CSSReplacedLayout *CL_CSSLayoutTree::create_replaced_level_layout(CL_CSSBoxObject *object)
 {
 	return new CL_CSSReplacedLayout(object);
-}
-
-CL_CSSBlockLayout *CL_CSSLayoutTree::create_block_level_layout(CL_CSSBoxElement *element)
-{
-	CL_CSSBlockLayout *layout = new CL_CSSBlockLayout(element);
-	CL_CSSBoxNode *cur = element->get_first_child();
-	while (cur)
-	{
-		CL_CSSBoxElement *child_element = dynamic_cast<CL_CSSBoxElement*>(cur);
-		if (child_element && !child_element->is_display_none())
-		{
-			CL_CSSLayoutTreeNode *child_layout = create_layout(child_element);
-			if (child_layout)
-				layout->children.push_back(child_layout);
-		}
-		cur = cur->get_next_sibling();
-	}
-	return layout;
 }
 
 CL_CSSInlineLayout *CL_CSSLayoutTree::create_inline_level_layout(CL_CSSBoxElement *element)

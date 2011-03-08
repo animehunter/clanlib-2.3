@@ -79,31 +79,47 @@ void CL_CSSInlineLayout::set_component_geometry()
 
 int CL_CSSInlineLayout::get_first_line_baseline()
 {
-/*
-	if (line_boxes.empty())
+	for (size_t i = 0; i < lines.size(); i++)
 	{
-		return -1;
+		CL_CSSInlineGeneratedBox *cur = lines[i];
+		if (cur->layout_node)
+		{
+			int baseline = cur->layout_node->get_first_line_baseline();
+			if (baseline != -1)
+			{
+				if (cur->layout_node->is_formatting_context_root())
+					baseline += cur->layout_node->get_formatting_context()->get_local_y();
+				return baseline;
+			}
+		}
+		else
+		{
+			return cur->y + cur->ascent;
+		}
 	}
-	else
-	{
-		return line_boxes.front().box.top + line_boxes.front().ascent;
-	}
-*/
 	return -1;
 }
 
 int CL_CSSInlineLayout::get_last_line_baseline()
 {
-/*
-	if (line_boxes.empty())
+	for (size_t i = lines.size(); i > 0; i++)
 	{
-		return -1;
+		CL_CSSInlineGeneratedBox *cur = lines[i-1];
+		if (cur->layout_node)
+		{
+			int baseline = cur->layout_node->get_last_line_baseline();
+			if (baseline != -1)
+			{
+				if (cur->layout_node->is_formatting_context_root())
+					baseline += cur->layout_node->get_formatting_context()->get_local_y();
+				return baseline;
+			}
+		}
+		else
+		{
+			return cur->y + cur->ascent;
+		}
 	}
-	else
-	{
-		return line_boxes.back().box.top + line_boxes.back().ascent;
-	}
-*/
 	return -1;
 }
 
@@ -175,7 +191,59 @@ void CL_CSSInlineLayout::calculate_content_top_down_sizes()
 
 bool CL_CSSInlineLayout::add_content_margin_top(CL_CSSLayoutCursor &cursor)
 {
-	return !is_empty();
+	bool start_of_line = true;
+	CL_CSSInlineGeneratedBox *cur = boxes.first_child;
+	while (cur)
+	{
+		CL_CSSBoxNode *node = cur->box_node;
+		CL_CSSBoxText *text = dynamic_cast<CL_CSSBoxText*>(node);
+		if (text)
+		{
+			size_t text_start = 0;
+			size_t text_end = text->processed_text.length();
+			adjust_start_of_line_text_range(text, text_start, text_end, start_of_line);
+
+			if (text->processed_text.substr(text_start, text_end - text_start).find_first_not_of(' ') != CL_String::npos)
+				return true;
+		}
+		else if (cur->layout_node &&
+			!cur->layout_node->get_element_node()->is_float() &&
+			!cur->layout_node->get_element_node()->is_absolute() &&
+			!cur->layout_node->get_element_node()->is_fixed())
+		{
+			if (cur->layout_node->add_margin_top(cursor))
+				return true;
+		}
+
+		if (cur->first_child)
+		{
+			cur = cur->first_child;
+		}
+		else if (cur->next_sibling)
+		{
+			cur = cur->next_sibling;
+		}
+		else
+		{
+			while (cur && !cur->next_sibling)
+			{
+				cur = cur->parent;
+			}
+			if (cur)
+			{
+				cur = cur->next_sibling;
+			}
+		}
+	}
+
+	if (height.use_content)
+	{
+		return false;
+	}
+	else
+	{
+		return height.value != 0.0f;
+	}
 }
 
 void CL_CSSInlineLayout::set_content_expanding_width()
@@ -186,7 +254,16 @@ void CL_CSSInlineLayout::set_content_expanding_width()
 		if (cur->layout_node)
 		{
 			cur->layout_node->containing_width.value = width.value;
-			cur->layout_node->set_expanding_width(width.value - cur->layout_node->margin.left - cur->layout_node->margin.right - cur->layout_node->border.left - cur->layout_node->border.right - cur->layout_node->padding.left - cur->layout_node->padding.right);
+			CL_CSSActualValue child_width =
+				cl_used_to_actual(width.value) -
+				cl_used_to_actual(cur->layout_node->margin.left) -
+				cl_used_to_actual(cur->layout_node->margin.right) -
+				cl_used_to_actual(cur->layout_node->border.left) -
+				cl_used_to_actual(cur->layout_node->border.right) -
+				cl_used_to_actual(cur->layout_node->padding.left) -
+				cl_used_to_actual(cur->layout_node->padding.right);
+
+			cur->layout_node->set_expanding_width(cl_actual_to_used(child_width));
 		}
 
 		if (cur->first_child)
@@ -213,6 +290,61 @@ void CL_CSSInlineLayout::set_content_expanding_width()
 
 bool CL_CSSInlineLayout::is_empty() const
 {
+	bool start_of_line = true;
+	CL_CSSInlineGeneratedBox *cur = boxes.first_child;
+	while (cur)
+	{
+		CL_CSSBoxNode *node = cur->box_node;
+		CL_CSSBoxText *text = dynamic_cast<CL_CSSBoxText*>(node);
+		if (text)
+		{
+			size_t text_start = 0;
+			size_t text_end = text->processed_text.length();
+			adjust_start_of_line_text_range(text, text_start, text_end, start_of_line);
+
+			if (text->processed_text.substr(text_start, text_end - text_start).find_first_not_of(' ') != CL_String::npos)
+				return false;
+		}
+		else if (cur->layout_node &&
+			!cur->layout_node->get_element_node()->is_float() &&
+			!cur->layout_node->get_element_node()->is_absolute() &&
+			!cur->layout_node->get_element_node()->is_fixed())
+		{
+			if (!cur->layout_node->is_empty())
+				return false;
+		}
+
+		if (cur->first_child)
+		{
+			cur = cur->first_child;
+		}
+		else if (cur->next_sibling)
+		{
+			cur = cur->next_sibling;
+		}
+		else
+		{
+			while (cur && !cur->next_sibling)
+			{
+				cur = cur->parent;
+			}
+			if (cur)
+			{
+				cur = cur->next_sibling;
+			}
+		}
+	}
+
+	if (height.use_content)
+	{
+		return true;
+	}
+	else
+	{
+		return height.value == 0.0f;
+	}
+
+/*
 	if (height.use_content)
 	{
 		return is_empty_line(begin(), end());
@@ -220,7 +352,7 @@ bool CL_CSSInlineLayout::is_empty() const
 	else
 	{
 		return height.value == 0.0f;
-	}
+	}*/
 }
 
 void CL_CSSInlineLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy)
@@ -242,6 +374,24 @@ void CL_CSSInlineLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCurso
 			{
 				generate_block_line(line_start_pos);
 				layout_block_line(lines.back(), gc, cursor, strategy);
+			}
+			else
+			{
+				// We layout absolute or fixed elements later since they may rely on the calculated height of the normal flow.
+
+				layout_node->static_position_parent = this;
+				layout_node->static_position.left = cl_actual_to_used(cursor.x);
+				layout_node->static_position.top = cl_actual_to_used(cursor.y + cursor.get_total_margin());
+				layout_node->static_position.right = layout_node->static_position.left;
+				layout_node->static_position.bottom = layout_node->static_position.top;
+				layout_node->relative_x = relative_x + layout_node->get_local_relative_x();
+				layout_node->relative_y = relative_y + layout_node->get_local_relative_y();
+				layout_node->calc_preferred(gc, cursor.resources);
+				layout_node->calculate_top_down_sizes();
+				layout_node->set_expanding_width(layout_node->preferred_width);
+				layout_node->layout_formatting_root_helper(gc, cursor.resources, normal_strategy);
+				layout_node->static_position.right = layout_node->static_position.left + layout_node->width.value;
+				layout_node->static_position.bottom = layout_node->static_position.top + layout_node->height.value;
 			}
 
 			if (line_start_pos == linebreak_opportunities[next_linebreak_opportunity].pos)
@@ -362,6 +512,9 @@ void CL_CSSInlineLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCurso
 		if (!lines[i]->is_block_line())
 			align_line(lines[i], gc, cursor.resources, last_line);
 	}
+
+	if (lines.empty() && height.value > 0.0f)
+		cursor.apply_margin();
 }
 
 void CL_CSSInlineLayout::layout_absolute_and_fixed_content(CL_GraphicContext &gc, CL_CSSResourceCache *resources, CL_Rect containing_block, const CL_Size &viewport_size)
@@ -424,7 +577,7 @@ void CL_CSSInlineLayout::render_layer_background(CL_GraphicContext &gc, CL_CSSRe
 			CL_CSSBoxElement *element = cur->box_node ? dynamic_cast<CL_CSSBoxElement*>(cur->box_node) : 0;
 			if (cur->layout_node)
 			{
-				cur->layout_node->render_layer_background(gc, resources, false);
+				//cur->layout_node->render_layer_background(gc, resources, false);
 			}
 			else if (element)
 			{
@@ -493,6 +646,7 @@ void CL_CSSInlineLayout::render_layer_non_inline(CL_GraphicContext &gc, CL_CSSRe
 				bool is_float = object_node->get_element_node()->is_float();
 				if (is_same_stacking_context && !is_positioned && !is_float)
 				{
+					object_node->render_layer_background(gc, resources, false);
 					object_node->render_layer_non_inline(gc, resources);
 				}
 			}
@@ -522,13 +676,50 @@ void CL_CSSInlineLayout::render_layer_non_inline(CL_GraphicContext &gc, CL_CSSRe
 
 void CL_CSSInlineLayout::render_layer_floats(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
 {
-	for (size_t i = 0; i < floats.size(); i++)
+	CL_CSSInlineGeneratedBox *cur = boxes.first_child;
+	while (cur)
 	{
-		floats[i]->render_layer_background(gc, resources, false);
-		floats[i]->render_layer_non_inline(gc, resources);
-		floats[i]->render_layer_floats(gc, resources);
-		floats[i]->render_layer_inline(gc, resources);
-		floats[i]->render_layer_positioned(gc, resources);
+		if (cur->layout_node)
+		{
+			CL_CSSLayoutTreeNode *object_node = cur->layout_node;
+			bool is_same_stacking_context = (stacking_context == object_node->get_stacking_context());
+			bool is_positioned = (object_node->get_element_node()->computed_properties.position.type != CL_CSSBoxPosition::type_static);
+			bool is_float = object_node->get_element_node()->is_float();
+			if (is_same_stacking_context && !is_positioned)
+			{
+				if (is_float)
+				{
+					object_node->render_layer_background(gc, resources, false);
+					object_node->render_layer_non_inline(gc, resources);
+					object_node->render_layer_floats(gc, resources);
+					object_node->render_layer_inline(gc, resources);
+				}
+				else
+				{
+					object_node->render_layer_floats(gc, resources);
+				}
+			}
+		}
+
+		if (cur->first_child)
+		{
+			cur = cur->first_child;
+		}
+		else if (cur->next_sibling)
+		{
+			cur = cur->next_sibling;
+		}
+		else
+		{
+			while (cur && !cur->next_sibling)
+			{
+				cur = cur->parent;
+			}
+			if (cur)
+			{
+				cur = cur->next_sibling;
+			}
+		}
 	}
 }
 
@@ -588,52 +779,49 @@ void CL_CSSInlineLayout::render_layer_inline(CL_GraphicContext &gc, CL_CSSResour
 
 void CL_CSSInlineLayout::render_layer_positioned(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
 {
-	for (size_t i = 0; i < lines.size(); i++)
+	CL_CSSInlineGeneratedBox *cur = boxes.first_child;
+	while (cur)
 	{
-		CL_CSSInlineGeneratedBox *cur = lines[i];
-		while (cur)
+		if (cur->layout_node)
 		{
-			if (cur->layout_node)
+			CL_CSSLayoutTreeNode *object_node = cur->layout_node;
+			bool is_same_stacking_context = (stacking_context == object_node->get_stacking_context());
+			bool is_positioned = (object_node->get_element_node()->computed_properties.position.type != CL_CSSBoxPosition::type_static);
+			int level = object_node->get_stacking_context()->get_level();
+			if (is_same_stacking_context)
 			{
-				CL_CSSLayoutTreeNode *object_node = cur->layout_node;
-				bool is_same_stacking_context = (stacking_context == object_node->get_stacking_context());
-				bool is_positioned = (object_node->get_element_node()->computed_properties.position.type != CL_CSSBoxPosition::type_static);
-				int level = object_node->get_stacking_context()->get_level();
-				if (is_same_stacking_context)
+				if (is_positioned)
 				{
-					if (is_positioned)
-					{
-						object_node->render_layer_background(gc, resources, false);
-						object_node->render_layer_non_inline(gc, resources);
-						object_node->render_layer_floats(gc, resources);
-						object_node->render_layer_inline(gc, resources);
-					}
-					object_node->render_layer_positioned(gc, resources);
+					object_node->render_layer_background(gc, resources, false);
+					object_node->render_layer_non_inline(gc, resources);
+					object_node->render_layer_floats(gc, resources);
+					object_node->render_layer_inline(gc, resources);
 				}
-				else if (!is_same_stacking_context && level == 0)
-				{
-					object_node->get_stacking_context()->render(gc, resources);
-				}
+				object_node->render_layer_positioned(gc, resources);
 			}
+			else if (!is_same_stacking_context && level == 0)
+			{
+				object_node->get_stacking_context()->render(gc, resources);
+			}
+		}
 
-			if (cur->first_child)
+		if (cur->first_child)
+		{
+			cur = cur->first_child;
+		}
+		else if (cur->next_sibling)
+		{
+			cur = cur->next_sibling;
+		}
+		else
+		{
+			while (cur && !cur->next_sibling)
 			{
-				cur = cur->first_child;
+				cur = cur->parent;
 			}
-			else if (cur->next_sibling)
+			if (cur)
 			{
 				cur = cur->next_sibling;
-			}
-			else
-			{
-				while (cur && !cur->next_sibling)
-				{
-					cur = cur->parent;
-				}
-				if (cur)
-				{
-					cur = cur->next_sibling;
-				}
 			}
 		}
 	}
@@ -1440,9 +1628,11 @@ int CL_CSSInlineLayout::find_word_count(CL_CSSInlineGeneratedBox *line)
 
 void CL_CSSInlineLayout::layout_block_line(CL_CSSInlineGeneratedBox *line, CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy)
 {
-	if (line->layout_node->get_element_node()->is_overflow_visible())
+	if (line->layout_node->get_element_node()->is_overflow_visible() && !line->layout_node->get_element_node()->is_table() && !line->layout_node->is_replaced())
 	{
 		line->layout_node->layout_normal(gc, cursor, strategy);
+		if (strategy != normal_strategy && width.expanding)
+			width.value = cl_max(width.value, cl_actual_to_used(line->layout_node->get_block_width()));
 	}
 	else
 	{
@@ -1458,10 +1648,9 @@ void CL_CSSInlineLayout::layout_block_line(CL_CSSInlineGeneratedBox *line, CL_Gr
 			box_y = cl_max(box_y, clear_right);
 		}
 
-		line->layout_node->calculate_top_down_sizes();
 		if (strategy == normal_strategy)
 		{
-			int available_width = formatting_context->find_line_box(cursor.x, cursor.x + cl_used_to_actual(width.value), box_y, 1, cl_used_to_actual(line->layout_node->width.value)).get_width();
+			CL_CSSActualValue available_width = formatting_context->find_line_box(cursor.x, cursor.x + cl_used_to_actual(width.value), box_y, 1, cl_used_to_actual(line->layout_node->width.value)).get_width();
 			line->layout_node->set_expanding_width(cl_actual_to_used(available_width));
 		}
 		line->layout_node->layout_formatting_root_helper(gc, cursor.resources, strategy);
@@ -1470,47 +1659,21 @@ void CL_CSSInlineLayout::layout_block_line(CL_CSSInlineGeneratedBox *line, CL_Gr
 		float_box.translate(cursor.x, box_y);
 		if (strategy != normal_strategy && width.expanding)
 		{
-			if (line->layout_node->get_element_node()->computed_properties.float_box.type == CL_CSSBoxFloat::type_left)
-			{
-				float_box = formatting_context->float_left(float_box, cursor.x+1000000);
-			}
-			else if (line->layout_node->get_element_node()->computed_properties.float_box.type == CL_CSSBoxFloat::type_right)
-			{
-				float_box = formatting_context->float_right_shrink_to_fit(float_box, cursor.x+1000000);
-			}
-			else
-			{
-				float_box = formatting_context->place_left(float_box, cursor.x+1000000);
-				cursor.apply_margin();
-				cursor.y = float_box.bottom;
-			}
+			float_box = formatting_context->place_left(float_box, cursor.x+1000000);
+			cursor.apply_margin();
+			cursor.y = float_box.bottom;
 		}
 		else
 		{
-			if (line->layout_node->get_element_node()->computed_properties.float_box.type == CL_CSSBoxFloat::type_left)
-			{
-				float_box = formatting_context->float_left(float_box, cursor.x+cl_used_to_actual(width.value));
-			}
-			else if (line->layout_node->get_element_node()->computed_properties.float_box.type == CL_CSSBoxFloat::type_right)
-			{
-				float_box.translate(width.value-float_box.get_width(), 0);
-				float_box = formatting_context->float_right(float_box, cursor.x+cl_used_to_actual(width.value));
-			}
-			else
-			{
-				float_box = formatting_context->place_left(float_box, cursor.x+cl_used_to_actual(width.value));
-				cursor.apply_margin();
-				cursor.y = float_box.bottom;
-			}
+			float_box = formatting_context->place_left(float_box, cursor.x+cl_used_to_actual(width.value));
+			cursor.apply_margin();
+			cursor.y = float_box.bottom;
 		}
 
 		if (strategy != normal_strategy && width.expanding)
 			width.value = cl_max(width.value, cl_actual_to_used(float_box.right - cursor.x));
 
 		line->layout_node->set_root_block_position(float_box.left, float_box.top);
-
-		cursor.apply_margin();
-		cursor.y = float_box.bottom;
 	}
 }
 

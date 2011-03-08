@@ -32,7 +32,6 @@
 #include "css_table_size_grid.h"
 
 class CL_CSSBoxElement;
-class CL_CSSBlockLayout;
 class CL_CSSTableColumn;
 class CL_CSSTableRow;
 class CL_CSSBoxText;

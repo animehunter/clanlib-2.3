@@ -36,7 +36,6 @@ class CL_CSSBoxNode;
 class CL_CSSBoxProperties;
 class CL_CSSBoxLength;
 class CL_CSSLayoutTreeNode;
-class CL_CSSBlockLayout;
 class CL_CSSInlineLayout;
 class CL_CSSLayoutCursor;
 class CL_CSSBlockFormattingContext;
