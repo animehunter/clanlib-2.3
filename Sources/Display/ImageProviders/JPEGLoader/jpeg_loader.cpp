@@ -269,6 +269,7 @@ void CL_JPEGLoader::process_sos_sequential(CL_JPEGStartOfScan &start_of_scan, st
 			for (size_t i = 0; i < last_dc_values.size(); i++)
 				last_dc_values[i] = 0;
 			bit_reader.reset();
+			eobrun = 0;
 		}
 		restart_counter++;
 
@@ -339,6 +340,7 @@ void CL_JPEGLoader::process_sos_progressive(CL_JPEGStartOfScan &start_of_scan, s
 				for (size_t i = 0; i < last_dc_values.size(); i++)
 					last_dc_values[i] = 0;
 				bit_reader.reset();
+				eobrun = 0;
 			}
 			restart_counter++;
 
@@ -353,22 +355,18 @@ void CL_JPEGLoader::process_sos_progressive(CL_JPEGStartOfScan &start_of_scan, s
 				{
 					short *dct = component_dcts[c_sof].get(mcu_block*scale_x*scale_y+i);
 
-					for (int j = start_of_scan.start_dct_coefficient; j <= start_of_scan.end_dct_coefficient; j++)
+					if (start_of_scan.preceding_point_transform == 0)
 					{
-						if (start_of_scan.preceding_point_transform == 0)
-						{
-							unsigned int code = CL_JPEGHuffmanDecoder::decode(bit_reader, dc_table);
-							if (code != huffman_eob)
-								dct[0] = CL_JPEGHuffmanDecoder::decode_number(bit_reader, code);
-							dct[0] <<= start_of_scan.point_transform;
-
-							dct[0] += last_dc_values[c_sof];
-							last_dc_values[c_sof] = dct[0];
-						}
-						else
-						{
-							dct[0] |= (bit_reader.get_bit() << start_of_scan.point_transform);
-						}
+						short s = CL_JPEGHuffmanDecoder::decode(bit_reader, dc_table);
+						if (s != huffman_eob)
+							s = CL_JPEGHuffmanDecoder::decode_number(bit_reader, s);
+						s += last_dc_values[c_sof];
+						last_dc_values[c_sof] = s;
+						dct[0] = (s << start_of_scan.point_transform);
+					}
+					else
+					{
+						dct[0] |= (bit_reader.get_bit() << start_of_scan.point_transform);
 					}
 				}
 			}
@@ -376,8 +374,12 @@ void CL_JPEGLoader::process_sos_progressive(CL_JPEGStartOfScan &start_of_scan, s
 	}
 	else
 	{
-		// To do: Implement restart_interval for progressive scans.
-
+		/*if (start_of_scan.components[0].component_selector != 1)
+		{
+			char buffer[16*1024];
+			while (reader.read_entropy_data(buffer, 16*1024) > 0);
+			return;
+		}*/
 		verify_ac_table_selector(start_of_scan);
 
 		int c_sof = component_to_sof[0];
@@ -385,9 +387,33 @@ void CL_JPEGLoader::process_sos_progressive(CL_JPEGStartOfScan &start_of_scan, s
 		int scale_x = start_of_frame.components[c_sof].horz_sampling_factor;
 		int scale_y = start_of_frame.components[c_sof].vert_sampling_factor;
 
-		for (int i = 0; i < scale_x * scale_y * mcu_width * mcu_height; i++)
+		int width_in_blocks = (start_of_frame.width * scale_x + (mcu_x * 8-1)) / (mcu_x * 8);
+		int height_in_blocks = (start_of_frame.height * scale_y + (mcu_y * 8-1)) / (mcu_y * 8);
+
+		for (int i = 0; i < width_in_blocks * height_in_blocks; i++)
 		{
-			short *dct = component_dcts[c_sof].get(i);
+			if (restart_interval != 0 && restart_counter == restart_interval)
+			{
+				CL_JPEGMarker marker = reader.read_marker();
+				if (marker < marker_rst0 || marker > marker_rst7)
+				{
+					throw CL_Exception("Restart marker missing between JPEG entropy data");
+				}
+				restart_counter = 0;
+				for (size_t i = 0; i < last_dc_values.size(); i++)
+					last_dc_values[i] = 0;
+				bit_reader.reset();
+				eobrun = 0;
+			}
+			restart_counter++;
+
+			int x = (i%width_in_blocks);
+			int y = (i/width_in_blocks);
+			int mcu_block_x = x / scale_x;
+			int mcu_block_y = y / scale_y;
+			int mcu_block = mcu_block_x + mcu_block_y * mcu_width;
+			int index = mcu_block * scale_x * scale_y + x%scale_x + (y%scale_y) * scale_x;
+			short *dct = component_dcts[c_sof].get(index);
 			if (start_of_scan.preceding_point_transform == 0)
 			{
 				if (eobrun > 0)
@@ -401,7 +427,14 @@ void CL_JPEGLoader::process_sos_progressive(CL_JPEGStartOfScan &start_of_scan, s
 						unsigned int code = CL_JPEGHuffmanDecoder::decode(bit_reader, ac_table);
 						unsigned int r = (code>>4);
 						unsigned int s = code&0x0f;
-						if (s == 0 && r >= huffman_eob0 && r <= huffman_eob14)
+						if (s)
+						{
+							j += r;
+							short v = CL_JPEGHuffmanDecoder::decode_number(bit_reader, s) << start_of_scan.point_transform;
+							if (j < 64)
+								dct[zigzag_map[j]] = v;
+						}
+						else if (r >= huffman_eob0 && r <= huffman_eob14)
 						{
 							eobrun = (1 << r);
 							if (r > 0)
@@ -409,18 +442,9 @@ void CL_JPEGLoader::process_sos_progressive(CL_JPEGStartOfScan &start_of_scan, s
 							eobrun--;
 							break;
 						}
-						else if (s == 0 && r == huffman_zrl)
+						else if (r == huffman_zrl)
 						{
 							j += 15;
-						}
-						else
-						{
-							j += r;
-							if (j <= start_of_scan.end_dct_coefficient)
-							{
-								short v = CL_JPEGHuffmanDecoder::decode_number(bit_reader, s) << start_of_scan.point_transform;
-								dct[zigzag_map[j]] += v;
-							}
 						}
 					}
 				}
@@ -437,45 +461,44 @@ void CL_JPEGLoader::process_sos_progressive(CL_JPEGStartOfScan &start_of_scan, s
 					{
 						unsigned int code = CL_JPEGHuffmanDecoder::decode(bit_reader, ac_table);
 						unsigned int r = (code>>4);
-						unsigned int s = code&0x0f;
-						if (s == 0 && r >= huffman_eob0 && r <= huffman_eob14)
+						int s = code&0x0f;
+
+						if (s)
+						{
+							s = bit_reader.get_bit() ? p1 : m1;
+						}
+						else if (r != huffman_zrl)
 						{
 							eobrun = (1 << r);
 							if (r > 0)
 								eobrun += bit_reader.get_bits(r);
 							break;
 						}
-						else
+
+						do 
 						{
-							short v = 0;
-							if (!(s == 0 && r == huffman_zrl))
-								v = CL_JPEGHuffmanDecoder::decode_number(bit_reader, 1) << start_of_scan.point_transform;
-
-							do
+							if (dct[zigzag_map[j]] == 0)
 							{
-								if (dct[zigzag_map[j]] == 0)
-								{
-									if (r == 0)
-										break;
-									r--;
-								}
-								else if (bit_reader.get_bit())
-								{
-									if ((dct[zigzag_map[j]] & p1) == 0)
-									{
-										if (dct[zigzag_map[j]] >= 0)
-											dct[zigzag_map[j]] += p1;
-										else
-											dct[zigzag_map[j]] += m1;
-									}
-								}
-								j++;
-							} while (j <= start_of_scan.end_dct_coefficient);
-
-							if (s && j <= start_of_scan.end_dct_coefficient)
-							{
-								dct[zigzag_map[j]] = v;
+								if (r == 0)
+									break;
+								r--;
 							}
+							else if (bit_reader.get_bit())
+							{
+								if ((dct[zigzag_map[j]] & p1) == 0)
+								{
+									if (dct[zigzag_map[j]] >= 0)
+										dct[zigzag_map[j]] += p1;
+									else
+										dct[zigzag_map[j]] += m1;
+								}
+							}
+							j++;
+						} while (j <= start_of_scan.end_dct_coefficient);
+
+						if (s && j < 64)
+						{
+							dct[zigzag_map[j]] = s;
 						}
 					}
 				}
@@ -484,14 +507,17 @@ void CL_JPEGLoader::process_sos_progressive(CL_JPEGStartOfScan &start_of_scan, s
 				{
 					for (; j <= start_of_scan.end_dct_coefficient; j++)
 					{
-						if (dct[zigzag_map[j]] != 0 && bit_reader.get_bit())
+						if (dct[zigzag_map[j]] != 0)
 						{
-							if ((dct[zigzag_map[j]] & p1) == 0)
+							if (bit_reader.get_bit())
 							{
-								if (dct[zigzag_map[j]] >= 0)
-									dct[zigzag_map[j]] += p1;
-								else
-									dct[zigzag_map[j]] += m1;
+								if ((dct[zigzag_map[j]] & p1) == 0)
+								{
+									if (dct[zigzag_map[j]] >= 0)
+										dct[zigzag_map[j]] += p1;
+									else
+										dct[zigzag_map[j]] += m1;
+								}
 							}
 						}
 					}

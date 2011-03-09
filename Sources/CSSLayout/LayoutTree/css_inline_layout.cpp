@@ -1630,7 +1630,7 @@ int CL_CSSInlineLayout::find_word_count(CL_CSSInlineGeneratedBox *line)
 
 void CL_CSSInlineLayout::layout_block_line(CL_CSSInlineGeneratedBox *line, CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy)
 {
-	if (/*line->layout_node->get_element_node()->is_overflow_visible() && */!line->layout_node->get_element_node()->is_table() && !line->layout_node->is_replaced())
+	if (line->layout_node->get_element_node()->is_overflow_visible() && !line->layout_node->get_element_node()->is_table() && !line->layout_node->is_replaced())
 	{
 		line->layout_node->layout_normal(gc, cursor, strategy);
 		if (strategy != normal_strategy && width.expanding)

@@ -50,26 +50,9 @@ short CL_JPEGHuffmanDecoder::decode_number(CL_JPEGBitReader &reader, int length)
 {
 	if (length == 0)
 		return 0;
-	unsigned int v = reader.get_bit();
-	if (v == 0)
-	{
-		v = 0xffffffff;
-		v <<= 1;
-		for (int i = 1; i < length; i++)
-		{
-			v <<= 1;
-			v |= reader.get_bit();
-		}
-
-		return ((short)v)+1;
-	}
+	int v = reader.get_bits(length);
+	if ((v) < (1 << ((length) - 1)))
+		return (v) + (((-1) << (length)) + 1);
 	else
-	{
-		for (int i = 1; i < length; i++)
-		{
-			v <<= 1;
-			v |= reader.get_bit();
-		}
 		return v;
-	}
 }
