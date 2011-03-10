@@ -49,7 +49,7 @@ CL_CSSReplacedLayout::~CL_CSSReplacedLayout()
 {
 }
 
-void CL_CSSReplacedLayout::calculate_top_down_sizes()
+void CL_CSSReplacedLayout::calculate_top_down_widths(LayoutStrategy strategy)
 {
 	margin.left = get_css_margin_width(element_node->computed_properties.margin_width_left, containing_width);
 	margin.right = get_css_margin_width(element_node->computed_properties.margin_width_right, containing_width);
@@ -149,7 +149,10 @@ void CL_CSSReplacedLayout::calculate_top_down_sizes()
 			}
 		}
 	}
+}
 
+void CL_CSSReplacedLayout::calculate_top_down_heights()
+{
 	margin.top = get_css_margin_height(element_node->computed_properties.margin_width_top, containing_height);
 	margin.bottom = get_css_margin_height(element_node->computed_properties.margin_width_bottom, containing_height);
 	border.top = element_node->computed_properties.border_width_top.length.value;

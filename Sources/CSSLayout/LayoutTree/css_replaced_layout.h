@@ -50,7 +50,8 @@ public:
 	int get_last_line_baseline();
 
 	bool is_replaced() const { return true; }
-	void calculate_top_down_sizes();
+	void calculate_top_down_widths(LayoutStrategy strategy);
+	void calculate_top_down_heights();
 
 private:
 	void prepare_children();

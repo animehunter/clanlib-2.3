@@ -74,7 +74,7 @@ void CL_CSSTableLayout::add_cell(CL_CSSLayoutTreeNode *cell_layout)
 	next_column++;
 }
 
-void CL_CSSTableLayout::calculate_content_top_down_sizes()
+void CL_CSSTableLayout::calculate_content_top_down_heights()
 {
 	for (size_t row = 0; row < rows.size(); row++)
 	{
@@ -82,9 +82,8 @@ void CL_CSSTableLayout::calculate_content_top_down_sizes()
 		{
 			if (columns[cell].rows.size() > row && columns[cell].rows[row])
 			{
-				columns[cell].rows[row]->containing_width = width;
 				columns[cell].rows[row]->containing_height = height;
-				columns[cell].rows[row]->calculate_content_top_down_sizes();
+				columns[cell].rows[row]->calculate_content_top_down_heights();
 			}
 		}
 	}
@@ -496,11 +495,13 @@ void CL_CSSTableLayout::layout_cells(CL_GraphicContext & gc, CL_CSSLayoutCursor 
 			{
 				if (columns[cell].rows[row])
 				{
-					CL_CSSUsedValue width = columns[cell].cell_width - columns[cell].rows[row]->padding.left - columns[cell].rows[row]->padding.right;
+					CL_CSSUsedValue cell_content_width = columns[cell].cell_width - columns[cell].rows[row]->padding.left - columns[cell].rows[row]->padding.right;
 					if (element_node->computed_properties.border_collapse.type == CL_CSSBoxBorderCollapse::type_separate)
-						width -= columns[cell].rows[row]->border.left + columns[cell].rows[row]->border.right;
-					columns[cell].rows[row]->calculate_top_down_sizes();
-					columns[cell].rows[row]->set_expanding_width(width);
+						cell_content_width -= columns[cell].rows[row]->border.left + columns[cell].rows[row]->border.right;
+					columns[cell].rows[row]->containing_width = width;
+					columns[cell].rows[row]->calculate_top_down_widths(normal_strategy);
+					columns[cell].rows[row]->calculate_top_down_heights();
+					columns[cell].rows[row]->width.value = cell_content_width;
 					columns[cell].rows[row]->relative_x = relative_x + columns[cell].rows[row]->get_local_relative_x();
 					columns[cell].rows[row]->relative_y = relative_y + columns[cell].rows[row]->get_local_relative_y();
 					columns[cell].rows[row]->layout_formatting_root_helper(gc, cursor.resources, normal_strategy);

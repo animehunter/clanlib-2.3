@@ -104,7 +104,7 @@ CL_CSSUsedValue CL_CSSLayoutTreeNode::get_css_padding_height(const CL_CSSBoxPadd
 	}
 }
 
-void CL_CSSLayoutTreeNode::calculate_absolute_sizes()
+void CL_CSSLayoutTreeNode::calculate_absolute_widths(LayoutStrategy strategy)
 {
 	margin.left = get_css_margin_width(element_node->computed_properties.margin_width_left, containing_width);
 	margin.right = get_css_margin_width(element_node->computed_properties.margin_width_right, containing_width);
@@ -196,8 +196,14 @@ void CL_CSSLayoutTreeNode::calculate_absolute_sizes()
 		width.value = containing_width.value - border.left - border.right - padding.left - padding.right - margin.left - margin.right - left - right;
 	}
 
+	if (width.expanding && strategy == normal_strategy)
+	{
+		width.value = containing_width.value - margin.left - margin.right - border.left - border.right - padding.left - padding.right;
+	}
+}
 
-
+void CL_CSSLayoutTreeNode::calculate_absolute_heights()
+{
 	margin.top = get_css_margin_height(element_node->computed_properties.margin_width_top, containing_height);
 	margin.bottom = get_css_margin_height(element_node->computed_properties.margin_width_bottom, containing_height);
 	border.top = element_node->computed_properties.border_width_top.length.value;
@@ -281,7 +287,7 @@ void CL_CSSLayoutTreeNode::calculate_absolute_sizes()
 	}
 }
 
-void CL_CSSLayoutTreeNode::calculate_static_sizes()
+void CL_CSSLayoutTreeNode::calculate_static_widths(LayoutStrategy strategy)
 {
 	bool is_table_cell = element_node->computed_properties.display.type == CL_CSSBoxDisplay::type_table_cell;
 	bool is_float = element_node->computed_properties.float_box.type != CL_CSSBoxFloat::type_none;
@@ -332,7 +338,19 @@ void CL_CSSLayoutTreeNode::calculate_static_sizes()
 		width.expanding = false;
 	}
 
-	if (!width.expanding)
+	if (width.expanding)
+	{
+		if (strategy == normal_strategy)
+			width.value = cl_actual_to_used(
+				cl_used_to_actual(containing_width.value) -
+				cl_used_to_actual(margin.left) -
+				cl_used_to_actual(margin.right) -
+				cl_used_to_actual(border.left) -
+				cl_used_to_actual(border.right) -
+				cl_used_to_actual(padding.left) -
+				cl_used_to_actual(padding.right));
+	}
+	else
 	{
 		if (element_node->computed_properties.max_width.type == CL_CSSBoxMaxWidth::type_length)
 			width.value = cl_min(width.value, element_node->computed_properties.max_width.length.value);
@@ -369,7 +387,10 @@ void CL_CSSLayoutTreeNode::calculate_static_sizes()
 			}
 		}
 	}
+}
 
+void CL_CSSLayoutTreeNode::calculate_static_heights()
+{
 	margin.top = get_css_margin_height(element_node->computed_properties.margin_width_top, containing_height);
 	margin.bottom = get_css_margin_height(element_node->computed_properties.margin_width_bottom, containing_height);
 	border.top = element_node->computed_properties.border_width_top.length.value;
@@ -429,19 +450,32 @@ void CL_CSSLayoutTreeNode::calculate_static_sizes()
 	}
 }
 
-void CL_CSSLayoutTreeNode::calculate_top_down_sizes()
+void CL_CSSLayoutTreeNode::calculate_top_down_widths(LayoutStrategy strategy)
 {
 	if (element_node->computed_properties.position.type == CL_CSSBoxPosition::type_absolute ||
 		element_node->computed_properties.position.type == CL_CSSBoxPosition::type_fixed)
 	{
-		calculate_absolute_sizes();
+		calculate_absolute_widths(strategy);
 	}
 	else
 	{
-		calculate_static_sizes();
+		calculate_static_widths(strategy);
+	}
+}
+
+void CL_CSSLayoutTreeNode::calculate_top_down_heights()
+{
+	if (element_node->computed_properties.position.type == CL_CSSBoxPosition::type_absolute ||
+		element_node->computed_properties.position.type == CL_CSSBoxPosition::type_fixed)
+	{
+		calculate_absolute_heights();
+	}
+	else
+	{
+		calculate_static_heights();
 	}
 
-	calculate_content_top_down_sizes();
+	calculate_content_top_down_heights();
 }
 
 void CL_CSSLayoutTreeNode::set_root_block_position(int x, int y)
@@ -472,7 +506,8 @@ void CL_CSSLayoutTreeNode::calc_preferred(CL_GraphicContext &gc, CL_CSSResourceC
 {
 	if (!preferred_width_calculated)
 	{
-		calculate_top_down_sizes();
+		calculate_top_down_widths(preferred_strategy);
+		calculate_top_down_heights();
 		layout_formatting_root_helper(gc, resources, preferred_strategy);
 	}
 }
@@ -481,7 +516,8 @@ void CL_CSSLayoutTreeNode::calc_minimum(CL_GraphicContext &gc, CL_CSSResourceCac
 {
 	if (!min_width_calculated)
 	{
-		calculate_top_down_sizes();
+		calculate_top_down_widths(minimum_strategy);
+		calculate_top_down_heights();
 		layout_formatting_root_helper(gc, resources, minimum_strategy);
 	}
 }
@@ -492,7 +528,8 @@ void CL_CSSLayoutTreeNode::layout_absolute_or_fixed(CL_GraphicContext &gc, CL_CS
 	containing_width.expanding = false;
 	containing_height.value = containing_block.get_height();
 	containing_height.use_content = false;
-	calculate_top_down_sizes();
+	calculate_top_down_widths(normal_strategy);
+	calculate_top_down_heights();
 
 	CL_CSSUsedValue left = 0.0f;
 	if (element_node->computed_properties.left.type == CL_CSSBoxLeft::type_length)
@@ -666,8 +703,10 @@ void CL_CSSLayoutTreeNode::layout_shrink_to_fit(CL_GraphicContext &gc, CL_CSSRes
 	{
 		shrink_to_fit_width = preferred_width;
 	}
-	calculate_top_down_sizes();
-	set_expanding_width(shrink_to_fit_width);
+	calculate_top_down_widths(normal_strategy);
+	calculate_top_down_heights();
+	if (width.expanding)
+		width.value = shrink_to_fit_width;
 	layout_formatting_root_helper(gc, resources, normal_strategy);
 }
 
@@ -679,7 +718,8 @@ void CL_CSSLayoutTreeNode::layout_float(CL_GraphicContext &gc, CL_CSSResourceCac
 	}
 	else
 	{
-		calculate_top_down_sizes();
+		calculate_top_down_widths(strategy);
+		calculate_top_down_heights();
 		layout_formatting_root_helper(gc, resources, strategy);
 	}
 
@@ -688,15 +728,6 @@ void CL_CSSLayoutTreeNode::layout_float(CL_GraphicContext &gc, CL_CSSResourceCac
 	{
 		cl_debug_breakpoint = 0xdeadbabe;
 	}*/
-}
-
-void CL_CSSLayoutTreeNode::set_expanding_width(CL_CSSUsedValue expanding_width)
-{
-	if (width.expanding)
-	{
-		width.value = expanding_width;
-		set_content_expanding_width();
-	}
 }
 
 void CL_CSSLayoutTreeNode::layout_formatting_root_helper(CL_GraphicContext &gc, CL_CSSResourceCache *resources, LayoutStrategy strategy)
@@ -746,6 +777,8 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCurs
 	{
 		Sleep(1);
 	}*/
+
+	calculate_top_down_widths(strategy);
 
 	CL_CSSActualValue old_x = cursor.x;
 	CL_CSSUsedValue old_relative_x = cursor.relative_x;

@@ -56,7 +56,7 @@ public:
 	int get_first_line_baseline();
 	int get_last_line_baseline();
 
-	void calculate_content_top_down_sizes();
+	void calculate_content_top_down_heights();
 	CL_CSSLayoutHitTestResult hit_test(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, const CL_Point &pos) const;
 	CL_CSSInlineLayout *find_inline_layout(CL_CSSBoxText *text_node);
 

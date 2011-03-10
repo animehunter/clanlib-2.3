@@ -73,13 +73,12 @@ public:
 
 	void calc_preferred(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
 	void calc_minimum(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
-	void set_expanding_width(CL_CSSUsedValue expanding_width);
 	void layout_formatting_root_helper(CL_GraphicContext &gc, CL_CSSResourceCache *resources, LayoutStrategy strategy);
 	void layout_absolute_or_fixed(CL_GraphicContext &gc, CL_CSSResourceCache *resources, const CL_Rect &containing_block, const CL_Size &viewport_size);
 
-	virtual void calculate_top_down_sizes();
-	virtual void calculate_content_top_down_sizes() { }
-	virtual void set_content_expanding_width() { }
+	virtual void calculate_top_down_widths(LayoutStrategy strategy);
+	virtual void calculate_top_down_heights();
+	virtual void calculate_content_top_down_heights() { }
 	bool add_margin_top(CL_CSSLayoutCursor &cursor);
 	CL_CSSUsedValue get_local_relative_x() const;
 	CL_CSSUsedValue get_local_relative_y() const;
@@ -149,6 +148,8 @@ private:
 
 	void layout_shrink_to_fit(CL_GraphicContext &gc, CL_CSSResourceCache *resources, CL_CSSUsedValue available_width);
 
-	void calculate_absolute_sizes();
-	void calculate_static_sizes();
+	void calculate_absolute_widths(LayoutStrategy strategy);
+	void calculate_absolute_heights();
+	void calculate_static_widths(LayoutStrategy strategy);
+	void calculate_static_heights();
 };

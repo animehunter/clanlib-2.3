@@ -75,7 +75,8 @@ void CL_CSSLayoutTree::layout(CL_GraphicContext &gc, CL_CSSResourceCache *resour
 	root_layout->containing_height.use_content = false;
 
 	root_layout->prepare(0, root_stacking_context);
-	root_layout->calculate_top_down_sizes();
+	root_layout->calculate_top_down_widths(CL_CSSLayoutTreeNode::normal_strategy);
+	root_layout->calculate_top_down_heights();
 	root_layout->layout_formatting_root_helper(gc, resource_cache, CL_CSSLayoutTreeNode::normal_strategy);
 	root_layout->set_root_block_position(0, 0);
 	root_layout->layout_absolute_and_fixed_content(gc, resource_cache, viewport, viewport);
