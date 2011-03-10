@@ -249,34 +249,107 @@ void CL_CSSDocument2_Impl::read_at_rule(CL_CSSTokenizer &tokenizer, CL_CSSToken 
 			tokenizer.read(token, true);
 		}
 	}
-	else
+	else if (equals(token.value, "media"))
 	{
-		// CL_Console::write_line("@%1", token.value);
-		int curly_count = 0;
-		while (true)
+		tokenizer.read(token, true);
+
+		std::vector<CL_String> media_types;
+		while (token.type != CL_CSSToken::type_curly_brace_begin)
 		{
-			tokenizer.read(token, false);
-			if (token.type == CL_CSSToken::type_null)
+			if (token.type != CL_CSSToken::type_ident)
+			{
+				read_end_of_at_rule(tokenizer, token);
+				return;
+			}
+			media_types.push_back(token.value);
+
+			tokenizer.read(token, true);
+			if (token.type == CL_CSSToken::type_curly_brace_begin)
 			{
 				break;
 			}
-			else if (token.type == CL_CSSToken::type_semi_colon && curly_count == 0)
+			else if (token.type != CL_CSSToken::type_delim || token.value != ",")
 			{
-				break;
-			}
-			else if (token.type == CL_CSSToken::type_curly_brace_begin)
-			{
-				curly_count++;
-			}
-			else if (token.type == CL_CSSToken::type_curly_brace_end)
-			{
-				curly_count--;
-				if (curly_count == 0)
-					break;
+				read_end_of_at_rule(tokenizer, token);
+				return;
 			}
 		}
+
+		bool media_matched = false;
+		for (size_t i = 0; i < media_types.size(); i++)
+		{
+			if (equals(media_types[i], "all") || equals(media_types[i], "screen"))
+			{
+				media_matched = true;
+				break;
+			}
+		}
+
+		if (media_matched)
+		{
+			size_t rollback_index = rulesets.size();
+			while (true)
+			{
+				tokenizer.read(token, true);
+				if (token.type == CL_CSSToken::type_null)
+				{
+					// Invalid media section. Rollback any rulesets added in it:
+					rulesets.erase(rulesets.begin() + rollback_index, rulesets.end());
+					break;
+				}
+				else if (token.type == CL_CSSToken::type_curly_brace_end)
+				{
+					break;
+				}
+				else if (token.type == CL_CSSToken::type_atkeyword)
+				{
+					read_end_of_at_rule(tokenizer, token);
+				}
+				else if (token.type != CL_CSSToken::type_whitespace)
+				{
+					read_statement(tokenizer, token);
+				}
+			}
+		}
+		else
+		{
+			read_end_of_at_rule(tokenizer, token);
+		}
+	}
+	else
+	{
+		read_end_of_at_rule(tokenizer, token);
 	}
 }
+
+void CL_CSSDocument2_Impl::read_end_of_at_rule(CL_CSSTokenizer &tokenizer, CL_CSSToken &token)
+{
+	// CL_Console::write_line("@%1", token.value);
+	int curly_count = 0;
+	while (true)
+	{
+		if (token.type == CL_CSSToken::type_null)
+		{
+			break;
+		}
+		else if (token.type == CL_CSSToken::type_semi_colon && curly_count == 0)
+		{
+			break;
+		}
+		else if (token.type == CL_CSSToken::type_curly_brace_begin)
+		{
+			curly_count++;
+		}
+		else if (token.type == CL_CSSToken::type_curly_brace_end)
+		{
+			curly_count--;
+			if (curly_count == 0)
+				break;
+		}
+		tokenizer.read(token, false);
+	}
+}
+
 
 bool CL_CSSDocument2_Impl::read_selector_chain(CL_CSSTokenizer &tokenizer, CL_CSSToken &token, CL_CSSSelectorChain2 &out_selector_chain)
 {

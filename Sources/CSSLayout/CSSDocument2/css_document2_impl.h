@@ -48,6 +48,7 @@ public:
 	void read_stylesheet(CL_CSSTokenizer &tokenizer, const CL_String &base_uri);
 	void read_at_rule(CL_CSSTokenizer &tokenizer, CL_CSSToken &token);
 	void read_statement(CL_CSSTokenizer &tokenizer, CL_CSSToken &token);
+	void read_end_of_at_rule(CL_CSSTokenizer &tokenizer, CL_CSSToken &token);
 	static bool read_end_of_statement(CL_CSSTokenizer &tokenizer, CL_CSSToken &token);
 	bool read_selector_chain(CL_CSSTokenizer &tokenizer, CL_CSSToken &token, CL_CSSSelectorChain2 &out_selector_chain);
 	static bool read_property_value(CL_CSSTokenizer &tokenizer, CL_CSSToken &token, CL_CSSProperty2 &property, CL_String base_uri);
