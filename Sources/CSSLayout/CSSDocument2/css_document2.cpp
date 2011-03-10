@@ -39,11 +39,16 @@ CL_CSSDocument2::~CL_CSSDocument2()
 {
 }
 
-void CL_CSSDocument2::add_sheet(const CL_String &filename)
+void CL_CSSDocument2::add_sheet(const CL_String &filename, const CL_String &base_uri)
 {
 	CL_File file(filename, CL_File::open_existing, CL_File::access_read);
-	CL_CSSTokenizer tokenizer(file);
-	impl->read_stylesheet(tokenizer);
+	add_sheet(file, base_uri);
+}
+
+void CL_CSSDocument2::add_sheet(CL_IODevice &iodevice, const CL_String &base_uri)
+{
+	CL_CSSTokenizer tokenizer(iodevice);
+	impl->read_stylesheet(tokenizer, base_uri);
 }
 
 CL_CSSPropertyList2 CL_CSSDocument2::select(const CL_DomElement &node, const CL_String &pseudo_element)

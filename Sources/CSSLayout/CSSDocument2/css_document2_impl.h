@@ -45,7 +45,7 @@ public:
 	std::vector<CL_CSSRulesetMatch2> select_rulesets(CL_CSSSelectNode2 *node, const CL_String &pseudo_element);
 	bool try_match_chain(const CL_CSSSelectorChain2 &chain, CL_CSSSelectNode2 *node, size_t chain_index);
 	bool try_match_link(const CL_CSSSelectorLink2 &link, const CL_CSSSelectNode2 *node);
-	void read_stylesheet(CL_CSSTokenizer &tokenizer);
+	void read_stylesheet(CL_CSSTokenizer &tokenizer, const CL_String &base_uri);
 	void read_at_rule(CL_CSSTokenizer &tokenizer, CL_CSSToken &token);
 	void read_statement(CL_CSSTokenizer &tokenizer, CL_CSSToken &token);
 	static bool read_end_of_statement(CL_CSSTokenizer &tokenizer, CL_CSSToken &token);

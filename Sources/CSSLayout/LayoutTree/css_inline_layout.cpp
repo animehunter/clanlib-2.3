@@ -1617,8 +1617,6 @@ void CL_CSSInlineLayout::layout_block_line(CL_CSSInlineGeneratedBox *line, CL_Gr
 			CL_CSSActualValue available_width = formatting_context->find_line_box(cursor.x, cursor.x + cl_used_to_actual(width.value), box_y, 1, 0).get_width();
 			line->layout_node->containing_width = width;
 			line->layout_node->containing_width.value = available_width;
-			//if (line->layout_node->width.expanding)
-			//	line->layout_node->width.value = cl_actual_to_used(available_width);
 		}
 		line->layout_node->calculate_top_down_widths(strategy);
 		line->layout_node->calculate_top_down_heights();

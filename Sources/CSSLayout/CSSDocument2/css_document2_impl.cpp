@@ -215,8 +215,9 @@ bool CL_CSSDocument2_Impl::try_match_link(const CL_CSSSelectorLink2 &link, const
 	return match;
 }
 
-void CL_CSSDocument2_Impl::read_stylesheet(CL_CSSTokenizer &tokenizer)
+void CL_CSSDocument2_Impl::read_stylesheet(CL_CSSTokenizer &tokenizer, const CL_String &new_base_uri)
 {
+	base_uri = new_base_uri;
 	CL_CSSToken token;
 	while (true)
 	{

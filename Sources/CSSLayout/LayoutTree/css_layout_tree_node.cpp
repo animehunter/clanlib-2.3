@@ -198,7 +198,14 @@ void CL_CSSLayoutTreeNode::calculate_absolute_widths(LayoutStrategy strategy)
 
 	if (width.expanding && strategy == normal_strategy)
 	{
-		width.value = containing_width.value - margin.left - margin.right - border.left - border.right - padding.left - padding.right;
+		width.value = cl_actual_to_used(
+			cl_used_to_actual(containing_width.value) -
+			cl_used_to_actual(margin.left) -
+			cl_used_to_actual(margin.right) -
+			cl_used_to_actual(border.left) -
+			cl_used_to_actual(border.right) -
+			cl_used_to_actual(padding.left) -
+			cl_used_to_actual(padding.right));
 	}
 }
 
