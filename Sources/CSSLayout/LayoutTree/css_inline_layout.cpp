@@ -1011,15 +1011,16 @@ bool CL_CSSInlineLayout::place_floats(CL_CSSInlinePosition start, CL_CSSInlinePo
 			CL_Rect float_box(0, 0, cur->layout_node->get_block_width(), cur->layout_node->get_block_height());
 			float_box.translate(x, y);
 
-			if (strategy != normal_strategy && width.expanding)
+			if (strategy == preferred_strategy && width.expanding)
 			{
+				CL_CSSActualValue w = 1000000;
 				if (cur->layout_node->get_element_node()->computed_properties.float_box.type == CL_CSSBoxFloat::type_left)
 				{
-					float_box = formatting_context->float_left(float_box, x+1000000);
+					float_box = formatting_context->float_left(float_box, x+w);
 				}
 				else if (cur->layout_node->get_element_node()->computed_properties.float_box.type == CL_CSSBoxFloat::type_right)
 				{
-					float_box = formatting_context->float_right_shrink_to_fit(float_box, x+1000000);
+					float_box = formatting_context->float_right_shrink_to_fit(float_box, x+w);
 				}
 				cur->layout_node->set_root_block_position(float_box.left, float_box.top);
 			}
@@ -1227,11 +1228,18 @@ void CL_CSSInlineLayout::layout_inline_blocks_and_floats(CL_GraphicContext &gc, 
 	{
 		if (cur->layout_node && (cur->layout_node->get_element_node()->is_float() || cur->layout_node->get_element_node()->is_inline_block_level() || cur->layout_node->is_replaced()))
 		{
+			/*if (cur->layout_node->get_element_node()->name.find("abc") != CL_String::npos)
+			{
+				Sleep(1);
+			}*/
 			cur->floated = false;
 			cur->layout_node->relative_x = relative_x + cur->layout_node->get_local_relative_x();
 			cur->layout_node->relative_y = relative_y + cur->layout_node->get_local_relative_y();
 			cur->layout_node->containing_width = width;
 			cur->layout_node->layout_float(gc, resources, strategy);
+
+			if (strategy == minimum_strategy && width.expanding)
+				width.value = cl_max(width.value, cur->layout_node->get_block_width());
 		}
 
 		if (cur->first_child)
@@ -1612,10 +1620,10 @@ void CL_CSSInlineLayout::layout_block_line(CL_CSSInlineGeneratedBox *line, CL_Gr
 			box_y = cl_max(box_y, clear_right);
 		}
 
+		line->layout_node->containing_width = width;
 		if (strategy == normal_strategy)
 		{
 			CL_CSSActualValue available_width = formatting_context->find_line_box(cursor.x, cursor.x + cl_used_to_actual(width.value), box_y, 1, 0).get_width();
-			line->layout_node->containing_width = width;
 			line->layout_node->containing_width.value = available_width;
 		}
 		line->layout_node->calculate_top_down_widths(strategy);
@@ -1624,7 +1632,7 @@ void CL_CSSInlineLayout::layout_block_line(CL_CSSInlineGeneratedBox *line, CL_Gr
 
 		CL_Rect float_box(0, 0, line->layout_node->get_block_width(), line->layout_node->get_block_height());
 		float_box.translate(cursor.x, box_y);
-		if (strategy != normal_strategy && width.expanding)
+		if (strategy == preferred_strategy && width.expanding)
 		{
 			float_box = formatting_context->place_left(float_box, cursor.x+1000000);
 			cursor.apply_margin();
