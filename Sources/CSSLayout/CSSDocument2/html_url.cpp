@@ -49,6 +49,23 @@ CL_HTMLUrl::CL_HTMLUrl(const CL_String &url, const CL_HTMLUrl &base)
 	{
 		scheme = s;
 		pos += 1;
+
+		if (CL_StringHelp::compare(scheme, "data", true) == 0)
+		{
+			CL_String::size_type semicolon = input.find_first_of(';', pos);
+			CL_String::size_type comma = input.find_first_of(',', semicolon);
+			if (semicolon == CL_String::npos || comma == CL_String::npos)
+			{
+				data = input.substr(pos);
+			}
+			else
+			{
+				content_type = input.substr(pos, semicolon-pos);
+				encoding = input.substr(semicolon+1, comma-semicolon-1);
+				data = input.substr(comma+1);
+			}
+			return;
+		}
 	}
 	else
 	{
@@ -140,5 +157,15 @@ CL_String CL_HTMLUrl::read_scheme(CL_String &input, CL_String::size_type &pos)
 
 CL_String CL_HTMLUrl::to_string() const
 {
-	return scheme + "://" + host + ":" + port + path + query;
+	if (CL_StringHelp::compare(scheme, "data", true) == 0)
+	{
+		if (!content_type.empty() && !encoding.empty())
+			return scheme + ":" + content_type + ";" + encoding + "," + data;
+		else
+			return scheme + ":" + data;
+	}
+	else
+	{
+		return scheme + "://" + host + ":" + port + path + query;
+	}
 }

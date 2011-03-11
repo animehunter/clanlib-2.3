@@ -36,10 +36,17 @@ public:
 	CL_String to_string() const;
 
 	CL_String scheme;
+
+	// http scheme:
 	CL_String host;
 	CL_String port;
 	CL_String path;
 	CL_String query;
+
+	// data scheme:
+	CL_String content_type;
+	CL_String encoding;
+	CL_String data;
 
 private:
 	CL_String read_scheme(CL_String &input, CL_String::size_type &pos);
