@@ -31,6 +31,7 @@
 #include "API/CSSLayout/css_box_properties.h"
 
 CL_CSSBoxElement::CL_CSSBoxElement()
+: col_span(1), row_span(1)
 {
 }
 

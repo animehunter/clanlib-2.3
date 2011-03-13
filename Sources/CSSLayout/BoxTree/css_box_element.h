@@ -39,6 +39,8 @@ public:
 	CL_String name;
 	CL_CSSBoxProperties properties;
 	CL_CSSBoxProperties computed_properties;
+	int col_span;
+	int row_span;
 
 	bool has_block_level_children() const;
 	bool is_block_level() const;

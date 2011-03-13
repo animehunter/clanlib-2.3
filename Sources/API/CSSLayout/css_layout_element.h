@@ -42,6 +42,9 @@ public:
 	CL_String get_name() const;
 	void set_name(const CL_String &name);
 
+	void set_col_span(int span);
+	void set_row_span(int span);
+
 	void apply_properties(const CL_CSSPropertyList2 &properties);
 	void apply_properties(const CL_String &style_string, const CL_String &base_uri = CL_String());
 

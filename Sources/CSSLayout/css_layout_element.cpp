@@ -55,6 +55,18 @@ void CL_CSSLayoutElement::set_name(const CL_String &name)
 		static_cast<CL_CSSBoxElement*>(impl->box_node)->name = name;
 }
 
+void CL_CSSLayoutElement::set_col_span(int span)
+{
+	if (!is_null())
+		static_cast<CL_CSSBoxElement*>(impl->box_node)->col_span = span;
+}
+
+void CL_CSSLayoutElement::set_row_span(int span)
+{
+	if (!is_null())
+		static_cast<CL_CSSBoxElement*>(impl->box_node)->row_span = span;
+}
+
 void CL_CSSLayoutElement::apply_properties(const CL_CSSPropertyList2 &properties)
 {
 	if (!is_null())

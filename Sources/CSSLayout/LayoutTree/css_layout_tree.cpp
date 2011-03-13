@@ -227,7 +227,7 @@ CL_CSSTableLayout *CL_CSSLayoutTree::create_table_level_layout(CL_CSSBoxElement 
 			{
 				CL_CSSLayoutTreeNode *cell_layout = create_layout(walker.get_element());
 				if (cell_layout)
-					table->add_cell(cell_layout);
+					table->add_cell(cell_layout, walker.get_element()->col_span, walker.get_element()->row_span);
 				walker.next(false);
 			}
 			else if (walker.get_element()->is_table_caption())

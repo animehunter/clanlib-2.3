@@ -44,7 +44,7 @@ public:
 	~CL_CSSTableLayout();
 
 	void add_row(CL_CSSBoxElement *row_element);
-	void add_cell(CL_CSSLayoutTreeNode *cell_layout);
+	void add_cell(CL_CSSLayoutTreeNode *cell_layout, int col_span, int row_span);
 	void add_caption(CL_CSSLayoutTreeNode *caption_layout);
 
 	void render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources, bool root);
@@ -75,6 +75,11 @@ private:
 	CL_CSSTableSizeGrid create_preferred_width_grid(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor);
 	CL_CSSTableSizeGrid create_minimum_width_grid(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor);
 	void apply_non_content(CL_CSSTableSizeGrid &size_grid);
+
+	int get_row_span(int col, int row);
+	int get_column_span(int col, int row);
+	CL_CSSLayoutTreeNode *get_layout(int col, int row);
+	const CL_CSSLayoutTreeNode *get_layout(int col, int row) const;
 
 	std::vector<CL_CSSTableColumn> columns;
 	std::vector<CL_CSSTableRow> rows;
