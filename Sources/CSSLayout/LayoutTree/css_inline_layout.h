@@ -50,6 +50,7 @@ public:
 	bool floated;
 	CL_CSSActualValue x, width;
 	CL_CSSActualValue y, height, ascent, descent, baseline_offset;
+	CL_CSSUsedValue relative_x, relative_y;
 	CL_CSSInlineGeneratedBox *parent;
 	CL_CSSInlineGeneratedBox *first_child;
 	CL_CSSInlineGeneratedBox *last_child;

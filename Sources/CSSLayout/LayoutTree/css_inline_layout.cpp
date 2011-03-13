@@ -338,8 +338,8 @@ void CL_CSSInlineLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCurso
 				layout_node->static_position.top = cl_actual_to_used(cursor.y + cursor.get_total_margin());
 				layout_node->static_position.right = layout_node->static_position.left;
 				layout_node->static_position.bottom = layout_node->static_position.top;
-				layout_node->relative_x = relative_x + layout_node->get_local_relative_x();
-				layout_node->relative_y = relative_y + layout_node->get_local_relative_y();
+				layout_node->relative_x = line_start_pos.box->relative_x;
+				layout_node->relative_y = line_start_pos.box->relative_y;
 				layout_node->containing_width = width;
 				layout_node->calc_preferred(gc, cursor.resources);
 				layout_node->calculate_top_down_widths(normal_strategy);
@@ -490,8 +490,8 @@ void CL_CSSInlineLayout::layout_absolute_and_fixed_content(CL_GraphicContext &gc
 			if (cur->layout_node->get_element_node()->computed_properties.position.type == CL_CSSBoxPosition::type_absolute ||
 				cur->layout_node->get_element_node()->computed_properties.position.type == CL_CSSBoxPosition::type_fixed)
 			{
-				cur->layout_node->relative_x = relative_x + cur->layout_node->get_local_relative_x();
-				cur->layout_node->relative_y = relative_y + cur->layout_node->get_local_relative_y();
+				cur->layout_node->relative_x = cur->relative_x;
+				cur->layout_node->relative_y = cur->relative_y;
 				cur->layout_node->layout_absolute_or_fixed(gc, resources, containing_block, viewport_size);
 			}
 
@@ -524,8 +524,6 @@ void CL_CSSInlineLayout::render_layer_background(CL_GraphicContext &gc, CL_CSSRe
 {
 	render_non_content(gc, resources, root);
 
-	int pos_x = cl_used_to_actual(relative_x) + formatting_context->get_x();
-	int pos_y = cl_used_to_actual(relative_y) + formatting_context->get_y();
 	for (size_t i = 0; i < lines.size(); i++)
 	{
 		CL_CSSInlineGeneratedBox *cur = lines[i];
@@ -540,6 +538,8 @@ void CL_CSSInlineLayout::render_layer_background(CL_GraphicContext &gc, CL_CSSRe
 			{
 				if (element->computed_properties.visibility.type == CL_CSSBoxVisibility::type_visible)
 				{
+					int pos_x = cl_used_to_actual(cur->relative_x) + formatting_context->get_x();
+					int pos_y = cl_used_to_actual(cur->relative_y) + formatting_context->get_y();
 					CL_Rect content(pos_x + cur->x, pos_y + cur->y, pos_x + cur->x + cur->width, pos_y + cur->y + cur->ascent + cur->descent);
 
 					CL_Rect padding_box = content;
@@ -682,9 +682,6 @@ void CL_CSSInlineLayout::render_layer_floats(CL_GraphicContext &gc, CL_CSSResour
 
 void CL_CSSInlineLayout::render_layer_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
 {
-	int pos_x = cl_used_to_actual(relative_x) + formatting_context->get_x();
-	int pos_y = cl_used_to_actual(relative_y) + formatting_context->get_y();
-
 	for (size_t i = 0; i < lines.size(); i++)
 	{
 		CL_CSSInlineGeneratedBox *cur = lines[i];
@@ -699,6 +696,8 @@ void CL_CSSInlineLayout::render_layer_inline(CL_GraphicContext &gc, CL_CSSResour
 				{
 					CL_Font font = resources->get_font(gc, properties);
 					CL_FontMetrics metrics = font.get_font_metrics(gc);
+					int pos_x = cl_used_to_actual(cur->relative_x) + formatting_context->get_x();
+					int pos_y = cl_used_to_actual(cur->relative_y) + formatting_context->get_y();
 					font.draw_text(gc, pos_x + cur->x, pos_y + cur->y + cl_used_to_actual(metrics.get_ascent()), text->processed_text.substr(cur->text_start, cur->text_end - cur->text_start), properties.color.color);
 				}
 			}
@@ -863,6 +862,8 @@ void CL_CSSInlineLayout::generate_block_line(CL_CSSInlinePosition pos)
 	std::auto_ptr<CL_CSSInlineGeneratedBox> line(new CL_CSSInlineGeneratedBox());
 	line->box_node = pos.box->box_node;
 	line->layout_node = pos.box->layout_node;
+	line->relative_x = pos.box->relative_x;
+	line->relative_y = pos.box->relative_y;
 	lines.push_back(line.get());
 	line.release();
 }
@@ -881,6 +882,8 @@ CL_CSSInlineGeneratedBox *CL_CSSInlineLayout::begin_tree(CL_CSSInlinePosition st
 			parent->opening = false;
 			parent->box_node = input->box_node;
 			parent->layout_node = input->layout_node;
+			parent->relative_x = input->relative_x;
+			parent->relative_y = input->relative_y;
 			if (cur)
 				parent->add_box(cur);
 			else
@@ -905,6 +908,9 @@ void CL_CSSInlineLayout::generate_line(CL_CSSInlinePosition start, CL_CSSInlineP
 	std::auto_ptr<CL_CSSInlineGeneratedBox> line(new CL_CSSInlineGeneratedBox());
 	CL_CSSInlineGeneratedBox *parent = begin_tree(start, line.get());
 
+	line->relative_x = boxes.relative_x;
+	line->relative_y = boxes.relative_y;
+
 	bool start_of_line = true;
 	CL_CSSInlinePosition cur = start;
 	while (cur != end)
@@ -924,6 +930,8 @@ void CL_CSSInlineLayout::generate_line(CL_CSSInlinePosition start, CL_CSSInlineP
 			output = new CL_CSSInlineGeneratedBox();
 			output->box_node = cur.box->box_node;
 			output->layout_node = cur.box->layout_node;
+			output->relative_x = cur.box->relative_x;
+			output->relative_y = cur.box->relative_y;
 			output->text_start = text_start;
 			output->text_end = text_end;
 			output->closing = false;
@@ -933,6 +941,8 @@ void CL_CSSInlineLayout::generate_line(CL_CSSInlinePosition start, CL_CSSInlineP
 		{
 			output = new CL_CSSInlineGeneratedBox();
 			output->box_node = cur.box->box_node;
+			output->relative_x = cur.box->relative_x;
+			output->relative_y = cur.box->relative_y;
 			output->closing = false;
 			parent->add_box(output);
 		}
@@ -943,6 +953,8 @@ void CL_CSSInlineLayout::generate_line(CL_CSSInlinePosition start, CL_CSSInlineP
 			output = new CL_CSSInlineGeneratedBox();
 			output->box_node = cur.box->box_node;
 			output->layout_node = cur.box->layout_node;
+			output->relative_x = cur.box->relative_x;
+			output->relative_y = cur.box->relative_y;
 			parent->add_box(output);
 		}
 
@@ -1224,8 +1236,19 @@ void CL_CSSInlineLayout::layout_inline_blocks_and_floats(CL_GraphicContext &gc, 
 {
 	floats.clear();
 	CL_CSSInlineGeneratedBox *cur = boxes.first_child;
+	boxes.relative_x = relative_x;
+	boxes.relative_y = relative_y;
 	while (cur)
 	{
+		cur->relative_x = cur->parent->relative_x;
+		cur->relative_y = cur->parent->relative_y;
+		CL_CSSBoxElement *element = dynamic_cast<CL_CSSBoxElement*>(cur->box_node);
+		if (element)
+		{
+			cur->relative_x += get_local_relative_x(element, width.value);
+			cur->relative_y += get_local_relative_y(element, height.value);
+		}
+
 		if (cur->layout_node && (cur->layout_node->get_element_node()->is_float() || cur->layout_node->get_element_node()->is_inline_block_level() || cur->layout_node->is_replaced()))
 		{
 			/*if (cur->layout_node->get_element_node()->name.find("abc") != CL_String::npos)
@@ -1233,8 +1256,8 @@ void CL_CSSInlineLayout::layout_inline_blocks_and_floats(CL_GraphicContext &gc, 
 				Sleep(1);
 			}*/
 			cur->floated = false;
-			cur->layout_node->relative_x = relative_x + cur->layout_node->get_local_relative_x();
-			cur->layout_node->relative_y = relative_y + cur->layout_node->get_local_relative_y();
+			cur->layout_node->relative_x = cur->relative_x;
+			cur->layout_node->relative_y = cur->relative_y;
 			cur->layout_node->containing_width = width;
 			cur->layout_node->layout_float(gc, resources, strategy);
 
@@ -1506,6 +1529,8 @@ void CL_CSSInlineLayout::split_text(CL_CSSInlineGeneratedBox *box, size_t text_p
 	{
 		std::auto_ptr<CL_CSSInlineGeneratedBox> box2(new CL_CSSInlineGeneratedBox());
 		box2->box_node = box->box_node;
+		box2->relative_x = box->relative_x;
+		box2->relative_y = box->relative_y;
 		box2->x = box->x;
 		box2->y = box->y;
 		box2->width = box->width;
@@ -1656,7 +1681,8 @@ void CL_CSSInlineLayout::layout_block_line(CL_CSSInlineGeneratedBox *line, CL_Gr
 
 CL_CSSInlineGeneratedBox::CL_CSSInlineGeneratedBox()
 : opening(true), closing(true), text_start(0), text_end(0), box_node(0), layout_node(0),
-  floated(false), x(0), width(0), y(0), height(0), ascent(0), descent(0), baseline_offset(0), parent(0), first_child(0), last_child(0), next_sibling(0)
+  floated(false), x(0), width(0), y(0), height(0), ascent(0), descent(0), baseline_offset(0),
+  relative_x(0), relative_y(0), parent(0), first_child(0), last_child(0), next_sibling(0)
 {
 }
 

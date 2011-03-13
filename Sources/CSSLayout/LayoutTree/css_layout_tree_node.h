@@ -82,6 +82,8 @@ public:
 	bool add_margin_top(CL_CSSLayoutCursor &cursor);
 	CL_CSSUsedValue get_local_relative_x() const;
 	CL_CSSUsedValue get_local_relative_y() const;
+	static CL_CSSUsedValue get_local_relative_x(const CL_CSSBoxElement *element, CL_CSSUsedValue containing_width);
+	static CL_CSSUsedValue get_local_relative_y(const CL_CSSBoxElement *element, CL_CSSUsedValue containing_height);
 	virtual bool is_empty() const { return false; }
 	CL_CSSActualValue get_block_width() const;
 	CL_CSSActualValue get_block_height() const;

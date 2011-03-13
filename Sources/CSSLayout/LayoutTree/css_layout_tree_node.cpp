@@ -895,12 +895,22 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCurs
 
 CL_CSSUsedValue CL_CSSLayoutTreeNode::get_local_relative_x() const
 {
-	if (element_node->computed_properties.position.type == CL_CSSBoxPosition::type_relative)
+	return get_local_relative_x(element_node, containing_width.value);
+}
+
+CL_CSSUsedValue CL_CSSLayoutTreeNode::get_local_relative_y() const
+{
+	return get_local_relative_y(element_node, containing_height.value);
+}
+
+CL_CSSUsedValue CL_CSSLayoutTreeNode::get_local_relative_x(const CL_CSSBoxElement *element, CL_CSSUsedValue containing_width)
+{
+	if (element->computed_properties.position.type == CL_CSSBoxPosition::type_relative)
 	{
-		if (element_node->computed_properties.left.type == CL_CSSBoxLeft::type_length)
-			return element_node->computed_properties.left.length.value;
-		else if (element_node->computed_properties.left.type == CL_CSSBoxLeft::type_percentage && !containing_width.expanding)
-			return element_node->computed_properties.left.percentage / 100.0f * containing_width.value;
+		if (element->computed_properties.left.type == CL_CSSBoxLeft::type_length)
+			return element->computed_properties.left.length.value;
+		else if (element->computed_properties.left.type == CL_CSSBoxLeft::type_percentage)
+			return element->computed_properties.left.percentage / 100.0f * containing_width;
 		else
 			return 0.0f;
 	}
@@ -910,14 +920,14 @@ CL_CSSUsedValue CL_CSSLayoutTreeNode::get_local_relative_x() const
 	}
 }
 
-CL_CSSUsedValue CL_CSSLayoutTreeNode::get_local_relative_y() const
+CL_CSSUsedValue CL_CSSLayoutTreeNode::get_local_relative_y(const CL_CSSBoxElement *element, CL_CSSUsedValue containing_height)
 {
-	if (element_node->computed_properties.position.type == CL_CSSBoxPosition::type_relative)
+	if (element->computed_properties.position.type == CL_CSSBoxPosition::type_relative)
 	{
-		if (element_node->computed_properties.top.type == CL_CSSBoxTop::type_length)
-			return element_node->computed_properties.top.length.value;
-		else if (element_node->computed_properties.top.type == CL_CSSBoxTop::type_percentage && !containing_height.use_content)
-			return element_node->computed_properties.top.percentage / 100.0f * containing_height.value;
+		if (element->computed_properties.top.type == CL_CSSBoxTop::type_length)
+			return element->computed_properties.top.length.value;
+		else if (element->computed_properties.top.type == CL_CSSBoxTop::type_percentage)
+			return element->computed_properties.top.percentage / 100.0f * containing_height;
 		else
 			return 0.0f;
 	}
