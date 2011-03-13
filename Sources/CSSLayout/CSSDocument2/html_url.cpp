@@ -96,8 +96,8 @@ CL_HTMLUrl::CL_HTMLUrl(const CL_String &url, const CL_HTMLUrl &base)
 		port = base.port;
 	}
 
-	CL_String::size_type query_pos = input.find_first_of('?');
-	path = input.substr(pos, query_pos);
+	CL_String::size_type query_pos = input.find_first_of('?', pos);
+	path = input.substr(pos, query_pos-pos);
 	query = input.substr(query_pos);
 
 	if (path.substr(0, 1) != "/")
