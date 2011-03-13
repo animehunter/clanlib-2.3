@@ -123,6 +123,36 @@ bool CL_CSSBoxElement::is_table_cell() const
 	return computed_properties.display.type == CL_CSSBoxDisplay::type_table_cell;
 }
 
+bool CL_CSSBoxElement::is_table_row_group() const
+{
+	return computed_properties.display.type == CL_CSSBoxDisplay::type_table_row_group;
+}
+
+bool CL_CSSBoxElement::is_table_header_group() const
+{
+	return computed_properties.display.type == CL_CSSBoxDisplay::type_table_header_group;
+}
+
+bool CL_CSSBoxElement::is_table_footer_group() const
+{
+	return computed_properties.display.type == CL_CSSBoxDisplay::type_table_footer_group;
+}
+
+bool CL_CSSBoxElement::is_table_column() const
+{
+	return computed_properties.display.type == CL_CSSBoxDisplay::type_table_column;
+}
+
+bool CL_CSSBoxElement::is_table_column_group() const
+{
+	return computed_properties.display.type == CL_CSSBoxDisplay::type_table_column_group;
+}
+
+bool CL_CSSBoxElement::is_table_caption() const
+{
+	return computed_properties.display.type == CL_CSSBoxDisplay::type_table_caption;
+}
+
 bool CL_CSSBoxElement::is_absolute() const
 {
 	return computed_properties.position.type == CL_CSSBoxPosition::type_absolute;

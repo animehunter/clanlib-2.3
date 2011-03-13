@@ -45,6 +45,7 @@ public:
 
 	void add_row(CL_CSSBoxElement *row_element);
 	void add_cell(CL_CSSLayoutTreeNode *cell_layout);
+	void add_caption(CL_CSSLayoutTreeNode *caption_layout);
 
 	void render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources, bool root);
 	void render_layer_non_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
@@ -77,7 +78,10 @@ private:
 
 	std::vector<CL_CSSTableColumn> columns;
 	std::vector<CL_CSSTableRow> rows;
+	std::vector<CL_CSSLayoutTreeNode *> captions;
 	size_t next_column;
 
 	CL_CSSTableSizeGrid size_grid;
+	CL_CSSActualValue table_x, table_y;
+	CL_Rect border_box;
 };

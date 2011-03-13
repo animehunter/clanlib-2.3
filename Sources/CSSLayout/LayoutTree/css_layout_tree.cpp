@@ -157,7 +157,39 @@ CL_CSSLayoutTreeNode *CL_CSSLayoutTree::create_layout(CL_CSSBoxElement *element)
 
 CL_CSSTableLayout *CL_CSSLayoutTree::create_table_level_layout(CL_CSSBoxElement *element)
 {
+	// To do: This code needs to apply the rules of 17.2.1 Anonymous table objects
+	/*
+		<table>
+			<caption>
+			</caption>
+			<thead>
+				<tr>
+					<td>Foobar</td>
+					<td>Foobar</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Foobar</td>
+					<td>Foobar</td>
+				</tr>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td>Foobar</td>
+					<td>Foobar</td>
+				</tr>
+			</tfoot>
+			<colgroup>
+				<col/>
+				<col/>
+				<col/>
+			</colgroup>
+		</table>
+	*/
+
 	CL_CSSTableLayout *table = new CL_CSSTableLayout(element);
+	bool in_table_row = false;
 
 	CL_CSSBoxNodeWalker walker(element->get_first_child(), false);
 	while (walker.is_node())
@@ -169,11 +201,40 @@ CL_CSSTableLayout *CL_CSSLayoutTree::create_table_level_layout(CL_CSSBoxElement 
 				table->add_row(walker.get_element());
 				walker.next(true);
 			}
+			else if (walker.get_element()->is_table_row_group())
+			{
+				walker.next(true);
+			}
+			else if (walker.get_element()->is_table_header_group())
+			{
+				walker.next(true);
+			}
+			else if (walker.get_element()->is_table_footer_group())
+			{
+				walker.next(true);
+			}
+			else if (walker.get_element()->is_table_column())
+			{
+				// 17.2.1: 1.1 All child boxes of a 'table-column' parent are treated as if they had 'display: none'. 
+				walker.next(false);
+			}
+			else if (walker.get_element()->is_table_column_group())
+			{
+				// 17.2.1: 1.2 If a child C of a 'table-column-group' parent is not a 'table-column' box, then it is treated as if it had 'display: none'. 
+				walker.next(true);
+			}
 			else if (walker.get_element()->is_table_cell())
 			{
 				CL_CSSLayoutTreeNode *cell_layout = create_layout(walker.get_element());
 				if (cell_layout)
 					table->add_cell(cell_layout);
+				walker.next(false);
+			}
+			else if (walker.get_element()->is_table_caption())
+			{
+				CL_CSSLayoutTreeNode *caption_layout = create_layout(walker.get_element());
+				if (caption_layout)
+					table->add_caption(caption_layout);
 				walker.next(false);
 			}
 			else
