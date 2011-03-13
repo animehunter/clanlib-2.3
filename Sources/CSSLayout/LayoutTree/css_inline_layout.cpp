@@ -1206,7 +1206,7 @@ CL_CSSActualValue CL_CSSInlineLayout::get_width(CL_GraphicContext &gc, CL_CSSRes
 		}
 		else if (cur.box->next_sibling)
 		{
-			if (element && !element->is_float())
+			if (element && !element->is_float() && (cur.box->layout_node == 0 || !(cur.box->layout_node->is_replaced() || cur.box->layout_node->get_element_node()->is_inline_block_level())))
 				width += cl_used_to_actual(get_css_margin_width(element->computed_properties.margin_width_right, containing_width)) + cl_used_to_actual(element->computed_properties.border_width_right.length.value) + cl_used_to_actual(get_css_padding_width(element->computed_properties.padding_width_right, containing_width));
 			cur.box = cur.box->next_sibling;
 		}

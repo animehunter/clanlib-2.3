@@ -492,11 +492,15 @@ void CL_CSSLayoutTreeNode::set_root_block_position(int x, int y)
 
 	if (element_node->is_table() || element_node->is_inline_table())
 	{
-		content_box = CL_Rect(CL_Point(x+margin.left, y+margin.top), content_box.get_size());
+		content_box = CL_Rect(CL_Point(x+cl_used_to_actual(margin.left), y+cl_used_to_actual(margin.top)), content_box.get_size());
 	}
 	else
 	{
-		content_box = CL_Rect(CL_Point(x+margin.left+border.left+padding.left, y+margin.top+border.top+padding.top), content_box.get_size());
+		content_box = CL_Rect(
+			CL_Point(
+				x+cl_used_to_actual(margin.left)+cl_used_to_actual(border.left)+cl_used_to_actual(padding.left),
+				y+cl_used_to_actual(margin.top)+cl_used_to_actual(border.top)+cl_used_to_actual(padding.top)),
+				content_box.get_size());
 	}
 	formatting_context->set_position(content_box.left, content_box.top);
 }
