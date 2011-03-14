@@ -59,7 +59,7 @@ CL_PopupMenu CL_PopupMenu::create_null_object()
 
 void CL_PopupMenu::throw_if_null() const
 {
-	if (impl.is_null())
+	if (!impl)
 		throw CL_Exception("CL_PopupMenu is null");
 }
 

@@ -50,7 +50,7 @@ CL_DomElement::CL_DomElement(
 	const CL_DomString &namespace_uri)
 : CL_DomNode(doc, ELEMENT_NODE)
 {
-	CL_DomDocument_Generic *doc_impl = (CL_DomDocument_Generic *) impl->owner_document.get();
+	CL_DomDocument_Generic *doc_impl = (CL_DomDocument_Generic *) impl->owner_document.lock().get();
 	impl->get_tree_node()->set_node_name(doc_impl, tag_name);
 	impl->get_tree_node()->set_namespace_uri(doc_impl, namespace_uri);
 }
@@ -100,7 +100,7 @@ CL_DomString CL_DomElement::get_attribute(const CL_DomString &name) const
 {
 	if (impl)
 	{
-		CL_DomDocument_Generic *doc_impl = (CL_DomDocument_Generic *) impl->owner_document.get();
+		CL_DomDocument_Generic *doc_impl = (CL_DomDocument_Generic *) impl->owner_document.lock().get();
 		const CL_DomTreeNode *tree_node = impl->get_tree_node();
 		unsigned int cur_index = tree_node->first_attribute;
 		const CL_DomTreeNode *cur_attribute = tree_node->get_first_attribute(doc_impl);
@@ -121,7 +121,7 @@ CL_DomString CL_DomElement::get_attribute(const CL_DomString &name, const CL_Dom
 {
 	if (impl)
 	{
-		CL_DomDocument_Generic *doc_impl = (CL_DomDocument_Generic *) impl->owner_document.get();
+		CL_DomDocument_Generic *doc_impl = (CL_DomDocument_Generic *) impl->owner_document.lock().get();
 		const CL_DomTreeNode *tree_node = impl->get_tree_node();
 		unsigned int cur_index = tree_node->first_attribute;
 		const CL_DomTreeNode *cur_attribute = tree_node->get_first_attribute(doc_impl);
@@ -144,7 +144,7 @@ CL_DomString CL_DomElement::get_attribute_ns(
 {
 	if (impl)
 	{
-		CL_DomDocument_Generic *doc_impl = (CL_DomDocument_Generic *) impl->owner_document.get();
+		CL_DomDocument_Generic *doc_impl = (CL_DomDocument_Generic *) impl->owner_document.lock().get();
 		const CL_DomTreeNode *tree_node = impl->get_tree_node();
 		unsigned int cur_index = tree_node->first_attribute;
 		const CL_DomTreeNode *cur_attribute = tree_node->get_first_attribute(doc_impl);
@@ -173,7 +173,7 @@ CL_DomString CL_DomElement::get_attribute_ns(
 {
 	if (impl)
 	{
-		CL_DomDocument_Generic *doc_impl = (CL_DomDocument_Generic *) impl->owner_document.get();
+		CL_DomDocument_Generic *doc_impl = (CL_DomDocument_Generic *) impl->owner_document.lock().get();
 		const CL_DomTreeNode *tree_node = impl->get_tree_node();
 		unsigned int cur_index = tree_node->first_attribute;
 		const CL_DomTreeNode *cur_attribute = tree_node->get_first_attribute(doc_impl);

@@ -34,7 +34,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CL_GUIMessage_InputData Class:
 
-class CL_GUIMessage_InputData
+class CL_GUIMessage_InputData : public CL_GUIMessageData
 {
 public:
 	CL_InputEvent input_event;
@@ -46,8 +46,7 @@ public:
 CL_GUIMessage_Input::CL_GUIMessage_Input()
 {
 	set_type("input");
-	set_data("input", CL_SharedPtr<CL_GUIMessage_InputData>(
-		new CL_GUIMessage_InputData));
+	set_data("input", CL_SharedPtr<CL_GUIMessage_InputData>(new CL_GUIMessage_InputData));
 }
 
 CL_GUIMessage_Input::CL_GUIMessage_Input(const CL_GUIMessage &message)
@@ -69,8 +68,8 @@ CL_StringRef CL_GUIMessage_Input::get_type_name()
 
 CL_InputEvent CL_GUIMessage_Input::get_event() const
 {
-	CL_SharedPtr<CL_GUIMessage_InputData> d = static_cast<CL_SharedPtr<CL_GUIMessage_InputData> >(get_data("input"));
-	if (d.is_null())
+	CL_SharedPtr<CL_GUIMessage_InputData> d = std::dynamic_pointer_cast<CL_GUIMessage_InputData>(get_data("input"));
+	if (!d)
 		return CL_InputEvent();
 	return d->input_event;
 }
@@ -80,11 +79,10 @@ CL_InputEvent CL_GUIMessage_Input::get_event() const
 
 void CL_GUIMessage_Input::set_event(const CL_InputEvent &event)
 {
-	CL_SharedPtr<CL_GUIMessage_InputData> d = static_cast<CL_SharedPtr<CL_GUIMessage_InputData> >(get_data("input"));
-	if (d.is_null())
+	CL_SharedPtr<CL_GUIMessage_InputData> d = std::dynamic_pointer_cast<CL_GUIMessage_InputData>(get_data("input"));
+	if (!d)
 	{
-		d = CL_SharedPtr<CL_GUIMessage_InputData>(
-			new CL_GUIMessage_InputData);
+		d = CL_SharedPtr<CL_GUIMessage_InputData>(new CL_GUIMessage_InputData);
 		set_data("input", d);
 	}
 	d->input_event = event;

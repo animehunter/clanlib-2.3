@@ -138,13 +138,13 @@ public:
 	virtual int receive(void *data, int len, bool receive_all)
 	{
 		if (http10)
-			return impl->connection.receive(data, len, receive_all);
+			return impl.lock()->connection.receive(data, len, receive_all);
 
 		char *_data = (char *) data;
 		int pos = 0;
 		if (bytes_left > 0)
 		{
-			int bytes_read = impl->connection.receive(_data, cl_min(bytes_left, len), receive_all);
+			int bytes_read = impl.lock()->connection.receive(_data, cl_min(bytes_left, len), receive_all);
 			if (bytes_read <= 0)
 				return bytes_read;
 			bytes_left -= bytes_read;
@@ -154,7 +154,7 @@ public:
 		if (bytes_left == 0 && chunked_encoding)
 		{
 			CL_String8 str_chunk_size;
-			if (impl->read_line(str_chunk_size) == false)
+			if (impl.lock()->read_line(str_chunk_size) == false)
 				throw CL_Exception("Premature end of HTTP response data");
 			CL_String::size_type size_length = str_chunk_size.find(';');
 			int chunk_size = CL_StringHelp::local8_to_int(str_chunk_size.substr(0, size_length), 16);
@@ -172,18 +172,18 @@ public:
 
 	virtual int peek(void *data, int len)
 	{
-		impl->connection.get_read_event().wait(15000);
+		impl.lock()->connection.get_read_event().wait(15000);
 		if (http10)
-			return impl->connection.peek(data, len);
+			return impl.lock()->connection.peek(data, len);
 
 		int pos = 0;
 		if (bytes_left > 0)
-			return impl->connection.peek(data, cl_min(bytes_left, len));
+			return impl.lock()->connection.peek(data, cl_min(bytes_left, len));
 
 		if (bytes_left == 0 && chunked_encoding)
 		{
 			CL_String8 str_chunk_size;
-			if (impl->read_line(str_chunk_size) == false)
+			if (impl.lock()->read_line(str_chunk_size) == false)
 				throw CL_Exception("Premature end of HTTP response data");
 			CL_String::size_type size_length = str_chunk_size.find(';');
 			int chunk_size = CL_StringHelp::local8_to_int(str_chunk_size.substr(0, size_length), 16);
@@ -243,7 +243,7 @@ CL_HTTPClientConnection::~CL_HTTPClientConnection()
 // CL_HTTPClientConnection Attributes:
 void CL_HTTPClientConnection::throw_if_null() const
 {
-	if (impl.is_null())
+	if (!impl)
 		throw CL_Exception("CL_HTTPClientConnection is null");
 }
 

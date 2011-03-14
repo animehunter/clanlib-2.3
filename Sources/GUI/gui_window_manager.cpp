@@ -83,12 +83,12 @@ CL_GUIWindowManager::CL_WindowManagerType CL_GUIWindowManager::get_window_manage
 
 bool CL_GUIWindowManager::is_null()
 {
-	return impl.is_null();
+	return !impl;
 }
 
 CL_GUIWindowManagerProvider *CL_GUIWindowManager::get_provider() const
 {
-	if (impl.is_null())
+	if (!impl)
 		return 0;
 	return impl->provider;
 }

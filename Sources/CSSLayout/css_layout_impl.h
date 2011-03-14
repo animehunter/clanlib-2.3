@@ -52,6 +52,13 @@ public:
 	mutable std::vector<CL_CSSLayoutNode_Impl *> free_node_impls;
 	CL_WeakPtr<CL_CSSLayout_Impl> self;
 
+	struct NodeImplDeleter
+	{
+		NodeImplDeleter(const CL_CSSLayout_Impl *impl) : impl(const_cast<CL_CSSLayout_Impl*>(impl)) { }
+		CL_CSSLayout_Impl *impl;
+		void operator()(CL_CSSLayoutNode_Impl *node) { impl->free_node_impl(node); }
+	};
+
 private:
 	void on_dispose();
 };

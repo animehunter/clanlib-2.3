@@ -247,7 +247,7 @@ CL_Image::~CL_Image()
 
 void CL_Image::throw_if_null() const
 {
-	if (impl.is_null())
+	if (!impl)
 		throw CL_Exception("CL_Image is null");
 }
 

@@ -207,7 +207,7 @@ CL_String CL_ShaderObject::get_shader_source() const
 
 void CL_ShaderObject::throw_if_null() const
 {
-	if (impl.is_null())
+	if (!impl)
 		throw CL_Exception("CL_ShaderObject is null");
 }
 

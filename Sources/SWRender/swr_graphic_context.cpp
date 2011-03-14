@@ -71,7 +71,7 @@ CL_GraphicContext_SWRender::~CL_GraphicContext_SWRender()
 
 void CL_GraphicContext_SWRender::throw_if_null() const
 {
-	if (impl.is_null())
+	if (!impl)
 		throw CL_Exception("CL_GraphicContext_SWRender is null");
 }
 

@@ -122,7 +122,7 @@ CL_RegistryKey::~CL_RegistryKey()
 
 void CL_RegistryKey::throw_if_null() const
 {
-	if (impl.is_null())
+	if (!impl)
 		throw CL_Exception("CL_RegistryKey is null");
 }
 

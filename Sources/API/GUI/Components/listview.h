@@ -178,7 +178,7 @@ public:
 	CL_ListViewItem find(int id, bool recursive=true);
 
 	/// \brief Returns a CL_ListViewItem with the userdata 'ptr', or a NULL item if none found.
-	CL_ListViewItem find(CL_UnknownSharedPtr userdata, bool recursive=true);
+	CL_ListViewItem find(CL_SharedPtr<CL_ListViewItemUserData> userdata, bool recursive=true);
 
 /// \}
 /// \name Events

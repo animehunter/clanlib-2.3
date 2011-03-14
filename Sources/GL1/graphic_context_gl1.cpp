@@ -69,7 +69,7 @@ CL_GraphicContext_GL1::~CL_GraphicContext_GL1()
 
 void CL_GraphicContext_GL1::throw_if_null() const
 {
-	if (impl.is_null())
+	if (!impl)
 		throw CL_Exception("CL_GraphicContext_GL1 is null");
 }
 

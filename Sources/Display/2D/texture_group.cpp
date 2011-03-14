@@ -53,7 +53,7 @@ CL_TextureGroup::~CL_TextureGroup()
 
 void CL_TextureGroup::throw_if_null() const
 {
-	if (impl.is_null())
+	if (!impl)
 		throw CL_Exception("CL_TextureGroup is null");
 }
 

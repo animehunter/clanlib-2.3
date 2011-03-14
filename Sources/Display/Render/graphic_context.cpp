@@ -72,7 +72,7 @@ CL_GraphicContext::~CL_GraphicContext()
 
 void CL_GraphicContext::throw_if_null() const
 {
-	if (impl.is_null())
+	if (!impl)
 		throw CL_Exception("CL_GraphicContext is null");
 }
 
@@ -154,7 +154,7 @@ CL_Size CL_GraphicContext::get_max_texture_size() const
 
 CL_GraphicContextProvider *CL_GraphicContext::get_provider()
 {
-	if (!impl.is_null())
+	if (impl)
 		return impl->provider;
 	else
 		return 0;
@@ -162,7 +162,7 @@ CL_GraphicContextProvider *CL_GraphicContext::get_provider()
 
 const CL_GraphicContextProvider * const CL_GraphicContext::get_provider() const
 {
-	if (!impl.is_null())
+	if (impl)
 		return impl->provider;
 	else
 		return 0;
@@ -337,13 +337,13 @@ void CL_GraphicContext::draw_primitives(CL_PrimitivesType type, int num_vertices
 		impl->provider->set_modelview(impl->modelviews[impl->modelview_index]);
 		impl->modelview_changed = false;
 	}
-	impl->provider->draw_primitives(type, num_vertices, prim_array.impl);
+	impl->provider->draw_primitives(type, num_vertices, prim_array.impl.get());
 }
 
 void CL_GraphicContext::set_primitives_array(const CL_PrimitivesArray &prim_array)
 {
 	impl->flush_batcher(*this);
-	impl->provider->set_primitives_array(prim_array.impl);
+	impl->provider->set_primitives_array(prim_array.impl.get());
 }
 
 void CL_GraphicContext::draw_primitives_array(CL_PrimitivesType type, int num_vertices)

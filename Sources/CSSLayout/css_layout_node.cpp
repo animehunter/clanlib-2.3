@@ -43,7 +43,7 @@ CL_CSSLayoutNode::CL_CSSLayoutNode()
 
 bool CL_CSSLayoutNode::is_null() const
 {
-	return impl.is_null() || impl->is_disposed();
+	return !impl || impl->is_disposed();
 }
 
 bool CL_CSSLayoutNode::is_text() const
@@ -197,7 +197,7 @@ void CL_CSSLayoutNode_Impl::on_dispose()
 
 CL_CSSLayoutNode CL_CSSLayoutNode_Impl::get_node(CL_CSSBoxNode *box_node) const
 {
-	return layout_impl->get_node(box_node);
+	return layout_impl.lock()->get_node(box_node);
 }
 
 

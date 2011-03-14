@@ -56,7 +56,7 @@ CL_FontDescription CL_FontDescription::create_null_object()
 
 void CL_FontDescription::throw_if_null() const
 {
-	if (impl.is_null())
+	if (!impl)
 		throw CL_Exception("is null");
 }
 

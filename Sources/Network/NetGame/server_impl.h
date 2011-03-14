@@ -28,7 +28,6 @@
 
 #pragma once
 
-#include "API/Core/System/autoptr.h"
 #include "API/Network/Socket/tcp_listen.h"
 #include "API/Core/System/keep_alive.h"
 
@@ -38,7 +37,7 @@ public:
 	CL_Event get_wakeup_event() { return event_arrived; }
 	void process();
 
-	CL_AutoPtr<CL_TCPListen> tcp_listen;
+	std::auto_ptr<CL_TCPListen> tcp_listen;
 	CL_Thread listen_thread;
 
 	CL_Mutex mutex;

@@ -107,7 +107,7 @@ public:
 #ifdef WIN32
 	HWND handle;
 #endif
-	std::map<CL_String, CL_UnknownSharedPtr> data_objects;
+	std::map<CL_String, CL_SharedPtr<CL_DisplayWindowDescriptionData>> data_objects;
 	int depth_size;
 	int stencil_size;
 /// \}

@@ -69,12 +69,12 @@ CL_GUITheme::~CL_GUITheme()
 
 bool CL_GUITheme::is_null()
 {
-	return impl.is_null();
+	return !impl;
 }
 
 CL_GUIThemeProvider *CL_GUITheme::get_provider() const
 {
-	if (impl.is_null())
+	if (!impl)
 		return 0;
 	return impl->provider;
 }

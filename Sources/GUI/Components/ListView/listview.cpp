@@ -280,7 +280,7 @@ CL_ListViewItem CL_ListView::find(const CL_StringRef &col_id, const CL_StringRef
 	return impl->find(it, col_id, str, recursive);
 }
 
-CL_ListViewItem CL_ListView::find(CL_UnknownSharedPtr userdata, bool recursive)
+CL_ListViewItem CL_ListView::find(CL_SharedPtr<CL_ListViewItemUserData> userdata, bool recursive)
 {
 	CL_ListViewItem it = impl->document_item.get_first_child();
 	return impl->find(it, userdata, recursive);
@@ -942,7 +942,7 @@ CL_ListViewItem CL_ListView_Impl::find(CL_ListViewItem &it, int id, bool recursi
 	return CL_ListViewItem();
 }
 
-CL_ListViewItem CL_ListView_Impl::find(CL_ListViewItem &it, CL_UnknownSharedPtr userdata, bool recursive)
+CL_ListViewItem CL_ListView_Impl::find(CL_ListViewItem &it, CL_SharedPtr<CL_ListViewItemUserData> userdata, bool recursive)
 {
 	while (it.is_item())
 	{

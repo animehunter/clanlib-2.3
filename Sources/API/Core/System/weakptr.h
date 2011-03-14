@@ -34,6 +34,23 @@
 
 #pragma once
 
+#include <memory>
+/*
+template<typename T>
+class CL_WeakPtr : public std::weak_ptr<T>
+{
+public:
+	CL_WeakPtr() { }
+	template<T>
+	CL_WeakPtr(T p) : std::weak_ptr(p) { }
+	bool is_null() const { return get() == nullptr; }
+};
+*/
+#define CL_WeakPtr std::weak_ptr
+
+
+#ifdef OLD_SHAREDPTR
+
 #include "../api_core.h"
 #include "sharedptr.h"
 
@@ -274,3 +291,5 @@ private:
 };
 
 /// \}
+
+#endif

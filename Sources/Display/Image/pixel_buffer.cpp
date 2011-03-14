@@ -99,7 +99,7 @@ CL_PixelBuffer::~CL_PixelBuffer()
 
 void CL_PixelBuffer::throw_if_null() const
 {
-	if (impl.is_null())
+	if (!impl)
 		throw CL_Exception("CL_PixelBuffer is null");
 }
 
@@ -275,7 +275,7 @@ CL_PixelBuffer CL_PixelBuffer::copy(const CL_Rect &rect) const
 
 CL_PixelBuffer::operator bool() const
 {
-	return !impl.is_null();
+	return impl;
 }
 
 void CL_PixelBuffer::convert(CL_PixelBuffer &target) const

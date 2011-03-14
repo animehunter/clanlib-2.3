@@ -131,7 +131,7 @@ public:
 	int get_exit_code() const;
 
 	/// \brief Returns userdata.
-	CL_UnknownSharedPtr get_userdata();
+	//CL_UnknownSharedPtr get_userdata();
 
 	/// \brief Get a registered user defined GUI font (set with register_font()). Returns NULL if not found
 	CL_Font get_registered_font(const CL_FontDescription &desc);
@@ -209,7 +209,7 @@ public:
 	void request_repaint(const CL_Rect &rect, CL_GUIComponent *root_component);
 
 	/// \brief Set userdata.
-	void set_userdata(CL_UnknownSharedPtr ptr);
+	//void set_userdata(CL_UnknownSharedPtr ptr);
 
 	/// \brief Registers a user defined GUI font - referenced using the specified font description.
 	void register_font(const CL_Font &font, const CL_FontDescription &desc);

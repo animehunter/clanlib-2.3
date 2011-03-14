@@ -88,7 +88,7 @@ CL_SoundOutput::CL_SoundOutput(const CL_SoundOutput_Description &desc)
 		alsa_impl.disconnect();
 	}
 
-	if (impl.is_null())
+	if (!impl)
 #endif
 
 #endif
@@ -106,7 +106,7 @@ CL_SoundOutput::~CL_SoundOutput()
 }
 
 CL_SoundOutput::CL_SoundOutput(const CL_WeakPtr<CL_SoundOutput_Impl> impl)
-: impl(impl.to_sharedptr())
+: impl(impl.lock())
 {
 }
 /////////////////////////////////////////////////////////////////////////////
@@ -114,7 +114,7 @@ CL_SoundOutput::CL_SoundOutput(const CL_WeakPtr<CL_SoundOutput_Impl> impl)
 
 void CL_SoundOutput::throw_if_null() const
 {
-	if (impl.is_null())
+	if (!impl)
 		throw CL_Exception("CL_SoundOutput is null");
 }
 
@@ -157,7 +157,7 @@ void CL_SoundOutput::stop_all()
 	
 void CL_SoundOutput::set_global_volume(float volume)
 {
-	if (!impl.is_null())
+	if (impl)
 	{
 		CL_MutexSection mutex_lock(&impl->mutex);
 		impl->volume = volume;
@@ -166,7 +166,7 @@ void CL_SoundOutput::set_global_volume(float volume)
 
 void CL_SoundOutput::set_global_pan(float pan)
 {
-	if (!impl.is_null())
+	if (impl)
 	{
 		CL_MutexSection mutex_lock(&impl->mutex);
 		impl->pan = pan;
@@ -175,7 +175,7 @@ void CL_SoundOutput::set_global_pan(float pan)
 
 void CL_SoundOutput::add_filter(CL_SoundFilter &filter)
 {
-	if (!impl.is_null())
+	if (impl)
 	{
 		CL_MutexSection mutex_lock(&impl->mutex);
 		impl->filters.push_back(filter);
@@ -184,7 +184,7 @@ void CL_SoundOutput::add_filter(CL_SoundFilter &filter)
 
 void CL_SoundOutput::remove_filter(CL_SoundFilter &filter)
 {
-	if (!impl.is_null())
+	if (impl)
 	{
 		CL_MutexSection mutex_lock(&impl->mutex);
 		for (std::vector<CL_SoundFilter>::size_type i=0; i<impl->filters.size(); i++)

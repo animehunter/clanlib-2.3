@@ -71,12 +71,12 @@ CL_GUILayout::~CL_GUILayout()
 // CL_GUILayout Attributes:
 bool CL_GUILayout::is_null()
 {
-	return impl.is_null();
+	return !impl;
 }
 
 CL_GUILayoutProvider *CL_GUILayout::get_provider() const
 {
-	if (impl.is_null())
+	if (!impl)
 		return 0;
 	return impl->provider;
 }

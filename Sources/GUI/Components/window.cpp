@@ -185,12 +185,12 @@ bool CL_Window::is_minimized() const
 	const CL_GUIComponent *root_component = get_top_level_component();
 
 	std::vector<CL_GUITopLevelWindow>::size_type pos, size;
-	size = CL_GUIComponent::impl->gui_manager->root_components.size();
+	size = CL_GUIComponent::impl->gui_manager.lock()->root_components.size();
 	for (pos = 0; pos < size; pos++)
 	{
-		CL_GUITopLevelWindow *cur = CL_GUIComponent::impl->gui_manager->root_components[pos];
+		CL_GUITopLevelWindow *cur = CL_GUIComponent::impl->gui_manager.lock()->root_components[pos];
 		if (cur->component == root_component)
-			return CL_GUIComponent::impl->gui_manager->window_manager.is_minimized(cur);
+			return CL_GUIComponent::impl->gui_manager.lock()->window_manager.is_minimized(cur);
 	}
 
 	return false;
@@ -201,12 +201,12 @@ bool CL_Window::is_maximized() const
 	const CL_GUIComponent *root_component = get_top_level_component();
 
 	std::vector<CL_GUITopLevelWindow>::size_type pos, size;
-	size = CL_GUIComponent::impl->gui_manager->root_components.size();
+	size = CL_GUIComponent::impl->gui_manager.lock()->root_components.size();
 	for (pos = 0; pos < size; pos++)
 	{
-		CL_GUITopLevelWindow *cur = CL_GUIComponent::impl->gui_manager->root_components[pos];
+		CL_GUITopLevelWindow *cur = CL_GUIComponent::impl->gui_manager.lock()->root_components[pos];
 		if (cur->component == root_component)
-			return CL_GUIComponent::impl->gui_manager->window_manager.is_maximized(cur);
+			return CL_GUIComponent::impl->gui_manager.lock()->window_manager.is_maximized(cur);
 	}
 
 	return false;
@@ -230,12 +230,12 @@ void CL_Window::bring_to_front()
 	const CL_GUIComponent *root_component = get_top_level_component();
 
 	std::vector<CL_GUITopLevelWindow>::size_type pos, size;
-	size = CL_GUIComponent::impl->gui_manager->root_components.size();
+	size = CL_GUIComponent::impl->gui_manager.lock()->root_components.size();
 	for (pos = 0; pos < size; pos++)
 	{
-		CL_GUITopLevelWindow *cur = CL_GUIComponent::impl->gui_manager->root_components[pos];
+		CL_GUITopLevelWindow *cur = CL_GUIComponent::impl->gui_manager.lock()->root_components[pos];
 		if (cur->component == root_component)
-			return CL_GUIComponent::impl->gui_manager->window_manager.bring_to_front(cur);
+			return CL_GUIComponent::impl->gui_manager.lock()->window_manager.bring_to_front(cur);
 	}
 }
 
@@ -461,11 +461,11 @@ void CL_Window_Impl::check_move_window(CL_GUIMessage &msg)
 			const CL_GUIComponent *root_component = window->get_top_level_component();
 
 			std::vector<CL_GUITopLevelWindow>::size_type pos, size;
-			size = window->CL_GUIComponent::impl->gui_manager->root_components.size();
+			size = window->CL_GUIComponent::impl->gui_manager.lock()->root_components.size();
 
 			for (pos = 0; pos < size; pos++)
 			{
-				CL_GUITopLevelWindow *cur = window->CL_GUIComponent::impl->gui_manager->root_components[pos];
+				CL_GUITopLevelWindow *cur = window->CL_GUIComponent::impl->gui_manager.lock()->root_components[pos];
 				if (cur->component == root_component)
 				{
 					CL_Rect geometry = window->get_window_geometry();

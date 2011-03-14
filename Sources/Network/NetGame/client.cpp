@@ -70,7 +70,7 @@ void CL_NetGameClient::process_events()
 
 void CL_NetGameClient::send_event(const CL_NetGameEvent &game_event)
 {
-	if (impl->connection != 0)
+	if (impl->connection.get() != 0)
 		impl->connection->send_event(game_event);
 }
 

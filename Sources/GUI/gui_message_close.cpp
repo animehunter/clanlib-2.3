@@ -32,7 +32,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CL_GUIMessage_CloseData Class:
 
-class CL_GUIMessage_CloseData
+class CL_GUIMessage_CloseData : public CL_GUIMessageData
 {
 public:
 };
@@ -43,8 +43,7 @@ public:
 CL_GUIMessage_Close::CL_GUIMessage_Close()
 {
 	set_type("window close");
-	set_data("window close", CL_SharedPtr<CL_GUIMessage_CloseData>(
-		new CL_GUIMessage_CloseData));
+	set_data("window close", CL_SharedPtr<CL_GUIMessage_CloseData>(new CL_GUIMessage_CloseData));
 }
 
 CL_GUIMessage_Close::CL_GUIMessage_Close(const CL_GUIMessage &message)

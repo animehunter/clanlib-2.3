@@ -55,7 +55,7 @@ CL_IODevice::~CL_IODevice()
 
 void CL_IODevice::throw_if_null() const
 {
-	if (impl.is_null())
+	if (!impl)
 		throw CL_Exception("CL_IODevice is null");
 }
 

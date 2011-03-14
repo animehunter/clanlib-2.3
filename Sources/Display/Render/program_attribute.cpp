@@ -78,7 +78,7 @@ CL_ProgramAttribute::~CL_ProgramAttribute()
 
 void CL_ProgramAttribute::throw_if_null() const
 {
-	if (impl.is_null())
+	if (!impl)
 		throw CL_Exception("CL_ProgramAttribute is null");
 }
 

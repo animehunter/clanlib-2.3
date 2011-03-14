@@ -51,7 +51,7 @@ public:
 
 	CL_GUIComponent *target;
 
-	std::map<CL_String, CL_UnknownSharedPtr> data_objects;
+	std::map<CL_String, CL_SharedPtr<CL_GUIMessageData>> data_objects;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -79,13 +79,13 @@ bool CL_GUIMessage::is_type(const CL_StringRef &type) const
 	return impl->type == type;
 }
 
-CL_UnknownSharedPtr CL_GUIMessage::get_data(const CL_StringRef &data_name) const
+CL_SharedPtr<CL_GUIMessageData> CL_GUIMessage::get_data(const CL_StringRef &data_name) const
 {
-	std::map<CL_String, CL_UnknownSharedPtr>::const_iterator it = impl->data_objects.find(data_name);
+	std::map<CL_String, CL_SharedPtr<CL_GUIMessageData>>::const_iterator it = impl->data_objects.find(data_name);
 	if (it != impl->data_objects.end())
 		return it->second;
 	else
-		return CL_UnknownSharedPtr();
+		return CL_SharedPtr<CL_GUIMessageData>();
 }
 
 CL_GUIComponent *CL_GUIMessage::get_target() const
@@ -106,7 +106,7 @@ void CL_GUIMessage::set_type(const CL_StringRef &type)
 	impl->type = type;
 }
 
-void CL_GUIMessage::set_data(const CL_StringRef &data_name, const CL_UnknownSharedPtr &ptr)
+void CL_GUIMessage::set_data(const CL_StringRef &data_name, const CL_SharedPtr<CL_GUIMessageData> &ptr)
 {
 	impl->data_objects[data_name] = ptr;
 }

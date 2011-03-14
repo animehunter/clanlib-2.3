@@ -96,12 +96,12 @@ CL_Font::~CL_Font()
 
 bool CL_Font::is_null()
 {
-	return impl.is_null();
+	return !impl;
 }
 
 CL_FontProvider *CL_Font::get_provider() const
 {
-	if (impl.is_null())
+	if (!impl)
 		return 0;
 	return impl->provider;
 }
@@ -111,7 +111,7 @@ CL_FontProvider *CL_Font::get_provider() const
 
 void CL_Font::draw_text(CL_GraphicContext &gc, float dest_x, float dest_y, const CL_StringRef &text, const CL_Colorf &color)
 {
-	if (!impl.is_null())
+	if (impl)
 	{
 		CL_FontMetrics fm = get_font_metrics(gc);
 		int line_spacing = fm.get_height() + fm.get_external_leading();
@@ -138,7 +138,7 @@ CL_Size CL_Font::get_text_size(CL_GraphicContext &gc, const CL_StringRef &text)
 {
 	CL_Size total_size;
 
-	if (!impl.is_null())
+	if (impl)
 	{
 		CL_FontMetrics fm = get_font_metrics(gc);
 		int line_spacing = fm.get_external_leading();
@@ -165,14 +165,14 @@ CL_Size CL_Font::get_text_size(CL_GraphicContext &gc, const CL_StringRef &text)
 
 CL_FontMetrics CL_Font::get_font_metrics(CL_GraphicContext &gc)
 {
-	if (!impl.is_null())
+	if (impl)
 		return get_provider()->get_font_metrics(gc);
 	return CL_FontMetrics();
 }
 
 int CL_Font::get_character_index(CL_GraphicContext &gc, const CL_String &text, const CL_Point &point)
 {
-	if (!impl.is_null())
+	if (impl)
 		return get_provider()->get_character_index(gc, text, point);
 	return 0;
 }

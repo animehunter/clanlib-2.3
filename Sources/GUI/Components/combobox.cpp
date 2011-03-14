@@ -97,6 +97,10 @@ public:
 	int item_height;
 	int minimum_width;
 	CL_Rect opener_rect;
+
+	class NoLoopHack : public CL_GUIMessageData
+	{
+	};
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -335,12 +339,12 @@ void CL_ComboBox_Impl::on_process_message(CL_GUIMessage &msg)
 				e.id != CL_KEY_ENTER && 
 				e.id != CL_KEY_NUMPAD_ENTER &&
 				e.id != CL_KEY_ESCAPE &&
-				msg.get_data("No Loop Hack").is_null())
+				!msg.get_data("No Loop Hack"))
 			{
 				CL_GUIMessage_Input input_msg;
 				input_msg.set_target(lineedit);
 				input_msg.set_event(e);
-				input_msg.set_data("No Loop Hack", CL_SharedPtr<int>(new int(1337)));
+				input_msg.set_data("No Loop Hack", CL_SharedPtr<NoLoopHack>(new NoLoopHack()));
 				component->get_gui_manager().dispatch_message(input_msg);
 				msg.set_consumed();
 			}

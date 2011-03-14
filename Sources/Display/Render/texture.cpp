@@ -73,6 +73,11 @@ public:
 			provider->destroy();
 	}
 
+	bool operator<(const CL_Texture_Impl &other) const
+	{
+		return provider < other.provider;
+	}
+
 	CL_TextureProvider *provider;
 	int width, height;
 	float min_lod;
@@ -246,7 +251,7 @@ CL_Texture::~CL_Texture()
 
 void CL_Texture::throw_if_null() const
 {
-	if (impl.is_null())
+	if (!impl)
 		throw CL_Exception("CL_Texture is null");
 }
 
@@ -348,7 +353,7 @@ CL_CompareFunction CL_Texture::get_compare_function() const
 
 CL_TextureProvider *CL_Texture::get_provider() const
 {
-	if (impl.is_null())
+	if (!impl)
 		return 0;
 	else
 		return impl->provider;

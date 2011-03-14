@@ -140,7 +140,7 @@ void CL_GL1FrameBufferProvider::attach_color_buffer(int color_buffer, const CL_T
 
 	// Find existing pbuffer
 	CL_WeakPtr<CL_Texture_Impl> texture_impl(texture.get_impl());
-	std::map< CL_WeakPtr<CL_Texture_Impl>, CL_PBuffer_GL1>::iterator texture_it = texture_pbuffer_map.find(texture_impl);
+	auto texture_it = texture_pbuffer_map.find(texture_impl);
 	if (texture_it == texture_pbuffer_map.end())
 	{
 		// Not found, create a new entry
@@ -161,7 +161,7 @@ void CL_GL1FrameBufferProvider::attach_color_buffer(int color_buffer, const CL_T
 	// Purge the cache from unused pbuffers. Maybe we could reuse them instead? But for this to occur, the user would be recreating CL_Textures anyway (which is slow). This added complexity is not required (at the moment)
 	for (texture_it = texture_pbuffer_map.begin(); texture_it != texture_pbuffer_map.end();)
 	{
-		if (texture_it->first.is_null())
+		if (texture_it->first.expired())
 		{
 			// This "texture_it = texture_pbuffer_map.erase(texture_it);" works on visual studio,
 			// but MSDN says This return type does not conform to the C++ standard. So do it a different way, so GCC does not complain

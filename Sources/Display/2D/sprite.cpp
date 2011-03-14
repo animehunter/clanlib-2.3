@@ -115,7 +115,7 @@ CL_Sprite::~CL_Sprite()
 
 void CL_Sprite::throw_if_null() const
 {
-	if (impl.is_null())
+	if (!impl)
 		throw CL_Exception("CL_Sprite is null");
 }
 

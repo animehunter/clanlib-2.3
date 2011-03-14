@@ -28,7 +28,6 @@
 
 #pragma once
 
-#include "API/Core/System/autoptr.h"
 #include "API/Core/System/keep_alive.h"
 
 class CL_NetGameClient_Impl : public CL_KeepAliveObject
@@ -41,7 +40,7 @@ public:
 	CL_Mutex mutex;
 	std::vector<CL_NetGameNetworkEvent> events;
 
-	CL_AutoPtr<CL_NetGameConnection> connection;
+	std::auto_ptr<CL_NetGameConnection> connection;
 	CL_Signal_v1<const CL_NetGameEvent &> sig_game_event_received;
 	CL_Signal_v0 sig_game_connected;
 	CL_Signal_v0 sig_game_disconnected;

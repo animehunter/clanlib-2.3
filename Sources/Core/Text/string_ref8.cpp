@@ -30,7 +30,6 @@
 #include "API/Core/Text/string_ref8.h"
 #include "API/Core/Text/string_types.h"
 #include "API/Core/Text/string_help.h"
-#include "API/Core/System/memory_pool.h"
 
 #ifndef WIN32
 #include <string.h>
@@ -150,7 +149,7 @@ CL_StringRef8 &CL_StringRef8::operator =(const wchar_t *c_str)
 void CL_StringRef8::clear() const
 {
 	if (temporary)
-		CL_MemoryPool::get_temp_pool()->free(this->data_ptr);
+		delete[] this->data_ptr;
 	temporary = false;
 	null_terminated = false;
 	this->data_ptr = 0;
@@ -160,7 +159,7 @@ void CL_StringRef8::clear() const
 void CL_StringRef8::create_temp(const char *data, size_type length) const
 {
 	clear();
-	this->data_ptr = (char *) CL_MemoryPool::get_temp_pool()->alloc(sizeof(char) * (length + 1));
+	this->data_ptr = new char[length + 1];
 	this->data_length = length;
 	memcpy(this->data_ptr, data, sizeof(char) * this->data_length);
 	this->data_ptr[this->data_length] = 0;

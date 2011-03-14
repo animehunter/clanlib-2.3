@@ -47,7 +47,7 @@ CL_CSSLayout::CL_CSSLayout()
 
 bool CL_CSSLayout::is_null() const
 {
-	return impl.is_null() || impl->box_tree.get_root_element() == 0;
+	return !impl || impl->box_tree.get_root_element() == 0;
 }
 
 void CL_CSSLayout::layout(CL_GraphicContext &gc, const CL_Size &viewport)
@@ -287,12 +287,12 @@ CL_SharedPtr<CL_CSSLayoutNode_Impl> CL_CSSLayout_Impl::alloc_node_impl() const
 		node_impl = free_node_impls.back();
 		free_node_impls.pop_back();
 	}
-	return CL_SharedPtr<CL_CSSLayoutNode_Impl>(node_impl, (CL_CSSLayout_Impl*)this, &CL_CSSLayout_Impl::free_node_impl);
+	return CL_SharedPtr<CL_CSSLayoutNode_Impl>(node_impl, NodeImplDeleter(this));
 }
 
 void CL_CSSLayout_Impl::free_node_impl(CL_CSSLayoutNode_Impl *node_impl)
 {
-	if (!node_impl->layout_impl.is_null())
+	if (!node_impl->layout_impl.expired())
 		free_node_impls.push_back(node_impl);
 	else
 		delete node_impl;
@@ -326,5 +326,5 @@ CL_CSSLayoutNode CL_CSSLayout_Impl::get_node(CL_CSSBoxNode *box_node) const
 CL_CSSLayout CL_CSSLayout_Impl::get_layout()
 {
 	throw_if_disposed();
-	return CL_CSSLayout(self);
+	return CL_CSSLayout(CL_SharedPtr<CL_CSSLayout_Impl>(self));
 }

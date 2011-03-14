@@ -85,7 +85,7 @@ CL_Win32Window::CL_Win32Window()
 CL_Win32Window::~CL_Win32Window()
 {
 	CL_DisplayMessageQueue_Win32::message_queue.remove_client(this);
-	if (!ic.impl.is_null())
+	if (ic.impl)
 		ic.impl->dispose();
 	get_keyboard()->dispose();
 	get_mouse()->dispose();

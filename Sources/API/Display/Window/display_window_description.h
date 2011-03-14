@@ -36,11 +36,18 @@
 #include "../api_display.h"
 #include "../../Core/Text/string_types.h"
 #include "../../Core/System/sharedptr.h"
+#include <windows.h>
 
 class CL_Size;
 class CL_Rect;
 class CL_DisplayWindow;
 class CL_DisplayWindowDescription_Impl;
+
+class CL_DisplayWindowDescriptionData
+{
+public:
+	virtual ~CL_DisplayWindowDescriptionData() { }
+};
 
 /// \brief Display window description class.
 ///
@@ -160,7 +167,7 @@ public:
 	bool get_tablet_context() const;
 
 	/// \brief Returns the object stored in the given data name.
-	CL_UnknownSharedPtr get_data(const CL_String &data_name) const;
+	CL_SharedPtr<CL_DisplayWindowDescriptionData> get_data(const CL_String &data_name) const;
 
 	/// \brief Returns the minimum required depth buffer.
 	int get_depth_size() const;
@@ -268,7 +275,7 @@ public:
 #endif
 
 	/// \brief Store object in description.
-	void set_data(const CL_String &data_name, const CL_UnknownSharedPtr &ptr);
+	void set_data(const CL_String &data_name, const CL_SharedPtr<CL_DisplayWindowDescriptionData> &ptr);
 
 	/// \brief Sets the minimum required depth buffer.
 	/** <p>If this value is zero, the smallest available depth buffer is preferred. Otherwise,

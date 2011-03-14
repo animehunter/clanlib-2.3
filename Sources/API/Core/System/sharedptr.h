@@ -35,6 +35,23 @@
 
 #include "../api_core.h"
 #include "system.h"
+#include <memory>
+/*
+template<typename T>
+class CL_SharedPtr : public std::shared_ptr<T>
+{
+public:
+	CL_SharedPtr() { }
+	CL_SharedPtr(T *ptr) : std::shared_ptr(ptr) { }
+	bool is_null() const { return get() == nullptr; }
+};
+*/
+#define CL_SharedPtr std::shared_ptr
+
+#ifdef OLD_SHAREDPTR
+
+#include "../api_core.h"
+#include "system.h"
 
 #include <cstring>
 
@@ -452,3 +469,4 @@ private:
 };
 
 /// \}
+#endif

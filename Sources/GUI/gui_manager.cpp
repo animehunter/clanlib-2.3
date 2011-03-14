@@ -119,12 +119,12 @@ int CL_GUIManager::get_exit_code() const
 {
 	return impl->exit_code;
 }
-
+/*
 CL_UnknownSharedPtr CL_GUIManager::get_userdata()
 {
 	return impl->userdata;
 }
-
+*/
 CL_Font CL_GUIManager::get_registered_font(const CL_FontDescription &desc)
 {
 	return impl->get_registered_font(desc);
@@ -324,12 +324,12 @@ void CL_GUIManager::render_windows()
 		cur->component->paint(CL_Rect(CL_Point(0,0), geometry.get_size()));
 	}
 }
-
+/*
 void CL_GUIManager::set_userdata(CL_UnknownSharedPtr ptr)
 {
 	impl->userdata = ptr;
 }
-
+*/
 void CL_GUIManager::register_font(const CL_Font &font, const CL_FontDescription &desc)
 {
 	impl->register_font(font, desc);

@@ -129,7 +129,7 @@ public:
 
 	CL_ListViewItem find(CL_ListViewItem &item, const CL_StringRef &col_id, const CL_StringRef &str, bool recursive);
 
-	CL_ListViewItem find(CL_ListViewItem &item, const CL_UnknownSharedPtr userdata, bool recursive);
+	CL_ListViewItem find(CL_ListViewItem &item, const CL_SharedPtr<CL_ListViewItemUserData> userdata, bool recursive);
 
 	CL_ListViewItem find(CL_ListViewItem &it, int id, bool recursive);
 

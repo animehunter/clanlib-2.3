@@ -35,8 +35,8 @@
 
 CL_OpenGLWindowDescription::CL_OpenGLWindowDescription()
 {
-	impl_gl = CL_SharedPtr<CL_OpenGLWindowDescription_Impl>(get_data("OpenGL"));
-	if (impl_gl.is_null())
+	impl_gl = std::dynamic_pointer_cast<CL_OpenGLWindowDescription_Impl>(get_data("OpenGL"));
+	if (!impl_gl)
 	{
 		impl_gl = CL_SharedPtr<CL_OpenGLWindowDescription_Impl>(new CL_OpenGLWindowDescription_Impl);
 		set_data("OpenGL", impl_gl);
@@ -50,8 +50,8 @@ CL_OpenGLWindowDescription::~CL_OpenGLWindowDescription()
 CL_OpenGLWindowDescription::CL_OpenGLWindowDescription(const CL_DisplayWindowDescription &desc)
 {
 	CL_DisplayWindowDescription::operator=(desc);
-	impl_gl = CL_SharedPtr<CL_OpenGLWindowDescription_Impl>(get_data("OpenGL"));
-	if (impl_gl.is_null())
+	impl_gl = std::dynamic_pointer_cast<CL_OpenGLWindowDescription_Impl>(get_data("OpenGL"));
+	if (!impl_gl)
 	{
 		impl_gl = CL_SharedPtr<CL_OpenGLWindowDescription_Impl>(new CL_OpenGLWindowDescription_Impl);
 		set_data("OpenGL", impl_gl);
@@ -61,8 +61,8 @@ CL_OpenGLWindowDescription::CL_OpenGLWindowDescription(const CL_DisplayWindowDes
 CL_OpenGLWindowDescription &CL_OpenGLWindowDescription::operator=(CL_DisplayWindowDescription &desc)
 {
 	CL_DisplayWindowDescription::operator=(desc);
-	impl_gl = CL_SharedPtr<CL_OpenGLWindowDescription_Impl>(get_data("OpenGL"));
-	if (impl_gl.is_null())
+	impl_gl = std::dynamic_pointer_cast<CL_OpenGLWindowDescription_Impl>(get_data("OpenGL"));
+	if (!impl_gl)
 	{
 		impl_gl = CL_SharedPtr<CL_OpenGLWindowDescription_Impl>(new CL_OpenGLWindowDescription_Impl);
 		set_data("OpenGL", impl_gl);

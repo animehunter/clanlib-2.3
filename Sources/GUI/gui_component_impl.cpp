@@ -42,7 +42,7 @@ CL_GUIComponent_Impl::CL_GUIComponent_Impl(const CL_SharedPtr<CL_GUIManager_Impl
   visible(true), activated(false), default_handler(false), cancel_handler(false),
   constant_repaint(false), blocks_default_action_when_focused(false), is_selected_in_group(false)
 {
-	gui_manager_impl = gui_manager.get();
+	gui_manager_impl = gui_manager.lock().get();
 
 	if (!toplevel)
 		parent = parent_or_owner;
@@ -101,9 +101,9 @@ void CL_GUIComponent_Impl::set_geometry(CL_Rect new_geometry, bool client_area)
 {
 	if (parent == 0)
 	{
-		CL_GUITopLevelWindow *handle = gui_manager->get_toplevel_window(component);
-		gui_manager->window_manager.set_geometry(handle, new_geometry, client_area);
-		new_geometry = gui_manager->window_manager.get_geometry(handle, true);
+		CL_GUITopLevelWindow *handle = gui_manager.lock()->get_toplevel_window(component);
+		gui_manager.lock()->window_manager.set_geometry(handle, new_geometry, client_area);
+		new_geometry = gui_manager.lock()->window_manager.get_geometry(handle, true);
 	}
 
 	// repaint parent at old geometry
