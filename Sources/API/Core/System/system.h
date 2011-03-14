@@ -173,10 +173,6 @@ public:
 		memory->~T();
 	}
 
-	static void alloc_thread_temp_pool();
-
-	static void free_thread_temp_pool();
-
 
 /// \}
 /// \name Implementation
