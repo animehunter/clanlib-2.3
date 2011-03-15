@@ -236,7 +236,7 @@ CL_CSSLayoutElement CL_CSSLayout::find_element(const CL_String &name)
 				{
 					next = stack.back().get_next_sibling();
 					while (!next.is_null() && !next.is_element())
-						next = stack.back().get_next_sibling();
+						next = next.get_next_sibling();
 					if (next.is_null())
 					{
 						stack.pop_back();
