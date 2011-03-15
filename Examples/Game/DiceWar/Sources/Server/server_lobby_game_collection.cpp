@@ -70,7 +70,7 @@ ServerLobbyGame *ServerLobbyGameCollection::create_lobby_game(ServerLobbyPlayer 
 ServerGame *ServerLobbyGameCollection::create_game(ServerLobbyGame *lobby_game)
 {
 	// Guard against exceptions between creation and putting it into collection
-	CL_AutoPtr<ServerGame> game(new ServerGame(server, next_game_id++, lobby_game->get_max_players()));
+	std::auto_ptr<ServerGame> game(new ServerGame(server, next_game_id++, lobby_game->get_max_players()));
 
 	game->set_map_name(lobby_game->get_map_name());
 

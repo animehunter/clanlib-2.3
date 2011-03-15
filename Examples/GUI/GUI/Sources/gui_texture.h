@@ -72,19 +72,19 @@ private:
 	CL_DisplayWindow *window_ptr;
 	CL_GUIWindowManagerTexture wm;
 
-	CL_AutoPtr<ScrollBar> scrollbar;
-	CL_AutoPtr<PushButton> pushbutton;
-	CL_AutoPtr<LineEdit> lineedit;
-	CL_AutoPtr<CheckBox> checkbox;
-	CL_AutoPtr<Slider> slider;
-	CL_AutoPtr<RadioButton> radiobutton;
-	CL_AutoPtr<ProgressBar> progressbar;
-	CL_AutoPtr<TabPage> tabpage;
-	CL_AutoPtr<MenuBar> menubar;
-	CL_AutoPtr<Spin> spin;
-	CL_AutoPtr<ComboBox> combobox;
-	CL_AutoPtr<Manager> manager;
-	CL_AutoPtr<ListView> listview;
+	std::auto_ptr<ScrollBar> scrollbar;
+	std::auto_ptr<PushButton> pushbutton;
+	std::auto_ptr<LineEdit> lineedit;
+	std::auto_ptr<CheckBox> checkbox;
+	std::auto_ptr<Slider> slider;
+	std::auto_ptr<RadioButton> radiobutton;
+	std::auto_ptr<ProgressBar> progressbar;
+	std::auto_ptr<TabPage> tabpage;
+	std::auto_ptr<MenuBar> menubar;
+	std::auto_ptr<Spin> spin;
+	std::auto_ptr<ComboBox> combobox;
+	std::auto_ptr<Manager> manager;
+	std::auto_ptr<ListView> listview;
 
 };
 

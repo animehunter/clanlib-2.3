@@ -87,8 +87,8 @@ private:
 	App *app;
 	CL_Font font;
 	CL_Font fps_font;
-	CL_AutoPtr<GUI_Texture> gui_texture;
-	CL_AutoPtr<GUI_System> gui_system;
+	std::auto_ptr<GUI_Texture> gui_texture;
+	std::auto_ptr<GUI_System> gui_system;
 
 	gui_theme new_theme;
 	gui_theme current_theme;

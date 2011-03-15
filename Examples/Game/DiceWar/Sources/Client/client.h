@@ -74,12 +74,12 @@ private:
 	GameView *game_view;
 	LobbyView *lobby_view;
 
-	CL_AutoPtr<ClientGUI> gui;
-	CL_AutoPtr<GameModel> game_model;
-	CL_AutoPtr<GameEvents> game_events;
-	CL_AutoPtr<LobbyModel> lobby_model;
-	CL_AutoPtr<LobbyEvents> lobby_events;
-	CL_AutoPtr<LoginEvents> login_events;
+	std::auto_ptr<ClientGUI> gui;
+	std::auto_ptr<GameModel> game_model;
+	std::auto_ptr<GameEvents> game_events;
+	std::auto_ptr<LobbyModel> lobby_model;
+	std::auto_ptr<LobbyEvents> lobby_events;
+	std::auto_ptr<LoginEvents> login_events;
 
 	CL_SlotContainer slots;
 };

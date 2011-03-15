@@ -42,7 +42,7 @@ private:
 
 	State state;
 
-	CL_AutoPtr<ServerLobbyGamePlayerCollection> player_collection;
+	std::auto_ptr<ServerLobbyGamePlayerCollection> player_collection;
 
 	int id;
 	CL_String name;

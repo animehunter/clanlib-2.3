@@ -16,7 +16,7 @@ public:
 	ClientMap *get_map() { return &map; }
 
 private:
-	CL_AutoPtr<GamePlayerCollection> players;
+	std::auto_ptr<GamePlayerCollection> players;
 
 	ClientMap map;
 };
