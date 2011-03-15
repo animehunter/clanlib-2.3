@@ -78,8 +78,19 @@ bool CL_DomElement::has_attribute(const CL_DomString &name) const
 {
 	if (impl)
 	{
-		CL_DomNode attribute = get_attributes().get_named_item(name);
-		return attribute.is_attr();
+		CL_DomDocument_Generic *doc_impl = (CL_DomDocument_Generic *) impl->owner_document.lock().get();
+		const CL_DomTreeNode *tree_node = impl->get_tree_node();
+		unsigned int cur_index = tree_node->first_attribute;
+		const CL_DomTreeNode *cur_attribute = tree_node->get_first_attribute(doc_impl);
+		while (cur_attribute)
+		{
+			if (cur_attribute->get_node_name() == name)
+				return true;
+
+			cur_index = cur_attribute->next_sibling;
+			cur_attribute = cur_attribute->get_next_sibling(doc_impl);
+		}
+		return false;
 	}
 	return false;
 }

@@ -57,32 +57,37 @@ std::vector<CL_CSSRulesetMatch2> CL_CSSDocument2_Impl::select_rulesets(CL_CSSSel
 bool CL_CSSDocument2_Impl::try_match_chain(const CL_CSSSelectorChain2 &chain, CL_CSSSelectNode2 *node, size_t chain_index)
 {
 	bool matches = false;
-	node->push();
 	if (chain_index > 0)
 	{
 		const CL_CSSSelectorLink2 &link = chain.links[chain_index-1];
 		if (link.type == CL_CSSSelectorLink2::type_child_combinator)
 		{
+			node->push();
 			if (node->parent())
 			{
 				matches = try_match_chain(chain, node, chain_index-1);
 			}
+			node->pop();
 		}
 		else if (link.type == CL_CSSSelectorLink2::type_descendant_combinator)
 		{
+			node->push();
 			while (node->parent())
 			{
 				matches = try_match_chain(chain, node, chain_index-1);
 				if (matches)
 					break;
 			}
+			node->pop();
 		}
 		else if (link.type == CL_CSSSelectorLink2::type_next_sibling_combinator)
 		{
+			node->push();
 			if (node->prev_sibling())
 			{
 				matches = try_match_chain(chain, node, chain_index-1);
 			}
+			node->pop();
 		}
 		else
 		{
@@ -96,26 +101,27 @@ bool CL_CSSDocument2_Impl::try_match_chain(const CL_CSSSelectorChain2 &chain, CL
 	{
 		matches = true;
 	}
-	node->pop();
 	return matches;
 }
 
 bool CL_CSSDocument2_Impl::try_match_link(const CL_CSSSelectorLink2 &link, CL_CSSSelectNode2 *node)
 {
-	bool match = false;
 	if ((link.type == CL_CSSSelectorLink2::type_simple_selector && equals(link.element_name, node->name())) ||
 		link.type == CL_CSSSelectorLink2::type_universal_selector)
 	{
-		match = true;
+	}
+	else
+	{
+		return false;
 	}
 
 	if (!link.element_id.empty() && link.element_id != node->id())
 	{
-		match = false;
+		return false;
 	}
 	if (!link.element_lang.empty() && link.element_lang != node->lang())
 	{
-		match = false;
+		return false;
 	}
 
 	std::vector<CL_String> element_classes;
@@ -134,7 +140,9 @@ bool CL_CSSDocument2_Impl::try_match_link(const CL_CSSSelectorLink2 &link, CL_CS
 			}
 		}
 		if (!found)
-			match = false;
+		{
+			return false;
+		}
 	}
 
 	std::vector<CL_String> pseudo_classes;
@@ -153,7 +161,9 @@ bool CL_CSSDocument2_Impl::try_match_link(const CL_CSSSelectorLink2 &link, CL_CS
 			}
 		}
 		if (!found)
-			match = false;
+		{
+			return false;
+		}
 	}
 
 	for (size_t k = 0; k < link.attribute_selectors.size(); k++)
@@ -222,11 +232,10 @@ bool CL_CSSDocument2_Impl::try_match_link(const CL_CSSSelectorLink2 &link, CL_CS
 
 		if (!found)
 		{
-			match = false;
-			break;
+			return false;
 		}
 	}
-	return match;
+	return true;
 }
 
 void CL_CSSDocument2_Impl::read_stylesheet(CL_CSSTokenizer &tokenizer, const CL_String &new_base_uri)

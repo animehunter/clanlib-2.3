@@ -130,9 +130,6 @@ void CL_DomSelectNode::push()
 
 void CL_DomSelectNode::pop()
 {
-	if (pos != saved_elements.back())
-	{
-		pos = saved_elements.back();
-	}
+	pos = saved_elements.back();
 	saved_elements.pop_back();
 }
