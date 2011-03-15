@@ -40,6 +40,7 @@
 #include "API/GUI/gui_window_manager.h"
 #include "API/GUI/Components/window.h"
 #include "API/Display/2D/draw.h"
+#include "API/Display/2D/image.h"
 #include "API/Display/Window/display_window.h"
 #include "API/Display/Window/input_event.h"
 #include "API/Display/Window/keys.h"
@@ -70,6 +71,8 @@ public:
 	void on_resized();
 
 	void create_parts();
+
+	CL_Image on_css_layout_get_image(CL_GraphicContext &gc, const CL_String &url);
 
 	CL_Rect get_client_area() const;
 
@@ -242,11 +245,25 @@ void CL_Window::bring_to_front()
 void CL_Window::set_layout(CL_CSSLayout layout)
 {
 	impl->css_layout = layout;
+	impl->css_layout.func_get_image().set(impl.get(), &CL_Window_Impl::on_css_layout_get_image);
 	impl->create_parts();
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // CL_Window Implementation:
+
+CL_Image CL_Window_Impl::on_css_layout_get_image(CL_GraphicContext &gc, const CL_String &url)
+{
+	try
+	{
+		return CL_Image(gc, url, &window->get_resources());
+	}
+	catch (CL_Exception e)
+	{
+		// Hmm what to do about that?
+		return CL_Image();
+	}
+}
 
 void CL_Window_Impl::create_parts()
 {
