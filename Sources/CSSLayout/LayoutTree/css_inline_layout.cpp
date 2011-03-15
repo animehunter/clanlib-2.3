@@ -525,7 +525,7 @@ bool CL_CSSInlineLayout::find_content_box(CL_CSSBoxElement *search_element, CL_R
 	if (get_element_node() == search_element)
 	{
 		CL_Rect box = content_box;
-		box.translate(cl_used_to_actual(relative_x) + formatting_context->get_x(), cl_used_to_actual(relative_y) + formatting_context->get_y());
+		box.translate(cl_used_to_actual(relative_x), cl_used_to_actual(relative_y));
 		if (!formatting_context_root)
 			content_box.translate(formatting_context->get_x(), formatting_context->get_y());
 		else if (formatting_context->get_parent())
