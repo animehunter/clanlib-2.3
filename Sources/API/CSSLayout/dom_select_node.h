@@ -39,9 +39,15 @@ public:
 	void push();
 	void pop();
 
-private:
-	void update();
+	CL_String name();
+	CL_String lang();
+	CL_String id();
+	std::vector<CL_String> element_classes();
+	std::vector<CL_String> pseudo_classes();
+	CL_String get_attribute_value(const CL_String &name, bool &out_found);
+	int child_index();
 
+private:
 	CL_DomElement dom_element;
 	CL_DomElement pos;
 	bool is_modified;

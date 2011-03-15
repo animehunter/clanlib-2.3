@@ -100,29 +100,34 @@ bool CL_CSSDocument2_Impl::try_match_chain(const CL_CSSSelectorChain2 &chain, CL
 	return matches;
 }
 
-bool CL_CSSDocument2_Impl::try_match_link(const CL_CSSSelectorLink2 &link, const CL_CSSSelectNode2 *node)
+bool CL_CSSDocument2_Impl::try_match_link(const CL_CSSSelectorLink2 &link, CL_CSSSelectNode2 *node)
 {
 	bool match = false;
-	if ((link.type == CL_CSSSelectorLink2::type_simple_selector && equals(link.element_name, node->name)) ||
+	if ((link.type == CL_CSSSelectorLink2::type_simple_selector && equals(link.element_name, node->name())) ||
 		link.type == CL_CSSSelectorLink2::type_universal_selector)
 	{
 		match = true;
 	}
 
-	if (!link.element_id.empty() && link.element_id != node->id)
+	if (!link.element_id.empty() && link.element_id != node->id())
 	{
 		match = false;
 	}
-	if (!link.element_lang.empty() && link.element_lang != node->lang)
+	if (!link.element_lang.empty() && link.element_lang != node->lang())
 	{
 		match = false;
 	}
+
+	std::vector<CL_String> element_classes;
+	if (!link.element_classes.empty())
+		element_classes = node->element_classes();
+
 	for (size_t k = 0; k < link.element_classes.size(); k++)
 	{
 		bool found = false;
-		for (size_t t = 0; t < node->element_classes.size(); t++)
+		for (size_t t = 0; t < element_classes.size(); t++)
 		{
-			if (equals(link.element_classes[k], node->element_classes[t]))
+			if (equals(link.element_classes[k], element_classes[t]))
 			{
 				found = true;
 				break;
@@ -131,12 +136,17 @@ bool CL_CSSDocument2_Impl::try_match_link(const CL_CSSSelectorLink2 &link, const
 		if (!found)
 			match = false;
 	}
+
+	std::vector<CL_String> pseudo_classes;
+	if (!link.pseudo_classes.empty())
+		pseudo_classes = node->pseudo_classes();
+
 	for (size_t k = 0; k < link.pseudo_classes.size(); k++)
 	{
 		bool found = false;
-		for (size_t t = 0; t < node->pseudo_classes.size(); t++)
+		for (size_t t = 0; t < pseudo_classes.size(); t++)
 		{
-			if (equals(link.pseudo_classes[k], node->pseudo_classes[t]))
+			if (equals(link.pseudo_classes[k], pseudo_classes[t]))
 			{
 				found = true;
 				break;
@@ -145,72 +155,76 @@ bool CL_CSSDocument2_Impl::try_match_link(const CL_CSSSelectorLink2 &link, const
 		if (!found)
 			match = false;
 	}
+
 	for (size_t k = 0; k < link.attribute_selectors.size(); k++)
 	{
 		bool found = false;
-		for (size_t t = 0; t < node->attributes.size(); t++)
+		CL_String value = node->get_attribute_value(link.attribute_selectors[k].name, found);
+		if (found)
 		{
-			if (equals(link.attribute_selectors[k].name, node->attributes[t].name))
+			found = false;
+			switch (link.attribute_selectors[k].type)
 			{
-				switch (link.attribute_selectors[k].type)
-				{
-				case CL_CSSAttributeSelector2::type_set:
+			case CL_CSSAttributeSelector2::type_set:
+				found = true;
+				break;
+
+			case CL_CSSAttributeSelector2::type_exact_value:
+				if (equals(link.attribute_selectors[k].value, value))
 					found = true;
-					break;
+				break;
 
-				case CL_CSSAttributeSelector2::type_exact_value:
-					if (equals(link.attribute_selectors[k].value, node->attributes[t].value))
-						found = true;
-					break;
-
-				case CL_CSSAttributeSelector2::type_space_separated_value:
+			case CL_CSSAttributeSelector2::type_space_separated_value:
+				{
+					std::vector<CL_String> values = CL_StringHelp::split_text(value, " ");
+					for (size_t p = 0; p < values.size(); p++)
 					{
-						std::vector<CL_String> values = CL_StringHelp::split_text(node->attributes[t].value, " ");
-						for (size_t p = 0; p < values.size(); p++)
-						{
-							if (equals(link.attribute_selectors[k].value, values[p]))
-							{
-								found = true;
-								break;
-							}
-						}
-					}
-					break;
-
-				case CL_CSSAttributeSelector2::type_hyphen_separated_value:
-					{
-						std::vector<CL_String> values = CL_StringHelp::split_text(node->attributes[t].value, "-");
-						for (size_t p = 0; p < values.size(); p++)
-						{
-							if (equals(link.attribute_selectors[k].value, values[p]))
-							{
-								found = true;
-								break;
-							}
-						}
-					}
-					break;
-
-				case CL_CSSAttributeSelector2::type_lang_value:
-					{
-						CL_String::size_type len = link.attribute_selectors[k].value.length();
-						if (equals(link.attribute_selectors[k].value, node->attributes[t].value) ||
-							(node->attributes[t].value.length() >= len+1 &&
-							node->attributes[t].value[len] == '-' &&
-							equals(link.attribute_selectors[k].value, node->attributes[t].value.substr(0, len))))
+						if (equals(link.attribute_selectors[k].value, values[p]))
 						{
 							found = true;
+							break;
 						}
 					}
-					break;
 				}
+				break;
 
-				if (found)
-					break;
+			case CL_CSSAttributeSelector2::type_hyphen_separated_value:
+				{
+					std::vector<CL_String> values = CL_StringHelp::split_text(value, "-");
+					for (size_t p = 0; p < values.size(); p++)
+					{
+						if (equals(link.attribute_selectors[k].value, values[p]))
+						{
+							found = true;
+							break;
+						}
+					}
+				}
+				break;
+
+			case CL_CSSAttributeSelector2::type_lang_value:
+				{
+					CL_String::size_type len = link.attribute_selectors[k].value.length();
+					if (equals(link.attribute_selectors[k].value, value) ||
+						(value.length() >= len+1 &&
+						value[len] == '-' &&
+						equals(link.attribute_selectors[k].value, value.substr(0, len))))
+					{
+						found = true;
+					}
+				}
+				break;
 			}
+
+			if (found)
+				break;
 		}
+
 		if (!found)
+		{
 			match = false;
+			break;
+		}
 	}
 	return match;
 }

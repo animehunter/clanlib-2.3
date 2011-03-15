@@ -34,7 +34,6 @@
 CL_DomSelectNode::CL_DomSelectNode(const CL_DomElement &element)
 : dom_element(element), pos(element)
 {
-	update();
 }
 
 bool CL_DomSelectNode::parent()
@@ -43,7 +42,6 @@ bool CL_DomSelectNode::parent()
 	if (parent_node.is_element())
 	{
 		pos = parent_node.to_element();
-		update();
 		return true;
 	}
 	else
@@ -61,7 +59,6 @@ bool CL_DomSelectNode::prev_sibling()
 	if (prev_node.is_element())
 	{
 		pos = prev_node.to_element();
-		update();
 		return true;
 	}
 	else
@@ -70,26 +67,60 @@ bool CL_DomSelectNode::prev_sibling()
 	}
 }
 
-void CL_DomSelectNode::update()
+CL_String CL_DomSelectNode::name()
 {
-	name = pos.get_tag_name();
-	id = pos.get_attribute("id");
-	element_classes = CL_StringHelp::split_text(pos.get_attribute("class"), " ");
-	attributes.clear();
-	CL_DomNamedNodeMap dom_attributes = pos.get_attributes();
-	for (int i = 0; i < dom_attributes.get_length(); i++)
-	{
-		CL_DomAttr attr = dom_attributes.item(i).to_attr();
-		CL_CSSSelectAttribute2 attribute;
-		attribute.name = attr.get_name();
-		attribute.value = attr.get_value();
-		attributes.push_back(attribute);
-	}
-	pseudo_classes.clear();
+	return pos.get_tag_name();
+}
+
+CL_String CL_DomSelectNode::lang()
+{
+	return pos.get_attribute("lang");
+}
+
+CL_String CL_DomSelectNode::id()
+{
+	return pos.get_attribute("id");
+}
+
+std::vector<CL_String> CL_DomSelectNode::element_classes()
+{
+	return CL_StringHelp::split_text(pos.get_attribute("class"), " ");
+}
+
+std::vector<CL_String> CL_DomSelectNode::pseudo_classes()
+{
+	std::vector<CL_String> classes;
 	if (pos.get_previous_sibling().is_null())
-		pseudo_classes.push_back("first-child");
+		classes.push_back("first-child");
 	if (pos.get_tag_name() == "a" || pos.get_tag_name() == "A")
-		pseudo_classes.push_back("link");
+		classes.push_back("link");
+	return classes;
+}
+
+CL_String CL_DomSelectNode::get_attribute_value(const CL_String &name, bool &out_found)
+{
+	if (pos.has_attribute(name)) // To do: need a case insensitive version of this for HTML
+	{
+		out_found = true;
+		return pos.get_attribute(name);
+	}
+	else
+	{
+		out_found = false;
+		return CL_String();
+	}
+}
+
+int CL_DomSelectNode::child_index()
+{
+	int index = 0;
+	CL_DomNode cur = pos;
+	while (!cur.is_null())
+	{
+		index++;
+		cur = cur.get_previous_sibling();
+	}
+	return index;
 }
 
 void CL_DomSelectNode::push()
@@ -102,7 +133,6 @@ void CL_DomSelectNode::pop()
 	if (pos != saved_elements.back())
 	{
 		pos = saved_elements.back();
-		update();
 	}
 	saved_elements.pop_back();
 }
