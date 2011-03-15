@@ -94,6 +94,8 @@ CL_CSSLayout CL_GUIThemeLayoutManager_Impl::create_layout(CL_String component_ty
 {
 	CL_CSSLayout css_layout;
 	CL_CSSLayoutElement css_element = css_layout.create_element(component_type);
+	css_element.apply_properties(css.select(dom_element));
+	css_element.apply_properties(dom_element.get_attribute("style"));
 	css_layout.set_root_element(css_element);
 
 	create_layout_parts(dom_element.get_first_child(), css_element);

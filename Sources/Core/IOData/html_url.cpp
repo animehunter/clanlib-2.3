@@ -167,6 +167,9 @@ CL_String CL_HTMLUrl::to_string() const
 	}
 	else
 	{
-		return scheme + "://" + host + ":" + port + path + query;
+		if (host.empty())
+			return path.substr(1) + query;
+		else
+			return scheme + "://" + host + ":" + port + path + query;
 	}
 }
