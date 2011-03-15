@@ -160,6 +160,7 @@
 #include "Core/IOData/virtual_file_source.h"
 #include "Core/IOData/iodevice_memory.h"
 #include "Core/IOData/virtual_directory_listing.h"
+#include "Core/IOData/html_url.h"
 #include "Core/Zip/zip_archive.h"
 #include "Core/Zip/zip_writer.h"
 #include "Core/Zip/zip_reader.h"

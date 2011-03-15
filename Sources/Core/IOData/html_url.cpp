@@ -26,8 +26,9 @@
 **    Magnus Norddahl
 */
 
-#include "CSSLayout/precomp.h"
-#include "API/CSSLayout/html_url.h"
+#include "Core/precomp.h"
+#include "API/Core/IOData/html_url.h"
+#include "API/Core/Text/string_help.h"
 
 CL_HTMLUrl::CL_HTMLUrl()
 {

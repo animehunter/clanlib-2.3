@@ -28,7 +28,10 @@
 
 #pragma once
 
-class CL_HTMLUrl
+#include "../api_core.h"
+
+/// \brief Class for handling HTML urls.
+class CL_API_CORE CL_HTMLUrl
 {
 public:
 	CL_HTMLUrl();
