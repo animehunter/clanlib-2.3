@@ -520,6 +520,68 @@ void CL_CSSInlineLayout::layout_absolute_and_fixed_content(CL_GraphicContext &gc
 	}
 }
 
+bool CL_CSSInlineLayout::find_content_box(CL_CSSBoxElement *search_element, CL_Rect &out_rect)
+{
+	if (get_element_node() == search_element)
+	{
+		int pos_x = cl_used_to_actual(relative_x) + formatting_context->get_x();
+		int pos_y = cl_used_to_actual(relative_y) + formatting_context->get_y();
+		CL_Rect box = content_box;
+		box.translate(pos_x, pos_y);
+		out_rect = box;
+		return true;
+	}
+
+	for (size_t i = 0; i < lines.size(); i++)
+	{
+		CL_CSSInlineGeneratedBox *cur = lines[i];
+		while (cur)
+		{
+			CL_CSSBoxElement *element = cur->box_node ? dynamic_cast<CL_CSSBoxElement*>(cur->box_node) : 0;
+			if (cur->layout_node)
+			{
+				if (cur->layout_node->find_content_box(element, out_rect))
+					return true;
+			}
+			else if (element == search_element)
+			{
+				int pos_x = cl_used_to_actual(cur->relative_x) + formatting_context->get_x();
+				int pos_y = cl_used_to_actual(cur->relative_y) + formatting_context->get_y();
+				CL_Rect content(pos_x + cur->x, pos_y + cur->y, pos_x + cur->x + cur->width, pos_y + cur->y + cur->ascent + cur->descent);
+				out_rect = content;
+				return true;
+			}
+
+			if (cur->first_child)
+			{
+				cur = cur->first_child;
+			}
+			else if (cur->next_sibling)
+			{
+				cur = cur->next_sibling;
+			}
+			else
+			{
+				while (cur && !cur->next_sibling)
+				{
+					cur = cur->parent;
+				}
+				if (cur)
+				{
+					cur = cur->next_sibling;
+				}
+			}
+		}
+	}
+
+	for (size_t i = 0; i < floats.size(); i++)
+	{
+		if (floats[i]->find_content_box(search_element, out_rect))
+			return true;
+	}
+	return false;
+}
+
 void CL_CSSInlineLayout::render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources, bool root)
 {
 	render_non_content(gc, resources, root);

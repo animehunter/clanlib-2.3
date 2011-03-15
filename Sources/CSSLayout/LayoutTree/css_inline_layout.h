@@ -115,7 +115,7 @@ public:
 	void render_layer_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
 	void render_layer_positioned(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
 
-	// bool find_content_box(CL_CSSBoxElement *element, CL_Rect &out_rect);
+	bool find_content_box(CL_CSSBoxElement *element, CL_Rect &out_rect);
 	// CL_CSSLayoutHitTestResult hit_test(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, const CL_Point &pos) const;
 
 private:
