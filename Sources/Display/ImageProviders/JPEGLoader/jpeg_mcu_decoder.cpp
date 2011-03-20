@@ -29,9 +29,10 @@
 #include "Display/precomp.h"
 #include "jpeg_mcu_decoder.h"
 #include "jpeg_loader.h"
-
+#ifndef CL_ARM_PLATFORM
 #include <xmmintrin.h>
 #include <emmintrin.h>
+#endif
 
 CL_JPEGMCUDecoder::CL_JPEGMCUDecoder(CL_JPEGLoader *loader)
 : loader(loader)
@@ -39,7 +40,7 @@ CL_JPEGMCUDecoder::CL_JPEGMCUDecoder(CL_JPEGLoader *loader)
 	try
 	{
 		for (size_t c = 0; c < loader->start_of_frame.components.size(); c++)
-			channels.push_back((unsigned char *) _aligned_malloc(loader->mcu_x*loader->mcu_y*64, 16));
+			channels.push_back((unsigned char *) CL_System::aligned_alloc(loader->mcu_x*loader->mcu_y*64, 16));
 
 		/* For float AA&N IDCT method, divisors are equal to quantization
 		 * coefficients scaled by scalefactor[row]*scalefactor[col], where
@@ -54,7 +55,7 @@ CL_JPEGMCUDecoder::CL_JPEGMCUDecoder(CL_JPEGLoader *loader)
 
 		for (size_t c = 0; c < loader->start_of_frame.components.size(); c++)
 		{
-			quant.push_back((float*) _aligned_malloc(64*sizeof(float), 16));
+			quant.push_back((float*) CL_System::aligned_alloc(64*sizeof(float), 16));
 			const CL_JPEGQuantizationTable &qtable = loader->quantization_tables[loader->start_of_frame.components[c].quantization_table_selector];
 			for (int y = 0; y < 8; y++)
 				for (int x = 0; x < 8; x++)
@@ -64,9 +65,9 @@ CL_JPEGMCUDecoder::CL_JPEGMCUDecoder(CL_JPEGLoader *loader)
 	catch (...)
 	{
 		for (size_t c = 0; c < channels.size(); c++)
-			_aligned_free(channels[c]);
+			CL_System::aligned_free(channels[c]);
 		for (size_t c = 0; c < quant.size(); c++)
-			_aligned_free(quant[c]);
+			CL_System::aligned_free(quant[c]);
 		throw;
 	}
 }
@@ -74,9 +75,9 @@ CL_JPEGMCUDecoder::CL_JPEGMCUDecoder(CL_JPEGLoader *loader)
 CL_JPEGMCUDecoder::~CL_JPEGMCUDecoder()
 {
 	for (size_t c = 0; c < channels.size(); c++)
-		_aligned_free(channels[c]);
+		CL_System::aligned_free(channels[c]);
 	for (size_t c = 0; c < quant.size(); c++)
-		_aligned_free(quant[c]);
+		CL_System::aligned_free(quant[c]);
 }
 
 void CL_JPEGMCUDecoder::decode(int block)
@@ -235,6 +236,7 @@ void CL_JPEGMCUDecoder::idct(short *inptr, unsigned char *outptr, int pitch, flo
 	}
 }
 
+#ifndef CL_ARM_PLATFORM
 void CL_JPEGMCUDecoder::idct_sse(short *inptr, unsigned char *outptr, int pitch, float *quantptr)
 {
 	__m128 tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7;
@@ -410,6 +412,7 @@ void CL_JPEGMCUDecoder::idct_sse(short *inptr, unsigned char *outptr, int pitch,
 		wsptr += 8*4; /* advance pointer to next row */
 	}
 }
+#endif
 
 unsigned char CL_JPEGMCUDecoder::float_to_int(float f)
 {

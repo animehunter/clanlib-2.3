@@ -31,8 +31,8 @@
 #include "API/Core/IOData/iodevice.h"
 #include "jpeg_define_huffman_table.h"
 #include "jpeg_define_quantization_table.h"
+#include "jpeg_markers.h"
 
-enum CL_JPEGMarker;
 class CL_JPEGStartOfFrame;
 class CL_JPEGStartOfScan;
 

@@ -653,7 +653,7 @@ void CL_CSSTableLayout::position_cells(CL_CSSLayoutCursor &cursor)
 				CL_CSSUsedValue cell_padding_top = get_layout(cell, row)->padding.top;
 				CL_CSSUsedValue cell_padding_bottom = get_layout(cell, row)->padding.top;
 				CL_CSSUsedValue cell_padding_left = get_layout(cell, row)->padding.left;
-				CL_CSSUsedValue cell_padding_right = get_layout(cell, row)->padding.right;
+				// CL_CSSUsedValue cell_padding_right = get_layout(cell, row)->padding.right;
 				if (row == 0)
 					cell_padding_top += padding.top;
 				if (row + 1 == rows.size())
@@ -827,7 +827,6 @@ void CL_CSSTableLayout::render_layer_positioned(CL_GraphicContext &gc, CL_CSSRes
 				CL_CSSLayoutTreeNode *cell_node = get_layout(cell, row);
 				bool is_same_stacking_context = (stacking_context == cell_node->get_stacking_context());
 				bool is_positioned = (cell_node->get_element_node()->computed_properties.position.type != CL_CSSBoxPosition::type_static);
-				bool is_float = cell_node->get_element_node()->is_float();
 				int level = cell_node->get_stacking_context()->get_level();
 				if (is_same_stacking_context)
 				{

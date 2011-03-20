@@ -1070,8 +1070,6 @@ bool CL_CSSInlineLayout::place_floats(CL_CSSInlinePosition start, CL_CSSInlinePo
 		{
 			cur->floated = true;
 			floats.push_back(cur->layout_node);
-			CL_CSSActualValue float_width = cur->layout_node->get_block_width();
-			CL_CSSActualValue float_height = cur->layout_node->get_block_height();
 
 			if (cur->layout_node->get_element_node()->computed_properties.clear.type == CL_CSSBoxClear::type_left || cur->layout_node->get_element_node()->computed_properties.clear.type == CL_CSSBoxClear::type_both)
 			{

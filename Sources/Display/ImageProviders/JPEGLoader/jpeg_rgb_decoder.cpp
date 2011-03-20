@@ -30,8 +30,10 @@
 #include "jpeg_rgb_decoder.h"
 #include "jpeg_mcu_decoder.h"
 #include "jpeg_loader.h"
+#ifndef CL_ARM_PLATFORM
 #include <xmmintrin.h>
 #include <emmintrin.h>
+#endif
 
 CL_JPEGRGBDecoder::CL_JPEGRGBDecoder(CL_JPEGLoader *loader)
 : loader(loader), mcu_x(0), mcu_y(0), pixels(0)
@@ -40,24 +42,24 @@ CL_JPEGRGBDecoder::CL_JPEGRGBDecoder(CL_JPEGLoader *loader)
 	mcu_y = loader->mcu_y;
 	try
 	{
-		pixels = (unsigned int *) _aligned_malloc(mcu_x*mcu_y*64*4, 16);
+		pixels = (unsigned int *) CL_System::aligned_alloc(mcu_x*mcu_y*64*4, 16);
 		for (size_t c = 0; c < loader->start_of_frame.components.size(); c++)
-			channels.push_back((unsigned char *) _aligned_malloc(mcu_x*mcu_y*64, 16));
+			channels.push_back((unsigned char *) CL_System::aligned_alloc(mcu_x*mcu_y*64, 16));
 	}
 	catch (...)
 	{
-		_aligned_free(pixels);
+        CL_System::aligned_free(pixels);
 		for (size_t c = 0; c < channels.size(); c++)
-			_aligned_free(channels[c]);
+			CL_System::aligned_free(channels[c]);
 		throw;
 	}
 }
 
 CL_JPEGRGBDecoder::~CL_JPEGRGBDecoder()
 {
-	_aligned_free(pixels);
+    CL_System::aligned_free(pixels);
 	for (size_t c = 0; c < channels.size(); c++)
-		_aligned_free(channels[c]);
+		CL_System::aligned_free(channels[c]);
 }
 
 void CL_JPEGRGBDecoder::decode(CL_JPEGMCUDecoder *mcu_decoder)
@@ -100,7 +102,6 @@ void CL_JPEGRGBDecoder::upsample(CL_JPEGMCUDecoder *mcu_decoder)
 			int step_sx = (h<<16)/mcu_x;
 			int step_sy = (v<<16)/mcu_y;
 			int sy = step_sy>>1;
-			int h64 = h*64;
 			for (int y = 0; y < height; y++)
 			{
 				const unsigned char *input_line = input+(sy>>16)*v*8;
@@ -142,7 +143,7 @@ void CL_JPEGRGBDecoder::convert_monochrome()
  * (These numbers are derived from TIFF 6.0 section 21, dated 3-June-92.)
  *
  */
-
+#ifndef CL_ARM_PLATFORM
 void CL_JPEGRGBDecoder::convert_ycrcb_sse()
 {
 	__m128 constant_r_cr = _mm_set1_ps(1.40200f);
@@ -232,6 +233,7 @@ void CL_JPEGRGBDecoder::convert_ycrcb_sse()
 		}
 	}
 }
+#endif
 
 void CL_JPEGRGBDecoder::convert_ycrcb_float()
 {
@@ -251,12 +253,12 @@ void CL_JPEGRGBDecoder::convert_ycrcb_float()
 			float G = Y - 0.34414f * Cb - 0.71414f * Cr;
 			float B = Y + 1.77200f * Cb;
 
-			R = max(R, 0.0f);
-			R = min(R, 255.0f);
-			G = max(G, 0.0f);
-			G = min(G, 255.0f);
-			B = max(B, 0.0f);
-			B = min(B, 255.0f);
+			R = cl_max(R, 0.0f);
+			R = cl_min(R, 255.0f);
+			G = cl_max(G, 0.0f);
+			G = cl_min(G, 255.0f);
+			B = cl_max(B, 0.0f);
+			B = cl_min(B, 255.0f);
 
 			R += 0.5f;
 			G += 0.5f;

@@ -126,7 +126,7 @@ CL_CollisionOutline::CL_CollisionOutline(
 	if (resource.get_type() != "collisionoutline")
 		throw CL_Exception(cl_format("Resource '%1' is not of type 'collisionoutline'", resource_id));
 	CL_ResourceDataSession("collisionoutline", resource);
-	CL_SharedPtr<CL_ResourceData_CollisionOutline> data = std::dynamic_pointer_cast<CL_ResourceData_CollisionOutline>(resource.get_data("collisionoutline"));
+	CL_SharedPtr<CL_ResourceData_CollisionOutline> data = cl_dynamic_pointer_cast<CL_ResourceData_CollisionOutline>(resource.get_data("collisionoutline"));
 	if (!data)
 	{
 		data = CL_SharedPtr<CL_ResourceData_CollisionOutline>(new CL_ResourceData_CollisionOutline(resource));

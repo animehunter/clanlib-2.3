@@ -189,7 +189,7 @@ CL_CSSTableLayout *CL_CSSLayoutTree::create_table_level_layout(CL_CSSBoxElement 
 	*/
 
 	CL_CSSTableLayout *table = new CL_CSSTableLayout(element);
-	bool in_table_row = false;
+	// bool in_table_row = false;
 
 	CL_CSSBoxNodeWalker walker(element->get_first_child(), false);
 	while (walker.is_node())

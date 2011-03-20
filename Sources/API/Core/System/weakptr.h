@@ -34,19 +34,13 @@
 
 #pragma once
 
+#ifdef __APPLE__
+#include <tr1/memory>
+#define CL_WeakPtr std::tr1::weak_ptr
+#else
 #include <memory>
-/*
-template<typename T>
-class CL_WeakPtr : public std::weak_ptr<T>
-{
-public:
-	CL_WeakPtr() { }
-	template<T>
-	CL_WeakPtr(T p) : std::weak_ptr(p) { }
-	bool is_null() const { return get() == nullptr; }
-};
-*/
 #define CL_WeakPtr std::weak_ptr
+#endif
 
 
 #ifdef OLD_SHAREDPTR

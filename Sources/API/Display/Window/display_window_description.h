@@ -36,7 +36,9 @@
 #include "../api_display.h"
 #include "../../Core/Text/string_types.h"
 #include "../../Core/System/sharedptr.h"
+#ifdef WIN32
 #include <windows.h>
+#endif
 
 class CL_Size;
 class CL_Rect;

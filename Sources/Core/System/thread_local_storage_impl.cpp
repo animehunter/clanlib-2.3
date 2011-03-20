@@ -46,7 +46,7 @@ CL_ThreadLocalStorage_Impl::~CL_ThreadLocalStorage_Impl()
 
 CL_SharedPtr<CL_ThreadLocalStorageData> CL_ThreadLocalStorage_Impl::get_variable(const CL_StringRef &name)
 {
-	std::map<CL_String, CL_SharedPtr<CL_ThreadLocalStorageData>>::const_iterator it = data.find(name);
+	std::map<CL_String, CL_SharedPtr<CL_ThreadLocalStorageData> >::const_iterator it = data.find(name);
 	if (it != data.end())
 		return it->second;
 	else

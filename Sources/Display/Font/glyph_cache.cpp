@@ -29,7 +29,7 @@
 
 #include "Display/precomp.h"
 #include "glyph_cache.h"
-#include "FontEngine/font_engine_freetype.h"
+#include "FontEngine/font_engine.h"
 #include "API/Core/System/databuffer.h"
 #include "API/Core/Text/string_format.h"
 #include "API/Display/Image/pixel_buffer.h"

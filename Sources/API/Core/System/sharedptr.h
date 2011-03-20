@@ -35,7 +35,17 @@
 
 #include "../api_core.h"
 #include "system.h"
+
+#ifdef __APPLE__
+#include <tr1/memory>
+#define CL_SharedPtr std::tr1::shared_ptr
+#define cl_dynamic_pointer_cast std::tr1::dynamic_pointer_cast
+#else
 #include <memory>
+#define CL_SharedPtr std::shared_ptr
+#define cl_dynamic_pointer_cast std::dynamic_pointer_cast
+#endif
+
 /*
 template<typename T>
 class CL_SharedPtr : public std::shared_ptr<T>
@@ -46,7 +56,7 @@ public:
 	bool is_null() const { return get() == nullptr; }
 };
 */
-#define CL_SharedPtr std::shared_ptr
+
 
 #ifdef OLD_SHAREDPTR
 

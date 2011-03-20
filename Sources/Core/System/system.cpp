@@ -136,6 +136,8 @@ int CL_System::capture_stack_trace(int frames_to_skip, int max_frames, void **ou
 		*out_hash = 0;
 
 	return (backtrace(out_frames, max_frames));
+#else
+    return 0;
 #endif
 }
 
@@ -252,6 +254,8 @@ std::vector<CL_String> CL_System::get_stack_frames_text(void **frames, int num_f
 
 	free (strings);
 	return backtrace_text;
+#else
+    return std::vector<CL_String>();
 #endif
 }
 

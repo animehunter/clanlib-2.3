@@ -140,8 +140,8 @@ void CL_CSSLayoutTreeNode::calculate_absolute_widths(LayoutStrategy strategy)
 		width.expanding = true;
 	}
 	else if (element_node->computed_properties.left.type != CL_CSSBoxLeft::type_auto &&
-		element_node->computed_properties.right.type != CL_CSSBoxLeft::type_auto &&
-		element_node->computed_properties.width.type != CL_CSSBoxLeft::type_auto)
+		element_node->computed_properties.right.type != CL_CSSBoxRight::type_auto &&
+		element_node->computed_properties.width.type != CL_CSSBoxWidth::type_auto)
 	{
 		if (element_node->computed_properties.margin_width_left.type == CL_CSSBoxMarginWidth::type_auto &&
 			element_node->computed_properties.margin_width_right.type == CL_CSSBoxMarginWidth::type_auto)
@@ -279,14 +279,14 @@ void CL_CSSLayoutTreeNode::calculate_absolute_heights()
 		height.value = 0.0f;
 		height.use_content = true;
 	}
-	else if (element_node->computed_properties.height.type == CL_CSSBoxWidth::type_auto &&
+	else if (element_node->computed_properties.height.type == CL_CSSBoxHeight::type_auto &&
 		element_node->computed_properties.bottom.type == CL_CSSBoxBottom::type_auto &&
 		element_node->computed_properties.top.type != CL_CSSBoxTop::type_auto) // rule #3
 	{
 		height.value = 0.0f;
 		height.use_content = true;
 	}
-	else if (element_node->computed_properties.height.type == CL_CSSBoxWidth::type_auto &&
+	else if (element_node->computed_properties.height.type == CL_CSSBoxHeight::type_auto &&
 		element_node->computed_properties.top.type != CL_CSSBoxTop::type_auto &&
 		element_node->computed_properties.bottom.type != CL_CSSBoxBottom::type_auto) // rule #5
 	{
@@ -561,7 +561,7 @@ void CL_CSSLayoutTreeNode::layout_absolute_or_fixed(CL_GraphicContext &gc, CL_CS
 		{
 			available_width = containing_width.value - margin.left - border.left - padding.left - padding.right - border.right - margin.right - right;
 		}
-		else if (element_node->computed_properties.right.type == CL_CSSBoxLeft::type_auto)
+		else if (element_node->computed_properties.right.type == CL_CSSBoxRight::type_auto)
 		{
 			available_width = containing_width.value - margin.left - border.left - padding.left - padding.right - border.right - margin.right - left;
 		}

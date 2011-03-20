@@ -72,7 +72,7 @@ public:
 protected:
 	int reference_count;
 
-	std::map<CL_String, CL_SharedPtr<CL_ThreadLocalStorageData>> data;
+	std::map<CL_String, CL_SharedPtr<CL_ThreadLocalStorageData> > data;
 /// \}
 };
 

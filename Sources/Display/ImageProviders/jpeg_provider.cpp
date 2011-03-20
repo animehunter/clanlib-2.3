@@ -35,7 +35,9 @@
 #include "API/Core/System/exception.h"
 #include "API/Core/Text/string_help.h"
 #include "JPEGLoader/jpeg_loader.h"
+#ifndef __APPLE__
 #include "API/Display/ImageProviders/jpeg_compressor.h"
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // CL_JPEGProvider construction:
@@ -79,6 +81,9 @@ void CL_JPEGProvider::save(
 	CL_IODevice &file,
 	int quality)
 {
+#ifdef __APPLE__
+    throw CL_Exception("CL_JPEGProvider::save not supported yet");
+#else
 	if (buffer.get_format() != cl_bgr8)
 	{
 		CL_PixelBuffer newbuf(
@@ -104,6 +109,7 @@ void CL_JPEGProvider::save(
 	}
 
 	cp.finish();
+#endif
 }
 
 void CL_JPEGProvider::save(
