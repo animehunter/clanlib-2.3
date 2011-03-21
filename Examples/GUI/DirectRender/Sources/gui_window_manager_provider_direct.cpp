@@ -288,6 +288,7 @@ void GUIWindowManagerProvider_Direct::set_site(CL_GUIWindowManagerSite *new_site
 void GUIWindowManagerProvider_Direct::create_window(
 	CL_GUITopLevelWindow *handle,
 	CL_GUITopLevelWindow *owner,
+	CL_GUIComponent *component,
 	CL_GUITopLevelDescription description)
 {
 	// Create the texture group, if it has not already been set
