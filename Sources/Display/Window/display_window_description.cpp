@@ -214,7 +214,7 @@ bool CL_DisplayWindowDescription::get_tablet_context() const
 
 CL_SharedPtr<CL_DisplayWindowDescriptionData> CL_DisplayWindowDescription::get_data(const CL_String &name) const
 {
-	std::map<CL_String, CL_SharedPtr<CL_DisplayWindowDescriptionData>>::const_iterator it;
+	std::map<CL_String, CL_SharedPtr<CL_DisplayWindowDescriptionData> >::const_iterator it;
 	it = impl->data_objects.find(name);
 	if (it != impl->data_objects.end())
 		return it->second;
