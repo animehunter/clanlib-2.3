@@ -47,33 +47,33 @@ public:
 	void add_cell(CL_CSSLayoutTreeNode *cell_layout, int col_span, int row_span);
 	void add_caption(CL_CSSLayoutTreeNode *caption_layout);
 
-	void render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources, bool root);
-	void render_layer_non_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
-	void render_layer_floats(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
-	void render_layer_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
-	void render_layer_positioned(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
+	void render_layer_background(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources, bool root);
+	void render_layer_non_inline(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources);
+	void render_layer_floats(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources);
+	void render_layer_inline(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources);
+	void render_layer_positioned(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources);
 
 	void set_component_geometry();
 	int get_first_line_baseline();
 	int get_last_line_baseline();
 
 	void calculate_content_top_down_heights();
-	CL_CSSLayoutHitTestResult hit_test(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, const CL_Point &pos) const;
+	CL_CSSLayoutHitTestResult hit_test(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resource_cache, const CL_Point &pos) const;
 	CL_CSSInlineLayout *find_inline_layout(CL_CSSBoxText *text_node);
 
 private:
 	void prepare_children();
-	void layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy);
+	void layout_content(CL_CSSLayoutGraphics *graphics, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy);
 	void position_cells(CL_CSSLayoutCursor &cursor);
-	void layout_cells(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor);
-	void calculate_cell_widths(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor, LayoutStrategy strategy);
-	void calculate_preferred_cell_widths(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor);
-	void calculate_minimum_cell_widths(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor);
+	void layout_cells(CL_CSSLayoutGraphics *graphics, CL_CSSLayoutCursor & cursor);
+	void calculate_cell_widths(CL_CSSLayoutGraphics *graphics, CL_CSSLayoutCursor & cursor, LayoutStrategy strategy);
+	void calculate_preferred_cell_widths(CL_CSSLayoutGraphics *graphics, CL_CSSLayoutCursor & cursor);
+	void calculate_minimum_cell_widths(CL_CSSLayoutGraphics *graphics, CL_CSSLayoutCursor & cursor);
 	CL_Rect get_cell_border_box(size_t row, size_t col);
-	void render_cell_non_content(CL_GraphicContext &gc, CL_CSSResourceCache *resources, size_t row, size_t col);
+	void render_cell_non_content(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources, size_t row, size_t col);
 
-	CL_CSSTableSizeGrid create_preferred_width_grid(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor);
-	CL_CSSTableSizeGrid create_minimum_width_grid(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor);
+	CL_CSSTableSizeGrid create_preferred_width_grid(CL_CSSLayoutGraphics *graphics, CL_CSSLayoutCursor & cursor);
+	CL_CSSTableSizeGrid create_minimum_width_grid(CL_CSSLayoutGraphics *graphics, CL_CSSLayoutCursor & cursor);
 	void apply_non_content(CL_CSSTableSizeGrid &size_grid);
 
 	int get_row_span(int col, int row);

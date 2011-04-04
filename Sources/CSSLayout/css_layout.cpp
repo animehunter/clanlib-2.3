@@ -36,6 +36,7 @@
 #include "BoxTree/css_box_text.h"
 #include "BoxTree/css_box_object.h"
 #include "LayoutTree/css_layout_hit_test_result.h"
+#include "LayoutTree/css_layout_graphics.h"
 #include "css_layout_impl.h"
 #include "css_layout_node_impl.h"
 
@@ -50,18 +51,23 @@ bool CL_CSSLayout::is_null() const
 	return !impl || impl->box_tree.get_root_element() == 0;
 }
 
-void CL_CSSLayout::layout(CL_GraphicContext &gc, const CL_Size &viewport)
+void CL_CSSLayout::layout(CL_GraphicContext &gc, const CL_Rect &viewport)
 {
 	impl->throw_if_disposed();
+
+	CL_CSSLayoutGraphics graphics(gc, &impl->resource_cache, impl->viewport);
 	impl->box_tree.prepare(&impl->resource_cache);
 	impl->layout_tree.create(impl->box_tree.get_root_element());
-	impl->layout_tree.layout(gc, &impl->resource_cache, viewport);
+	impl->layout_tree.layout(&graphics, &impl->resource_cache, viewport.get_size());
+	impl->viewport = viewport;
 }
 
 void CL_CSSLayout::render(CL_GraphicContext &gc)
 {
 	impl->throw_if_disposed();
-	impl->layout_tree.render(gc, &impl->resource_cache);
+
+	CL_CSSLayoutGraphics graphics(gc, &impl->resource_cache, impl->viewport);
+	impl->layout_tree.render(&graphics, &impl->resource_cache);
 }
 
 void CL_CSSLayout::clear_selection()
@@ -86,7 +92,8 @@ void CL_CSSLayout::set_selection(CL_CSSLayoutNode start, size_t start_text_offse
 CL_CSSHitTestResult CL_CSSLayout::hit_test(CL_GraphicContext &gc, const CL_Point &pos)
 {
 	impl->throw_if_disposed();
-	CL_CSSLayoutHitTestResult result = impl->layout_tree.hit_test(gc, &impl->resource_cache, pos);
+	CL_CSSLayoutGraphics graphics(gc, &impl->resource_cache, impl->viewport);
+	CL_CSSLayoutHitTestResult result = impl->layout_tree.hit_test(&graphics, &impl->resource_cache, pos);
 	if (result.node)
 	{
 		CL_CSSHitTestResult result2;

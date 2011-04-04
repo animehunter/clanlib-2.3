@@ -46,6 +46,7 @@ public:
 	CL_SharedPtr<CL_CSSLayoutNode_Impl> alloc_node_impl() const;
 	void free_node_impl(CL_CSSLayoutNode_Impl *node_impl);
 
+	CL_Rect viewport;
 	CL_CSSBoxTree box_tree;
 	CL_CSSLayoutTree layout_tree;
 	CL_CSSResourceCache resource_cache;

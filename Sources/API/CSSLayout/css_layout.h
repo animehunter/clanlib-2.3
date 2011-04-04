@@ -42,6 +42,7 @@ class CL_CSSLayout_Impl;
 class CL_Size;
 class CL_Point;
 class CL_Image;
+class CL_Rect;
 
 class CL_API_CSSLAYOUT CL_CSSLayout
 {
@@ -51,7 +52,7 @@ public:
 	bool is_null() const;
 
 	void load_xml(const CL_String &filename, const CL_String &style_sheet);
-	void layout(CL_GraphicContext &gc, const CL_Size &viewport);
+	void layout(CL_GraphicContext &gc, const CL_Rect &viewport);
 	void render(CL_GraphicContext &gc);
 	CL_CSSHitTestResult hit_test(CL_GraphicContext &gc, const CL_Point &pos);
 	void clear_selection();

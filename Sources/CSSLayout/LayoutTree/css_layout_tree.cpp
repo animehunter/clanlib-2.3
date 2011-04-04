@@ -64,7 +64,7 @@ void CL_CSSLayoutTree::create(CL_CSSBoxElement *element)
 	root_layout = create_layout(element);
 }
 
-void CL_CSSLayoutTree::layout(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, const CL_Size &viewport)
+void CL_CSSLayoutTree::layout(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resource_cache, const CL_Size &viewport)
 {
 	delete root_stacking_context;
 	root_stacking_context = new CL_CSSStackingContext(root_layout);
@@ -77,17 +77,17 @@ void CL_CSSLayoutTree::layout(CL_GraphicContext &gc, CL_CSSResourceCache *resour
 	root_layout->prepare(0, root_stacking_context);
 	root_layout->calculate_top_down_widths(CL_CSSLayoutTreeNode::normal_strategy);
 	root_layout->calculate_top_down_heights();
-	root_layout->layout_formatting_root_helper(gc, resource_cache, CL_CSSLayoutTreeNode::normal_strategy);
+	root_layout->layout_formatting_root_helper(graphics, resource_cache, CL_CSSLayoutTreeNode::normal_strategy);
 	root_layout->set_root_block_position(0, 0);
-	root_layout->layout_absolute_and_fixed_content(gc, resource_cache, viewport, viewport);
+	root_layout->layout_absolute_and_fixed_content(graphics, resource_cache, viewport, viewport);
 	root_layout->set_component_geometry();
 
 	root_stacking_context->sort();
 }
 
-void CL_CSSLayoutTree::render(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache)
+void CL_CSSLayoutTree::render(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resource_cache)
 {
-	root_stacking_context->render(gc, resource_cache, true);
+	root_stacking_context->render(graphics, resource_cache, true);
 }
 /*
 CL_CSSInlineLayout *CL_CSSLayoutTree::find_inline_layout(CL_CSSBoxText *text_node)
@@ -111,9 +111,9 @@ CL_CSSInlineLayout *CL_CSSLayoutTree::find_inline_layout(CL_CSSBoxText *text_nod
 	}
 }
 */
-CL_CSSLayoutHitTestResult CL_CSSLayoutTree::hit_test(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, const CL_Point &pos)
+CL_CSSLayoutHitTestResult CL_CSSLayoutTree::hit_test(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resource_cache, const CL_Point &pos)
 {
-	return root_layout->hit_test(gc, resource_cache, pos);
+	return root_layout->hit_test(graphics, resource_cache, pos);
 }
 /*
 CL_Rect CL_CSSLayoutTree::get_cursor_box(CL_GraphicContext &gc, CL_CSSResourceCache *resources, CL_CSSBoxText *text_node, CL_String::size_type pos)

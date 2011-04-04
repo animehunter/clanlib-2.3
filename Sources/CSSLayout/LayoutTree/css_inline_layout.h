@@ -106,34 +106,34 @@ public:
 	void calculate_content_top_down_heights();
 	bool add_content_margin_top(CL_CSSLayoutCursor &cursor);
 	bool is_empty() const;
-	void layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy);
-	void layout_absolute_and_fixed_content(CL_GraphicContext &gc, CL_CSSResourceCache *resources, CL_Rect containing_block, const CL_Size &viewport_size);
+	void layout_content(CL_CSSLayoutGraphics *graphics, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy);
+	void layout_absolute_and_fixed_content(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources, CL_Rect containing_block, const CL_Size &viewport_size);
 
-	void render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources, bool root);
-	void render_layer_non_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
-	void render_layer_floats(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
-	void render_layer_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
-	void render_layer_positioned(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
+	void render_layer_background(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources, bool root);
+	void render_layer_non_inline(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources);
+	void render_layer_floats(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources);
+	void render_layer_inline(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources);
+	void render_layer_positioned(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources);
 
 	bool find_content_box(CL_CSSBoxElement *element, CL_Rect &out_rect);
-	// CL_CSSLayoutHitTestResult hit_test(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, const CL_Point &pos) const;
+	// CL_CSSLayoutHitTestResult hit_test(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resource_cache, const CL_Point &pos) const;
 
 private:
-	void layout_inline_blocks_and_floats(CL_GraphicContext &gc, CL_CSSResourceCache *resources, LayoutStrategy strategy);
+	void layout_inline_blocks_and_floats(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources, LayoutStrategy strategy);
 	void create_linebreak_opportunities();
 	bool should_break_at_end_of_spaces(const CL_CSSBoxWhiteSpace &whitespace);
-	CL_CSSActualValue get_width(CL_GraphicContext &gc, CL_CSSResourceCache *resources, CL_CSSInlinePosition start, CL_CSSInlinePosition end, bool &start_of_line);
+	CL_CSSActualValue get_width(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources, CL_CSSInlinePosition start, CL_CSSInlinePosition end, bool &start_of_line);
 	bool place_floats(CL_CSSInlinePosition start, CL_CSSInlinePosition end, CL_CSSActualValue x, CL_CSSActualValue y, LayoutStrategy strategy);
 	void adjust_start_of_line_text_range(CL_CSSBoxText *text, size_t &text_start, size_t &text_end, bool &start_of_line) const;
 	void generate_line(CL_CSSInlinePosition start, CL_CSSInlinePosition end);
 	CL_CSSInlineGeneratedBox *begin_tree(CL_CSSInlinePosition start, CL_CSSInlineGeneratedBox *line);
 	void generate_block_line(CL_CSSInlinePosition pos);
-	void layout_line(CL_CSSInlineGeneratedBox *line, CL_Rect &line_box, CL_GraphicContext &gc, CL_CSSResourceCache *resources);
-	void align_line(CL_CSSInlineGeneratedBox *line, CL_GraphicContext &gc, CL_CSSResourceCache *resources, bool last_line);
+	void layout_line(CL_CSSInlineGeneratedBox *line, CL_Rect &line_box, CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources);
+	void align_line(CL_CSSInlineGeneratedBox *line, CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources, bool last_line);
 	int find_word_count(CL_CSSInlineGeneratedBox *line);
-	void split_text(CL_CSSInlineGeneratedBox *box, size_t text_pos, CL_GraphicContext &gc, CL_CSSResourceCache *resources);
+	void split_text(CL_CSSInlineGeneratedBox *box, size_t text_pos, CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources);
 	void expand_box(CL_CSSInlineGeneratedBox *box, CL_CSSActualValue extra);
-	void layout_block_line(CL_CSSInlineGeneratedBox *line, CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy);
+	void layout_block_line(CL_CSSInlineGeneratedBox *line, CL_CSSLayoutGraphics *graphics, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy);
 	bool is_empty_line(CL_CSSInlinePosition start, CL_CSSInlinePosition end) const;
 	CL_CSSInlinePosition begin() const;
 	CL_CSSInlinePosition end() const;

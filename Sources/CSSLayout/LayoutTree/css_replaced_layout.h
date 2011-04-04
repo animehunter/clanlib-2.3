@@ -39,11 +39,11 @@ public:
 	CL_CSSReplacedLayout(CL_CSSBoxObject *object);
 	~CL_CSSReplacedLayout();
 
-	void render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources, bool root);
-	void render_layer_non_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
-	void render_layer_floats(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
-	void render_layer_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
-	void render_layer_positioned(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
+	void render_layer_background(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources, bool root);
+	void render_layer_non_inline(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources);
+	void render_layer_floats(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources);
+	void render_layer_inline(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources);
+	void render_layer_positioned(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources);
 
 	void set_component_geometry();
 	int get_first_line_baseline();
@@ -55,7 +55,7 @@ public:
 
 private:
 	void prepare_children();
-	void layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy);
+	void layout_content(CL_CSSLayoutGraphics *graphics, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy);
 
 	CL_Rect box;
 	CL_Image image;

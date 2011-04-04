@@ -30,6 +30,7 @@
 
 class CL_CSSLayoutTreeNode;
 class CL_CSSResourceCache;
+class CL_CSSLayoutGraphics;
 
 class CL_CSSStackingContext
 {
@@ -40,7 +41,7 @@ public:
 	int get_level() const { return level; }
 	void push_back(CL_CSSStackingContext *child);
 	void sort();
-	void render(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, bool root = false);
+	void render(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resource_cache, bool root = false);
 
 private:
 	int level;

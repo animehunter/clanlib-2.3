@@ -39,6 +39,7 @@ class CL_CSSLayoutCursor;
 class CL_CSSLayoutHitTestResult;
 class CL_CSSBoxMarginWidth;
 class CL_CSSBoxPaddingWidth;
+class CL_CSSLayoutGraphics;
 
 class CL_CSSLayoutTreeNode
 {
@@ -59,22 +60,22 @@ public:
 	virtual int get_last_line_baseline() = 0;
 	virtual bool find_content_box(CL_CSSBoxElement *element, CL_Rect &out_rect) { return false; }
 
-	virtual void render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources, bool root) = 0;
-	virtual void render_layer_non_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources) = 0;
-	virtual void render_layer_floats(CL_GraphicContext &gc, CL_CSSResourceCache *resources) = 0;
-	virtual void render_layer_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources) = 0;
-	virtual void render_layer_positioned(CL_GraphicContext &gc, CL_CSSResourceCache *resources) = 0;
+	virtual void render_layer_background(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources, bool root) = 0;
+	virtual void render_layer_non_inline(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources) = 0;
+	virtual void render_layer_floats(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources) = 0;
+	virtual void render_layer_inline(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources) = 0;
+	virtual void render_layer_positioned(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources) = 0;
 
-	void layout_float(CL_GraphicContext &gc, CL_CSSResourceCache *resources, LayoutStrategy strategy = normal_strategy);
+	void layout_float(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources, LayoutStrategy strategy = normal_strategy);
 	void set_root_block_position(int x, int y);
 	void set_root_content_position(int x, int y);
-	virtual void layout_absolute_and_fixed_content(CL_GraphicContext &gc, CL_CSSResourceCache *resources, CL_Rect containing_block, const CL_Size &viewport_size) { }
-	void layout_normal(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy);
+	virtual void layout_absolute_and_fixed_content(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources, CL_Rect containing_block, const CL_Size &viewport_size) { }
+	void layout_normal(CL_CSSLayoutGraphics *graphics, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy);
 
-	void calc_preferred(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
-	void calc_minimum(CL_GraphicContext &gc, CL_CSSResourceCache *resources);
-	void layout_formatting_root_helper(CL_GraphicContext &gc, CL_CSSResourceCache *resources, LayoutStrategy strategy);
-	void layout_absolute_or_fixed(CL_GraphicContext &gc, CL_CSSResourceCache *resources, const CL_Rect &containing_block, const CL_Size &viewport_size);
+	void calc_preferred(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources);
+	void calc_minimum(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources);
+	void layout_formatting_root_helper(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources, LayoutStrategy strategy);
+	void layout_absolute_or_fixed(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources, const CL_Rect &containing_block, const CL_Size &viewport_size);
 
 	virtual void calculate_top_down_widths(LayoutStrategy strategy);
 	virtual void calculate_top_down_heights();
@@ -88,7 +89,7 @@ public:
 	CL_CSSActualValue get_block_width() const;
 	CL_CSSActualValue get_block_height() const;
 	virtual bool is_replaced() const { return false; }
-	virtual CL_CSSLayoutHitTestResult hit_test(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, const CL_Point &pos) const { return CL_CSSLayoutHitTestResult(); }
+	virtual CL_CSSLayoutHitTestResult hit_test(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resource_cache, const CL_Point &pos) const { return CL_CSSLayoutHitTestResult(); }
 
 	CL_CSSBoxElement *get_element_node() { return element_node; }
 	CL_CSSStackingContext *get_stacking_context() { return stacking_context; }
@@ -121,7 +122,7 @@ public:
 
 protected:
 	virtual void prepare_children() = 0;
-	virtual void layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy) = 0;
+	virtual void layout_content(CL_CSSLayoutGraphics *graphics, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy) = 0;
 	virtual bool add_content_margin_top(CL_CSSLayoutCursor &cursor) { return false; }
 
 	CL_CSSUsedValue get_css_margin_width(const CL_CSSBoxMarginWidth &margin_width, CL_CSSUsedWidth containing_width);
@@ -129,14 +130,14 @@ protected:
 	CL_CSSUsedValue get_css_padding_width(const CL_CSSBoxPaddingWidth &padding_width, CL_CSSUsedWidth containing_width);
 	CL_CSSUsedValue get_css_padding_height(const CL_CSSBoxPaddingWidth &padding_width, CL_CSSUsedHeight containing_height);
 
-	void render_non_content(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, bool root);
-	void render_border(CL_GraphicContext &gc);
-	void render_background(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, bool root);
+	void render_non_content(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resource_cache, bool root);
+	void render_border(CL_CSSLayoutGraphics *graphics);
+	void render_background(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resource_cache, bool root);
 	CL_Rect get_border_box() const;
 	CL_Rect get_padding_box() const;
 
-	static void render_background(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, CL_CSSBoxElement *element_node, CL_Rect padding_box, CL_Rect paint_box);
-	static void render_border(CL_GraphicContext &gc, CL_CSSBoxElement *element_node, CL_Rect border_box, CL_CSSUsedValue border_left, CL_CSSUsedValue border_top, CL_CSSUsedValue border_right, CL_CSSUsedValue border_bottom);
+	static void render_background(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resource_cache, CL_CSSBoxElement *element_node, CL_Rect padding_box, CL_Rect paint_box);
+	static void render_border(CL_CSSLayoutGraphics *graphics, CL_CSSBoxElement *element_node, CL_Rect border_box, CL_CSSUsedValue border_left, CL_CSSUsedValue border_top, CL_CSSUsedValue border_right, CL_CSSUsedValue border_bottom);
 
 	CL_CSSBoxElement *element_node;
 	CL_CSSBlockFormattingContext *formatting_context;
@@ -148,7 +149,7 @@ private:
 	void set_formatting_context(CL_CSSBlockFormattingContext *formatting_context, bool is_root);
 	void establish_stacking_context_if_needed(CL_CSSStackingContext *current_stacking_context);
 
-	void layout_shrink_to_fit(CL_GraphicContext &gc, CL_CSSResourceCache *resources, CL_CSSUsedValue available_width);
+	void layout_shrink_to_fit(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources, CL_CSSUsedValue available_width);
 
 	void calculate_absolute_widths(LayoutStrategy strategy);
 	void calculate_absolute_heights();

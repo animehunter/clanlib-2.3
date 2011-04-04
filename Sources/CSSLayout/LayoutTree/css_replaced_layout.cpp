@@ -225,7 +225,7 @@ void CL_CSSReplacedLayout::prepare_children()
 {
 }
 
-void CL_CSSReplacedLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy)
+void CL_CSSReplacedLayout::layout_content(CL_CSSLayoutGraphics *graphics, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy)
 {
 	if (strategy != normal_strategy)
 	{
@@ -265,23 +265,23 @@ int CL_CSSReplacedLayout::get_last_line_baseline()
 	return get_first_line_baseline();
 }
 
-void CL_CSSReplacedLayout::render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources, bool root)
+void CL_CSSReplacedLayout::render_layer_background(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources, bool root)
 {
-	render_non_content(gc, resources, root);
+	render_non_content(graphics, resources, root);
 }
 
-void CL_CSSReplacedLayout::render_layer_non_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
-{
-}
-
-void CL_CSSReplacedLayout::render_layer_floats(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+void CL_CSSReplacedLayout::render_layer_non_inline(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources)
 {
 }
 
-void CL_CSSReplacedLayout::render_layer_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+void CL_CSSReplacedLayout::render_layer_floats(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources)
 {
 }
 
-void CL_CSSReplacedLayout::render_layer_positioned(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+void CL_CSSReplacedLayout::render_layer_inline(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources)
+{
+}
+
+void CL_CSSReplacedLayout::render_layer_positioned(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources)
 {
 }

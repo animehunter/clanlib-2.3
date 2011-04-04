@@ -38,6 +38,7 @@
 #include "../BoxTree/css_box_element.h"
 #include "../BoxTree/css_box_text.h"
 #include "clan_image_stretch.h"
+#include "css_layout_graphics.h"
 
 CL_CSSTableLayout::CL_CSSTableLayout(CL_CSSBoxElement *block_element)
 : CL_CSSLayoutTreeNode(block_element), next_column(0)
@@ -138,7 +139,7 @@ void CL_CSSTableLayout::calculate_content_top_down_heights()
 	}
 }
 
-void CL_CSSTableLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy)
+void CL_CSSTableLayout::layout_content(CL_CSSLayoutGraphics *graphics, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy)
 {
 	CL_CSSUsedValue start_y = cursor.y;
 
@@ -149,13 +150,13 @@ void CL_CSSTableLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor
 			captions[i]->containing_height = height;
 			captions[i]->calculate_content_top_down_heights();
 			captions[i]->containing_width = width;
-			captions[i]->layout_normal(gc, cursor, strategy);
+			captions[i]->layout_normal(graphics, cursor, strategy);
 		}
 	}
 	cursor.apply_margin();
 
-	calculate_cell_widths(gc, cursor, strategy);
-	layout_cells(gc, cursor);
+	calculate_cell_widths(graphics, cursor, strategy);
+	layout_cells(graphics, cursor);
 	position_cells(cursor);
 
 	for (size_t i = 0; i < captions.size(); i++)
@@ -165,7 +166,7 @@ void CL_CSSTableLayout::layout_content(CL_GraphicContext &gc, CL_CSSLayoutCursor
 			captions[i]->containing_height = height;
 			captions[i]->calculate_content_top_down_heights();
 			captions[i]->containing_width = width;
-			captions[i]->layout_normal(gc, cursor, strategy);
+			captions[i]->layout_normal(graphics, cursor, strategy);
 		}
 	}
 
@@ -203,22 +204,22 @@ CL_Rect CL_CSSTableLayout::get_cell_border_box(size_t row, size_t col)
 	return box;
 }
 
-void CL_CSSTableLayout::render_cell_non_content(CL_GraphicContext &gc, CL_CSSResourceCache *resources, size_t row, size_t col)
+void CL_CSSTableLayout::render_cell_non_content(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources, size_t row, size_t col)
 {
 	CL_CSSLayoutTreeNode *cell = get_layout(col, row);
 
 	CL_Rect border_box = get_cell_border_box(row, col);
 	if (cell->get_element_node()->computed_properties.background_color.type == CL_CSSBoxBackgroundColor::type_color)
-		CL_Draw::fill(gc, border_box, cell->get_element_node()->computed_properties.background_color.color);
+		graphics->fill(border_box, cell->get_element_node()->computed_properties.background_color.color);
 
 	if (cell->get_element_node()->computed_properties.background_image.type == CL_CSSBoxBackgroundImage::type_uri)
 	{
-		CL_Image &image = resources->get_image(gc, cell->get_element_node()->computed_properties.background_image.url);
+		CL_Image &image = graphics->get_image(cell->get_element_node()->computed_properties.background_image.url);
 		if (!image.is_null())
 		{
 			if (cell->get_element_node()->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_repeat)
 			{
-				image.draw(gc, border_box);
+				graphics->draw_image(image, border_box);
 			}
 /*			else if (cell->get_element_node()->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_clan_stretch)
 			{
@@ -232,45 +233,16 @@ void CL_CSSTableLayout::render_cell_non_content(CL_GraphicContext &gc, CL_CSSRes
 	}
 
 	if (cell->get_element_node()->computed_properties.border_style_top.type == CL_CSSBoxBorderStyle::type_solid)
-	{
-		CL_Draw::fill(
-			gc,
-			(float)border_box.left,
-			(float)border_box.top,
-			(float)border_box.right,
-			(float)(border_box.top+cell->border.top),
-			cell->get_element_node()->computed_properties.border_color_top.color);
-	}
+		graphics->fill(CL_Rect(border_box.left, border_box.top, border_box.right, border_box.top+cell->border.top), cell->get_element_node()->computed_properties.border_color_top.color);
+
 	if (cell->get_element_node()->computed_properties.border_style_bottom.type == CL_CSSBoxBorderStyle::type_solid)
-	{
-		CL_Draw::fill(
-			gc,
-			(float)border_box.left,
-			(float)(border_box.bottom-cell->border.bottom),
-			(float)border_box.right,
-			(float)border_box.bottom,
-			cell->get_element_node()->computed_properties.border_color_bottom.color);
-	}
+		graphics->fill(CL_Rect(border_box.left, (border_box.bottom-cell->border.bottom), border_box.right, border_box.bottom), cell->get_element_node()->computed_properties.border_color_bottom.color);
+
 	if (cell->get_element_node()->computed_properties.border_style_left.type == CL_CSSBoxBorderStyle::type_solid)
-	{
-		CL_Draw::fill(
-			gc,
-			(float)border_box.left,
-			(float)(border_box.top+cell->border.top),
-			(float)(border_box.left+cell->border.left),
-			(float)(border_box.bottom-cell->border.bottom),
-			cell->get_element_node()->computed_properties.border_color_left.color);
-	}
+		graphics->fill(CL_Rect(border_box.left, (border_box.top+cell->border.top), (border_box.left+cell->border.left), (border_box.bottom-cell->border.bottom)), cell->get_element_node()->computed_properties.border_color_left.color);
+
 	if (cell->get_element_node()->computed_properties.border_style_right.type == CL_CSSBoxBorderStyle::type_solid)
-	{
-		CL_Draw::fill(
-			gc,
-			(float)(border_box.right-cell->border.right),
-			(float)(border_box.top+cell->border.top),
-			(float)border_box.right,
-			(float)(border_box.bottom-cell->border.bottom),
-			cell->get_element_node()->computed_properties.border_color_right.color);
-	}
+		graphics->fill(CL_Rect((border_box.right-cell->border.right), (border_box.top+cell->border.top), border_box.right, (border_box.bottom-cell->border.bottom)), cell->get_element_node()->computed_properties.border_color_right.color);
 }
 
 void CL_CSSTableLayout::set_component_geometry()
@@ -327,7 +299,7 @@ int CL_CSSTableLayout::get_last_line_baseline()
 	return last_line_baseline;
 }
 
-CL_CSSLayoutHitTestResult CL_CSSTableLayout::hit_test(CL_GraphicContext &gc, CL_CSSResourceCache *resource_cache, const CL_Point &pos) const
+CL_CSSLayoutHitTestResult CL_CSSTableLayout::hit_test(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resource_cache, const CL_Point &pos) const
 {
 	for (size_t row = 0; row < rows.size(); row++)
 	{
@@ -337,7 +309,7 @@ CL_CSSLayoutHitTestResult CL_CSSTableLayout::hit_test(CL_GraphicContext &gc, CL_
 			r.translate(formatting_context->get_x(), formatting_context->get_y());
 			if (r.contains(pos))
 			{
-				CL_CSSLayoutHitTestResult result = get_layout(cell, row)->hit_test(gc, resource_cache, pos);
+				CL_CSSLayoutHitTestResult result = get_layout(cell, row)->hit_test(graphics, resource_cache, pos);
 				if (result.node)
 					return result;
 			}
@@ -396,7 +368,7 @@ void CL_CSSTableLayout::prepare_children()
 	}
 }
 
-void CL_CSSTableLayout::calculate_minimum_cell_widths(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor)
+void CL_CSSTableLayout::calculate_minimum_cell_widths(CL_CSSLayoutGraphics *graphics, CL_CSSLayoutCursor & cursor)
 {
 	for (size_t row = 0; row < rows.size(); row++)
 	{
@@ -407,7 +379,7 @@ void CL_CSSTableLayout::calculate_minimum_cell_widths(CL_GraphicContext & gc, CL
 
 			if (get_layout(cell, row))
 			{
-				get_layout(cell, row)->calc_minimum(gc, cursor.resources);
+				get_layout(cell, row)->calc_minimum(graphics, cursor.resources);
 				CL_CSSUsedValue cell_width = get_layout(cell, row)->min_width;
 				cell_width += get_layout(cell, row)->padding.left + get_layout(cell, row)->padding.right;
 				if (cell == 0)
@@ -426,7 +398,7 @@ void CL_CSSTableLayout::calculate_minimum_cell_widths(CL_GraphicContext & gc, CL
 	}
 }
 
-void CL_CSSTableLayout::calculate_preferred_cell_widths(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor)
+void CL_CSSTableLayout::calculate_preferred_cell_widths(CL_CSSLayoutGraphics *graphics, CL_CSSLayoutCursor & cursor)
 {
 	for (size_t row = 0; row < rows.size(); row++)
 	{
@@ -437,7 +409,7 @@ void CL_CSSTableLayout::calculate_preferred_cell_widths(CL_GraphicContext & gc, 
 
 			if (get_layout(cell, row))
 			{
-				get_layout(cell, row)->calc_preferred(gc, cursor.resources);
+				get_layout(cell, row)->calc_preferred(graphics, cursor.resources);
 				CL_CSSUsedValue cell_width = get_layout(cell, row)->preferred_width;
 				cell_width += get_layout(cell, row)->padding.left + get_layout(cell, row)->padding.right;
 				if (cell == 0)
@@ -456,9 +428,9 @@ void CL_CSSTableLayout::calculate_preferred_cell_widths(CL_GraphicContext & gc, 
 	}
 }
 
-CL_CSSTableSizeGrid CL_CSSTableLayout::create_preferred_width_grid(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor)
+CL_CSSTableSizeGrid CL_CSSTableLayout::create_preferred_width_grid(CL_CSSLayoutGraphics *graphics, CL_CSSLayoutCursor & cursor)
 {
-	calculate_preferred_cell_widths(gc, cursor);
+	calculate_preferred_cell_widths(graphics, cursor);
 	CL_CSSTableSizeGrid grid(rows.size(), columns.size());
 	apply_non_content(grid);
 
@@ -479,9 +451,9 @@ CL_CSSTableSizeGrid CL_CSSTableLayout::create_preferred_width_grid(CL_GraphicCon
 	return grid;
 }
 
-CL_CSSTableSizeGrid CL_CSSTableLayout::create_minimum_width_grid(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor)
+CL_CSSTableSizeGrid CL_CSSTableLayout::create_minimum_width_grid(CL_CSSLayoutGraphics *graphics, CL_CSSLayoutCursor & cursor)
 {
-	calculate_minimum_cell_widths(gc, cursor);
+	calculate_minimum_cell_widths(graphics, cursor);
 	CL_CSSTableSizeGrid grid(rows.size(), columns.size());
 	apply_non_content(grid);
 
@@ -526,19 +498,19 @@ void CL_CSSTableLayout::apply_non_content(CL_CSSTableSizeGrid &grid)
 	}
 }
 
-void CL_CSSTableLayout::calculate_cell_widths(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor, LayoutStrategy strategy)
+void CL_CSSTableLayout::calculate_cell_widths(CL_CSSLayoutGraphics *graphics, CL_CSSLayoutCursor & cursor, LayoutStrategy strategy)
 {
 	if (strategy == minimum_strategy)
-		size_grid = create_minimum_width_grid(gc, cursor);
+		size_grid = create_minimum_width_grid(graphics, cursor);
 	else
-		size_grid = create_preferred_width_grid(gc, cursor);
+		size_grid = create_preferred_width_grid(graphics, cursor);
 
 	if (element_node->computed_properties.width.type == CL_CSSBoxWidth::type_auto)
 	{
 		if (!containing_width.expanding && size_grid.get_table_width() > containing_width.value)
 		{
 			if (strategy != minimum_strategy)
-				size_grid = create_minimum_width_grid(gc, cursor);
+				size_grid = create_minimum_width_grid(graphics, cursor);
 			if (size_grid.get_table_width() < containing_width.value)
 				size_grid.expand_table_width(containing_width.value);
 		}
@@ -553,7 +525,7 @@ void CL_CSSTableLayout::calculate_cell_widths(CL_GraphicContext & gc, CL_CSSLayo
 		{
 			if (strategy != minimum_strategy)
 			{
-				size_grid = create_minimum_width_grid(gc, cursor);
+				size_grid = create_minimum_width_grid(graphics, cursor);
 				if (size_grid.get_table_width() < width.value)
 					size_grid.expand_table_width(width.value);
 			}
@@ -568,7 +540,7 @@ void CL_CSSTableLayout::calculate_cell_widths(CL_GraphicContext & gc, CL_CSSLayo
 	width.value = size_grid.get_table_width();
 }
 
-void CL_CSSTableLayout::layout_cells(CL_GraphicContext & gc, CL_CSSLayoutCursor & cursor)
+void CL_CSSTableLayout::layout_cells(CL_CSSLayoutGraphics *graphics, CL_CSSLayoutCursor & cursor)
 {
 	CL_CSSUsedValue height_used = 0;
 	for (size_t row = 0; row < rows.size(); row++)
@@ -603,7 +575,7 @@ void CL_CSSTableLayout::layout_cells(CL_GraphicContext & gc, CL_CSSLayoutCursor 
 				get_layout(cell, row)->width.value = cell_content_width;
 				get_layout(cell, row)->relative_x = relative_x + get_layout(cell, row)->get_local_relative_x();
 				get_layout(cell, row)->relative_y = relative_y + get_layout(cell, row)->get_local_relative_y();
-				get_layout(cell, row)->layout_formatting_root_helper(gc, cursor.resources, normal_strategy);
+				get_layout(cell, row)->layout_formatting_root_helper(graphics, cursor.resources, normal_strategy);
 				CL_CSSUsedValue cell_height = get_layout(cell, row)->height.value + get_layout(cell, row)->padding.top + get_layout(cell, row)->padding.bottom;
 				if (row == 0)
 					cell_height += padding.top;
@@ -685,7 +657,7 @@ void CL_CSSTableLayout::position_cells(CL_CSSLayoutCursor &cursor)
 	cursor.y += y;
 }
 
-void CL_CSSTableLayout::render_layer_background(CL_GraphicContext &gc, CL_CSSResourceCache *resources, bool root)
+void CL_CSSTableLayout::render_layer_background(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources, bool root)
 {
 	CL_Rect border_box(table_x, table_y, table_x + size_grid.get_table_width(), table_y + size_grid.get_table_height());
 	border_box.translate(formatting_context->get_x(), formatting_context->get_y());
@@ -694,8 +666,8 @@ void CL_CSSTableLayout::render_layer_background(CL_GraphicContext &gc, CL_CSSRes
 	CL_Rect padding_box = border_box;
 	padding_box.shrink(cl_used_to_actual(border.left), cl_used_to_actual(border.top), cl_used_to_actual(border.right), cl_used_to_actual(border.bottom));
 
-	render_background(gc, resources, element_node, padding_box, padding_box);
-	render_border(gc, element_node, border_box, border.left, border.top, border.right, border.bottom);
+	render_background(graphics, resources, element_node, padding_box, padding_box);
+	render_border(graphics, element_node, border_box, border.left, border.top, border.right, border.bottom);
 
 	for (size_t row = 0; row < rows.size(); row++)
 	{
@@ -703,13 +675,13 @@ void CL_CSSTableLayout::render_layer_background(CL_GraphicContext &gc, CL_CSSRes
 		{
 			if (get_layout(cell, row))
 			{
-				render_cell_non_content(gc, resources, row, cell);
+				render_cell_non_content(graphics, resources, row, cell);
 			}
 		}
 	}
 }
 
-void CL_CSSTableLayout::render_layer_non_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+void CL_CSSTableLayout::render_layer_non_inline(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources)
 {
 	for (size_t i = 0; i < captions.size(); i++)
 	{
@@ -717,8 +689,8 @@ void CL_CSSTableLayout::render_layer_non_inline(CL_GraphicContext &gc, CL_CSSRes
 		bool is_positioned = (captions[i]->get_element_node()->computed_properties.position.type != CL_CSSBoxPosition::type_static);
 		if (is_same_stacking_context && !is_positioned)
 		{
-			captions[i]->render_layer_background(gc, resources, false);
-			captions[i]->render_layer_non_inline(gc, resources);
+			captions[i]->render_layer_background(graphics, resources, false);
+			captions[i]->render_layer_non_inline(graphics, resources);
 		}
 	}
 
@@ -733,13 +705,13 @@ void CL_CSSTableLayout::render_layer_non_inline(CL_GraphicContext &gc, CL_CSSRes
 				bool is_positioned = (cell_node->get_element_node()->computed_properties.position.type != CL_CSSBoxPosition::type_static);
 				bool is_float = cell_node->get_element_node()->is_float();
 				if (is_same_stacking_context && !is_positioned && !is_float)
-					cell_node->render_layer_non_inline(gc, resources);
+					cell_node->render_layer_non_inline(graphics, resources);
 			}
 		}
 	}
 }
 
-void CL_CSSTableLayout::render_layer_floats(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+void CL_CSSTableLayout::render_layer_floats(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources)
 {
 	for (size_t row = 0; row < rows.size(); row++)
 	{
@@ -755,14 +727,14 @@ void CL_CSSTableLayout::render_layer_floats(CL_GraphicContext &gc, CL_CSSResourc
 				{
 					if (is_float)
 					{
-						cell_node->render_layer_background(gc, resources, false);
-						cell_node->render_layer_non_inline(gc, resources);
-						cell_node->render_layer_floats(gc, resources);
-						cell_node->render_layer_inline(gc, resources);
+						cell_node->render_layer_background(graphics, resources, false);
+						cell_node->render_layer_non_inline(graphics, resources);
+						cell_node->render_layer_floats(graphics, resources);
+						cell_node->render_layer_inline(graphics, resources);
 					}
 					else
 					{
-						cell_node->render_layer_floats(gc, resources);
+						cell_node->render_layer_floats(graphics, resources);
 					}
 				}
 			}
@@ -770,7 +742,7 @@ void CL_CSSTableLayout::render_layer_floats(CL_GraphicContext &gc, CL_CSSResourc
 	}
 }
 
-void CL_CSSTableLayout::render_layer_inline(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+void CL_CSSTableLayout::render_layer_inline(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources)
 {
 	for (size_t i = 0; i < captions.size(); i++)
 	{
@@ -778,7 +750,7 @@ void CL_CSSTableLayout::render_layer_inline(CL_GraphicContext &gc, CL_CSSResourc
 		bool is_positioned = (captions[i]->get_element_node()->computed_properties.position.type != CL_CSSBoxPosition::type_static);
 		if (is_same_stacking_context && !is_positioned)
 		{
-			captions[i]->render_layer_inline(gc, resources);
+			captions[i]->render_layer_inline(graphics, resources);
 		}
 	}
 
@@ -793,13 +765,13 @@ void CL_CSSTableLayout::render_layer_inline(CL_GraphicContext &gc, CL_CSSResourc
 				bool is_positioned = (cell_node->get_element_node()->computed_properties.position.type != CL_CSSBoxPosition::type_static);
 				bool is_float = cell_node->get_element_node()->is_float();
 				if (is_same_stacking_context && !is_positioned && !is_float)
-					cell_node->render_layer_inline(gc, resources);
+					cell_node->render_layer_inline(graphics, resources);
 			}
 		}
 	}
 }
 
-void CL_CSSTableLayout::render_layer_positioned(CL_GraphicContext &gc, CL_CSSResourceCache *resources)
+void CL_CSSTableLayout::render_layer_positioned(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources)
 {
 	for (size_t i = 0; i < captions.size(); i++)
 	{
@@ -809,12 +781,12 @@ void CL_CSSTableLayout::render_layer_positioned(CL_GraphicContext &gc, CL_CSSRes
 		{
 			if (is_positioned)
 			{
-				captions[i]->render_layer_background(gc, resources, false);
-				captions[i]->render_layer_non_inline(gc, resources);
-				captions[i]->render_layer_floats(gc, resources);
-				captions[i]->render_layer_inline(gc, resources);
+				captions[i]->render_layer_background(graphics, resources, false);
+				captions[i]->render_layer_non_inline(graphics, resources);
+				captions[i]->render_layer_floats(graphics, resources);
+				captions[i]->render_layer_inline(graphics, resources);
 			}
-			captions[i]->render_layer_positioned(gc, resources);
+			captions[i]->render_layer_positioned(graphics, resources);
 		}
 	}
 
@@ -832,16 +804,16 @@ void CL_CSSTableLayout::render_layer_positioned(CL_GraphicContext &gc, CL_CSSRes
 				{
 					if (is_positioned)
 					{
-						cell_node->render_layer_background(gc, resources, false);
-						cell_node->render_layer_non_inline(gc, resources);
-						cell_node->render_layer_floats(gc, resources);
-						cell_node->render_layer_inline(gc, resources);
+						cell_node->render_layer_background(graphics, resources, false);
+						cell_node->render_layer_non_inline(graphics, resources);
+						cell_node->render_layer_floats(graphics, resources);
+						cell_node->render_layer_inline(graphics, resources);
 					}
-					cell_node->render_layer_positioned(gc, resources);
+					cell_node->render_layer_positioned(graphics, resources);
 				}
 				else if (!is_same_stacking_context && level == 0)
 				{
-					cell_node->get_stacking_context()->render(gc, resources);
+					cell_node->get_stacking_context()->render(graphics, resources);
 				}
 			}
 		}
