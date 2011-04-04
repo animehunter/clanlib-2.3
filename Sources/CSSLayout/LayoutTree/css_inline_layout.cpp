@@ -543,7 +543,7 @@ bool CL_CSSInlineLayout::find_content_box(CL_CSSBoxElement *search_element, CL_R
 			CL_CSSBoxElement *element = cur->box_node ? dynamic_cast<CL_CSSBoxElement*>(cur->box_node) : 0;
 			if (cur->layout_node)
 			{
-				if (cur->layout_node->find_content_box(element, out_rect))
+				if (cur->layout_node->find_content_box(search_element, out_rect))
 					return true;
 			}
 			else if (element == search_element)

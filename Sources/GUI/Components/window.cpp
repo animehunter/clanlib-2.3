@@ -127,7 +127,7 @@ CL_Window::CL_Window(CL_GUIComponent *owner, const CL_GUITopLevelDescription &de
 	set_type_name(CssStr::Window::type_name);
 
 	if(get_gui_manager().has_layout(this))
-		set_layout(get_gui_manager().create_layout(this));
+		set_css_layout(get_gui_manager().create_layout(this));
 
 	impl->create_parts();
 }
@@ -151,7 +151,7 @@ CL_Window::CL_Window(CL_GUIManager *manager, const CL_GUITopLevelDescription &de
 	set_type_name(CssStr::Window::type_name);
 
 	if(get_gui_manager().has_layout(this))
-		set_layout(get_gui_manager().create_layout(this));
+		set_css_layout(get_gui_manager().create_layout(this));
 
 	impl->create_parts();
 }
@@ -242,7 +242,12 @@ void CL_Window::bring_to_front()
 	}
 }
 
-void CL_Window::set_layout(CL_CSSLayout layout)
+CL_CSSLayout CL_Window::get_css_layout()
+{
+	return impl->css_layout;
+}
+
+void CL_Window::set_css_layout(CL_CSSLayout layout)
 {
 	impl->css_layout = layout;
 	impl->css_layout.func_get_image().set(impl.get(), &CL_Window_Impl::on_css_layout_get_image);
