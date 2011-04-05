@@ -23,27 +23,49 @@
 **
 **  File Author(s):
 **
-**    Kenneth Gangstoe
+**    Harry Storbacka
 */
 
-#pragma once
+#include "precomp.h"
+#include "application.h"
+#include <ClanLib/swrender.h>
 
-#include "component_type.h"
+#if _MSC_VER >= 1300
+#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#endif
 
-class ImageViewComponentType : public ComponentType
+// This is the Program class that is called by CL_ClanApplication
+class Program
 {
 public:
-	ImageViewComponentType(const CL_String &xmlname, const CL_StringRef &name, int id, const CL_StringRef &icon)	
-	: ComponentType(xmlname, name, id, icon) {}
-
-	virtual CL_GUIComponent *create_component(CL_GUIComponent *parent) const
+	static int main(const std::vector<CL_String> &args)
 	{
-		CL_ImageView *component = new CL_ImageView(parent);
-		component->set_geometry(CL_Rect(0, 0, 128, 128));
+		CL_SetupCore setup_core;
+		CL_SetupDisplay setup_display;
+		CL_SetupSWRender setup_swrender;
 
-		CL_Sprite image(parent->get_gc(), "ImageViewDefaultImage", &(parent->get_resources()));
-		component->set_image(image);
-		component->set_scale_to_fit();
-		return component;
+		try
+		{
+			Application app;
+
+			if(args.size() > 1)
+				app.run(args[1]);
+			else
+				app.run();
+		}
+		catch (CL_Exception e)
+		{
+#ifdef WIN32
+			MessageBoxA(0, e.get_message_and_stack_trace().c_str(), "Unhandled Exception", MB_OK|MB_ICONERROR);
+#else
+			CL_Console::write_line("Unhandled exception: %1", e.get_message_and_stack_trace());
+#endif
+			return 0;
+		}
+
+		return 1;
 	}
 };
+
+// Instantiate CL_ClanApplication, informing it where the Program is located
+CL_ClanApplication app(&Program::main);

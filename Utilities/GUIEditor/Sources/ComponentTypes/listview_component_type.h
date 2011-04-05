@@ -29,7 +29,7 @@
 #pragma once
 
 #include "component_type.h"
-#include "../MainWindow/main_window.h"
+#include "../MainWindow/gui_editor_window.h"
 #include "../MainWindow/edit_columns_window.h"
 #include "../GridComponent/grid_component.h"
 #include "../GridComponent/grid_object.h"
@@ -60,14 +60,15 @@ public:
 			throw CL_Exception("Can't get listview object");
 
 		GridComponent *grid_component = grid_object->get_grid_component();
-		MainWindow *main_window = grid_component->get_main_window();
+		GuiEditorWindow *main_window = grid_component->get_main_window();
 		EditColumnsWindow edit_columns_window(main_window);
 
 		edit_columns_window.set_columns(get_columns(list_view));
 		if(edit_columns_window.exec() == 1)
 		{
 			remove_columns(list_view);
-			create_columns(list_view, edit_columns_window.get_columns());
+			std::vector<EditColumnsWindow::Column> columns = edit_columns_window.get_columns();
+			create_columns(list_view, columns);
 		}
 	}
 

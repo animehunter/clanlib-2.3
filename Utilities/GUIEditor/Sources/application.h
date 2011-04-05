@@ -23,27 +23,25 @@
 **
 **  File Author(s):
 **
-**    Kenneth Gangstoe
+**    Harry Storbacka
 */
 
 #pragma once
 
-#include "component_type.h"
-
-class ImageViewComponentType : public ComponentType
+class Application
 {
 public:
-	ImageViewComponentType(const CL_String &xmlname, const CL_StringRef &name, int id, const CL_StringRef &icon)	
-	: ComponentType(xmlname, name, id, icon) {}
+	Application();
+	~Application();
 
-	virtual CL_GUIComponent *create_component(CL_GUIComponent *parent) const
-	{
-		CL_ImageView *component = new CL_ImageView(parent);
-		component->set_geometry(CL_Rect(0, 0, 128, 128));
+	void run(const CL_String &filename = CL_String());
 
-		CL_Sprite image(parent->get_gc(), "ImageViewDefaultImage", &(parent->get_resources()));
-		component->set_image(image);
-		component->set_scale_to_fit();
-		return component;
-	}
+	CL_ResourceManager get_resources() { return resources; }
+	CL_GUIManager *get_gui() { return &gui; }
+
+private:
+	CL_ResourceManager resources;
+	CL_GUIThemeDefault theme;
+	CL_GUIWindowManagerSystem window_manager;
+	CL_GUIManager gui;
 };
