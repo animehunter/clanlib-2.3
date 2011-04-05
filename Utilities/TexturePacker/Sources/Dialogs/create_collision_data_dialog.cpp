@@ -11,6 +11,7 @@ CreateCollisionDataDialog::CreateCollisionDataDialog(CL_GUIComponent *owner, Spr
 	create_components("Resources/create_collision_data.gui");
 
 	edit_directory = CL_LineEdit::get_named_item(this, "editDirectory");
+	edit_filename = CL_LineEdit::get_named_item(this, "editFilename");
 	button_browse = CL_PushButton::get_named_item(this, "buttonBrowse");
 	button_generate =  CL_PushButton::get_named_item(this, "buttonGenerate");
 	button_close =  CL_PushButton::get_named_item(this, "buttonClose");
@@ -19,9 +20,10 @@ CreateCollisionDataDialog::CreateCollisionDataDialog(CL_GUIComponent *owner, Spr
 	radio_low = CL_RadioButton::get_named_item(this, "radiobuttonLow");
 	radio_poor = CL_RadioButton::get_named_item(this, "radiobuttonPoor");
 	radio_raw = CL_RadioButton::get_named_item(this, "radiobuttonRaw");
+	label_expected_filenames = CL_Label::get_named_item(this, "labelExpectedFilenames");
 
 	edit_directory->set_focus();
-
+	edit_filename->set_text(sprite_item->resource.get_name());
 	radio_medium->set_selected(true);
 
 	button_browse->func_clicked().set(this, &CreateCollisionDataDialog::on_browse);
@@ -29,8 +31,12 @@ CreateCollisionDataDialog::CreateCollisionDataDialog(CL_GUIComponent *owner, Spr
 	button_generate->set_default(true);
 	button_close->func_clicked().set(this, &CreateCollisionDataDialog::on_close);
 	button_close->set_cancel(true);
-	
+	edit_filename->func_after_edit_changed().set(this, &CreateCollisionDataDialog::on_file_edit);
+	edit_directory->func_after_edit_changed().set(this, &CreateCollisionDataDialog::on_file_edit);
+
 	func_close().set(this, &CreateCollisionDataDialog::on_window_close);
+
+	update_expected_filenames();
 
 	set_visible(true, true);
 }
@@ -47,6 +53,11 @@ CL_GUITopLevelDescription CreateCollisionDataDialog::get_description()
 	return desc;
 }
 
+void CreateCollisionDataDialog::on_file_edit(CL_InputEvent &event)
+{
+	update_expected_filenames();
+}
+
 bool CreateCollisionDataDialog::on_window_close()
 {
 	exit_with_code(0);
@@ -58,7 +69,10 @@ void CreateCollisionDataDialog::on_browse()
 	CL_BrowseFolderDialog dlg(this);
 
 	if(dlg.show())
+	{
 		edit_directory->set_text(dlg.get_selected_path());
+		update_expected_filenames();
+	}
 }
 
 void CreateCollisionDataDialog::on_generate()
@@ -67,6 +81,13 @@ void CreateCollisionDataDialog::on_generate()
 	if(directory.length() == 0)
 	{
 		cl_message_box(this, "Missing output directory", "You need to specify an output directory.", cl_mb_buttons_ok, cl_mb_icon_error);
+		return;
+	}
+
+	CL_String filename = CL_StringHelp::trim(edit_filename->get_text());
+	if(filename.length() == 0)
+	{
+		cl_message_box(this, "Missing output filename", "You need to specify an output filename.", cl_mb_buttons_ok, cl_mb_icon_error);
 		return;
 	}
 
@@ -82,7 +103,7 @@ void CreateCollisionDataDialog::on_generate()
 	else if(radio_raw->is_selected())
 		accuracy = accuracy_raw;
 
-	generate_collision(directory, accuracy);
+	generate_collision(filename, directory, accuracy);
 
 	exit_with_code(1);
 }
@@ -92,11 +113,9 @@ void CreateCollisionDataDialog::on_close()
 	exit_with_code(0);
 }
 
-void CreateCollisionDataDialog::generate_collision(const CL_String &directory, CL_OutlineAccuracy accuracy)
+void CreateCollisionDataDialog::generate_collision(const CL_String &filename, const CL_String &directory, CL_OutlineAccuracy accuracy)
 {
 	const std::vector<CL_SpriteDescriptionFrame> &frames = sprite_item->sprite_description.get_frames();
-
-	CL_String filename = sprite_item->resource.get_name();
 
 	for(size_t i = 0; i < frames.size(); ++i)
 	{
@@ -124,4 +143,10 @@ void CreateCollisionDataDialog::generate_collision(const CL_String &directory, C
 	CL_String msg = cl_format("%1 collision outlines generated as %3\\%2-xxx.col", frames.size(), filename, directory);
 
 	cl_message_box(this, "Collision outlines generated", msg, cl_mb_buttons_ok, cl_mb_icon_info);
+}
+
+void CreateCollisionDataDialog::update_expected_filenames()
+{
+	label_expected_filenames->set_text(
+		cl_format("Expected output: %1\\%2-xxx.col", edit_directory->get_text(), edit_filename->get_text()));
 }
