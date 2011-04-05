@@ -772,7 +772,7 @@ void CL_CSSLayoutTreeNode::layout_formatting_root_helper(CL_CSSLayoutGraphics *g
 		min_width_calculated = true;
 	}
 
-	if (element_node->computed_properties.height.type == CL_CSSBoxHeight::type_auto)
+	if (height.use_content)
 	{
 		height.value = cursor.y;
 		CL_CSSActualValue left_float_height = formatting_context->find_left_clearance();

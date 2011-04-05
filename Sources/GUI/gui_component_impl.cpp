@@ -30,6 +30,7 @@
 #include "GUI/precomp.h"
 #include "API/GUI/gui_manager.h"
 #include "API/GUI/gui_component.h"
+#include "API/Display/2D/image.h"
 #include "gui_component_impl.h"
 #include "gui_manager_impl.h"
 
@@ -45,7 +46,18 @@ CL_GUIComponent_Impl::CL_GUIComponent_Impl(const CL_SharedPtr<CL_GUIManager_Impl
 	gui_manager_impl = gui_manager.lock().get();
 
 	if (!toplevel)
+	{
 		parent = parent_or_owner;
+		//css_element = parent->get_top_level_component()->impl->css_layout.create_element("component");
+		//parent->impl->css_element.append_child(css_element);
+	}
+	else
+	{
+		css_element = css_layout.create_element("component");
+		css_element.apply_properties("display: block");
+		css_layout.set_root_element(css_element);
+		css_layout.func_get_image().set(this, &CL_GUIComponent_Impl::on_css_layout_get_image);
+	}
 }
 
 CL_GUIComponent_Impl *CL_GUIComponent_Impl::create_from_parent(CL_GUIComponent *parent)
@@ -128,6 +140,12 @@ void CL_GUIComponent_Impl::geometry_updated()
 	if (!layout.is_null())
 		layout.set_geometry(geometry.get_size());
 
+	if (!css_layout.is_null())
+	{
+		CL_GraphicContext gc = component->get_gc();
+		css_layout.layout(gc, geometry.get_size());
+	}
+
 	if (!func_resized.is_null())
 		func_resized.invoke();
 
@@ -136,3 +154,16 @@ void CL_GUIComponent_Impl::geometry_updated()
 
 /////////////////////////////////////////////////////////////////////////////
 // CL_GUIComponent_Impl Implementation:
+
+CL_Image CL_GUIComponent_Impl::on_css_layout_get_image(CL_GraphicContext &gc, const CL_String &url)
+{
+	try
+	{
+		return CL_Image(gc, url, &gui_manager.lock()->theme.get_resources());
+	}
+	catch (CL_Exception e)
+	{
+		// Hmm what to do about that?
+		return CL_Image();
+	}
+}

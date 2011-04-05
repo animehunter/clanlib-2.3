@@ -535,9 +535,10 @@ bool CL_CSSInlineLayout::find_content_box(CL_CSSBoxElement *search_element, CL_R
 		return true;
 	}
 
-	for (size_t i = 0; i < lines.size(); i++)
+	//for (size_t i = 0; i < lines.size(); i++)
 	{
-		CL_CSSInlineGeneratedBox *cur = lines[i];
+		//CL_CSSInlineGeneratedBox *cur = lines[i];
+		CL_CSSInlineGeneratedBox *cur = &boxes;
 		while (cur)
 		{
 			CL_CSSBoxElement *element = cur->box_node ? dynamic_cast<CL_CSSBoxElement*>(cur->box_node) : 0;
@@ -576,12 +577,13 @@ bool CL_CSSInlineLayout::find_content_box(CL_CSSBoxElement *search_element, CL_R
 			}
 		}
 	}
-
+/*
 	for (size_t i = 0; i < floats.size(); i++)
 	{
 		if (floats[i]->find_content_box(search_element, out_rect))
 			return true;
 	}
+*/
 	return false;
 }
 

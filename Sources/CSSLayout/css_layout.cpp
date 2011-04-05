@@ -225,32 +225,30 @@ CL_CSSLayoutElement CL_CSSLayout::find_element(const CL_String &name)
 {
 	if (!get_root_element().is_null())
 	{
-		std::vector<CL_CSSLayoutElement> stack;
+		std::vector<CL_CSSLayoutNode> stack;
 		stack.push_back(get_root_element());
 		while (!stack.empty())
 		{
-			if (stack.back().get_name() == name)
-				return stack.back();
+			if (stack.back().is_element() && stack.back().to_element().get_name() == name)
+				return stack.back().to_element();
 
 			CL_CSSLayoutNode next = stack.back().get_first_child();
-			if (next.is_element())
+			if (!next.is_null())
 			{
-				stack.push_back(next.to_element());
+				stack.push_back(next);
 			}
 			else
 			{
 				while (!stack.empty())
 				{
 					next = stack.back().get_next_sibling();
-					while (!next.is_null() && !next.is_element())
-						next = next.get_next_sibling();
 					if (next.is_null())
 					{
 						stack.pop_back();
 					}
 					else
 					{
-						stack.back() = next.to_element();
+						stack.back() = next;
 						break;
 					}
 				}

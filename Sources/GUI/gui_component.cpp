@@ -40,11 +40,18 @@
 #include "API/Core/CSS/css_document.h"
 #include "API/Core/XML/dom_document.h"
 #include "API/Core/XML/dom_element.h"
+#include "API/Core/XML/dom_text.h"
 #include "API/Core/Text/string_help.h"
 #include "API/Core/IOData/iodevice.h"
 #include "API/Display/Render/graphic_context.h"
 #include "API/Display/Window/input_context.h"
 #include "API/Display/Render/blend_mode.h"
+#include "API/CSSLayout/css_layout.h"
+#include "API/CSSLayout/css_layout_element.h"
+#include "API/CSSLayout/css_layout_text.h"
+#include "API/CSSLayout/css_document2.h"
+#include "API/CSSLayout/dom_select_node.h"
+#include "API/CSSLayout/css_property_list2.h"
 #include "gui_component_impl.h"
 #include "gui_manager_impl.h"
 #include "gui_component_description_impl.h"
@@ -716,6 +723,12 @@ void CL_GUIComponent::render(CL_GraphicContext &gc, const CL_Rect &clip_rect, bo
 	if (!impl->visible)
 		return;
 
+	if (!impl->css_layout.is_null())
+	{
+		impl->css_layout.layout(gc, get_size());
+		impl->css_layout.render(gc);
+	}
+
 	if (impl->func_render.is_null() == false)
 	{
 		impl->func_render.invoke(gc, clip_rect);
@@ -1269,6 +1282,74 @@ void CL_GUIComponent::set_constant_repaint(bool enable)
 void CL_GUIComponent::set_selected_in_component_group(bool selected)
 {
 	impl->is_selected_in_group = selected;
+}
+
+CL_CSSLayout CL_GUIComponent::get_css_layout()
+{
+	return get_top_level_component()->impl->css_layout;
+}
+
+CL_CSSLayoutElement CL_GUIComponent::get_css_element()
+{
+	return impl->css_element;
+}
+
+void CL_GUIComponent::load_css_layout(const CL_String &xml_filename, const CL_String &css_filename)
+{
+	CL_CSSDocument2 css_document;
+	css_document.add_sheet(css_filename);
+
+	CL_File file(xml_filename);
+	CL_DomDocument dom(file, false);
+	CL_DomNode cur = dom.get_document_element().get_first_child();
+	std::vector<CL_CSSLayoutElement> element_stack;
+
+	{
+		CL_DomSelectNode select_node(dom.get_document_element());
+		impl->css_element.apply_properties(css_document.select(&select_node));
+		impl->css_element.apply_properties(dom.get_document_element().get_attribute("style"));
+	}
+
+	element_stack.push_back(impl->css_element);
+	while (!cur.is_null())
+	{
+		CL_CSSLayoutElement child_css_element;
+		if (cur.is_element())
+		{
+			CL_DomElement cur_element = cur.to_element();
+			CL_DomSelectNode select_node(cur_element);
+			child_css_element = element_stack.back().create_element(cur_element.get_tag_name());
+			child_css_element.apply_properties(css_document.select(&select_node));
+			child_css_element.apply_properties(cur_element.get_attribute("style"));
+		}
+		else if (cur.is_text())
+		{
+			CL_DomText cur_text = cur.to_text();
+			element_stack.back().create_text(cur_text.get_node_value());
+		}
+
+		CL_DomNode next = cur.get_first_child();
+		if (next.is_null())
+		{
+			next = cur.get_next_sibling();
+			if (next.is_null())
+			{
+				next = cur.get_parent_node();
+				while (!next.is_null() && next.get_next_sibling().is_null())
+					next = next.get_parent_node();
+				if (!next.is_null())
+					next = next.get_next_sibling();
+			}
+		}
+		else
+		{
+			element_stack.push_back(child_css_element);
+		}
+		cur = next;
+	}
+
+	CL_GraphicContext gc = get_gc();
+	impl->css_layout.layout(gc, get_size());
 }
 
 /////////////////////////////////////////////////////////////////////////////

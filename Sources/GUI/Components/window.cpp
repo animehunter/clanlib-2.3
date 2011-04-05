@@ -46,8 +46,6 @@
 #include "API/Display/Window/keys.h"
 #include "API/Display/Font/font.h"
 #include "API/Display/Font/font_metrics.h"
-#include "API/CSSLayout/css_layout.h"
-#include "API/CSSLayout/css_layout_element.h"
 #include "../gui_component_impl.h"
 #include "../gui_manager_impl.h"
 #include "../gui_css_strings.h"
@@ -71,8 +69,6 @@ public:
 	void on_resized();
 
 	void create_parts();
-
-	CL_Image on_css_layout_get_image(CL_GraphicContext &gc, const CL_String &url);
 
 	CL_Rect get_client_area() const;
 
@@ -101,8 +97,6 @@ public:
 	CL_GUIThemePart part_framebottom;
 	CL_GUIThemePart part_buttonclose;
 	CL_GUIThemePartProperty prop_text_color;
-
-	CL_CSSLayout css_layout;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -126,9 +120,6 @@ CL_Window::CL_Window(CL_GUIComponent *owner, const CL_GUITopLevelDescription &de
 
 	set_type_name(CssStr::Window::type_name);
 
-	if(get_gui_manager().has_layout(this))
-		set_css_layout(get_gui_manager().create_layout(this));
-
 	impl->create_parts();
 }
 
@@ -149,9 +140,6 @@ CL_Window::CL_Window(CL_GUIManager *manager, const CL_GUITopLevelDescription &de
 	func_resized().set(impl.get(), &CL_Window_Impl::on_resized);
 
 	set_type_name(CssStr::Window::type_name);
-
-	if(get_gui_manager().has_layout(this))
-		set_css_layout(get_gui_manager().create_layout(this));
 
 	impl->create_parts();
 }
@@ -242,33 +230,8 @@ void CL_Window::bring_to_front()
 	}
 }
 
-CL_CSSLayout CL_Window::get_css_layout()
-{
-	return impl->css_layout;
-}
-
-void CL_Window::set_css_layout(CL_CSSLayout layout)
-{
-	impl->css_layout = layout;
-	impl->css_layout.func_get_image().set(impl.get(), &CL_Window_Impl::on_css_layout_get_image);
-	impl->create_parts();
-}
-
 /////////////////////////////////////////////////////////////////////////////
 // CL_Window Implementation:
-
-CL_Image CL_Window_Impl::on_css_layout_get_image(CL_GraphicContext &gc, const CL_String &url)
-{
-	try
-	{
-		return CL_Image(gc, url, &window->get_resources());
-	}
-	catch (CL_Exception e)
-	{
-		// Hmm what to do about that?
-		return CL_Image();
-	}
-}
 
 void CL_Window_Impl::create_parts()
 {
@@ -295,15 +258,6 @@ void CL_Window_Impl::create_parts()
 
 	font = part_component.get_font();
 	text_color = part_component.get_property(prop_text_color);
-
-	if (!css_layout.is_null())
-	{
-		CL_GraphicContext gc = window->get_gc();
-		css_layout.layout(gc, window->get_size());
-
-		part_buttonclose_rect = css_layout.find_element("close").get_content_box();
-		part_caption_rect = css_layout.find_element("caption").get_content_box();
-	}
 }
 
 void CL_Window_Impl::on_style_changed()
@@ -439,9 +393,6 @@ void CL_Window_Impl::on_render(CL_GraphicContext &gc, const CL_Rect &update_rect
 	{
 		part_component.render_box(gc, rect, update_rect);
 	}
-
-	if (!css_layout.is_null())
-		css_layout.render(gc);
 }
 
 void CL_Window_Impl::check_move_window(CL_GUIMessage &msg)
