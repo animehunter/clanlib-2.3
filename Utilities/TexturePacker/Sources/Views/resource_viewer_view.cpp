@@ -138,7 +138,7 @@ void ResourceViewerView::on_button_create_collision_data()
 		SpriteResourceItem *sprite_item = dynamic_cast<SpriteResourceItem *>(resource_item);
 		if(sprite_item)
 		{
-			CreateCollisionDataDialog dlg(this);
+			CreateCollisionDataDialog dlg(this, sprite_item);
 			dlg.exec();
 		}
 	}

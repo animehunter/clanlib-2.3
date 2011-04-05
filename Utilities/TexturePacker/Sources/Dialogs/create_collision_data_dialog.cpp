@@ -1,9 +1,10 @@
 
 #include "precomp.h"
 #include "create_collision_data_dialog.h"
+#include "../texture_packer.h"
 
-CreateCollisionDataDialog::CreateCollisionDataDialog(CL_GUIComponent *owner)
-: CL_Window(owner, get_description())
+CreateCollisionDataDialog::CreateCollisionDataDialog(CL_GUIComponent *owner, SpriteResourceItem *sprite_item)
+: CL_Window(owner, get_description()), sprite_item(sprite_item)
 {
 	set_layout(layout);
 
@@ -62,10 +63,65 @@ void CreateCollisionDataDialog::on_browse()
 
 void CreateCollisionDataDialog::on_generate()
 {
+	CL_String directory = CL_StringHelp::trim(edit_directory->get_text());
+	if(directory.length() == 0)
+	{
+		cl_message_box(this, "Missing output directory", "You need to specify an output directory.", cl_mb_buttons_ok, cl_mb_icon_error);
+		return;
+	}
+
+	CL_OutlineAccuracy accuracy;
+	if(radio_high->is_selected())
+		accuracy = accuracy_high;
+	else if(radio_low->is_selected())
+		accuracy = accuracy_low;
+	else if(radio_medium->is_selected())
+		accuracy = accuracy_medium;
+	else if(radio_poor->is_selected())
+		accuracy = accuracy_poor;
+	else if(radio_raw->is_selected())
+		accuracy = accuracy_raw;
+
+	generate_collision(directory, accuracy);
+
 	exit_with_code(1);
 }
 
 void CreateCollisionDataDialog::on_close()
 {
 	exit_with_code(0);
+}
+
+void CreateCollisionDataDialog::generate_collision(const CL_String &directory, CL_OutlineAccuracy accuracy)
+{
+	const std::vector<CL_SpriteDescriptionFrame> &frames = sprite_item->sprite_description.get_frames();
+
+	CL_String filename = sprite_item->resource.get_name();
+
+	for(size_t i = 0; i < frames.size(); ++i)
+	{
+		CL_PixelBuffer pb;
+
+		if(frames[i].type == CL_SpriteDescriptionFrame::type_pixelbuffer)
+			pb = frames[i].pixelbuffer;
+		else if(frames[i].type == CL_SpriteDescriptionFrame::type_texture)
+			pb = frames[i].texture.get_pixeldata();
+
+		if(frames[i].rect != pb.get_size())
+			pb = pb.copy(frames[i].rect);
+		
+		CL_CollisionOutline generated(pb, 128, accuracy);
+
+		CL_StringFormat f("%1\\%2-%3.col"); 
+		f.set_arg(1, directory); 
+		f.set_arg(2, filename);
+		f.set_arg(3, i, 3);
+		f.get_result();
+
+		generated.save(f.get_result());
+	}
+
+	CL_String msg = cl_format("%1 collision outlines generated as %3\\%2-xxx.col", frames.size(), filename, directory);
+
+	cl_message_box(this, "Collision outlines generated", msg, cl_mb_buttons_ok, cl_mb_icon_info);
 }
