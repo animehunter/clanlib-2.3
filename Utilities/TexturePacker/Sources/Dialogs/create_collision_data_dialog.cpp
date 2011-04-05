@@ -131,22 +131,41 @@ void CreateCollisionDataDialog::generate_collision(const CL_String &filename, co
 		
 		CL_CollisionOutline generated(pb, 128, accuracy);
 
-		CL_StringFormat f("%1\\%2_%3.out"); 
-		f.set_arg(1, directory); 
-		f.set_arg(2, filename);
-		f.set_arg(3, i, 3);
-		f.get_result();
+		CL_String output_filename;
 
-		generated.save(f.get_result());
+		if(frames.size() > 1)
+		{
+			CL_StringFormat f("%1\\%2_%3.out"); 
+			f.set_arg(1, directory); 
+			f.set_arg(2, filename);
+			f.set_arg(3, i, 3);
+			output_filename = f.get_result();
+		}
+		else
+		{
+			CL_StringFormat f("%1\\%2.out"); 
+			f.set_arg(1, directory); 
+			f.set_arg(2, filename);
+			output_filename = f.get_result();
+		}
+
+		generated.save(output_filename);
 	}
 
-	CL_String msg = cl_format("%1 collision outlines generated as %3\\%2_xxx.out", frames.size(), filename, directory);
-
+	CL_String msg = cl_format("%1 collision outlines generated", frames.size());
 	cl_message_box(this, "Collision outlines generated", msg, cl_mb_buttons_ok, cl_mb_icon_info);
 }
 
 void CreateCollisionDataDialog::update_expected_filenames()
 {
-	label_expected_filenames->set_text(
-		cl_format("Expected output: %1\\%2_xxx.out", edit_directory->get_text(), edit_filename->get_text()));
+	if(sprite_item->sprite_description.get_frames().size() > 1)
+	{
+		label_expected_filenames->set_text(
+			cl_format("Expected output: %1\\%2_xxx.out", edit_directory->get_text(), edit_filename->get_text()));
+	}
+	else
+	{
+		label_expected_filenames->set_text(
+			cl_format("Expected output: %1\\%2.out", edit_directory->get_text(), edit_filename->get_text()));
+	}
 }
