@@ -131,7 +131,7 @@ void CreateCollisionDataDialog::generate_collision(const CL_String &filename, co
 		
 		CL_CollisionOutline generated(pb, 128, accuracy);
 
-		CL_StringFormat f("%1\\%2-%3.col"); 
+		CL_StringFormat f("%1\\%2_%3.out"); 
 		f.set_arg(1, directory); 
 		f.set_arg(2, filename);
 		f.set_arg(3, i, 3);
@@ -140,7 +140,7 @@ void CreateCollisionDataDialog::generate_collision(const CL_String &filename, co
 		generated.save(f.get_result());
 	}
 
-	CL_String msg = cl_format("%1 collision outlines generated as %3\\%2-xxx.col", frames.size(), filename, directory);
+	CL_String msg = cl_format("%1 collision outlines generated as %3\\%2_xxx.out", frames.size(), filename, directory);
 
 	cl_message_box(this, "Collision outlines generated", msg, cl_mb_buttons_ok, cl_mb_icon_info);
 }
@@ -148,5 +148,5 @@ void CreateCollisionDataDialog::generate_collision(const CL_String &filename, co
 void CreateCollisionDataDialog::update_expected_filenames()
 {
 	label_expected_filenames->set_text(
-		cl_format("Expected output: %1\\%2-xxx.col", edit_directory->get_text(), edit_filename->get_text()));
+		cl_format("Expected output: %1\\%2_xxx.out", edit_directory->get_text(), edit_filename->get_text()));
 }
