@@ -62,11 +62,11 @@ void CL_CSSLayout::layout(CL_GraphicContext &gc, const CL_Rect &viewport)
 	impl->viewport = viewport;
 }
 
-void CL_CSSLayout::render(CL_GraphicContext &gc)
+void CL_CSSLayout::render_impl(CL_GraphicContext &gc, std::auto_ptr<ClipWrapper> wrapper)
 {
 	impl->throw_if_disposed();
 
-	CL_CSSLayoutGraphics graphics(gc, &impl->resource_cache, impl->viewport);
+	CL_CSSLayoutGraphics graphics(gc, &impl->resource_cache, impl->viewport, wrapper.get());
 	impl->layout_tree.render(&graphics, &impl->resource_cache);
 }
 

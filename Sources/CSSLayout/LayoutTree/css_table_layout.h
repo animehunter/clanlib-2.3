@@ -61,6 +61,8 @@ public:
 	CL_CSSLayoutHitTestResult hit_test(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resource_cache, const CL_Point &pos) const;
 	CL_CSSInlineLayout *find_inline_layout(CL_CSSBoxText *text_node);
 
+	bool find_content_box(CL_CSSBoxElement *element, CL_Rect &out_rect);
+
 private:
 	void prepare_children();
 	void layout_content(CL_CSSLayoutGraphics *graphics, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy);

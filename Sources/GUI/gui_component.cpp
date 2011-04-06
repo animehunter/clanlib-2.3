@@ -726,7 +726,7 @@ void CL_GUIComponent::render(CL_GraphicContext &gc, const CL_Rect &clip_rect, bo
 	if (!impl->css_layout.is_null())
 	{
 		impl->css_layout.layout(gc, get_size());
-		impl->css_layout.render(gc);
+		impl->css_layout.render(gc, this);
 	}
 
 	if (impl->func_render.is_null() == false)
@@ -1308,6 +1308,8 @@ void CL_GUIComponent::load_css_layout(const CL_String &xml_filename, const CL_St
 		CL_DomSelectNode select_node(dom.get_document_element());
 		impl->css_element.apply_properties(css_document.select(&select_node));
 		impl->css_element.apply_properties(dom.get_document_element().get_attribute("style"));
+		impl->css_element.set_col_span(dom.get_document_element().get_attribute_int("colspan", 1));
+		impl->css_element.set_row_span(dom.get_document_element().get_attribute_int("rowspan", 1));
 	}
 
 	element_stack.push_back(impl->css_element);
@@ -1321,6 +1323,8 @@ void CL_GUIComponent::load_css_layout(const CL_String &xml_filename, const CL_St
 			child_css_element = element_stack.back().create_element(cur_element.get_tag_name());
 			child_css_element.apply_properties(css_document.select(&select_node));
 			child_css_element.apply_properties(cur_element.get_attribute("style"));
+			child_css_element.set_col_span(cur_element.get_attribute_int("colspan", 1));
+			child_css_element.set_row_span(cur_element.get_attribute_int("rowspan", 1));
 		}
 		else if (cur.is_text())
 		{

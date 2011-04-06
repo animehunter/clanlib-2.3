@@ -819,3 +819,33 @@ void CL_CSSTableLayout::render_layer_positioned(CL_CSSLayoutGraphics *graphics, 
 		}
 	}
 }
+
+bool CL_CSSTableLayout::find_content_box(CL_CSSBoxElement *search_element, CL_Rect &out_rect)
+{
+	if (get_element_node() == search_element)
+	{
+		CL_Rect box = content_box;
+		box.translate(cl_used_to_actual(relative_x), cl_used_to_actual(relative_y));
+		if (!formatting_context_root)
+			content_box.translate(formatting_context->get_x(), formatting_context->get_y());
+		else if (formatting_context->get_parent())
+			content_box.translate(formatting_context->get_parent()->get_x(), formatting_context->get_parent()->get_y());
+		out_rect = box;
+		return true;
+	}
+
+	for (size_t row = 0; row < rows.size(); row++)
+	{
+		for (size_t cell = 0; cell < columns.size(); cell++)
+		{
+			if (get_layout(cell, row))
+			{
+				CL_CSSLayoutTreeNode *cell_node = get_layout(cell, row);
+				if (cell_node->find_content_box(search_element, out_rect))
+					return true;
+			}
+		}
+	}
+
+	return false;
+}

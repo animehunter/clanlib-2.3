@@ -30,8 +30,8 @@
 #include "css_layout_graphics.h"
 #include "../css_resource_cache.h"
 
-CL_CSSLayoutGraphics::CL_CSSLayoutGraphics(CL_GraphicContext &gc, CL_CSSResourceCache *cache, const CL_Rect &viewport)
-: gc(gc), cache(cache), viewport(viewport)
+CL_CSSLayoutGraphics::CL_CSSLayoutGraphics(CL_GraphicContext &gc, CL_CSSResourceCache *cache, const CL_Rect &viewport, CL_CSSLayout::ClipWrapper *clip_wrapper)
+: gc(gc), cache(cache), viewport(viewport), clip_wrapper(clip_wrapper)
 {
 }
 
@@ -85,10 +85,16 @@ void CL_CSSLayoutGraphics::push_cliprect(const CL_Rect &box)
 {
 	CL_Rect box2 = box;
 	box2.translate(viewport.left, viewport.top);
-	gc.push_cliprect(box2);
+	if (clip_wrapper)
+		clip_wrapper->push_cliprect(gc, box2);
+	else
+		gc.push_cliprect(box2);
 }
 
 void CL_CSSLayoutGraphics::pop_cliprect()
 {
-	gc.pop_cliprect();
+	if (clip_wrapper)
+		clip_wrapper->pop_cliprect(gc);
+	else
+		gc.pop_cliprect();
 }

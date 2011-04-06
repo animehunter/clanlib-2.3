@@ -30,6 +30,7 @@
 
 #include "API/Core/Math/rect.h"
 #include "API/Display/2D/image.h"
+#include "API/CSSLayout/css_layout.h"
 
 class CL_CSSBoxProperties;
 class CL_Image;
@@ -40,7 +41,7 @@ class CL_CSSResourceCache;
 class CL_CSSLayoutGraphics
 {
 public:
-	CL_CSSLayoutGraphics(CL_GraphicContext &gc, CL_CSSResourceCache *cache, const CL_Rect &viewport);
+	CL_CSSLayoutGraphics(CL_GraphicContext &gc, CL_CSSResourceCache *cache, const CL_Rect &viewport, CL_CSSLayout::ClipWrapper *clip_wrapper = 0);
 	~CL_CSSLayoutGraphics();
 
 	CL_Image &get_image(const CL_String &url);
@@ -60,4 +61,5 @@ private:
 	CL_GraphicContext gc;
 	CL_CSSResourceCache *cache;
 	CL_Rect viewport;
+	CL_CSSLayout::ClipWrapper *clip_wrapper;
 };
