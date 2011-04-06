@@ -85,8 +85,8 @@ void TileMap::draw(CL_GraphicContext &gc)
 	int scrolling_pixel_offset_x = current_map_position_x - start_tile_x * tile_width;
 	int scrolling_pixel_offset_y = current_map_position_y - start_tile_y * tile_height;
 
-	int tiles_on_screen_horizontally = screen_width / tile_width;
-	int tiles_on_screen_vertically = screen_height / tile_height; 
+	int tiles_on_screen_horizontally = screen_width / tile_width + 1;
+	int tiles_on_screen_vertically = screen_height / tile_height + 1; 
 
 	// since we might show half tiles on edges, make sure we display one more tile to fill screen
 	tiles_on_screen_horizontally++;
