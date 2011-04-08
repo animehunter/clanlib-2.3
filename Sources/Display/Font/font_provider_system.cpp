@@ -283,10 +283,12 @@ CL_FontDescription CL_FontProvider_System::get_registered_font(const CL_FontDesc
 	}
 	else
 	{
+#if !defined(__APPLE__)
         // Obtain the best matching font file from fontconfig.
 		CL_FontConfig &fc = CL_FontConfig::instance();
 		CL_String font_file_path = fc.match_font(new_desc);
 		new_desc.set_typeface_name(font_file_path);
+#endif
 	}
 	return new_desc;
 }

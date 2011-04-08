@@ -59,7 +59,9 @@
 #include "API/GL/opengl_wrap.h"
 #include "API/Display/2D/image.h"
 
-#ifndef WIN32
+#if defined(__APPLE__)
+#include <CoreFoundation/CoreFoundation.h>
+#elif !defined(WIN32)
 #include "GLX/opengl_window_provider_glx.h"
 #endif
 
@@ -70,7 +72,7 @@ const CL_String::char_type *cl_glsl_vertex_color_only =
 	"void main(void) { gl_Position = cl_ModelViewProjectionMatrix*Position; Color = Color0; }";
 
 const CL_String::char_type *cl_glsl_fragment_color_only =
-	"varying vec4 Color; "
+	"varying highp vec4 Color; "
 	"void main(void) { gl_FragColor = Color; }";
 
 const CL_String::char_type *cl_glsl_vertex_single_texture =
@@ -83,8 +85,8 @@ const CL_String::char_type *cl_glsl_vertex_single_texture =
 
 const CL_String::char_type *cl_glsl_fragment_single_texture =
 	"uniform sampler2D Texture0; "
-	"varying vec4 Color; "
-	"varying vec2 TexCoord; "
+	"varying highp vec4 Color; "
+	"varying highp vec2 TexCoord; "
 	"void main(void) { gl_FragColor = Color*texture2D(Texture0, TexCoord); }";
 
 const CL_String::char_type *cl_glsl_vertex_sprite =
@@ -102,10 +104,10 @@ const CL_String::char_type *cl_glsl_fragment_sprite =
 	"uniform sampler2D Texture1; "
 	"uniform sampler2D Texture2; "
 	"uniform sampler2D Texture3; "
-	"varying vec4 Color; "
-	"varying vec2 TexCoord; "
-	"varying float TexIndex; "
-	"vec4 sampleTexture(int index, vec2 pos) { if (index == 0) return texture2D(Texture0, TexCoord); else if (index == 1) return texture2D(Texture1, TexCoord); else if (index == 2) return texture2D(Texture2, TexCoord); else if (index == 3) return texture2D(Texture3, TexCoord); else return vec4(1.0,1.0,1.0,1.0); }"
+	"varying highp vec4 Color; "
+	"varying highp vec2 TexCoord; "
+	"varying highp float TexIndex; "
+	"highp vec4 sampleTexture(int index, highp vec2 pos) { if (index == 0) return texture2D(Texture0, TexCoord); else if (index == 1) return texture2D(Texture1, TexCoord); else if (index == 2) return texture2D(Texture2, TexCoord); else if (index == 3) return texture2D(Texture3, TexCoord); else return vec4(1.0,1.0,1.0,1.0); }"
 	"void main(void) { gl_FragColor = Color*sampleTexture(int(TexIndex), TexCoord); } ";
 
 
@@ -223,15 +225,25 @@ void CL_OpenGLGraphicContextProvider::get_opengl_version(int &version_major, int
 	version_major = 0;
 	version_minor = 0;
 	version_release = 0;
-
-	std::vector<CL_String> split_version = CL_StringHelp::split_text(version, ".");
-	if(split_version.size() > 0)
-		version_major = CL_StringHelp::text_to_int(split_version[0]);
-	if(split_version.size() > 1)
-		version_minor = CL_StringHelp::text_to_int(split_version[1]);
-	if(split_version.size() > 2)
-		version_release = CL_StringHelp::text_to_int(split_version[2]);
-
+    
+    // OK so Apple's OpenGL ES 2 implementation incorrectly returns a GL_VERSION with stuff at the front:
+    // "OpenGL ES 2.0 APPLE"
+    if (version == "OpenGL ES 2.0 APPLE")
+    {
+        version_major = 2;
+        version_minor = 0;
+        version_release = 0;
+    }
+    else
+    {
+        std::vector<CL_String> split_version = CL_StringHelp::split_text(version, ".");
+        if(split_version.size() > 0)
+            version_major = CL_StringHelp::text_to_int(split_version[0]);
+        if(split_version.size() > 1)
+            version_minor = CL_StringHelp::text_to_int(split_version[1]);
+        if(split_version.size() > 2)
+            version_release = CL_StringHelp::text_to_int(split_version[2]);
+    }
 }
 
 void CL_OpenGLGraphicContextProvider::get_opengl_shading_language_version(int &version_major, int &version_minor, int &version_release)
@@ -330,8 +342,12 @@ CL_ProcAddress *CL_OpenGLGraphicContextProvider::get_proc_address(const CL_Strin
 	{
 		cl_gBundleRefOpenGL = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.opengl"));
 		if (cl_gBundleRefOpenGL == 0)
-			throw CL_Exception("Unable to find com.apple.opengl bundle");
-	}
+        {
+            cl_gBundleRefOpenGL = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.opengles"));
+            if (cl_gBundleRefOpenGL == 0)
+                throw CL_Exception("Unable to find opengl bundle");
+        }
+    }
 
 	return (CL_ProcAddress *) CFBundleGetFunctionPointerForName(
 		cl_gBundleRefOpenGL,
@@ -501,6 +517,7 @@ void CL_OpenGLGraphicContextProvider::set_frame_buffer(const CL_FrameBuffer &dra
 
 void CL_OpenGLGraphicContextProvider::reset_frame_buffer()
 {
+#ifndef __APPLE__
 	CL_OpenGL::set_active(this);
 	clBindFramebuffer(CL_FRAMEBUFFER, 0);
 	clBindFramebuffer(CL_READ_FRAMEBUFFER, 0);
@@ -512,6 +529,7 @@ void CL_OpenGLGraphicContextProvider::reset_frame_buffer()
 		if (map_mode != cl_user_projection)
 			set_map_mode(map_mode_before_framebuffer);
 	}
+#endif
 }
 
 void CL_OpenGLGraphicContextProvider::set_program_object(CL_StandardProgram standard_program)
@@ -955,10 +973,9 @@ void CL_OpenGLGraphicContextProvider::set_pen(const CL_Pen &pen)
 	CL_OpenGL::set_active(this);
 
 	if (clPointParameterf)
-	{
 		clPointParameterf(CL_POINT_FADE_THRESHOLD_SIZE, (CLfloat)pen.get_point_fade_treshold_size());
-	}
-	clPointSize((CLfloat)pen.get_point_size());
+    if (clPointSize)
+        clPointSize((CLfloat)pen.get_point_size());
 	clLineWidth((CLfloat)pen.get_line_width());
 
 	if (pen.is_line_antialiased())
@@ -1014,8 +1031,11 @@ void CL_OpenGLGraphicContextProvider::set_polygon_rasterizer(const CL_PolygonRas
 	else
 		clDisable(CL_POLYGON_OFFSET_FILL);
 
-	clPolygonMode(CL_FRONT, to_enum(raster.get_face_fill_mode_front()));
-	clPolygonMode(CL_BACK, to_enum(raster.get_face_fill_mode_back()));
+    if (clPolygonMode)
+    {
+        clPolygonMode(CL_FRONT, to_enum(raster.get_face_fill_mode_front()));
+        clPolygonMode(CL_BACK, to_enum(raster.get_face_fill_mode_back()));
+    }
 
 	switch (raster.get_front_face())
 	{
@@ -1100,7 +1120,8 @@ void CL_OpenGLGraphicContextProvider::set_buffer_control(const CL_BufferControl 
 		clDisable(CL_STENCIL_TEST);
 	}
 
-	clDrawBuffer( to_enum(bc.get_draw_buffer()) );
+    if (clDrawBuffer)
+        clDrawBuffer( to_enum(bc.get_draw_buffer()) );
 
 	if (bc.is_logic_op_enabled())
 	{

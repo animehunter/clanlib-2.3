@@ -92,7 +92,11 @@ void CL_JPEGMCUDecoder::decode(int block)
 			for (int dct_x = 0; dct_x < scale_x; dct_x++)
 			{
 				short *dct = loader->component_dcts[c].get(block * block_size + dct_x + dct_y * scale_x);
+#ifndef CL_ARM_PLATFORM
 				idct_sse(dct, channels[c]+dct_x*8+dct_y*scale_x*64, scale_x*8, quant[c]);
+#else
+				idct(dct, channels[c]+dct_x*8+dct_y*scale_x*64, scale_x*8, quant[c]);
+#endif
 			}
 		}
 	}

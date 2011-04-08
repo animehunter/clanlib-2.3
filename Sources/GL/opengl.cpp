@@ -43,20 +43,16 @@
 #include <map>
 
 #ifdef __APPLE__
-#include <AGL/agl.h>
-#include <OpenGL/gl.h>
+#include "AGL/opengl_window_provider_agl.h"
+#include <OpenGLES/ES2/gl.h>
+#include <OpenGLES/ES2/glext.h>
 #else
 #include <GL/gl.h>
 #endif
 
-#ifndef WIN32
-#ifdef __APPLE__
-#include <AGL/agl.h>
-#include <Carbon/Carbon.h>
-#else
+#if !defined(WIN32) && !defined(__APPLE__)
 #define GLX_GLXEXT_PROTOTYPES
 #include <GL/glx.h>
-#endif
 #endif
 
 CL_GLFunctions *CL_OpenGL::functions = 0;
@@ -579,6 +575,8 @@ bool CL_OpenGL::to_opengl_pixelformat(CL_TextureFormat texture_format, CLenum &f
 
 #if defined(_MSC_VER)
 #define cl_tls_variable _declspec(thread)
+#elif defined(__APPLE__) // To do: change check to only apply to iOS/ARM target
+#define cl_tls_variable
 #else
 #define cl_tls_variable __thread
 #endif
@@ -635,7 +633,9 @@ bool CL_OpenGL::set_active()
 void CL_OpenGL::set_active(const CL_OpenGLGraphicContextProvider * const gc_provider)
 {
 	// Don't do anything if the supplied graphic context is already active.
+#ifndef __APPLE__ // temp hack to see if iOS changes the current context behind our back
 	if (gc_provider != cl_active_opengl_gc)
+#endif
 	{
 		if (gc_provider)
 		{
@@ -665,7 +665,7 @@ void CL_OpenGL::set_active(const CL_OpenGLGraphicContextProvider * const gc_prov
 #		if defined(WIN32)
 			wglMakeCurrent(NULL, NULL);
 #		elif defined(__APPLE__)
-			aglMakeCurrent(AGL_NONE, NULL);
+            cl_agl_make_none_current();
 #		else
 			//Note: glX may not even be available. Also glXGetCurrentDisplay() may fail
 			// Hopefully this will not matter!
@@ -1228,137 +1228,34 @@ CL_GLFunctions *cl_setup_binds()
 #endif
 
 #ifdef __APPLE__
-	// *** NOTE - Some of these should be commented out, as they are legacy if (!functions) functions that are not in the OpenGL 3 spec
+//	if (!functions->drawRangeElements) functions->drawRangeElements = (CL_GLFunctions::ptr_glDrawRangeElements) &glDrawRangeElements;
+//	if (!functions->texImage3D) functions->texImage3D = (CL_GLFunctions::ptr_glTexImage3D) &glTexImage3D;
+//	if (!functions->texSubImage3D) functions->texSubImage3D = (CL_GLFunctions::ptr_glTexSubImage3D) &glTexSubImage3D;
+//	if (!functions->copyTexSubImage3D) functions->copyTexSubImage3D = (CL_GLFunctions::ptr_glCopyTexSubImage3D) &glCopyTexSubImage3D;
+	if (!functions->blendColor) functions->blendColor = (CL_GLFunctions::ptr_glBlendColor) &glBlendColor;
+	if (!functions->blendEquation) functions->blendEquation = (CL_GLFunctions::ptr_glBlendEquation) &glBlendEquation;
+	if (!functions->activeTexture) functions->activeTexture = (CL_GLFunctions::ptr_glActiveTexture) &glActiveTexture;
+//	if (!functions->compressedTexImage1D) functions->compressedTexImage1D = (CL_GLFunctions::ptr_glCompressedTexImage1D) &glCompressedTexImage1D;
+	if (!functions->compressedTexImage2D) functions->compressedTexImage2D = (CL_GLFunctions::ptr_glCompressedTexImage2D) &glCompressedTexImage2D;
+//	if (!functions->compressedTexImage3D) functions->compressedTexImage3D = (CL_GLFunctions::ptr_glCompressedTexImage3DARB) &glCompressedTexImage3D;
+//	if (!functions->compressedTexSubImage1D) functions->compressedTexSubImage1D = (CL_GLFunctions::ptr_glCompressedTexSubImage1D) &glCompressedTexSubImage1D;
+	if (!functions->compressedTexSubImage2D) functions->compressedTexSubImage2D = (CL_GLFunctions::ptr_glCompressedTexSubImage2D) &glCompressedTexSubImage2D;
+//	if (!functions->compressedTexSubImage3D) functions->compressedTexSubImage3D = (CL_GLFunctions::ptr_glCompressedTexSubImage3D) &glCompressedTexSubImage3D;
+//	if (!functions->getCompressedTexImage) functions->getCompressedTexImage = (CL_GLFunctions::ptr_glGetCompressedTexImage) &glGetCompressedTexImage;
+	if (!functions->sampleCoverage) functions->sampleCoverage = (CL_GLFunctions::ptr_glSampleCoverage) &glSampleCoverage;
+//	if (!functions->multiDrawArrays) functions->multiDrawArrays = (CL_GLFunctions::ptr_glMultiDrawArrays) &glMultiDrawArrays;
+//	if (!functions->multiDrawElements) functions->multiDrawElements = (CL_GLFunctions::ptr_glMultiDrawElements) &glMultiDrawElements;
+//	if (!functions->pointParameterf) functions->pointParameterf = (CL_GLFunctions::ptr_glPointParameterf) &glPointParameterf;
+//	if (!functions->pointParameterfv) functions->pointParameterfv = (CL_GLFunctions::ptr_glPointParameterfv) &glPointParameterfv;
+	if (!functions->blendFuncSeparate) functions->blendFuncSeparate = (CL_GLFunctions::ptr_glBlendFuncSeparate) &glBlendFuncSeparate;
 
-	if (!functions->drawRangeElements) functions->drawRangeElements = (CL_GLFunctions::ptr_glDrawRangeElementsEXT) &glDrawRangeElements;
-	if (!functions->texImage3D) functions->texImage3D = (CL_GLFunctions::ptr_glTexImage3DEXT) &glTexImage3D;
-	if (!functions->texSubImage3D) functions->texSubImage3D = (CL_GLFunctions::ptr_glTexSubImage3DEXT) &glTexSubImage3D;
-	if (!functions->copyTexSubImage3D) functions->copyTexSubImage3D = (CL_GLFunctions::ptr_glCopyTexSubImage3DEXT) &glCopyTexSubImage3D;
-	if (!functions->colorTable) functions->colorTable = (CL_GLFunctions::ptr_glColorTableSGI) &glColorTable;
-	if (!functions->copyColorTable) functions->copyColorTable = (CL_GLFunctions::ptr_glCopyColorTableSGI) &glCopyColorTable;
-	if (!functions->colorTableParameteriv) functions->colorTableParameteriv = (CL_GLFunctions::ptr_glColorTableParameterivSGI) &glColorTableParameteriv;
-	if (!functions->colorTableParameterfv) functions->colorTableParameterfv = (CL_GLFunctions::ptr_glColorTableParameterfvSGI) &glColorTableParameterfv;
-	if (!functions->getColorTable) functions->getColorTable = (CL_GLFunctions::ptr_glGetColorTableSGI) &glGetColorTable;
-	if (!functions->getColorTableParameteriv) functions->getColorTableParameteriv = (CL_GLFunctions::ptr_glGetColorTableParameterivSGI) &glGetColorTableParameteriv;
-	if (!functions->getColorTableParameterfv) functions->getColorTableParameterfv = (CL_GLFunctions::ptr_glGetColorTableParameterfvSGI) &glGetColorTableParameterfv;
-	if (!functions->colorSubTable) functions->colorSubTable = (CL_GLFunctions::ptr_glColorSubTableEXT) &glColorSubTable;
-	if (!functions->copyColorSubTable) functions->copyColorSubTable = (CL_GLFunctions::ptr_glCopyColorSubTableEXT) &glCopyColorSubTable;
-	if (!functions->convolutionFilter1D) functions->convolutionFilter1D = (CL_GLFunctions::ptr_glConvolutionFilter1DEXT) &glConvolutionFilter1D;
-	if (!functions->convolutionFilter2D) functions->convolutionFilter2D = (CL_GLFunctions::ptr_glConvolutionFilter2DEXT) &glConvolutionFilter2D;
-	if (!functions->copyConvolutionFilter1D) functions->copyConvolutionFilter1D = (CL_GLFunctions::ptr_glCopyConvolutionFilter1DEXT) &glCopyConvolutionFilter1D;
-	if (!functions->copyConvolutionFilter2D) functions->copyConvolutionFilter2D = (CL_GLFunctions::ptr_glCopyConvolutionFilter2DEXT) &glCopyConvolutionFilter2D;
-	if (!functions->getConvolutionFilter) functions->getConvolutionFilter = (CL_GLFunctions::ptr_glGetConvolutionFilterEXT) &glGetConvolutionFilter;
-	if (!functions->separableFilter2D) functions->separableFilter2D = (CL_GLFunctions::ptr_glSeparableFilter2DEXT) &glSeparableFilter2D;
-	if (!functions->getSeparableFilter) functions->getSeparableFilter = (CL_GLFunctions::ptr_glGetSeparableFilterEXT) &glGetSeparableFilter;
-	if (!functions->convolutionParameteri) functions->convolutionParameteri = (CL_GLFunctions::ptr_glConvolutionParameteriEXT) &glConvolutionParameteri;
-	if (!functions->convolutionParameteriv) functions->convolutionParameteriv = (CL_GLFunctions::ptr_glConvolutionParameterivEXT) &glConvolutionParameteriv;
-	if (!functions->convolutionParameterf) functions->convolutionParameterf = (CL_GLFunctions::ptr_glConvolutionParameterfEXT) &glConvolutionParameterf;
-	if (!functions->convolutionParameterfv) functions->convolutionParameterfv = (CL_GLFunctions::ptr_glConvolutionParameterfvEXT) &glConvolutionParameterfv;
-	if (!functions->getConvolutionParameteriv) functions->getConvolutionParameteriv = (CL_GLFunctions::ptr_glGetConvolutionParameterivEXT) &glGetConvolutionParameteriv;
-	if (!functions->getConvolutionParameterfv) functions->getConvolutionParameterfv = (CL_GLFunctions::ptr_glGetConvolutionParameterfvEXT) &glGetConvolutionParameterfv;
-	if (!functions->histogram) functions->histogram = (CL_GLFunctions::ptr_glHistogramEXT) &glHistogram;
-	if (!functions->resetHistogram) functions->resetHistogram = (CL_GLFunctions::ptr_glResetHistogramEXT) &glResetHistogram;
-	if (!functions->getHistogram) functions->getHistogram = (CL_GLFunctions::ptr_glGetHistogramEXT) &glGetHistogram;
-	if (!functions->getHistogramParameteriv) functions->getHistogramParameteriv = (CL_GLFunctions::ptr_glGetHistogramParameterivEXT) &glGetHistogramParameteriv;
-	if (!functions->getHistogramParameterfv) functions->getHistogramParameterfv = (CL_GLFunctions::ptr_glGetHistogramParameterfvEXT) &glGetHistogramParameterfv;
-	if (!functions->minmax) functions->minmax = (CL_GLFunctions::ptr_glMinmaxEXT) &glMinmax;
-	if (!functions->resetMinmax) functions->resetMinmax = (CL_GLFunctions::ptr_glResetMinmaxEXT) &glResetMinmax;
-	if (!functions->getMinmax) functions->getMinmax = (CL_GLFunctions::ptr_glGetMinmaxEXT) &glGetMinmax;
-	if (!functions->getMinmaxParameteriv) functions->getMinmaxParameteriv = (CL_GLFunctions::ptr_glGetMinmaxParameterivEXT) &glGetMinmaxParameteriv;
-	if (!functions->getMinmaxParameterfv) functions->getMinmaxParameterfv = (CL_GLFunctions::ptr_glGetMinmaxParameterfvEXT) &glGetMinmaxParameterfv;
-	if (!functions->blendColor) functions->blendColor = (CL_GLFunctions::ptr_glBlendColorEXT) &glBlendColor;
-	if (!functions->blendEquation) functions->blendEquation = (CL_GLFunctions::ptr_glBlendEquationEXT) &glBlendEquation;
-	if (!functions->activeTexture) functions->activeTexture = (CL_GLFunctions::ptr_glActiveTextureARB) &glActiveTexture;
-	if (!functions->clientActiveTexture) functions->clientActiveTexture = (CL_GLFunctions::ptr_glClientActiveTextureARB) &glClientActiveTexture;
-	if (!functions->multiTexCoord1d) functions->multiTexCoord1d = (CL_GLFunctions::ptr_glMultiTexCoord1dARB) &glMultiTexCoord1d;
-	if (!functions->multiTexCoord1dv) functions->multiTexCoord1dv = (CL_GLFunctions::ptr_glMultiTexCoord1dvARB) &glMultiTexCoord1dv;
-	if (!functions->multiTexCoord1f) functions->multiTexCoord1f = (CL_GLFunctions::ptr_glMultiTexCoord1fARB) &glMultiTexCoord1f;
-	if (!functions->multiTexCoord1fv) functions->multiTexCoord1fv = (CL_GLFunctions::ptr_glMultiTexCoord1fvARB) &glMultiTexCoord1fv;
-	if (!functions->multiTexCoord1i) functions->multiTexCoord1i = (CL_GLFunctions::ptr_glMultiTexCoord1iARB) &glMultiTexCoord1i;
-	if (!functions->multiTexCoord1iv) functions->multiTexCoord1iv = (CL_GLFunctions::ptr_glMultiTexCoord1ivARB) &glMultiTexCoord1iv;
-	if (!functions->multiTexCoord1s) functions->multiTexCoord1s = (CL_GLFunctions::ptr_glMultiTexCoord1sARB) &glMultiTexCoord1s;
-	if (!functions->multiTexCoord1sv) functions->multiTexCoord1sv = (CL_GLFunctions::ptr_glMultiTexCoord1svARB) &glMultiTexCoord1sv;
-	if (!functions->multiTexCoord2d) functions->multiTexCoord2d = (CL_GLFunctions::ptr_glMultiTexCoord2dARB) &glMultiTexCoord2d;
-	if (!functions->multiTexCoord2dv) functions->multiTexCoord2dv = (CL_GLFunctions::ptr_glMultiTexCoord2dvARB) &glMultiTexCoord2dv;
-	if (!functions->multiTexCoord2f) functions->multiTexCoord2f = (CL_GLFunctions::ptr_glMultiTexCoord2fARB) &glMultiTexCoord2f;
-	if (!functions->multiTexCoord2fv) functions->multiTexCoord2fv = (CL_GLFunctions::ptr_glMultiTexCoord2fvARB) &glMultiTexCoord2fv;
-	if (!functions->multiTexCoord2i) functions->multiTexCoord2i = (CL_GLFunctions::ptr_glMultiTexCoord2iARB) &glMultiTexCoord2i;
-	if (!functions->multiTexCoord2iv) functions->multiTexCoord2iv = (CL_GLFunctions::ptr_glMultiTexCoord2ivARB) &glMultiTexCoord2iv;
-	if (!functions->multiTexCoord2s) functions->multiTexCoord2s = (CL_GLFunctions::ptr_glMultiTexCoord2sARB) &glMultiTexCoord2s;
-	if (!functions->multiTexCoord2sv) functions->multiTexCoord2sv = (CL_GLFunctions::ptr_glMultiTexCoord2svARB) &glMultiTexCoord2sv;
-	if (!functions->multiTexCoord3d) functions->multiTexCoord3d = (CL_GLFunctions::ptr_glMultiTexCoord3dARB) &glMultiTexCoord3d;
-	if (!functions->multiTexCoord3dv) functions->multiTexCoord3dv = (CL_GLFunctions::ptr_glMultiTexCoord3dvARB) &glMultiTexCoord3dv;
-	if (!functions->multiTexCoord3f) functions->multiTexCoord3f = (CL_GLFunctions::ptr_glMultiTexCoord3fARB) &glMultiTexCoord3f;
-	if (!functions->multiTexCoord3fv) functions->multiTexCoord3fv = (CL_GLFunctions::ptr_glMultiTexCoord3fvARB) &glMultiTexCoord3fv;
-	if (!functions->multiTexCoord3i) functions->multiTexCoord3i = (CL_GLFunctions::ptr_glMultiTexCoord3iARB) &glMultiTexCoord3i;
-	if (!functions->multiTexCoord3iv) functions->multiTexCoord3iv = (CL_GLFunctions::ptr_glMultiTexCoord3ivARB) &glMultiTexCoord3iv;
-	if (!functions->multiTexCoord3s) functions->multiTexCoord3s = (CL_GLFunctions::ptr_glMultiTexCoord3sARB) &glMultiTexCoord3s;
-	if (!functions->multiTexCoord3sv) functions->multiTexCoord3sv = (CL_GLFunctions::ptr_glMultiTexCoord3svARB) &glMultiTexCoord3sv;
-	if (!functions->multiTexCoord4d) functions->multiTexCoord4d = (CL_GLFunctions::ptr_glMultiTexCoord4dARB) &glMultiTexCoord4d;
-	if (!functions->multiTexCoord4dv) functions->multiTexCoord4dv = (CL_GLFunctions::ptr_glMultiTexCoord4dvARB) &glMultiTexCoord4dv;
-	if (!functions->multiTexCoord4f) functions->multiTexCoord4f = (CL_GLFunctions::ptr_glMultiTexCoord4fARB) &glMultiTexCoord4f;
-	if (!functions->multiTexCoord4fv) functions->multiTexCoord4fv = (CL_GLFunctions::ptr_glMultiTexCoord4fvARB) &glMultiTexCoord4fv;
-	if (!functions->multiTexCoord4i) functions->multiTexCoord4i = (CL_GLFunctions::ptr_glMultiTexCoord4iARB) &glMultiTexCoord4i;
-	if (!functions->multiTexCoord4iv) functions->multiTexCoord4iv = (CL_GLFunctions::ptr_glMultiTexCoord4ivARB) &glMultiTexCoord4iv;
-	if (!functions->multiTexCoord4s) functions->multiTexCoord4s = (CL_GLFunctions::ptr_glMultiTexCoord4sARB) &glMultiTexCoord4s;
-	if (!functions->multiTexCoord4sv) functions->multiTexCoord4sv = (CL_GLFunctions::ptr_glMultiTexCoord4svARB) &glMultiTexCoord4sv;
-	if (!functions->compressedTexImage1D) functions->compressedTexImage1D = (CL_GLFunctions::ptr_glCompressedTexImage1DARB) &glCompressedTexImage1D;
-	if (!functions->compressedTexImage2D) functions->compressedTexImage2D = (CL_GLFunctions::ptr_glCompressedTexImage2DARB) &glCompressedTexImage2D;
-	if (!functions->compressedTexImage3D) functions->compressedTexImage3D = (CL_GLFunctions::ptr_glCompressedTexImage3DARB) &glCompressedTexImage3D;
-	if (!functions->compressedTexSubImage1D) functions->compressedTexSubImage1D = (CL_GLFunctions::ptr_glCompressedTexSubImage1DARB) &glCompressedTexSubImage1D;
-	if (!functions->compressedTexSubImage2D) functions->compressedTexSubImage2D = (CL_GLFunctions::ptr_glCompressedTexSubImage2DARB) &glCompressedTexSubImage2D;
-	if (!functions->compressedTexSubImage3D) functions->compressedTexSubImage3D = (CL_GLFunctions::ptr_glCompressedTexSubImage3DARB) &glCompressedTexSubImage3D;
-	if (!functions->getCompressedTexImage) functions->getCompressedTexImage = (CL_GLFunctions::ptr_glGetCompressedTexImageARB) &glGetCompressedTexImage;
-	if (!functions->sampleCoverage) functions->sampleCoverage = (CL_GLFunctions::ptr_glSampleCoverageARB) &glSampleCoverage;
-	if (!functions->glLoadTransposeMatrixd) functions->glLoadTransposeMatrixd = (CL_GLFunctions::ptr_glLoadTransposeMatrixdARB) &glLoadTransposeMatrixd;
-	if (!functions->glLoadTransposeMatrixf) functions->glLoadTransposeMatrixf = (CL_GLFunctions::ptr_glLoadTransposeMatrixfARB) &glLoadTransposeMatrixf;
-	if (!functions->glMultTransposeMatrixd) functions->glMultTransposeMatrixd = (CL_GLFunctions::ptr_glMultTransposeMatrixdARB) &glMultTransposeMatrixd;
-	if (!functions->glMultTransposeMatrixf) functions->glMultTransposeMatrixf = (CL_GLFunctions::ptr_glMultTransposeMatrixfARB) &glMultTransposeMatrixf;
-	if (!functions->fogCoordd) functions->fogCoordd = (CL_GLFunctions::ptr_glFogCoorddEXT) &glFogCoordd;
-	if (!functions->fogCoorddv) functions->fogCoorddv = (CL_GLFunctions::ptr_glFogCoorddvEXT) &glFogCoorddv;
-	if (!functions->fogCoordf) functions->fogCoordf = (CL_GLFunctions::ptr_glFogCoordfEXT) &glFogCoordf;
-	if (!functions->fogCoordfv) functions->fogCoordfv = (CL_GLFunctions::ptr_glFogCoordfvEXT) &glFogCoordfv;
-	if (!functions->fogCoordPointer) functions->fogCoordPointer = (CL_GLFunctions::ptr_glFogCoordPointerEXT) &glFogCoordPointer;
-	if (!functions->multiDrawArrays) functions->multiDrawArrays = (CL_GLFunctions::ptr_glMultiDrawArraysEXT) &glMultiDrawArrays;
-	if (!functions->multiDrawElementsEXT) functions->multiDrawElementsEXT = (CL_GLFunctions::ptr_glMultiDrawElementsEXT) &glMultiDrawElements;
-	if (!functions->pointParameterf) functions->pointParameterf = (CL_GLFunctions::ptr_glPointParameterfARB) &glPointParameterf;
-	if (!functions->pointParameterfv) functions->pointParameterfv = (CL_GLFunctions::ptr_glPointParameterfvARB) &glPointParameterfv;
-	if (!functions->secondaryColor3b) functions->secondaryColor3b = (CL_GLFunctions::ptr_glSecondaryColor3bEXT) &glSecondaryColor3b;
-	if (!functions->secondaryColor3bv) functions->secondaryColor3bv = (CL_GLFunctions::ptr_glSecondaryColor3bvEXT) &glSecondaryColor3bv;
-	if (!functions->secondaryColor3d) functions->secondaryColor3d = (CL_GLFunctions::ptr_glSecondaryColor3dEXT) &glSecondaryColor3d;
-	if (!functions->secondaryColor3dv) functions->secondaryColor3dv = (CL_GLFunctions::ptr_glSecondaryColor3dvEXT) &glSecondaryColor3dv;
-	if (!functions->secondaryColor3f) functions->secondaryColor3f = (CL_GLFunctions::ptr_glSecondaryColor3fEXT) &glSecondaryColor3f;
-	if (!functions->secondaryColor3fv) functions->secondaryColor3fv = (CL_GLFunctions::ptr_glSecondaryColor3fvEXT) &glSecondaryColor3fv;
-	if (!functions->secondaryColor3i) functions->secondaryColor3i = (CL_GLFunctions::ptr_glSecondaryColor3iEXT) &glSecondaryColor3i;
-	if (!functions->secondaryColor3iv) functions->secondaryColor3iv = (CL_GLFunctions::ptr_glSecondaryColor3ivEXT) &glSecondaryColor3iv;
-	if (!functions->secondaryColor3s) functions->secondaryColor3s = (CL_GLFunctions::ptr_glSecondaryColor3sEXT) &glSecondaryColor3s;
-	if (!functions->secondaryColor3sv) functions->secondaryColor3sv = (CL_GLFunctions::ptr_glSecondaryColor3svEXT) &glSecondaryColor3sv;
-	if (!functions->secondaryColor3ub) functions->secondaryColor3ub = (CL_GLFunctions::ptr_glSecondaryColor3ubEXT) &glSecondaryColor3ub;
-	if (!functions->secondaryColor3ubv) functions->secondaryColor3ubv = (CL_GLFunctions::ptr_glSecondaryColor3ubvEXT) &glSecondaryColor3ubv;
-	if (!functions->secondaryColor3ui) functions->secondaryColor3ui = (CL_GLFunctions::ptr_glSecondaryColor3uiEXT) &glSecondaryColor3ui;
-	if (!functions->secondaryColor3uiv) functions->secondaryColor3uiv = (CL_GLFunctions::ptr_glSecondaryColor3uivEXT) &glSecondaryColor3uiv;
-	if (!functions->secondaryColor3us) functions->secondaryColor3us = (CL_GLFunctions::ptr_glSecondaryColor3usEXT) &glSecondaryColor3us;
-	if (!functions->secondaryColor3usv) functions->secondaryColor3usv = (CL_GLFunctions::ptr_glSecondaryColor3usvEXT) &glSecondaryColor3usv;
-	if (!functions->secondaryColorPointer) functions->secondaryColorPointer = (CL_GLFunctions::ptr_glSecondaryColorPointerEXT) &glSecondaryColorPointer;
-	if (!functions->blendFuncSeparate) functions->blendFuncSeparate = (CL_GLFunctions::ptr_glBlendFuncSeparateEXT) &glBlendFuncSeparate;
-	if (!functions->windowPos2d) functions->windowPos2d = &glWindowPos2d;
-	if (!functions->windowPos2dv) functions->windowPos2dv = &glWindowPos2dv;
-	if (!functions->windowPos2f) functions->windowPos2f = &glWindowPos2f;
-	if (!functions->windowPos2fv) functions->windowPos2fv = &glWindowPos2fv;
-	if (!functions->windowPos2i) functions->windowPos2i = &glWindowPos2i;
-	if (!functions->windowPos2iv) functions->windowPos2iv = &glWindowPos2iv;
-	if (!functions->windowPos2s) functions->windowPos2s = &glWindowPos2s;
-	if (!functions->windowPos2sv) functions->windowPos2sv = &glWindowPos2sv;
-	if (!functions->windowPos3d) functions->windowPos3d = &glWindowPos3d;
-	if (!functions->windowPos3dv) functions->windowPos3dv = &glWindowPos3dv;
-	if (!functions->windowPos3f) functions->windowPos3f = &glWindowPos3f;
-	if (!functions->windowPos3fv) functions->windowPos3fv = &glWindowPos3fv;
-	if (!functions->windowPos3i) functions->windowPos3i = &glWindowPos3i;
-	if (!functions->windowPos3iv) functions->windowPos3iv = &glWindowPos3iv;
-	if (!functions->windowPos3s) functions->windowPos3s = &glWindowPos3s;
-	if (!functions->windowPos3sv) functions->windowPos3sv = &glWindowPos3sv;
+    // The following functions exist in the bundle but they are not implemented by Apple:
+    
+    functions->pointParameterf = 0;
+    functions->pointParameterfv = 0;
+    functions->pointSize = 0;
+    
 #endif
 
 	return functions;
 }
-
