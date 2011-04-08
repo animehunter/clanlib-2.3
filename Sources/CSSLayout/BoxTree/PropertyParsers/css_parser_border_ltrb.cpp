@@ -170,11 +170,6 @@ void CL_CSSParserBorderLTRB::parse(CL_CSSBoxProperties &properties, const CL_Str
 					border_style.type = CL_CSSBoxBorderStyle::type_outset;
 					style_specified = true;
 				}
-				else if (!color_specified && equals(token.value, "transparent"))
-				{
-					border_color.type = CL_CSSBoxBorderColor::type_transparent;
-					color_specified = true;
-				}
 				else
 				{
 					debug_parse_error(name, tokens);

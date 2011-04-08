@@ -138,6 +138,13 @@ bool CL_CSSPropertyParser::parse_color(const std::vector<CL_CSSToken> &tokens, s
 	CL_CSSToken token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident)
 	{
+		if (equals(token.value, "transparent"))
+		{
+			out_color = CL_Colorf::transparent;
+			in_out_pos = pos;
+			return true;
+		}
+
 		for (int i = 0; colors[i].name != 0; i++)
 		{
 			if (equals(token.value, colors[i].name))

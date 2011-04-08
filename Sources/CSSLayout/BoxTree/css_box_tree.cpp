@@ -188,16 +188,19 @@ void CL_CSSBoxTree::propagate_html_body()
 {
 	if (html_body_element && root_element != html_body_element)
 	{
-		if (root_element->computed_properties.background_image.type == CL_CSSBoxBackgroundImage::type_none &&
-			root_element->computed_properties.background_color.type == CL_CSSBoxBackgroundColor::type_transparent)
+		if (root_element->computed_properties.background_image.images[0].type == CL_CSSBoxBackgroundImage::image_type_none &&
+			root_element->computed_properties.background_color.color.a == 0.0f)
 		{
 			root_element->computed_properties.background_color = html_body_element->computed_properties.background_color;
 			root_element->computed_properties.background_image = html_body_element->computed_properties.background_image;
 			root_element->computed_properties.background_repeat = html_body_element->computed_properties.background_repeat;
 			root_element->computed_properties.background_attachment = html_body_element->computed_properties.background_attachment;
 			root_element->computed_properties.background_position = html_body_element->computed_properties.background_position;
-			html_body_element->computed_properties.background_color.type = CL_CSSBoxBackgroundColor::type_transparent;
-			html_body_element->computed_properties.background_image.type = CL_CSSBoxBackgroundImage::type_none;
+			root_element->computed_properties.background_origin = html_body_element->computed_properties.background_origin;
+			root_element->computed_properties.background_clip = html_body_element->computed_properties.background_clip;
+			root_element->computed_properties.background_size = html_body_element->computed_properties.background_size;
+			html_body_element->computed_properties.background_color = CL_CSSBoxBackgroundColor();
+			html_body_element->computed_properties.background_image = CL_CSSBoxBackgroundImage();
 		}
 	}
 }

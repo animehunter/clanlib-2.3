@@ -32,6 +32,7 @@
 #include "css_stacking_context.h"
 #include "css_block_formatting_context.h"
 #include "css_layout_graphics.h"
+#include "css_background_renderer.h"
 #include "../BoxTree/css_box_text.h"
 #include "../css_resource_cache.h"
 #include "API/CSSLayout/css_box_properties.h"
@@ -623,7 +624,13 @@ void CL_CSSInlineLayout::render_layer_background(CL_CSSLayoutGraphics *graphics,
 						cur->closing ? cl_used_to_actual(element->computed_properties.border_width_right.length.value) : 0,
 						cl_used_to_actual(element->computed_properties.border_width_bottom.length.value));
 
-					render_background(graphics, resources, element, padding_box, padding_box);
+					CL_CSSBackgroundRenderer background(graphics, resources, element);
+					background.set_initial_containing_box(CL_Rect(0, 0, cl_used_to_actual(containing_width.value), cl_used_to_actual(containing_height.value))); // Bug: this is wrong
+					background.set_content_box(content);
+					background.set_padding_box(padding_box);
+					background.set_border_box(border_box);
+					background.render();
+
 					render_border(graphics, element, border_box,
 						cur->opening ? element->computed_properties.border_width_left.length.value : 0,
 						element->computed_properties.border_width_top.length.value,

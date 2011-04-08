@@ -38,10 +38,22 @@ public:
 
 	enum Type
 	{
-		type_uri,
-		type_none,
+		type_images,
 		type_inherit
 	};
+	enum ImageType
+	{
+		image_type_uri,
+		image_type_none
+	};
+	class Image
+	{
+	public:
+		Image(ImageType type, const CL_String &url = CL_String()) : type(type), url(url) { }
+
+		ImageType type;
+		CL_String url;
+	};
 	Type type;
-	CL_String url;
+	std::vector<Image> images;
 };

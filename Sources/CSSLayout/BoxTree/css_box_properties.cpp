@@ -91,6 +91,9 @@ void CL_CSSBoxProperties::compute(const CL_CSSBoxProperties *parent, CL_CSSResou
 		background_image.compute(&parent->background_image, layout, em_size, ex_size);
 		background_position.compute(&parent->background_position, layout, em_size, ex_size);
 		background_repeat.compute(&parent->background_repeat, layout, em_size, ex_size);
+		background_origin.compute(&parent->background_origin, layout, em_size, ex_size);
+		background_clip.compute(&parent->background_clip, layout, em_size, ex_size);
+		background_size.compute(&parent->background_size, layout, em_size, ex_size);
 		padding_width_left.compute(&parent->padding_width_left, layout, em_size, ex_size);
 		padding_width_top.compute(&parent->padding_width_top, layout, em_size, ex_size);
 		padding_width_right.compute(&parent->padding_width_right, layout, em_size, ex_size);
@@ -179,6 +182,9 @@ void CL_CSSBoxProperties::compute(const CL_CSSBoxProperties *parent, CL_CSSResou
 		background_image.compute(0, layout, em_size, ex_size);
 		background_position.compute(0, layout, em_size, ex_size);
 		background_repeat.compute(0, layout, em_size, ex_size);
+		background_origin.compute(0, layout, em_size, ex_size);
+		background_clip.compute(0, layout, em_size, ex_size);
+		background_size.compute(0, layout, em_size, ex_size);
 		padding_width_left.compute(0, layout, em_size, ex_size);
 		padding_width_top.compute(0, layout, em_size, ex_size);
 		padding_width_right.compute(0, layout, em_size, ex_size);

@@ -41,16 +41,39 @@ void CL_CSSParserBackgroundImage::parse(CL_CSSBoxProperties &properties, const C
 {
 	size_t pos = 0;
 	CL_CSSToken token = next_token(pos, tokens);
-	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
+
+	CL_CSSBoxBackgroundImage background_image;
+
+	if (token.type == CL_CSSToken::type_ident && pos == tokens.size() && equals(token.value, "inherit"))
 	{
-		if (equals(token.value, "none"))
-			properties.background_image.type = CL_CSSBoxBackgroundImage::type_none;
-		else if (equals(token.value, "inherit"))
-			properties.background_image.type = CL_CSSBoxBackgroundImage::type_inherit;
+		background_image.type = CL_CSSBoxBackgroundImage::type_inherit;
 	}
-	else if (token.type == CL_CSSToken::type_uri && pos == tokens.size())
+	else
 	{
-		properties.background_image.type = CL_CSSBoxBackgroundImage::type_uri;
-		properties.background_image.url = token.value;
+		background_image.type = CL_CSSBoxBackgroundImage::type_images;
+		background_image.images.clear();
+		while (true)
+		{
+			if (token.type == CL_CSSToken::type_ident && equals(token.value, "none"))
+				background_image.images.push_back(CL_CSSBoxBackgroundImage::Image(CL_CSSBoxBackgroundImage::image_type_none));
+			else if (token.type == CL_CSSToken::type_uri)
+				background_image.images.push_back(CL_CSSBoxBackgroundImage::Image(CL_CSSBoxBackgroundImage::image_type_uri, token.value));
+			else
+				return;
+
+			if (pos != tokens.size())
+			{
+				token = next_token(pos, tokens);
+				if (token.type != CL_CSSToken::type_delim || token.value != ",")
+					return;
+				token = next_token(pos, tokens);
+			}
+			else
+			{
+				break;
+			}
+		}
 	}
+
+	properties.background_image = background_image;
 }

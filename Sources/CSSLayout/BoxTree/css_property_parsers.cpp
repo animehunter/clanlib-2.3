@@ -36,6 +36,9 @@
 #include "PropertyParsers/css_parser_background_image.h"
 #include "PropertyParsers/css_parser_background_position.h"
 #include "PropertyParsers/css_parser_background_repeat.h"
+#include "PropertyParsers/css_parser_background_clip.h"
+#include "PropertyParsers/css_parser_background_origin.h"
+#include "PropertyParsers/css_parser_background_size.h"
 #include "PropertyParsers/css_parser_border.h"
 #include "PropertyParsers/css_parser_border_collapse.h"
 #include "PropertyParsers/css_parser_border_color.h"
@@ -116,6 +119,9 @@ CL_CSSPropertyParsers::CL_CSSPropertyParsers()
 	add(new CL_CSSParserBackgroundImage());
 	add(new CL_CSSParserBackgroundPosition());
 	add(new CL_CSSParserBackgroundRepeat());
+	add(new CL_CSSParserBackgroundClip());
+	add(new CL_CSSParserBackgroundOrigin());
+	add(new CL_CSSParserBackgroundSize());
 	add(new CL_CSSParserBorder());
 	add(new CL_CSSParserBorderCollapse());
 	add(new CL_CSSParserBorderColor());

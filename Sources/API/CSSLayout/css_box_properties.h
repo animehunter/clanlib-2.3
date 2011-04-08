@@ -33,6 +33,9 @@
 #include "PropertyTypes/css_box_background_image.h"
 #include "PropertyTypes/css_box_background_position.h"
 #include "PropertyTypes/css_box_background_repeat.h"
+#include "PropertyTypes/css_box_background_origin.h"
+#include "PropertyTypes/css_box_background_clip.h"
+#include "PropertyTypes/css_box_background_size.h"
 #include "PropertyTypes/css_box_border_collapse.h"
 #include "PropertyTypes/css_box_border_color.h"
 #include "PropertyTypes/css_box_border_spacing.h"
@@ -128,6 +131,9 @@ public:
 	CL_CSSBoxBackgroundImage background_image;
 	CL_CSSBoxBackgroundPosition background_position;
 	CL_CSSBoxBackgroundRepeat background_repeat;
+	CL_CSSBoxBackgroundOrigin background_origin;
+	CL_CSSBoxBackgroundClip background_clip;
+	CL_CSSBoxBackgroundSize background_size;
 
 	CL_CSSBoxPaddingWidth padding_width_left;
 	CL_CSSBoxPaddingWidth padding_width_top;

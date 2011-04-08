@@ -41,13 +41,42 @@ void CL_CSSParserBackgroundAttachment::parse(CL_CSSBoxProperties &properties, co
 {
 	size_t pos = 0;
 	CL_CSSToken token = next_token(pos, tokens);
-	if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
+
+	CL_CSSBoxBackgroundAttachment attachment;
+
+	if (token.type == CL_CSSToken::type_ident && pos == tokens.size() && equals(token.value, "inherit"))
 	{
-		if (equals(token.value, "scroll"))
-			properties.background_attachment.type = CL_CSSBoxBackgroundAttachment::type_scroll;
-		else if (equals(token.value, "fixed"))
-			properties.background_attachment.type = CL_CSSBoxBackgroundAttachment::type_fixed;
-		else if (equals(token.value, "inherit"))
-			properties.background_attachment.type = CL_CSSBoxBackgroundAttachment::type_inherit;
+		attachment.type = CL_CSSBoxBackgroundAttachment::type_inherit;
 	}
+	else
+	{
+		attachment.type = CL_CSSBoxBackgroundAttachment::type_attachments;
+		attachment.attachments.clear();
+		while (true)
+		{
+			if (token.type != CL_CSSToken::type_ident)
+				return;
+
+			if (equals(token.value, "scroll"))
+				attachment.attachments.push_back(CL_CSSBoxBackgroundAttachment::attachment_scroll);
+			else if (equals(token.value, "fixed"))
+				attachment.attachments.push_back(CL_CSSBoxBackgroundAttachment::attachment_fixed);
+			else
+				return;
+
+			if (pos != tokens.size())
+			{
+				token = next_token(pos, tokens);
+				if (token.type != CL_CSSToken::type_delim || token.value != ",")
+					return;
+				token = next_token(pos, tokens);
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+
+	properties.background_attachment = attachment;
 }

@@ -34,6 +34,7 @@
 #include "css_layout_cursor.h"
 #include "css_block_formatting_context.h"
 #include "css_stacking_context.h"
+#include "css_background_renderer.h"
 #include "../css_resource_cache.h"
 #include "../BoxTree/css_box_element.h"
 #include "../BoxTree/css_box_text.h"
@@ -209,28 +210,13 @@ void CL_CSSTableLayout::render_cell_non_content(CL_CSSLayoutGraphics *graphics, 
 	CL_CSSLayoutTreeNode *cell = get_layout(col, row);
 
 	CL_Rect border_box = get_cell_border_box(row, col);
-	if (cell->get_element_node()->computed_properties.background_color.type == CL_CSSBoxBackgroundColor::type_color)
-		graphics->fill(border_box, cell->get_element_node()->computed_properties.background_color.color);
 
-	if (cell->get_element_node()->computed_properties.background_image.type == CL_CSSBoxBackgroundImage::type_uri)
-	{
-		CL_Image &image = graphics->get_image(cell->get_element_node()->computed_properties.background_image.url);
-		if (!image.is_null())
-		{
-			if (cell->get_element_node()->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_repeat)
-			{
-				graphics->draw_image(image, border_box);
-			}
-/*			else if (cell->get_element_node()->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_clan_stretch)
-			{
-				int sizing_left = cl_used_to_actual(cell->get_element_node()->computed_properties.clan_background_border_left.length.value);
-				int sizing_top = cl_used_to_actual(cell->get_element_node()->computed_properties.clan_background_border_top.length.value);
-				int sizing_right = cl_used_to_actual(cell->get_element_node()->computed_properties.clan_background_border_right.length.value);
-				int sizing_bottom = cl_used_to_actual(cell->get_element_node()->computed_properties.clan_background_border_bottom.length.value);
-				CL_ClanImageStretch::draw_image(gc, border_box, image, sizing_left, sizing_top, sizing_right, sizing_bottom);
-			}*/
-		}
-	}
+	CL_CSSBackgroundRenderer background(graphics, resources, cell->get_element_node());
+	background.set_initial_containing_box(CL_Rect(0, 0, cl_used_to_actual(containing_width.value), cl_used_to_actual(containing_height.value))); // Bug: this is wrong
+	background.set_content_box(border_box); // Bug: this is wrong
+	background.set_padding_box(border_box); // Bug: this is wrong
+	background.set_border_box(border_box);
+	background.render();
 
 	if (cell->get_element_node()->computed_properties.border_style_top.type == CL_CSSBoxBorderStyle::type_solid)
 		graphics->fill(CL_Rect(border_box.left, border_box.top, border_box.right, border_box.top+cell->border.top), cell->get_element_node()->computed_properties.border_color_top.color);
@@ -666,7 +652,16 @@ void CL_CSSTableLayout::render_layer_background(CL_CSSLayoutGraphics *graphics, 
 	CL_Rect padding_box = border_box;
 	padding_box.shrink(cl_used_to_actual(border.left), cl_used_to_actual(border.top), cl_used_to_actual(border.right), cl_used_to_actual(border.bottom));
 
-	render_background(graphics, resources, element_node, padding_box, padding_box);
+	CL_Rect content_box = padding_box;
+	content_box.shrink(cl_used_to_actual(padding.left), cl_used_to_actual(padding.top), cl_used_to_actual(padding.right), cl_used_to_actual(padding.bottom));
+
+	CL_CSSBackgroundRenderer background(graphics, resources, element_node);
+	background.set_initial_containing_box(CL_Rect(0, 0, cl_used_to_actual(containing_width.value), cl_used_to_actual(containing_height.value))); // Bug: this is wrong
+	background.set_content_box(content_box);
+	background.set_padding_box(padding_box);
+	background.set_border_box(border_box);
+	background.render();
+
 	render_border(graphics, element_node, border_box, border.left, border.top, border.right, border.bottom);
 
 	for (size_t row = 0; row < rows.size(); row++)

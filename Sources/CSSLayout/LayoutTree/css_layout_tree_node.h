@@ -136,7 +136,6 @@ protected:
 	CL_Rect get_border_box() const;
 	CL_Rect get_padding_box() const;
 
-	static void render_background(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resource_cache, CL_CSSBoxElement *element_node, CL_Rect padding_box, CL_Rect paint_box);
 	static void render_border(CL_CSSLayoutGraphics *graphics, CL_CSSBoxElement *element_node, CL_Rect border_box, CL_CSSUsedValue border_left, CL_CSSUsedValue border_top, CL_CSSUsedValue border_right, CL_CSSUsedValue border_bottom);
 
 	CL_CSSBoxElement *element_node;

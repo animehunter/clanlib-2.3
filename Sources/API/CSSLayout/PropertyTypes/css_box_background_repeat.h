@@ -38,12 +38,18 @@ public:
 
 	enum Type
 	{
-		type_repeat,
-		type_repeat_x,
-		type_repeat_y,
-		type_no_repeat,
+		type_repeat_style,
 		type_inherit,
-		type_clan_stretch
 	};
 	Type type;
+
+	enum RepeatStyle
+	{
+		style_repeat,
+		style_no_repeat,
+		style_space,
+		style_round
+	};
+	std::vector<RepeatStyle> repeat_x;
+	std::vector<RepeatStyle> repeat_y;
 };

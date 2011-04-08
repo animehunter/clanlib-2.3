@@ -51,7 +51,6 @@ public:
 		type1_percentage,
 		type1_length
 	};
-	Type1 type_x;
 
 	enum Type2
 	{
@@ -61,10 +60,20 @@ public:
 		type2_percentage,
 		type2_length
 	};
-	Type2 type_y;
 
-	CL_CSSBoxLength length_x;
-	float percentage_x;
-	CL_CSSBoxLength length_y;
-	float percentage_y;
+	class Position
+	{
+	public:
+		Position() : type_x(type1_percentage), type_y(type2_percentage), percentage_x(0.0f), percentage_y(0.0f) { }
+
+		Type1 type_x;
+		Type2 type_y;
+
+		CL_CSSBoxLength length_x;
+		float percentage_x;
+		CL_CSSBoxLength length_y;
+		float percentage_y;
+	};
+
+	std::vector<Position> positions;
 };

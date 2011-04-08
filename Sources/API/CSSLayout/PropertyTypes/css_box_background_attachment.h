@@ -38,10 +38,16 @@ public:
 
 	enum Type
 	{
-		type_scroll,
-		type_fixed,
+		type_attachments,
 		type_inherit
 	};
+	enum Attachment
+	{
+		attachment_scroll,
+		attachment_local,
+		attachment_fixed
+	};
 	Type type;
+	std::vector<Attachment> attachments;
 };
 

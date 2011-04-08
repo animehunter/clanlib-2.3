@@ -30,8 +30,9 @@
 #include "API/CSSLayout/PropertyTypes/css_box_background_attachment.h"
 
 CL_CSSBoxBackgroundAttachment::CL_CSSBoxBackgroundAttachment()
-: type(type_scroll)
+: type(type_attachments)
 {
+	attachments.push_back(attachment_scroll);
 }
 
 void CL_CSSBoxBackgroundAttachment::compute(const CL_CSSBoxBackgroundAttachment *parent, CL_CSSResourceCache *layout, float em_size, float ex_size)
@@ -39,8 +40,14 @@ void CL_CSSBoxBackgroundAttachment::compute(const CL_CSSBoxBackgroundAttachment 
 	if (type == type_inherit)
 	{
 		if (parent)
+		{
 			type = parent->type;
+		}
 		else
-			type = type_scroll;
+		{
+			type = type_attachments;
+			attachments.clear();
+			attachments.push_back(attachment_scroll);
+		}
 	}
 }

@@ -34,7 +34,7 @@
 #include "css_layout_graphics.h"
 #include "../css_resource_cache.h"
 #include "../BoxTree/css_box_element.h"
-#include "clan_image_stretch.h"
+#include "css_background_renderer.h"
 
 CL_CSSLayoutTreeNode::CL_CSSLayoutTreeNode(CL_CSSBoxElement *element_node)
 : preferred_width(0.0f), min_width(0.0f), preferred_width_calculated(false), min_width_calculated(false),
@@ -1068,132 +1068,22 @@ CL_Rect CL_CSSLayoutTreeNode::get_padding_box() const
 
 void CL_CSSLayoutTreeNode::render_background(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resource_cache, bool root)
 {
-	CL_Rect padding_box = get_padding_box();
-	padding_box.translate(cl_used_to_actual(relative_x), cl_used_to_actual(relative_y));
-	CL_Rect paint_box;
-	if (root)
-	{
-		paint_box = CL_Rect(0, 0, cl_used_to_actual(containing_width.value), cl_used_to_actual(containing_height.value));
-		//CL_Vec4f offset = gc.get_modelview()*CL_Vec4f(0.0f, 0.0f, 1.0f, 1.0f);
-		//paint_box.translate((int)(-offset.x+0.5f), (int)(-offset.y+0.5f+38));
-	}
-	else
-	{
-		paint_box = padding_box;
-	}
-	render_background(graphics, resource_cache, element_node, padding_box, paint_box);
+	CL_Rect box = content_box;
+	if (!formatting_context_root)
+		box.translate(formatting_context->get_x(), formatting_context->get_y());
+	else if (formatting_context->get_parent())
+		box.translate(formatting_context->get_parent()->get_x(), formatting_context->get_parent()->get_y());
+	box.translate(cl_used_to_actual(relative_x), cl_used_to_actual(relative_y));
 
-	/*if (formatting_context_root)
-	{
-		CL_Draw::box(gc, padding_box, CL_Colorf::deepskyblue);
-	}*/
-}
-
-void CL_CSSLayoutTreeNode::render_background(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resource_cache, CL_CSSBoxElement *element_node, CL_Rect padding_box, CL_Rect paint_box)
-{
-	if (element_node->computed_properties.background_color.type == CL_CSSBoxBackgroundColor::type_color)
-		graphics->fill(paint_box, element_node->computed_properties.background_color.color);
-
-	if (element_node->computed_properties.background_image.type == CL_CSSBoxBackgroundImage::type_uri)
-	{
-		/*if (element_node->computed_properties.background_image.url.find("right_bg.gif") != CL_String::npos)
-		{
-			Sleep(1);
-		}*/
-		CL_Image &image = graphics->get_image(element_node->computed_properties.background_image.url);
-		if (!image.is_null())
-		{
-			int x = padding_box.left;
-			switch (element_node->computed_properties.background_position.type_x)
-			{
-			case CL_CSSBoxBackgroundPosition::type1_left:
-				x = padding_box.left;
-				break;
-			case CL_CSSBoxBackgroundPosition::type1_center:
-				x = padding_box.left + (padding_box.get_width() - image.get_width()) / 2;
-				break;
-			case CL_CSSBoxBackgroundPosition::type1_right:
-				x = padding_box.right - image.get_width();
-				break;
-			case CL_CSSBoxBackgroundPosition::type1_percentage:
-				x = cl_used_to_actual(padding_box.left + (padding_box.get_width()-image.get_width()) * element_node->computed_properties.background_position.percentage_x / 100.0f);
-				break;
-			case CL_CSSBoxBackgroundPosition::type1_length:
-				x = cl_used_to_actual(padding_box.left + element_node->computed_properties.background_position.length_x.value);
-				break;
-			}
-
-			int y = padding_box.top;
-			switch (element_node->computed_properties.background_position.type_y)
-			{
-			case CL_CSSBoxBackgroundPosition::type2_top:
-				y = padding_box.top;
-				break;
-			case CL_CSSBoxBackgroundPosition::type2_center:
-				y = padding_box.top + (padding_box.get_height() - image.get_height()) / 2;
-				break;
-			case CL_CSSBoxBackgroundPosition::type2_bottom:
-				y = padding_box.bottom - image.get_height();
-				break;
-			case CL_CSSBoxBackgroundPosition::type2_percentage:
-				y = cl_used_to_actual(padding_box.top + (padding_box.get_height()-image.get_height()) * element_node->computed_properties.background_position.percentage_y / 100.0f);
-				break;
-			case CL_CSSBoxBackgroundPosition::type2_length:
-				y = cl_used_to_actual(padding_box.top + element_node->computed_properties.background_position.length_y.value);
-				break;
-			}
-
-			//CL_Vec4f offset = gc.get_modelview()*CL_Vec4f(0.0f, 0.0f, 1.0f, 1.0f);
-			//CL_Rect b = paint_box;
-			//b.translate((int)(offset.x+0.5f), (int)(offset.y+0.5f));
-
-			graphics->push_cliprect(paint_box);
-			if (element_node->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_no_repeat)
-			{
-				graphics->draw_image(image, x, y);
-			}
-			else if (element_node->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_repeat_x)
-			{
-				int start_x;
-				if (x >= paint_box.left)
-					start_x = paint_box.left - (x-paint_box.left)%image.get_width();
-				else
-					start_x = paint_box.left - (paint_box.left-x)%image.get_width();
-
-				for (x = start_x; x < paint_box.right; x += image.get_width())
-					graphics->draw_image(image, x, y);
-			}
-			else if (element_node->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_repeat_y)
-			{
-				int start_y;
-				if (y >= paint_box.top)
-					start_y = paint_box.top - (y-paint_box.top)%image.get_height();
-				else
-					start_y = paint_box.top - (paint_box.top-y)%image.get_height();
-
-				for (y = start_y; y < paint_box.bottom; y += image.get_height())
-					graphics->draw_image(image, x, y);
-			}
-			else if (element_node->computed_properties.background_repeat.type == CL_CSSBoxBackgroundRepeat::type_repeat)
-			{
-				int start_x, start_y;
-				if (x >= paint_box.left)
-					start_x = paint_box.left - (x-paint_box.left)%image.get_width();
-				else
-					start_x = paint_box.left - (paint_box.left-x)%image.get_width();
-
-				if (y >= paint_box.top)
-					start_y = paint_box.top - (y-paint_box.top)%image.get_height();
-				else
-					start_y = paint_box.top - (paint_box.top-y)%image.get_height();
-
-				for (y = start_y; y < paint_box.bottom; y += image.get_height())
-					for (x = start_x; x < paint_box.right; x += image.get_width())
-						graphics->draw_image(image, x, y);
-			}
-			graphics->pop_cliprect();
-		}
-	}
+	CL_CSSBackgroundRenderer renderer(graphics, resource_cache, element_node);
+	renderer.set_is_root(root);
+	renderer.set_initial_containing_box(CL_Rect(0, 0, cl_used_to_actual(containing_width.value), cl_used_to_actual(containing_height.value))); // Bug: this is wrong except for the root
+	renderer.set_content_box(box);
+	box.expand(cl_used_to_actual(padding.left), cl_used_to_actual(padding.top), cl_used_to_actual(padding.right), cl_used_to_actual(padding.bottom));
+	renderer.set_padding_box(box);
+	box.expand(cl_used_to_actual(border.left), cl_used_to_actual(border.top), cl_used_to_actual(border.right), cl_used_to_actual(border.bottom));
+	renderer.set_border_box(box);
+	renderer.render();
 }
 
 void CL_CSSLayoutTreeNode::render_border(CL_CSSLayoutGraphics *graphics)

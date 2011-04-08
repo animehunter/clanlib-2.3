@@ -66,11 +66,7 @@ void CL_CSSParserBorderLTRBColor::parse(CL_CSSBoxProperties &properties, const C
 			CL_CSSToken token = next_token(pos, tokens);
 			if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 			{
-				if (equals(token.value, "transparent"))
-				{
-					border_color->type = CL_CSSBoxBorderColor::type_transparent;
-				}
-				else if (equals(token.value, "inherit"))
+				if (equals(token.value, "inherit"))
 				{
 					border_color->type = CL_CSSBoxBorderColor::type_inherit;
 				}

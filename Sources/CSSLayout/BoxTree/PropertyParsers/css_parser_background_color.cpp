@@ -51,11 +51,7 @@ void CL_CSSParserBackgroundColor::parse(CL_CSSBoxProperties &properties, const C
 		CL_CSSToken token = next_token(pos, tokens);
 		if (token.type == CL_CSSToken::type_ident && pos == tokens.size())
 		{
-			if (equals(token.value, "transparent"))
-			{
-				properties.background_color.type = CL_CSSBoxBackgroundColor::type_transparent;
-			}
-			else if (equals(token.value, "inherit"))
+			if (equals(token.value, "inherit"))
 			{
 				properties.background_color.type = CL_CSSBoxBackgroundColor::type_inherit;
 			}

@@ -30,8 +30,9 @@
 #include "API/CSSLayout/PropertyTypes/css_box_background_color.h"
 
 CL_CSSBoxBackgroundColor::CL_CSSBoxBackgroundColor()
-: type(type_transparent)
+: type(type_color)
 {
+	color = CL_Colorf::transparent;
 }
 
 void CL_CSSBoxBackgroundColor::compute(const CL_CSSBoxBackgroundColor *parent, CL_CSSResourceCache *layout, float em_size, float ex_size)
@@ -45,7 +46,8 @@ void CL_CSSBoxBackgroundColor::compute(const CL_CSSBoxBackgroundColor *parent, C
 		}
 		else
 		{
-			type = type_transparent;
+			type = type_color;
+			color = CL_Colorf::transparent;
 		}
 	}
 }

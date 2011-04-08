@@ -39,7 +39,6 @@ public:
 	enum Type
 	{
 		type_color,
-		type_transparent,
 		type_inherit
 	};
 	Type type;
