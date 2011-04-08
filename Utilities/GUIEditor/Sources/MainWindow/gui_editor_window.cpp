@@ -50,8 +50,9 @@ GuiEditorWindow::GuiEditorWindow(CL_GUIManager *gui_manager)
 
 	create_components();
 //	populate_menubar();
-	populate_main_toolbar(get_resources());
-	populate_tools_toolbar(get_resources());
+	CL_ResourceManager resources = get_resources();
+	populate_main_toolbar(resources);
+	populate_tools_toolbar(resources);
 
 	create_new_document();
 	update_child_positions();
