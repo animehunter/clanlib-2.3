@@ -11,7 +11,7 @@ public:
 	GameModel();
 	~GameModel();
 
-	GamePlayerCollection *get_players() { return players; }
+	GamePlayerCollection *get_players() { return players.get(); }
 
 	ClientMap *get_map() { return &map; }
 

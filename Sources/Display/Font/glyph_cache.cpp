@@ -49,12 +49,12 @@
 /////////////////////////////////////////////////////////////////////////////
 // CL_GlyphCache Construction:
 
-CL_GlyphCache::CL_GlyphCache(CL_GraphicContext &gc)
+CL_GlyphCache::CL_GlyphCache()
 {
 	glyph_list.reserve(256);
 
 	// Note, the user can specify a different texture group size using set_texture_group()
-	texture_group = CL_TextureGroup(gc, CL_Size(256,256));
+	texture_group = CL_TextureGroup(CL_Size(256,256));
 
 	// Set default font metrics
 	font_metrics = CL_FontMetrics(

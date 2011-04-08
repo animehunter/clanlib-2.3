@@ -18,7 +18,7 @@ public:
 	ServerLobbyGame(Server *server, ServerLobbyPlayer *owner, int id);
 	~ServerLobbyGame();
 
-	ServerLobbyGamePlayerCollection *get_player_collection() { return player_collection; }
+	ServerLobbyGamePlayerCollection *get_player_collection() { return player_collection.get(); }
 
 	State get_state() { return state; }
 	void set_state(State state);

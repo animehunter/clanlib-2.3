@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TexturePacker", "Utilities\TexturePacker\TexturePacker-vc2010.vcxproj", "{2EAAC185-8D7F-4570-9AC6-B07D5AB4FDAC}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GuiEditorApp", "Utilities\GUIEditor\GuiEditor-vc2010.vcxproj", "{5C1AAF8C-7FF0-447E-B01D-AED0A0B2849F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{043694A3-5F8F-4BE1-AEF7-CBB8DE5F7BB2} = {043694A3-5F8F-4BE1-AEF7-CBB8DE5F7BB2}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SQL", "Examples\Database\SQL\SQL-vc2010.vcxproj", "{0E7C035C-9855-466F-9468-9FF06750C64D}"
 EndProject
@@ -113,9 +116,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Timing", "Examples\Display\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Thread", "Examples\Display\Thread\Thread-vc2010.vcxproj", "{C40C2488-5052-4581-A9A5-392CC19418BA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GuiDirectRender", "Examples\GUI\DirectRender\direct_render-vc2010.vcxproj", "{BAB64109-DBA5-439B-A821-5AFAAACCCAEE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectRender", "Examples\GUI\DirectRender\direct_render-vc2010.vcxproj", "{BAB64109-DBA5-439B-A821-5AFAAACCCAEE}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TileMap", "Examples\Game\TileMap\TileMap-vc2010.vcxproj", "{55672B55-E5EA-4CF2-80CB-0350A8CAB0B3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GuiEditorLib", "Utilities\GUIEditor\GuiEditorLib-vc2010.vcxproj", "{043694A3-5F8F-4BE1-AEF7-CBB8DE5F7BB2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -459,6 +464,12 @@ Global
 		{55672B55-E5EA-4CF2-80CB-0350A8CAB0B3}.Release|Win32.ActiveCfg = Release|Win32
 		{55672B55-E5EA-4CF2-80CB-0350A8CAB0B3}.Release|Win32.Build.0 = Release|Win32
 		{55672B55-E5EA-4CF2-80CB-0350A8CAB0B3}.Release|x64.ActiveCfg = Release|Win32
+		{043694A3-5F8F-4BE1-AEF7-CBB8DE5F7BB2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{043694A3-5F8F-4BE1-AEF7-CBB8DE5F7BB2}.Debug|Win32.Build.0 = Debug|Win32
+		{043694A3-5F8F-4BE1-AEF7-CBB8DE5F7BB2}.Debug|x64.ActiveCfg = Debug|Win32
+		{043694A3-5F8F-4BE1-AEF7-CBB8DE5F7BB2}.Release|Win32.ActiveCfg = Release|Win32
+		{043694A3-5F8F-4BE1-AEF7-CBB8DE5F7BB2}.Release|Win32.Build.0 = Release|Win32
+		{043694A3-5F8F-4BE1-AEF7-CBB8DE5F7BB2}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

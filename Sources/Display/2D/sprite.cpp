@@ -54,11 +54,6 @@ CL_Sprite::CL_Sprite()
 {
 }
 
-CL_Sprite::CL_Sprite(CL_GraphicContext &gc)
-: impl(new CL_Sprite_Impl(gc))
-{
-}
-
 CL_Sprite::CL_Sprite(CL_GraphicContext &gc, const CL_StringRef &fullname, const CL_ImageImportDescription &import_desc)
 {
 	CL_String path = CL_PathHelp::get_fullpath(fullname, CL_PathHelp::path_type_file);
@@ -69,7 +64,7 @@ CL_Sprite::CL_Sprite(CL_GraphicContext &gc, const CL_StringRef &fullname, const 
 }
 
 CL_Sprite::CL_Sprite(CL_GraphicContext &gc, const CL_StringRef &filename, CL_VirtualDirectory &dir, const CL_ImageImportDescription &import_desc)
-: impl(new CL_Sprite_Impl(gc))
+: impl(new CL_Sprite_Impl())
 {
 	CL_SpriteDescription desc;
 	desc.add_frame(filename, dir, import_desc );
@@ -79,7 +74,7 @@ CL_Sprite::CL_Sprite(CL_GraphicContext &gc, const CL_StringRef &filename, CL_Vir
 }
 
 CL_Sprite::CL_Sprite(CL_GraphicContext &gc, CL_IODevice &file, const CL_String &image_type, const CL_ImageImportDescription &import_desc )
-: impl(new CL_Sprite_Impl(gc))
+: impl(new CL_Sprite_Impl())
 {
 	CL_SpriteDescription desc;
 	desc.add_frame(file, image_type, import_desc );
@@ -88,7 +83,7 @@ CL_Sprite::CL_Sprite(CL_GraphicContext &gc, CL_IODevice &file, const CL_String &
 }
 
 CL_Sprite::CL_Sprite(CL_GraphicContext &gc, const CL_StringRef &resource_id, CL_ResourceManager *resources, const CL_ImageImportDescription &import_desc)
-: impl(new CL_Sprite_Impl(gc))
+: impl(new CL_Sprite_Impl())
 {
 	CL_Resource resource = resources->get_resource(resource_id);
 	CL_String type = resource.get_element().get_tag_name();
@@ -100,7 +95,7 @@ CL_Sprite::CL_Sprite(CL_GraphicContext &gc, const CL_StringRef &resource_id, CL_
 }
 
 CL_Sprite::CL_Sprite(CL_GraphicContext &gc, const CL_SpriteDescription &description)
-: impl(new CL_Sprite_Impl(gc))
+: impl(new CL_Sprite_Impl())
 {
 	impl->create_textures(gc, description);
 	restart();

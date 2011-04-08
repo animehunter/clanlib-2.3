@@ -57,7 +57,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CL_FontProvider_Freetype Construction:
 
-CL_FontProvider_Freetype::CL_FontProvider_Freetype(CL_GraphicContext &gc) : glyph_cache(gc), font_engine(0)
+CL_FontProvider_Freetype::CL_FontProvider_Freetype() : glyph_cache(), font_engine(0)
 {
 }
 

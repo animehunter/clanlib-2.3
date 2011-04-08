@@ -17,12 +17,12 @@ Server::Server()
 	slots.connect(network_server.sig_client_disconnected(), this, &Server::on_client_disconnected);
 	slots.connect(network_server.sig_event_received(), this, &Server::on_event_received);
 
-	login_events = new ServerLoginEvents(this);
+	login_events.reset(new ServerLoginEvents(this));
 
-	lobby_model = new ServerLobbyModel(this);
-	lobby_events = new ServerLobbyEvents(this, lobby_model);
+	lobby_model.reset(new ServerLobbyModel(this));
+	lobby_events.reset(new ServerLobbyEvents(this, lobby_model.get()));
 
-	game_events = new ServerGameEvents(this);
+	game_events.reset(new ServerGameEvents(this));
 
 //	ServerTest test(this);
 }

@@ -72,11 +72,6 @@ public:
 	/// \brief Constructs a Sprite
 	///
 	/// \param gc = Graphic Context
-	CL_Sprite(CL_GraphicContext &gc);
-
-	/// \brief Constructs a Sprite
-	///
-	/// \param gc = Graphic Context
 	/// \param fullname = String Ref
 	CL_Sprite(CL_GraphicContext &gc, const CL_StringRef &fullname, const CL_ImageImportDescription &import_desc = CL_ImageImportDescription ());
 

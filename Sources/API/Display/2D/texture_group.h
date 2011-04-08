@@ -65,7 +65,7 @@ public:
 	CL_TextureGroup();
 
 	/// \brief Constructs a texture group
-	CL_TextureGroup(CL_GraphicContext &context, const CL_Size &texture_sizes);
+	CL_TextureGroup(const CL_Size &texture_sizes);
 
 	~CL_TextureGroup();
 

@@ -38,10 +38,10 @@ public:
 	CL_GUIManager *get_gui();
 
 	LobbyView *get_lobby_view() { return lobby_view; }
-	LobbyModel *get_lobby_model() { return lobby_model; }
+	LobbyModel *get_lobby_model() { return lobby_model.get(); }
 
 	GameView *get_game_view() { return game_view; }
-	GameModel *get_game_model() { return game_model; }
+	GameModel *get_game_model() { return game_model.get(); }
 
 	CL_NetGameClient *get_network_client() { return &network_client; }
 

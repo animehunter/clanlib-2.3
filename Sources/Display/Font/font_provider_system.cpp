@@ -68,7 +68,7 @@ std::map<CL_String, CL_String > CL_FontProvider_System::font_register_cache;
 /////////////////////////////////////////////////////////////////////////////
 // CL_FontProvider_System Construction:
 
-CL_FontProvider_System::CL_FontProvider_System(CL_GraphicContext &gc) : glyph_cache(gc), font_engine(0)
+CL_FontProvider_System::CL_FontProvider_System() : glyph_cache(), font_engine(0)
 {
 }
 

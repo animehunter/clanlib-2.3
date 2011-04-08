@@ -38,8 +38,8 @@ CL_TextureGroup::CL_TextureGroup()
 {
 }
 
-CL_TextureGroup::CL_TextureGroup(CL_GraphicContext &context, const CL_Size &texture_sizes)
-: impl(new CL_TextureGroup_Impl(context, texture_sizes))
+CL_TextureGroup::CL_TextureGroup(const CL_Size &texture_sizes)
+: impl(new CL_TextureGroup_Impl(texture_sizes))
 {
 	set_texture_allocation_policy(create_new_texture);
 }

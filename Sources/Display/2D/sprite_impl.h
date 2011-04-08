@@ -83,7 +83,7 @@ class CL_Sprite_Impl
 /// \name Construction
 /// \{
 public:
-	CL_Sprite_Impl(CL_GraphicContext &gc);
+	CL_Sprite_Impl();
 
 	virtual ~CL_Sprite_Impl();
 

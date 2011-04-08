@@ -78,7 +78,7 @@ GUI::GUI(App *app) : app(app), window_ptr(app->get_window()), wm(*window_ptr)
 	display_framebuffer = CL_FrameBuffer(gc);
 	display_framebuffer.attach_color_buffer(0, display_image);
 
-	font_texture_group = CL_TextureGroup(gc, CL_Size(512, 512));
+	font_texture_group = CL_TextureGroup(CL_Size(512, 512));
 	font = CL_Font_System(gc, "Tahoma", 32);
 	font.set_texture_group(font_texture_group);
 	font_small = CL_Font_System(gc, "Tahoma", 16);

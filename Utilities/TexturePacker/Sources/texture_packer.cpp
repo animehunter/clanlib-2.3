@@ -128,7 +128,7 @@ ResourceItem *TexturePacker::load_image(CL_GraphicContext &gc, CL_String &resour
 
 CL_TextureGroup *TexturePacker::pack(CL_GraphicContext &gc, const CL_Size &texture_size, int border_size)
 {
-	CL_TextureGroup *group = new CL_TextureGroup(gc, texture_size);
+	CL_TextureGroup *group = new CL_TextureGroup(texture_size);
 
 	std::vector<ResourceItem *> &items = get_resource_items();
 	std::vector<ResourceItem *>::size_type item_index, item_size;

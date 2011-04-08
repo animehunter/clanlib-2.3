@@ -47,69 +47,59 @@ class CL_API_DISPLAY CL_Font_Freetype : public CL_Font
 {
 /// \name Construction
 /// \{
-
 public:
 	/// \brief Constructs freetype font.
 	CL_Font_Freetype();
 
 	/// \brief Constructs a Font Freetype
 	///
-	/// \param gc = Graphic Context
 	/// \param typeface_name = String Ref
 	/// \param height = value
-	CL_Font_Freetype( CL_GraphicContext &gc, const CL_StringRef &typeface_name, int height);
+	CL_Font_Freetype(const CL_StringRef &typeface_name, int height);
 
 	/// \brief Constructs a Font Freetype
 	///
-	/// \param gc = Graphic Context
 	/// \param typeface_name = String Ref
 	/// \param height = value
 	/// \param file = IODevice
-	CL_Font_Freetype( CL_GraphicContext &gc, const CL_StringRef &typeface_name, int height, CL_IODevice &file);
+	CL_Font_Freetype(const CL_StringRef &typeface_name, int height, CL_IODevice &file);
 
 	/// \brief Constructs a Font Freetype
 	///
-	/// \param gc = Graphic Context
 	/// \param typeface_name = String Ref
 	/// \param height = value
 	/// \param directory = Virtual Directory
-	CL_Font_Freetype( CL_GraphicContext &gc, const CL_StringRef &typeface_name, int height, const CL_VirtualDirectory &directory);
+	CL_Font_Freetype(const CL_StringRef &typeface_name, int height, const CL_VirtualDirectory &directory);
 
 	/// \brief Constructs a Font Freetype
 	///
-	/// \param gc = Graphic Context
 	/// \param desc = Font Description
-	CL_Font_Freetype( CL_GraphicContext &gc, const CL_FontDescription &desc);
+	CL_Font_Freetype(const CL_FontDescription &desc);
 
 	/// \brief Constructs a Font Freetype
 	///
-	/// \param gc = Graphic Context
 	/// \param desc = Font Description
 	/// \param file = IODevice
-	CL_Font_Freetype( CL_GraphicContext &gc, const CL_FontDescription &desc, CL_IODevice &file);
+	CL_Font_Freetype(const CL_FontDescription &desc, CL_IODevice &file);
 
 	/// \brief Constructs a Font Freetype
 	///
-	/// \param gc = Graphic Context
 	/// \param desc = Font Description
 	/// \param directory = Virtual Directory
-	CL_Font_Freetype( CL_GraphicContext &gc, const CL_FontDescription &desc, const CL_VirtualDirectory &directory);
+	CL_Font_Freetype(const CL_FontDescription &desc, const CL_VirtualDirectory &directory);
 
 	~CL_Font_Freetype();
 
 /// \}
 /// \name Attributes
 /// \{
-
 public:
-
 	/// \brief Retrieves the font provider.
 	CL_FontProvider_Freetype *get_provider() const;
 
 /// \}
 /// \name Operations
 /// \{
-
 public:
 	/// \brief Set the texture font to use a specified texture group
 	void set_texture_group(CL_TextureGroup &new_texture_group);
@@ -117,7 +107,6 @@ public:
 /// \}
 /// \name Implementation
 /// \{
-
 private:
 /// \}
 };

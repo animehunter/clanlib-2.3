@@ -390,8 +390,9 @@ void CL_GUIWindowManagerProvider_Texture::create_window(
 	CL_GUIComponent *component,
 	CL_GUITopLevelDescription description)
 {
-	// Create the texture group, if it has not already been set
 	CL_GraphicContext &gc = display_window.get_gc();
+
+	// Create the texture group, if it has not already been set
 	if (texture_group.is_null())
 	{
 		//Set the texture group size to 0. This will force the texture group to use a single texture
@@ -401,7 +402,7 @@ void CL_GUIWindowManagerProvider_Texture::create_window(
 		//3) Depth buffer and Stencil buffer size must match the CL_Texture size.
 		//If you want multiple windows in a single texture - Use set_texture_group()
 		CL_Size initial_texture_size = CL_Size(0, 0);
-		texture_group = CL_TextureGroup(gc, initial_texture_size);
+		texture_group = CL_TextureGroup(initial_texture_size);
 	}
 
 	//Note: destroy_window() deletes this window

@@ -242,7 +242,7 @@ void App::select_font()
 	switch (selected_fontclass)
 	{
 		case font_freetype:
-			selected_font = CL_Font_Freetype(gc, font_desc);
+			selected_font = CL_Font_Freetype(font_desc);
 			break;
 		case font_system:
 			selected_font = CL_Font_System(gc, font_desc);

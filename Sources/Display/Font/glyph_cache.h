@@ -46,10 +46,8 @@ class CL_GlyphCache
 {
 /// \name Construction
 /// \{
-
 public:
-
-	CL_GlyphCache(CL_GraphicContext &gc);
+	CL_GlyphCache();
 	virtual ~CL_GlyphCache();
 
 /// \}
@@ -66,7 +64,6 @@ public:
 /// \}
 /// \name Operations
 /// \{
-
 public:
 
 	/// \brief Print text on gc.
@@ -90,7 +87,6 @@ public:
 /// \}
 /// \name Implementation
 /// \{
-
 private:
 	/// \brief Set the font metrics from the OS font
 	void write_font_metrics(CL_GraphicContext &gc);
@@ -105,6 +101,5 @@ public:
 	// Contains the anti alias setting
 	bool anti_alias;
 	CL_FontMetrics font_metrics;
-
 /// \}
 };

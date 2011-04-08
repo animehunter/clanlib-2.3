@@ -116,7 +116,7 @@ std::map<int, MapArea*> Map::create_areas(CL_DomElement &areas_element)
 
 			if (area_id_map.find(area_id) != area_id_map.end())
 				throw CL_Exception(cl_format("Duplicate definitions of area with id %1", area_id));
-			area_id_map[area_id] = area;
+			area_id_map[area_id] = area.get();
 
 			areas.push_back(area.release());
 		}

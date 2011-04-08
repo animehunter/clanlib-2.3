@@ -80,7 +80,7 @@ ServerGame *ServerLobbyGameCollection::create_game(ServerLobbyGame *lobby_game)
 	for(it = players.begin(); it != players.end(); ++it)
 		game->add_player((*it)->player);
 
-	running_games.push_back(game);
+	running_games.push_back(game.get());
 
 	return game.release();
 }

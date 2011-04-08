@@ -41,7 +41,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CL_Sprite_Impl construction:
 
-CL_Sprite_Impl::CL_Sprite_Impl(CL_GraphicContext &gc) :
+CL_Sprite_Impl::CL_Sprite_Impl() :
 	angle(CL_Angle(0.0f, cl_radians)),
 	angle_pitch(CL_Angle(0.0f, cl_radians)),
 	angle_yaw(CL_Angle(0.0f, cl_radians)),
@@ -65,7 +65,7 @@ CL_Sprite_Impl::CL_Sprite_Impl(CL_GraphicContext &gc) :
 	play_backward(false),
 	play_pingpong(false),
 	show_on_finish(CL_Sprite::show_blank),
-	texture_group(gc, CL_Size(1,1))
+	texture_group(CL_Size(1,1))
 {
 	for (int i=0; i<6; i++)
 		prim_color[i] = CL_Vec4f(color.r,color.g,color.b,color.a);
@@ -648,7 +648,7 @@ void CL_Sprite_Impl::create_textures(CL_GraphicContext &gc, const CL_SpriteDescr
 		// Only create group if an object will definately fit into it
 		if ( (group_width >= min_width) && (group_height >= min_height) && (num_objects > 1) )
 		{
-			texture_group = CL_TextureGroup(gc, CL_Size(group_width, group_height));
+			texture_group = CL_TextureGroup(CL_Size(group_width, group_height));
 		}
 	}
 
