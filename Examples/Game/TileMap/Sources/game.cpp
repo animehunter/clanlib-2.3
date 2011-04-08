@@ -54,9 +54,15 @@ void Game::run()
 	// Run until someone presses escape, or closes the window
 	while (!quit)
 	{
-		int x = window.get_ic().get_mouse().get_x();
-		int y = window.get_ic().get_mouse().get_y();
-		map.set_scroll(x - gc.get_width(), y - gc.get_height());
+		int x = window.get_ic().get_mouse().get_x() - gc.get_width();
+		int y = window.get_ic().get_mouse().get_y() - gc.get_height();
+
+		// ** Enable these 3 lines to display the example magnified **
+		//CL_Mat4f matrix = CL_Mat4f::scale( 2.0f, 2.0f, 1.0f);
+		//x /= 2; y /= 2;
+		//gc.set_modelview(matrix);
+
+		map.set_scroll(x, y);
 
 		gc.clear(CL_Colorf::black);
 
