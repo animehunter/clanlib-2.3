@@ -229,10 +229,6 @@ public:
 	/** Use this to change the look of your sprite.*/
 	void set_image_data(const CL_Sprite &image_source);
 
-	/// \brief Copies all information from another sprite into this, not sharing animation state.
-	/** This will not share animation state afterwards, like sprite1 = sprite2 would do. */
-	void clone(const CL_Sprite &source);
-
 	/// \brief Draw sprite on graphic context.
 	///
 	/// \param x, y Anchor position of where to render sprite. Actual rendering position depends on the anchor and the alignment mode.
