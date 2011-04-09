@@ -85,8 +85,6 @@ void CL_CSSBackgroundRenderer::render()
 			CL_CSSBoxBackgroundRepeat::RepeatStyle repeat_x = get_layer_repeat_x(index);
 			CL_CSSBoxBackgroundRepeat::RepeatStyle repeat_y = get_layer_repeat_y(index);
 
-			// To do: Calculate positions and sizes for space and round correctly.
-
 			CL_CSSActualValue y = get_start_y(index, origin_box, image_size);
 			while (true)
 			{
@@ -144,67 +142,86 @@ void CL_CSSBackgroundRenderer::render()
 
 CL_CSSActualValue CL_CSSBackgroundRenderer::get_start_x(size_t index, const CL_Rect &origin_box, const CL_Size &image_size)
 {
-	CL_CSSActualValue x = origin_box.left;
-	switch (get_layer_position(index).type_x)
+	CL_CSSActualValue x;
+	if (get_layer_repeat_x(index) == CL_CSSBoxBackgroundRepeat::style_space && image_size.width * 2 > origin_box.get_width())
 	{
-	case CL_CSSBoxBackgroundPosition::type1_left:
 		x = origin_box.left;
-		break;
-	case CL_CSSBoxBackgroundPosition::type1_center:
-		x = origin_box.left + (origin_box.get_width() - image_size.width) / 2;
-		break;
-	case CL_CSSBoxBackgroundPosition::type1_right:
-		x = origin_box.right - image_size.width;
-		break;
-	case CL_CSSBoxBackgroundPosition::type1_percentage:
-		x = cl_used_to_actual(origin_box.left + (origin_box.get_width()-image_size.width) * get_layer_position(index).percentage_x / 100.0f);
-		break;
-	case CL_CSSBoxBackgroundPosition::type1_length:
-		x = cl_used_to_actual(origin_box.left + get_layer_position(index).length_x.value);
-		break;
+	}
+	else
+	{
+		x = origin_box.left;
+		switch (get_layer_position(index).type_x)
+		{
+		case CL_CSSBoxBackgroundPosition::type1_left:
+			x = origin_box.left;
+			break;
+		case CL_CSSBoxBackgroundPosition::type1_center:
+			x = origin_box.left + (origin_box.get_width() - image_size.width) / 2;
+			break;
+		case CL_CSSBoxBackgroundPosition::type1_right:
+			x = origin_box.right - image_size.width;
+			break;
+		case CL_CSSBoxBackgroundPosition::type1_percentage:
+			x = cl_used_to_actual(origin_box.left + (origin_box.get_width()-image_size.width) * get_layer_position(index).percentage_x / 100.0f);
+			break;
+		case CL_CSSBoxBackgroundPosition::type1_length:
+			x = cl_used_to_actual(origin_box.left + get_layer_position(index).length_x.value);
+			break;
+		}
 	}
 	return x;
 }
 
 CL_CSSActualValue CL_CSSBackgroundRenderer::get_start_y(size_t index, const CL_Rect &origin_box, const CL_Size &image_size)
 {
-	CL_CSSActualValue y = origin_box.top;
-	switch (get_layer_position(index).type_y)
+	CL_CSSActualValue y;
+	if (get_layer_repeat_y(index) == CL_CSSBoxBackgroundRepeat::style_space && image_size.height * 2 > origin_box.get_height())
 	{
-	case CL_CSSBoxBackgroundPosition::type2_top:
 		y = origin_box.top;
-		break;
-	case CL_CSSBoxBackgroundPosition::type2_center:
-		y = origin_box.top + (origin_box.get_height() - image_size.height) / 2;
-		break;
-	case CL_CSSBoxBackgroundPosition::type2_bottom:
-		y = origin_box.bottom - image_size.height;
-		break;
-	case CL_CSSBoxBackgroundPosition::type2_percentage:
-		y = cl_used_to_actual(origin_box.top + (origin_box.get_height()-image_size.height) * get_layer_position(index).percentage_y / 100.0f);
-		break;
-	case CL_CSSBoxBackgroundPosition::type2_length:
-		y = cl_used_to_actual(origin_box.top + get_layer_position(index).length_y.value);
-		break;
+	}
+	else
+	{
+		y = origin_box.top;
+		switch (get_layer_position(index).type_y)
+		{
+		case CL_CSSBoxBackgroundPosition::type2_top:
+			y = origin_box.top;
+			break;
+		case CL_CSSBoxBackgroundPosition::type2_center:
+			y = origin_box.top + (origin_box.get_height() - image_size.height) / 2;
+			break;
+		case CL_CSSBoxBackgroundPosition::type2_bottom:
+			y = origin_box.bottom - image_size.height;
+			break;
+		case CL_CSSBoxBackgroundPosition::type2_percentage:
+			y = cl_used_to_actual(origin_box.top + (origin_box.get_height()-image_size.height) * get_layer_position(index).percentage_y / 100.0f);
+			break;
+		case CL_CSSBoxBackgroundPosition::type2_length:
+			y = cl_used_to_actual(origin_box.top + get_layer_position(index).length_y.value);
+			break;
+		}
 	}
 	return y;
 }
 
 CL_Size CL_CSSBackgroundRenderer::get_image_size(size_t index, CL_Image &image, CL_Rect origin_box)
 {
+	CL_Size size;
 	switch (get_layer_size(index).type)
 	{
 	case CL_CSSBoxBackgroundSize::size_contain:
 		if (origin_box.get_height()*image.get_width() / image.get_height() <= origin_box.get_width())
-			return CL_Size(origin_box.get_height()*image.get_width() / image.get_height(), origin_box.get_height());
+			size = CL_Size(origin_box.get_height()*image.get_width() / image.get_height(), origin_box.get_height());
 		else
-			return CL_Size(origin_box.get_width(), origin_box.get_width()*image.get_height() / image.get_width());
+			size = CL_Size(origin_box.get_width(), origin_box.get_width()*image.get_height() / image.get_width());
+		break;
 
 	case CL_CSSBoxBackgroundSize::size_cover:
 		if (origin_box.get_height()*image.get_width() / image.get_height() >= origin_box.get_width())
-			return CL_Size(origin_box.get_height()*image.get_width() / image.get_height(), origin_box.get_height());
+			size = CL_Size(origin_box.get_height()*image.get_width() / image.get_height(), origin_box.get_height());
 		else
-			return CL_Size(origin_box.get_width(), origin_box.get_width()*image.get_height() / image.get_width());
+			size = CL_Size(origin_box.get_width(), origin_box.get_width()*image.get_height() / image.get_width());
+		break;
 
 	case CL_CSSBoxBackgroundSize::size_values:
 		{
@@ -234,12 +251,43 @@ CL_Size CL_CSSBackgroundRenderer::get_image_size(size_t index, CL_Image &image, 
 				break;
 			}
 
-			return CL_Size(width, height);
+			size = CL_Size(width, height);
 		}
+		break;
 
 	default:
-		return image.get_size();
+		size = image.get_size();
+		break;
 	}
+
+	CL_CSSBoxBackgroundRepeat::RepeatStyle repeat_x = get_layer_repeat_x(index);
+	CL_CSSBoxBackgroundRepeat::RepeatStyle repeat_y = get_layer_repeat_y(index);
+
+	if (repeat_x == CL_CSSBoxBackgroundRepeat::style_round)
+	{
+		if (size.width != 0)
+			size.width = origin_box.get_width() / (int)(origin_box.get_width() / (float)size.width + 0.5f);
+	}
+
+	if (repeat_y == CL_CSSBoxBackgroundRepeat::style_round)
+	{
+		if (size.height != 0)
+			size.height = origin_box.get_height() / (int)(origin_box.get_height() / (float)size.height + 0.5f);
+	}
+
+	if (get_layer_size(index).type == CL_CSSBoxBackgroundSize::size_values)
+	{
+		if (repeat_x == CL_CSSBoxBackgroundRepeat::style_round && get_layer_size(index).value_y == CL_CSSBoxBackgroundSize::value_type_auto)
+		{
+			size.height = size.width*image.get_height() / image.get_width();
+		}
+		else if (repeat_y == CL_CSSBoxBackgroundRepeat::style_round && get_layer_size(index).value_x == CL_CSSBoxBackgroundSize::value_type_auto)
+		{
+			size.width = size.height*image.get_width() / image.get_height();
+		}
+	}
+
+	return size;
 }
 
 CL_Rect CL_CSSBackgroundRenderer::get_clip_box(size_t index)

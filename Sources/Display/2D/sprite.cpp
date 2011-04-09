@@ -54,6 +54,14 @@ CL_Sprite::CL_Sprite()
 {
 }
 
+CL_Sprite::CL_Sprite(const CL_Sprite &other)
+{
+	if (other.impl)
+		impl = CL_SharedPtr<CL_Sprite_Impl>(new CL_Sprite_Impl(*other.impl.get()));
+	else
+		impl = CL_SharedPtr<CL_Sprite_Impl>();
+}
+
 CL_Sprite::CL_Sprite(CL_GraphicContext &gc, const CL_StringRef &fullname, const CL_ImageImportDescription &import_desc)
 {
 	CL_String path = CL_PathHelp::get_fullpath(fullname, CL_PathHelp::path_type_file);
@@ -250,9 +258,14 @@ bool CL_Sprite::is_looping() const
 /////////////////////////////////////////////////////////////////////////////
 // CL_Sprite Operations:
 
-CL_Sprite &CL_Sprite::operator =(const CL_Sprite &copy)
+CL_Sprite &CL_Sprite::operator =(const CL_Sprite &other)
 {
-	impl = copy.impl;
+	if (!other.impl)
+		impl = CL_SharedPtr<CL_Sprite_Impl>();
+	else if (impl)
+		*impl.get() = *other.impl.get();
+	else
+		impl = CL_SharedPtr<CL_Sprite_Impl>(new CL_Sprite_Impl(*other.impl.get()));
 //	resource_data_session = copy.resource_data_session;
 	return *this;
 }
@@ -479,17 +492,11 @@ void CL_Sprite::set_scale(float x, float y)
 void CL_Sprite::set_alpha(float alpha)
 {
 	impl->color.a = alpha;
-
-	for (int i=0; i<6; i++)
-		impl->prim_color[i] = CL_Vec4f(impl->color.r,impl->color.g,impl->color.b,impl->color.a);
 }
 
 void CL_Sprite::set_color(const CL_Colorf &color)
 {
 	impl->color = color;
-
-	for (int i=0; i<6; i++)
-		impl->prim_color[i] = CL_Vec4f(color.r,color.g,color.b,color.a);
 }
 
 void CL_Sprite::set_linear_filter(bool linear_filter)

@@ -67,8 +67,19 @@ CL_Sprite_Impl::CL_Sprite_Impl() :
 	show_on_finish(CL_Sprite::show_blank),
 	texture_group(CL_Size(1,1))
 {
-	for (int i=0; i<6; i++)
-		prim_color[i] = CL_Vec4f(color.r,color.g,color.b,color.a);
+}
+
+CL_Sprite_Impl::CL_Sprite_Impl(const CL_Sprite_Impl &other)
+: angle(other.angle), angle_pitch(other.angle_pitch), angle_yaw(other.angle_yaw),
+  base_angle(other.base_angle), scale_x(other.scale_x), scale_y(other.scale_y),
+  color(other.color), translation_hotspot(other.translation_hotspot),
+  rotation_hotspot(other.rotation_hotspot), translation_origin(other.translation_origin),
+  rotation_origin(other.rotation_origin), current_frame(other.current_frame),
+  delta_frame(other.delta_frame), update_time_ms(other.update_time_ms),
+  last_time_ms(other.last_time_ms), id(other.id), finished(other.finished), play_loop(other.play_loop),
+  play_backward(other.play_backward), play_pingpong(other.play_pingpong), show_on_finish(other.show_on_finish),
+  frames(other.frames), texture_group(other.texture_group)
+{
 }
 
 CL_Sprite_Impl::~CL_Sprite_Impl()
@@ -272,9 +283,8 @@ CL_Sprite_Impl &CL_Sprite_Impl::operator =(const CL_Sprite_Impl &copy)
 	play_backward = copy.play_backward;
 	play_pingpong = copy.play_pingpong;
 	show_on_finish = copy.show_on_finish;
-
 	frames = copy.frames;
-
+	texture_group = copy.texture_group;
 	return *this;
 }
 
