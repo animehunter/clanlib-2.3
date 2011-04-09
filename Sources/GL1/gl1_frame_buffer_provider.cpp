@@ -140,7 +140,7 @@ void CL_GL1FrameBufferProvider::attach_color_buffer(int color_buffer, const CL_T
 
 	// Find existing pbuffer
 	CL_WeakPtr<CL_Texture_Impl> texture_impl(texture.get_impl());
-	auto texture_it = texture_pbuffer_map.find(texture_impl);
+	std::map< CL_WeakPtr<CL_Texture_Impl>, CL_PBuffer_GL1, WeakPtrCompare>::iterator texture_it = texture_pbuffer_map.find(texture_impl);
 	if (texture_it == texture_pbuffer_map.end())
 	{
 		// Not found, create a new entry

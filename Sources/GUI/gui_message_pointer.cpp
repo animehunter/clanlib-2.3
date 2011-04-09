@@ -66,7 +66,7 @@ CL_StringRef CL_GUIMessage_Pointer::get_type_name()
 
 CL_GUIMessage_Pointer::PointerType CL_GUIMessage_Pointer::get_pointer_type() const
 {
-	CL_SharedPtr<CL_GUIMessage_PointerData> d = std::dynamic_pointer_cast<CL_GUIMessage_PointerData>(get_data("pointer"));
+	CL_SharedPtr<CL_GUIMessage_PointerData> d = cl_dynamic_pointer_cast<CL_GUIMessage_PointerData>(get_data("pointer"));
 	if (!d)
 		return pointer_enter;
 	return d->pointer_type;
@@ -77,7 +77,7 @@ CL_GUIMessage_Pointer::PointerType CL_GUIMessage_Pointer::get_pointer_type() con
 
 void CL_GUIMessage_Pointer::set_pointer_type(PointerType pointer_type)
 {
-	CL_SharedPtr<CL_GUIMessage_PointerData> d = std::dynamic_pointer_cast<CL_GUIMessage_PointerData>(get_data("pointer"));
+	CL_SharedPtr<CL_GUIMessage_PointerData> d = cl_dynamic_pointer_cast<CL_GUIMessage_PointerData>(get_data("pointer"));
 	if (!d)
 	{
 		d = CL_SharedPtr<CL_GUIMessage_PointerData>(

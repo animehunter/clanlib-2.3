@@ -66,7 +66,7 @@ CL_StringRef CL_GUIMessage_FocusChange::get_type_name()
 
 CL_GUIMessage_FocusChange::FocusType CL_GUIMessage_FocusChange::get_focus_type() const
 {
-	CL_SharedPtr<CL_GUIMessage_FocusChangeData> d = std::dynamic_pointer_cast<CL_GUIMessage_FocusChangeData>(get_data("focus change"));
+	CL_SharedPtr<CL_GUIMessage_FocusChangeData> d = cl_dynamic_pointer_cast<CL_GUIMessage_FocusChangeData>(get_data("focus change"));
 	if (!d)
 		return losing_focus;
 	return d->focus_type;
@@ -77,7 +77,7 @@ CL_GUIMessage_FocusChange::FocusType CL_GUIMessage_FocusChange::get_focus_type()
 
 void CL_GUIMessage_FocusChange::set_focus_type(FocusType focus_type)
 {
-	CL_SharedPtr<CL_GUIMessage_FocusChangeData> d = std::dynamic_pointer_cast<CL_GUIMessage_FocusChangeData>(get_data("focus change"));
+	CL_SharedPtr<CL_GUIMessage_FocusChangeData> d = cl_dynamic_pointer_cast<CL_GUIMessage_FocusChangeData>(get_data("focus change"));
 	if (!d)
 	{
 		d = CL_SharedPtr<CL_GUIMessage_FocusChangeData>(

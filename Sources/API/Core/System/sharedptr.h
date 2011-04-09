@@ -36,14 +36,19 @@
 #include "../api_core.h"
 #include "system.h"
 
-#ifdef __APPLE__
-#include <tr1/memory>
-#define CL_SharedPtr std::tr1::shared_ptr
-#define cl_dynamic_pointer_cast std::tr1::dynamic_pointer_cast
+#if defined(__APPLE__) 
+	#include <tr1/memory>
+	#define CL_SharedPtr std::tr1::shared_ptr
+	#define cl_dynamic_pointer_cast std::tr1::dynamic_pointer_cast
 #else
-#include <memory>
-#define CL_SharedPtr std::shared_ptr
-#define cl_dynamic_pointer_cast std::dynamic_pointer_cast
+	#include <memory>
+	#if defined(_MSC_VER) && _MSC_VER < 1600
+		#define CL_SharedPtr std::tr1::shared_ptr
+		#define cl_dynamic_pointer_cast std::tr1::dynamic_pointer_cast
+	#else
+		#define CL_SharedPtr std::shared_ptr
+		#define cl_dynamic_pointer_cast std::dynamic_pointer_cast
+	#endif
 #endif
 
 /*

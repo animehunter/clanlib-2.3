@@ -35,13 +35,16 @@
 #pragma once
 
 #ifdef __APPLE__
-#include <tr1/memory>
-#define CL_WeakPtr std::tr1::weak_ptr
+	#include <tr1/memory>
+	#define CL_WeakPtr std::tr1::weak_ptr
 #else
-#include <memory>
-#define CL_WeakPtr std::weak_ptr
+	#include <memory>
+	#if defined(_MSC_VER) && _MSC_VER < 1600
+		#define CL_WeakPtr std::tr1::weak_ptr
+	#else
+		#define CL_WeakPtr std::weak_ptr
+	#endif
 #endif
-
 
 #ifdef OLD_SHAREDPTR
 

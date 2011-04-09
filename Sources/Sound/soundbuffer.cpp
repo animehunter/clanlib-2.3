@@ -56,7 +56,7 @@ CL_SoundBuffer::CL_SoundBuffer(
 	CL_Resource resource = manager->get_resource(res_id);
 
 	CL_ResourceDataSession resource_data_session("sample", resource);
-	CL_SharedPtr<CL_ResourceData_Sample> data = std::dynamic_pointer_cast<CL_ResourceData_Sample>(resource.get_data("sample"));
+	CL_SharedPtr<CL_ResourceData_Sample> data = cl_dynamic_pointer_cast<CL_ResourceData_Sample>(resource.get_data("sample"));
 	if (!data)
 	{
 		data = CL_SharedPtr<CL_ResourceData_Sample>(new CL_ResourceData_Sample(resource));

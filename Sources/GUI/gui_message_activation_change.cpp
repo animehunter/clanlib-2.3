@@ -67,7 +67,7 @@ CL_StringRef CL_GUIMessage_ActivationChange::get_type_name()
 
 CL_GUIMessage_ActivationChange::ActivationType CL_GUIMessage_ActivationChange::get_activation_type() const
 {
-	CL_SharedPtr<CL_GUIMessage_ActivationChangeData> d = std::dynamic_pointer_cast<CL_GUIMessage_ActivationChangeData>(get_data("activation change"));
+	CL_SharedPtr<CL_GUIMessage_ActivationChangeData> d = cl_dynamic_pointer_cast<CL_GUIMessage_ActivationChangeData>(get_data("activation change"));
 	if (!d)
 		return activation_lost;
 	return d->activation_type;
@@ -78,7 +78,7 @@ CL_GUIMessage_ActivationChange::ActivationType CL_GUIMessage_ActivationChange::g
 
 void CL_GUIMessage_ActivationChange::set_activation_type(ActivationType activation_type)
 {
-	CL_SharedPtr<CL_GUIMessage_ActivationChangeData> d = std::dynamic_pointer_cast<CL_GUIMessage_ActivationChangeData>(get_data("activation change"));
+	CL_SharedPtr<CL_GUIMessage_ActivationChangeData> d = cl_dynamic_pointer_cast<CL_GUIMessage_ActivationChangeData>(get_data("activation change"));
 	if (!d)
 	{
 		d = CL_SharedPtr<CL_GUIMessage_ActivationChangeData>(

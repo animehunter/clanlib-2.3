@@ -67,7 +67,7 @@ CL_StringRef CL_GUIMessage_Resize::get_type_name()
 
 CL_Rect CL_GUIMessage_Resize::get_geometry() const
 {
-	CL_SharedPtr<CL_GUIMessage_ResizeData> d = std::dynamic_pointer_cast<CL_GUIMessage_ResizeData>(get_data("resize"));
+	CL_SharedPtr<CL_GUIMessage_ResizeData> d = cl_dynamic_pointer_cast<CL_GUIMessage_ResizeData>(get_data("resize"));
 	if (!d)
 		return CL_Rect();
 	return d->rect;
@@ -78,7 +78,7 @@ CL_Rect CL_GUIMessage_Resize::get_geometry() const
 
 void CL_GUIMessage_Resize::set_geometry(const CL_Rect &rect)
 {
-	CL_SharedPtr<CL_GUIMessage_ResizeData> d = std::dynamic_pointer_cast<CL_GUIMessage_ResizeData>(get_data("resize"));
+	CL_SharedPtr<CL_GUIMessage_ResizeData> d = cl_dynamic_pointer_cast<CL_GUIMessage_ResizeData>(get_data("resize"));
 	if (!d)
 	{
 		d = CL_SharedPtr<CL_GUIMessage_ResizeData>(new CL_GUIMessage_ResizeData);
