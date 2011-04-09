@@ -47,8 +47,8 @@ public:
 	void render();
 
 private:
-	CL_CSSActualValue get_start_x(size_t index, const CL_Rect &origin_box, const CL_Size &image_size);
-	CL_CSSActualValue get_start_y(size_t index, const CL_Rect &origin_box, const CL_Size &image_size);
+	CL_CSSActualValue get_start_x(size_t index, const CL_Rect &clip_box, const CL_Rect &origin_box, const CL_Size &image_size);
+	CL_CSSActualValue get_start_y(size_t index, const CL_Rect &clip_box, const CL_Rect &origin_box, const CL_Size &image_size);
 	CL_Size get_image_size(size_t index, CL_Image &image, CL_Rect origin_box);
 	CL_Rect get_clip_box(size_t index);
 	CL_Rect get_origin_box(size_t index);

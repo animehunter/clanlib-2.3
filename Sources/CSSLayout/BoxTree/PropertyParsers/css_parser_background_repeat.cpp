@@ -50,6 +50,8 @@ void CL_CSSParserBackgroundRepeat::parse(CL_CSSBoxProperties &properties, const 
 	{
 		CL_CSSBoxBackgroundRepeat background_repeat;
 		background_repeat.type = CL_CSSBoxBackgroundRepeat::type_repeat_style;
+		background_repeat.repeat_x.clear();
+		background_repeat.repeat_y.clear();
 		while (true)
 		{
 			if (token.type != CL_CSSToken::type_ident)

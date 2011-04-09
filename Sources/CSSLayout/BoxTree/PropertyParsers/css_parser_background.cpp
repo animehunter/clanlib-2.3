@@ -61,6 +61,15 @@ void CL_CSSParserBackground::parse(CL_CSSBoxProperties &properties, const CL_Str
 	CL_CSSBoxBackgroundClip bgclip;
 	CL_CSSBoxBackgroundSize bgsize;
 
+	bgimage.images.clear();
+	bgrepeat.repeat_x.clear();
+	bgrepeat.repeat_y.clear();
+	bgattachment.attachments.clear();
+	bgposition.positions.clear();
+	bgorigin.values.clear();
+	bgclip.values.clear();
+	bgsize.values.clear();
+
 	size_t pos = 0;
 	while (true) // for each layer
 	{
@@ -120,6 +129,15 @@ void CL_CSSParserBackground::parse(CL_CSSBoxProperties &properties, const CL_Str
 			if (token.type == CL_CSSToken::type_delim && token.value == ",")
 				break;
 		}
+
+		bgimage.images.push_back(layer_image);
+		bgrepeat.repeat_x.push_back(layer_repeat_x);
+		bgrepeat.repeat_y.push_back(layer_repeat_y);
+		bgattachment.attachments.push_back(layer_attachment);
+		bgposition.positions.push_back(layer_position);
+		bgorigin.values.push_back(layer_origin);
+		bgclip.values.push_back(layer_clip);
+		bgsize.values.push_back(layer_size);
 
 		if (pos == tokens.size())
 			break;
@@ -223,6 +241,7 @@ bool CL_CSSParserBackground::parse_repeat(CL_CSSBoxBackgroundRepeat::RepeatStyle
 	}
 
 	parse_pos = pos;
+	repeat_y = repeat_x;
 
 	token = next_token(pos, tokens);
 	if (token.type == CL_CSSToken::type_ident)
