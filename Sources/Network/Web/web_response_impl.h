@@ -155,7 +155,6 @@ inline void CL_WebResponse_Impl::read_response(CL_TCPConnection &connection)
 		else
 		{
 			CL_IODevice_Memory memory_device;
-			size_t length = CL_StringHelp::text_to_uint(headers["Content-Length"]);
 			while (true)
 			{
 				const char *src = buffer.get_read_pos();

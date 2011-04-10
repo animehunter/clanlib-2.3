@@ -131,9 +131,7 @@ void CL_CocoaWindow::create(CL_DisplayWindowSite *new_site, const CL_DisplayWind
     {
         window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
         controller = [[CL_CocoaController alloc] init];
-        //UINavigationController *nav_controller = [[UINavigationController alloc] initWithRootViewController:controller];
         window.rootViewController = controller;
-        //[window addSubview: nav_controller.view];
         [window makeKeyAndVisible];
     }
 }

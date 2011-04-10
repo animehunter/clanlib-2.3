@@ -33,10 +33,8 @@
 class CL_NetGameClient_Impl : public CL_KeepAliveObject
 {
 public:
-	CL_Event get_wakeup_event() { return event_arrived; }
 	void process();
 
-	CL_Event event_arrived;
 	CL_Mutex mutex;
 	std::vector<CL_NetGameNetworkEvent> events;
 

@@ -34,7 +34,6 @@
 class CL_NetGameServer_Impl : public CL_KeepAliveObject
 {
 public:
-	CL_Event get_wakeup_event() { return event_arrived; }
 	void process();
 
 	std::auto_ptr<CL_TCPListen> tcp_listen;
@@ -42,7 +41,6 @@ public:
 
 	CL_Mutex mutex;
 	CL_Event stop_event;
-	CL_Event event_arrived;
 	std::vector<CL_NetGameConnection *> connections;
 	std::vector<CL_NetGameNetworkEvent> events;
 

@@ -53,12 +53,7 @@ void CL_NetGameServer::add_network_event(const CL_NetGameNetworkEvent &e)
 {
 	CL_MutexSection mutex_lock(&impl->mutex);
 	impl->events.push_back(e);
-	impl->event_arrived.set();
-}
-
-CL_Event &CL_NetGameServer::get_event_arrived()
-{
-	return impl->event_arrived; 
+	impl->set_wakeup_event();
 }
 
 void CL_NetGameServer::send_event(const CL_NetGameEvent &game_event)
@@ -133,7 +128,6 @@ CL_Signal_v2<CL_NetGameConnection *, const CL_NetGameEvent &> &CL_NetGameServer:
 void CL_NetGameServer_Impl::process()
 {
 	CL_MutexSection mutex_lock(&mutex);
-	event_arrived.reset();
 	std::vector<CL_NetGameNetworkEvent> new_events;
 	new_events.swap(events);
 	mutex_lock.unlock();
