@@ -190,7 +190,7 @@ CL_Texture::CL_Texture(
 {
 	CL_PixelBuffer pb = CL_ImageProviderFactory::load(filename, directory, CL_String());
 	pb = import_desc.process(pb);
-	
+
 	*this = CL_Texture(context, pb.get_width(), pb.get_height());
 
 	set_subimage(CL_Point(0, 0), pb, CL_Rect(pb.get_size()), 0);

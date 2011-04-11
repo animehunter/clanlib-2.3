@@ -138,6 +138,7 @@ private:
 	CLenum to_enum(CL_TextureWrapMode mode);
 	CLenum to_enum(CL_CompareFunction func);
 	CLenum to_enum(CL_TextureCompareMode mode);
+    static int get_next_power_of_two(int value);
 
 	int width, height, depth;
 

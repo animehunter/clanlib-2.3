@@ -161,6 +161,26 @@ int CL_OpenGL::get_textureformat_bits(CL_TextureFormat format)
 
 void CL_OpenGL::to_opengl_textureformat(CL_TextureFormat format, CLint &gl_internal_format, CLenum &gl_pixel_format)
 {
+#ifdef __APPLE__
+    
+    // OpenGL ES 2 only supports a very limited set of formats
+    // format: GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA
+    // type: GL_UNSIGNED_BYTE, GL_UNSIGNED_SHORT_5_6_5, GL_UNSIGNED_SHORT_4_4_4_4, GL_UNSIGNED_SHORT_5_5_5_1
+	switch (format)
+	{
+		case cl_rgb: gl_internal_format = CL_RGB; gl_pixel_format = CL_RGB; break;
+		case cl_rgb8: gl_internal_format = CL_RGB; gl_pixel_format = CL_RGB; break;
+		case cl_rgb8ui: gl_internal_format = CL_RGB; gl_pixel_format = CL_RGB; break;
+		case cl_rgba: gl_internal_format = CL_RGBA; gl_pixel_format = CL_RGBA; break;
+		case cl_rgba8: gl_internal_format = CL_RGBA; gl_pixel_format = CL_RGBA; break;
+		case cl_rgba8ui: gl_internal_format = CL_RGBA; gl_pixel_format = CL_RGBA; break;
+		default:
+			throw CL_Exception("Unsupported CL_TextureFormat");
+    }
+    
+    
+#else
+    
 	switch (format)
 	{
 	// base internal format
@@ -275,13 +295,41 @@ void CL_OpenGL::to_opengl_textureformat(CL_TextureFormat format, CLint &gl_inter
 		default:
 			throw CL_Exception("Unknown CL_TextureFormat");
 	}
-
+#endif
 }
 
 bool CL_OpenGL::to_opengl_pixelformat(CL_TextureFormat texture_format, CLenum &format, CLenum &type)
 {
 	bool valid = false;
 
+#ifdef __APPLE__
+    
+    // OpenGL ES 2 only supports a very limited set of formats
+    // format: GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA
+    // type: GL_UNSIGNED_BYTE, GL_UNSIGNED_SHORT_5_6_5, GL_UNSIGNED_SHORT_4_4_4_4, GL_UNSIGNED_SHORT_5_5_5_1
+	switch (texture_format)
+	{
+		case cl_abgr8:
+		{
+			valid = true;
+			type = CL_UNSIGNED_BYTE;
+			format = CL_RGBA;
+			break;
+		}
+		case cl_bgr8:
+		{
+			valid = true;
+			type = CL_UNSIGNED_BYTE;
+			format = CL_RGB;
+			break;
+		}
+        default:
+            break;
+    }
+    
+    
+#else
+    
 	//TODO: We should really use CL_Endian::is_system_big()
 
 	//TODO: All the formats in this switch are not supported - Maybe they can be
@@ -566,6 +614,8 @@ bool CL_OpenGL::to_opengl_pixelformat(CL_TextureFormat texture_format, CLenum &f
 //		CLint gl_internal_format;
 //		to_opengl_textureformat(texture_format, gl_internal_format, format);
 //	}
+    
+#endif
 
 	return valid;
 }

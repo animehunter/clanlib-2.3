@@ -109,6 +109,16 @@ void CL_OpenGLTextureProvider::generate_mipmap()
 	clGenerateMipmap(texture_type);
 }
 
+int CL_OpenGLTextureProvider::get_next_power_of_two(int value)
+{
+    for (int pot_count = 1; pot_count < 32768; pot_count += pot_count)
+    {
+        if (value <= pot_count)
+            return pot_count;
+    }
+    return 32768;
+}
+
 void CL_OpenGLTextureProvider::create(int new_width, int new_height, CL_TextureFormat internal_format, int new_depth)
 {
 	throw_if_disposed();
@@ -241,14 +251,15 @@ void CL_OpenGLTextureProvider::set_subimage(
 	const CL_Rect &src_rect,
 	int level)
 {
-	if (src_rect.left < 0 || src_rect.top < 0 || src_rect.right > image.get_width(), src_rect.bottom > image.get_height())
+	if (src_rect.left < 0 || src_rect.top < 0 || src_rect.right > image.get_width() || src_rect.bottom > image.get_height())
 		throw CL_Exception("Rectangle out of bounds");
 
 	throw_if_disposed();
 	CL_TextureStateTracker state_tracker(texture_type, handle, NULL);
 
 	// check out if the original texture needs or doesn't need an alpha channel
-	bool needs_alpha = image.get_alpha_mask() || image.has_colorkey();
+	//bool needs_alpha = image.get_alpha_mask() || image.has_colorkey();
+    bool needs_alpha = true; // Forcing this to true because if the internal format of the texture contains alpha we must upload alpha no matter what
 
 	CLenum format;
 	CLenum type;
@@ -452,8 +463,10 @@ void CL_OpenGLTextureProvider::set_wrap_mode(
 	throw_if_disposed();
 	CL_TextureStateTracker state_tracker(texture_type, handle, NULL);
 	clTexParameteri(texture_type, CL_TEXTURE_WRAP_S, to_enum(wrap_s));
-	clTexParameteri(texture_type, CL_TEXTURE_WRAP_T, to_enum(wrap_t));
-	clTexParameteri(texture_type, CL_TEXTURE_WRAP_R, to_enum(wrap_r));
+    if (texture_type != CL_TEXTURE_1D)
+        clTexParameteri(texture_type, CL_TEXTURE_WRAP_T, to_enum(wrap_t));
+    if (texture_type != CL_TEXTURE_1D && texture_type != CL_TEXTURE_2D)
+        clTexParameteri(texture_type, CL_TEXTURE_WRAP_R, to_enum(wrap_r));
 }
 
 void CL_OpenGLTextureProvider::set_wrap_mode(
@@ -795,7 +808,7 @@ CLenum CL_OpenGLTextureProvider::to_enum(CL_CompareFunction func)
 /////////////////////////////////////////////////////////////////////////////
 
 CL_TextureStateTracker::CL_TextureStateTracker(CLuint texture_type, CLuint handle, CL_OpenGLGraphicContextProvider *gc_provider)
-{
+{    
 	// If the gc_provider is unknown, we need to use the first active provider
 	if (!gc_provider)
 	{
@@ -805,6 +818,12 @@ CL_TextureStateTracker::CL_TextureStateTracker(CLuint texture_type, CLuint handl
 	{
 		CL_OpenGL::set_active(gc_provider);
 	}
+     
+#ifdef __APPLE__
+	clGetIntegerv(CL_TEXTURE_BINDING_2D, (CLint *) &last_bound_texture2d);
+    if (handle)
+        clBindTexture(CL_TEXTURE_2D, handle);
+#else
 
 	last_is_enabled_texture1d = clIsEnabled(CL_TEXTURE_1D);
 	last_is_enabled_texture2d = clIsEnabled(CL_TEXTURE_2D);
@@ -850,10 +869,14 @@ CL_TextureStateTracker::CL_TextureStateTracker(CLuint texture_type, CLuint handl
 		clEnable(CL_TEXTURE_CUBE_MAP);
 		clBindTexture(CL_TEXTURE_CUBE_MAP, handle);
 	}
+#endif
 }
 
 CL_TextureStateTracker::~CL_TextureStateTracker()
 {
+#ifdef __APPLE__
+	clBindTexture(CL_TEXTURE_2D, last_bound_texture2d);
+#else
 	if (last_is_enabled_texture1d) clEnable(CL_TEXTURE_1D); else clDisable(CL_TEXTURE_1D);
 	if (last_is_enabled_texture2d) clEnable(CL_TEXTURE_2D); else clDisable(CL_TEXTURE_2D);
 	if (last_is_enabled_texture3d) clEnable(CL_TEXTURE_3D); else clDisable(CL_TEXTURE_3D);
@@ -863,4 +886,5 @@ CL_TextureStateTracker::~CL_TextureStateTracker()
 	if (last_is_enabled_texture2d) clBindTexture(CL_TEXTURE_2D, last_bound_texture2d);
 	if (last_is_enabled_texture3d) clBindTexture(CL_TEXTURE_3D, last_bound_texture3d);
 	if (last_is_enabled_texture_cube_map) clBindTexture(CL_TEXTURE_CUBE_MAP, last_bound_texture_cube_map);
+#endif
 }
