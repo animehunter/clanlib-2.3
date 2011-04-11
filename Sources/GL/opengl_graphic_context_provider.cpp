@@ -65,6 +65,7 @@
 #include "GLX/opengl_window_provider_glx.h"
 #endif
 
+#if defined(__APPLE__)
 const CL_String::char_type *cl_glsl_vertex_color_only = 
 	"attribute vec4 Position, Color0; "
 	"uniform mat4 cl_ModelViewProjectionMatrix;"
@@ -109,7 +110,52 @@ const CL_String::char_type *cl_glsl_fragment_sprite =
 	"varying highp float TexIndex; "
 	"highp vec4 sampleTexture(int index, highp vec2 pos) { if (index == 0) return texture2D(Texture0, TexCoord); else if (index == 1) return texture2D(Texture1, TexCoord); else if (index == 2) return texture2D(Texture2, TexCoord); else if (index == 3) return texture2D(Texture3, TexCoord); else return vec4(1.0,1.0,1.0,1.0); }"
 	"void main(void) { gl_FragColor = Color*sampleTexture(int(TexIndex), TexCoord); } ";
+#else
+const CL_String::char_type *cl_glsl_vertex_color_only = 
+	"attribute vec4 Position, Color0; "
+	"uniform mat4 cl_ModelViewProjectionMatrix;"
+	"varying vec4 Color; "
+	"void main(void) { gl_Position = cl_ModelViewProjectionMatrix*Position; Color = Color0; }";
 
+const CL_String::char_type *cl_glsl_fragment_color_only =
+	"varying vec4 Color; "
+	"void main(void) { gl_FragColor = Color; }";
+
+const CL_String::char_type *cl_glsl_vertex_single_texture =
+	"attribute vec4 Position, Color0; "
+	"attribute vec2 TexCoord0; "
+	"uniform mat4 cl_ModelViewProjectionMatrix;"
+	"varying vec4 Color; "
+	"varying vec2 TexCoord; "
+	"void main(void) { gl_Position = cl_ModelViewProjectionMatrix*Position; Color = Color0; TexCoord = TexCoord0; }";
+
+const CL_String::char_type *cl_glsl_fragment_single_texture =
+	"uniform sampler2D Texture0; "
+	"varying vec4 Color; "
+	"varying vec2 TexCoord; "
+	"void main(void) { gl_FragColor = Color*texture2D(Texture0, TexCoord); }";
+
+const CL_String::char_type *cl_glsl_vertex_sprite =
+	"attribute vec4 Position, Color0; "
+	"attribute vec2 TexCoord0; "
+	"attribute float TexIndex0; "
+	"uniform mat4 cl_ModelViewProjectionMatrix;"
+	"varying vec4 Color; "
+	"varying vec2 TexCoord; "
+	"varying float TexIndex; "
+	"void main(void) { gl_Position = cl_ModelViewProjectionMatrix*Position; Color = Color0; TexCoord = TexCoord0; TexIndex = TexIndex0; }";
+
+const CL_String::char_type *cl_glsl_fragment_sprite =
+	"uniform sampler2D Texture0; "
+	"uniform sampler2D Texture1; "
+	"uniform sampler2D Texture2; "
+	"uniform sampler2D Texture3; "
+	"varying vec4 Color; "
+	"varying vec2 TexCoord; "
+	"varying float TexIndex; "
+	"vec4 sampleTexture(int index, vec2 pos) { if (index == 0) return texture2D(Texture0, TexCoord); else if (index == 1) return texture2D(Texture1, TexCoord); else if (index == 2) return texture2D(Texture2, TexCoord); else if (index == 3) return texture2D(Texture3, TexCoord); else return vec4(1.0,1.0,1.0,1.0); }"
+	"void main(void) { gl_FragColor = Color*sampleTexture(int(TexIndex), TexCoord); } ";
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // CL_OpenGLGraphicContextProvider Construction:
