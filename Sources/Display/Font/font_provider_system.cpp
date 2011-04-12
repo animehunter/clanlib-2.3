@@ -33,6 +33,9 @@
 #ifdef USE_MS_FONT_RENDERER
 #include "FontEngine/font_engine_win32.h"
 #endif
+#ifdef __APPLE__
+#include "FontEngine/font_engine_cocoa.h"
+#endif
 //#else
 #include "FontEngine/font_engine_freetype.h"
 #include "font_provider_freetype.h"
@@ -200,6 +203,11 @@ void CL_FontProvider_System::load_font( CL_GraphicContext &context, const CL_Fon
 	CL_IODevice_Memory font_iodevice(font_file);
 	font_engine = new CL_FontEngine_Freetype(font_iodevice, desc.get_height(), desc.get_average_width());
 	glyph_cache.font_metrics = font_engine->get_metrics();
+    
+#elif defined(__APPLE__)
+    
+    font_engine = new CL_FontEngine_Cocoa(desc);
+    glyph_cache.font_metrics = font_engine->get_metrics();
 
 #else
 

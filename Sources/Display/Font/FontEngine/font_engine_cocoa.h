@@ -24,29 +24,33 @@
 **  File Author(s):
 **
 **    Magnus Norddahl
-**    (if your name is missing here, please add it)
+**    Mark Page
 */
 
 #pragma once
 
+#include "font_engine.h"
+#include "API/Display/Font/font.h"
+#include "API/Display/Font/font_description.h"
+#include <CoreText/CoreText.h>
+#include <CoreGraphics/CoreGraphics.h>
 
-#ifdef WIN32
-#ifdef _MSC_VER
-# pragma warning (disable:4786)
-#endif
-#include <windows.h>
-#endif
+class CL_DataBuffer;
 
-#include "API/Core/Text/string_types.h"
-#include "API/Core/IOData/datatypes.h"
-#include "API/Core/System/exception.h"
+class CL_FontEngine_Cocoa : public CL_FontEngine
+{
+public:
+	CL_FontEngine_Cocoa(const CL_FontDescription &description);
+	~CL_FontEngine_Cocoa();
 
-#if defined(_DEBUG) && !defined(DEBUG)
-#define DEBUG
-#endif
+	CL_FontMetrics get_metrics();
+	CL_FontPixelBuffer get_font_glyph(int glyph, bool anti_alias, const CL_Colorf &color);
 
-#ifdef WIN32
-#define BREAKPOINT
-#else
-#define BREAKPOINT asm("int $03");
-#endif
+private:
+	CL_FontPixelBuffer get_font_glyph_lcd(int glyph, const CL_Colorf &color);
+	CL_FontPixelBuffer get_font_glyph_gray8(int glyph, const CL_Colorf &color);
+	CL_FontPixelBuffer get_font_glyph_mono(int glyph, const CL_Colorf &color);
+	CL_FontPixelBuffer get_empty_font_glyph(int glyph);
+
+	CTFontRef handle;
+};
