@@ -96,7 +96,7 @@ private:
 	void render_impl(CL_GraphicContext &gc, std::auto_ptr<ClipWrapper> wrapper = std::auto_ptr<ClipWrapper>());
 
 	template<typename GUIComponent>
-	class GUIComponentWrapper : ClipWrapper
+	class GUIComponentWrapper : public ClipWrapper
 	{
 	public:
 		GUIComponentWrapper(GUIComponent *component) : component(component) { }

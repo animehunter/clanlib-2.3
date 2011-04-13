@@ -33,18 +33,19 @@
 #include "API/Sound/sound.h"
 #include "API/Core/System/thread.h"
 #include "soundoutput_impl.h"
+
 #ifdef WIN32
 #include "Win32/soundoutput_directsound.h"
 #else
 #ifdef __APPLE__
 #include "MacOSX/soundoutput_macosx.h"
 #else
+#include "Unix/soundoutput_oss.h"
+#endif
+#endif
 
 #ifdef HAVE_ALSA_ASOUNDLIB_H
 #include "Unix/soundoutput_alsa.h"
-#endif
-#include "Unix/soundoutput_oss.h"
-#endif
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
@@ -64,7 +65,6 @@ CL_SoundOutput::CL_SoundOutput(int mixing_frequency, int latency)
 
 CL_SoundOutput::CL_SoundOutput(const CL_SoundOutput_Description &desc)
 {
-
 #ifdef WIN32
 	CL_SharedPtr<CL_SoundOutput_Impl> soundoutput_impl(new CL_SoundOutput_DirectSound(desc.get_mixing_frequency(), desc.get_mixing_latency()));
 	impl = soundoutput_impl;
@@ -73,9 +73,7 @@ CL_SoundOutput::CL_SoundOutput(const CL_SoundOutput_Description &desc)
 	CL_SharedPtr<CL_SoundOutput_Impl> soundoutput_impl(new CL_SoundOutput_MacOSX(desc.get_mixing_frequency(), desc.get_mixing_latency()));
 	impl = soundoutput_impl;
 #else
-#ifdef __linux__
-
-#ifdef HAVE_ALSA_ASOUNDLIB_H
+#if defined(__linux__) && defined(HAVE_ALSA_ASOUNDLIB_H)
 	// Try building ALSA
 
 	CL_SharedPtr<CL_SoundOutput_Impl> alsa_impl(new CL_SoundOutput_alsa(desc.get_mixing_frequency(), desc.get_mixing_latency()));
@@ -89,13 +87,14 @@ CL_SoundOutput::CL_SoundOutput(const CL_SoundOutput_Description &desc)
 	}
 
 	if (!impl)
-#endif
-
-#endif
 	{
 		CL_SharedPtr<CL_SoundOutput_Impl> soundoutput_impl(new CL_SoundOutput_OSS(desc.get_mixing_frequency(), desc.get_mixing_latency()));
 		impl = soundoutput_impl;
 	}
+#else
+    CL_SharedPtr<CL_SoundOutput_Impl> soundoutput_impl(new CL_SoundOutput_OSS(desc.get_mixing_frequency(), desc.get_mixing_latency()));
+    impl = soundoutput_impl;
+#endif
 #endif
 #endif
 	CL_Sound::select_output(*this);

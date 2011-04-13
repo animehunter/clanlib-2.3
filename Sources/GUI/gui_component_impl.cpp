@@ -159,7 +159,8 @@ CL_Image CL_GUIComponent_Impl::on_css_layout_get_image(CL_GraphicContext &gc, co
 {
 	try
 	{
-		return CL_Image(gc, url, &gui_manager.lock()->theme.get_resources());
+        CL_ResourceManager resources = gui_manager.lock()->theme.get_resources();
+		return CL_Image(gc, url, &resources);
 	}
 	catch (CL_Exception e)
 	{
