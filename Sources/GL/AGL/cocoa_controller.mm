@@ -29,6 +29,7 @@
 #include "GL/precomp.h"
 #include "cocoa_controller.h"
 #include "cocoa_view.h"
+#include "cocoa_window.h"
 #include "API/Core/Math/vec2.h"
 #import <QuartzCore/QuartzCore.h>
 
@@ -46,6 +47,7 @@
     if (self)
     {
         self.displayLink = nil;
+        self->clanlib_window = 0;
     }
     return self;
 }
@@ -53,6 +55,11 @@
 - (void)dealloc
 {
     [super dealloc];
+}
+
+-(void) setClanLibWindow:(CL_CocoaWindow *)window
+{
+    self->clanlib_window = window;
 }
 
 - (void)loadView
@@ -102,21 +109,50 @@
         CGPoint point = [touch locationInView:self.view];
         vec_touches.push_back(CL_Vec2f(point.x, point.y));
     }
+    if (clanlib_window)
+        clanlib_window->on_touches_began(vec_touches);
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    
+    std::vector<CL_Vec2f> vec_touches;
+    NSSet *allTouches = [event allTouches];
+    NSEnumerator *enumerator = [allTouches objectEnumerator];
+    for (UITouch *touch in enumerator)
+    {
+        CGPoint point = [touch locationInView:self.view];
+        vec_touches.push_back(CL_Vec2f(point.x, point.y));
+    }
+    if (clanlib_window)
+        clanlib_window->on_touches_moved(vec_touches);
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    
+    std::vector<CL_Vec2f> vec_touches;
+    NSSet *allTouches = [event allTouches];
+    NSEnumerator *enumerator = [allTouches objectEnumerator];
+    for (UITouch *touch in enumerator)
+    {
+        CGPoint point = [touch locationInView:self.view];
+        vec_touches.push_back(CL_Vec2f(point.x, point.y));
+    }
+    if (clanlib_window)
+        clanlib_window->on_touches_ended(vec_touches);
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    
+    std::vector<CL_Vec2f> vec_touches;
+    NSSet *allTouches = [event allTouches];
+    NSEnumerator *enumerator = [allTouches objectEnumerator];
+    for (UITouch *touch in enumerator)
+    {
+        CGPoint point = [touch locationInView:self.view];
+        vec_touches.push_back(CL_Vec2f(point.x, point.y));
+    }
+    if (clanlib_window)
+        clanlib_window->on_touches_cancelled(vec_touches);
 }
 
 - (void)motionBegan:(UIEventSubtype)motion withEvent:(UIEvent *)event

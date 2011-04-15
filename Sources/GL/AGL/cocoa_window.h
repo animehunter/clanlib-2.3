@@ -34,6 +34,7 @@
 #include <map>
 #include "API/Display/Window/input_context.h"
 #include "API/Display/Window/input_device.h"
+#include "API/Display/Window/display_window.h"
 #include "API/Display/TargetProviders/input_device_provider.h"
 #include "API/Core/System/sharedptr.h"
 #include "API/Core/Math/point.h"
@@ -53,6 +54,7 @@ class CL_DataBuffer;
 class CL_CursorProvider_Cocoa;
 class CL_InputEvent;
 class CL_Colorf;
+class CL_CocoaMouseInputDeviceProvider;
 
 class CL_CocoaWindow
 {
@@ -117,8 +119,15 @@ public:
 	void set_clipboard_image(const CL_PixelBuffer &image);
 	void request_repaint(const CL_Rect &rect);
 	void set_modifier_keys(CL_InputEvent &key);
+    
+    void on_touches_began(const std::vector<CL_Vec2f> &touches);
+    void on_touches_moved(const std::vector<CL_Vec2f> &touches);
+    void on_touches_ended(const std::vector<CL_Vec2f> &touches);
+    void on_touches_cancelled(const std::vector<CL_Vec2f> &touches);
 
 private:
+    CL_CocoaMouseInputDeviceProvider *get_mouse();
+    
 	CL_DisplayWindowSite *site;
 	CL_InputDevice keyboard, mouse;
 	CL_Point mouse_pos;

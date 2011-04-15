@@ -790,6 +790,7 @@ CL_GLFunctions *cl_setup_binds()
 	functions->clearColor = (CL_GLFunctions::ptr_glClearColor) cl_get_proc_address_extension("glClearColor");
 	functions->clearStencil = (CL_GLFunctions::ptr_glClearStencil) cl_get_proc_address_extension("glClearStencil");
 	functions->clearDepth = (CL_GLFunctions::ptr_glClearDepth) cl_get_proc_address_extension("glClearDepth");
+	functions->clearDepthf = (CL_GLFunctions::ptr_glClearDepthf) cl_get_proc_address_extension("glClearDepthf");
 	functions->stencilMask = (CL_GLFunctions::ptr_glStencilMask) cl_get_proc_address_extension("glStencilMask");
 	functions->colorMask = (CL_GLFunctions::ptr_glColorMask) cl_get_proc_address_extension("glColorMask");
 	functions->depthMask = (CL_GLFunctions::ptr_glDepthMask) cl_get_proc_address_extension("glDepthMask");

@@ -43,14 +43,15 @@
 #include "API/Display/Image/pixel_buffer.h"
 #include "API/Display/ImageProviders/png_provider.h"
 #include "API/Display/screen_info.h"
-#include "cocoa_window.h"
-#include "cocoa_message_queue.h"
 #include "Display/Window/input_context_impl.h"
+#include "cocoa_window.h"
+#include "cocoa_mouse_input_device_provider.h"
 
 CL_CocoaWindow::CL_CocoaWindow()
 : site(0), window(0), controller(0)
 {
-    CL_CocoaMessageQueue *queue = CL_CocoaMessageQueue::get();
+    mouse = CL_InputDevice(new CL_CocoaMouseInputDeviceProvider());
+    ic.add_mouse(mouse);
 }
 
 CL_CocoaWindow::~CL_CocoaWindow()
@@ -61,12 +62,14 @@ CL_CocoaWindow::~CL_CocoaWindow()
 
 CL_Rect CL_CocoaWindow::get_geometry() const
 {
-    return CL_Rect();
+    CGRect box = [window frame];
+    return CL_Rect(box.origin.x, box.origin.y, box.origin.x + box.size.width, box.origin.y + box.size.height);
 }
 
 CL_Rect CL_CocoaWindow::get_viewport() const
 {
-    return CL_Rect(0, 0, 768, 1024);
+    CGRect box = [window bounds];
+    return CL_Rect(box.origin.x, box.origin.y, box.origin.x + box.size.width, box.origin.y + box.size.height);
 }
 
 bool CL_CocoaWindow::has_focus() const
@@ -86,7 +89,7 @@ bool CL_CocoaWindow::is_maximized() const
 
 bool CL_CocoaWindow::is_fullscreen() const
 {
-    return false;
+    return true;
 }
 
 bool CL_CocoaWindow::is_visible() const
@@ -96,12 +99,12 @@ bool CL_CocoaWindow::is_visible() const
 
 CL_Size CL_CocoaWindow::get_minimum_size(bool client_area) const
 {
-    return CL_Size();
+    return get_viewport().get_size();
 }
 
 CL_Size CL_CocoaWindow::get_maximum_size(bool client_area) const
 {
-    return CL_Size();
+    return get_viewport().get_size();
 }
 
 CL_String CL_CocoaWindow::get_title() const
@@ -132,6 +135,7 @@ void CL_CocoaWindow::create(CL_DisplayWindowSite *new_site, const CL_DisplayWind
         window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
         controller = [[CL_CocoaController alloc] init];
         window.rootViewController = controller;
+        [controller setClanLibWindow:this];
         [window makeKeyAndVisible];
     }
 }
@@ -263,10 +267,75 @@ void CL_CocoaWindow::set_clipboard_image(const CL_PixelBuffer &image)
 
 void CL_CocoaWindow::request_repaint(const CL_Rect &rect)
 {
-    
+    CGRect box;
+    box.origin.x = rect.left;
+    box.origin.y = rect.top;
+    box.size.width = rect.get_width();
+    box.size.height = rect.get_height();
+    [window setNeedsDisplayInRect:box];
 }
 
 void CL_CocoaWindow::set_modifier_keys(CL_InputEvent &key)
 {
     
 }
+
+void CL_CocoaWindow::on_touches_began(const std::vector<CL_Vec2f> &touches)
+{
+    get_mouse()->touches = touches;
+    get_mouse()->down = true;
+    
+    CL_InputEvent e;
+    e.type = CL_InputEvent::pressed;
+    e.id = CL_MOUSE_LEFT;
+    e.mouse_pos = CL_Point(touches[0]);
+    e.device = mouse;
+    get_mouse()->sig_provider_event->invoke(e);
+    ic.process_messages();
+}
+
+void CL_CocoaWindow::on_touches_moved(const std::vector<CL_Vec2f> &touches)
+{
+    get_mouse()->touches = touches;
+    
+    CL_InputEvent e;
+    e.type = CL_InputEvent::pointer_moved;
+    e.mouse_pos = CL_Point(touches[0]);
+    e.device = mouse;
+    get_mouse()->sig_provider_event->invoke(e);
+    ic.process_messages();
+}
+
+void CL_CocoaWindow::on_touches_ended(const std::vector<CL_Vec2f> &touches)
+{
+    get_mouse()->touches = touches;
+    get_mouse()->down = false;
+    
+    CL_InputEvent e;
+    e.type = CL_InputEvent::released;
+    e.id = CL_MOUSE_LEFT;
+    e.mouse_pos = CL_Point(touches[0]);
+    e.device = mouse;
+    get_mouse()->sig_provider_event->invoke(e);
+    ic.process_messages();
+}
+
+void CL_CocoaWindow::on_touches_cancelled(const std::vector<CL_Vec2f> &touches)
+{
+    get_mouse()->touches = touches;
+    get_mouse()->down = false;
+    
+    CL_InputEvent e;
+    e.type = CL_InputEvent::released;
+    e.id = CL_MOUSE_LEFT;
+    e.mouse_pos = CL_Point(touches[0]);
+    e.device = mouse;
+    get_mouse()->sig_provider_event->invoke(e);
+    ic.process_messages();
+}
+
+CL_CocoaMouseInputDeviceProvider *CL_CocoaWindow::get_mouse()
+{
+    return dynamic_cast<CL_CocoaMouseInputDeviceProvider*>(mouse.get_provider());
+}
+

@@ -59,8 +59,9 @@
 #include "API/GL/opengl_wrap.h"
 #include "API/Display/2D/image.h"
 
-#if defined(__APPLE__)
+#ifdef __APPLE__
 #include <CoreFoundation/CoreFoundation.h>
+#include "AGL/opengl_window_provider_agl.h"
 #elif !defined(WIN32)
 #include "GLX/opengl_window_provider_glx.h"
 #endif
@@ -563,10 +564,15 @@ void CL_OpenGLGraphicContextProvider::set_frame_buffer(const CL_FrameBuffer &dra
 
 void CL_OpenGLGraphicContextProvider::reset_frame_buffer()
 {
-#ifndef __APPLE__
 	CL_OpenGL::set_active(this);
+
+#ifdef __APPLE__
+    cl_set_default_frame_buffer((CL_RenderWindowProvider*)render_window);
+        
+#else
 	clBindFramebuffer(CL_FRAMEBUFFER, 0);
 	clBindFramebuffer(CL_READ_FRAMEBUFFER, 0);
+#endif
 
 	if (framebuffer_bound)
 	{
@@ -575,7 +581,6 @@ void CL_OpenGLGraphicContextProvider::reset_frame_buffer()
 		if (map_mode != cl_user_projection)
 			set_map_mode(map_mode_before_framebuffer);
 	}
-#endif
 }
 
 void CL_OpenGLGraphicContextProvider::set_program_object(CL_StandardProgram standard_program)
@@ -782,16 +787,6 @@ void CL_OpenGLGraphicContextProvider::reset_primitives_array()
 {
 	CL_OpenGL::set_active(this);
 
-	/* Removed in OpenGL 3 ...
-	clDisableClientState(CL_VERTEX_ARRAY);
-	clDisableClientState(CL_COLOR_ARRAY);
-	if (clSecondaryColor3i)
-		clDisableClientState(CL_SECONDARY_COLOR_ARRAY);
-	clDisableClientState(CL_NORMAL_ARRAY);
-	clDisableClientState(CL_EDGE_FLAG_ARRAY);
-	clDisableClientState(CL_TEXTURE_COORD_ARRAY);
-	*/
-
 	for (int i=0; i<num_set_program_attribute_arrays; ++i)
 	{
 		clDisableVertexAttribArray(i);
@@ -862,7 +857,10 @@ void CL_OpenGLGraphicContextProvider::clear_stencil(int value)
 void CL_OpenGLGraphicContextProvider::clear_depth(float value)
 {
 	CL_OpenGL::set_active(this);
-	clClearDepth(value);
+    if (clClearDepth)
+        clClearDepth(value);
+    else
+        clClearDepthf(value);
 	clClear(CL_DEPTH_BUFFER_BIT);
 }
 

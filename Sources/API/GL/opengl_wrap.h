@@ -71,6 +71,7 @@ public:
 	typedef void (CL_GLFUNC *ptr_glClearColor)(CLclampf red, CLclampf green, CLclampf blue, CLclampf alpha);
 	typedef void (CL_GLFUNC *ptr_glClearStencil)(CLint s);
 	typedef void (CL_GLFUNC *ptr_glClearDepth)(CLclampd depth);
+	typedef void (CL_GLFUNC *ptr_glClearDepthf)(CLclampf depth); // OpenGL ES
 	typedef void (CL_GLFUNC *ptr_glStencilMask)(CLuint mask);
 	typedef void (CL_GLFUNC *ptr_glColorMask)(CLboolean red, CLboolean green, CLboolean blue, CLboolean alpha);
 	typedef void (CL_GLFUNC *ptr_glDepthMask)(CLboolean flag);
@@ -516,6 +517,7 @@ public:
 	ptr_glClearColor clearColor;
 	ptr_glClearStencil clearStencil;
 	ptr_glClearDepth clearDepth;
+	ptr_glClearDepthf clearDepthf;
 	ptr_glStencilMask stencilMask;
 	ptr_glColorMask colorMask;
 	ptr_glDepthMask depthMask;
@@ -958,6 +960,7 @@ public:
 #define clClearColor CL_OpenGL::functions->clearColor
 #define clClearStencil CL_OpenGL::functions->clearStencil
 #define clClearDepth CL_OpenGL::functions->clearDepth
+#define clClearDepthf CL_OpenGL::functions->clearDepthf
 #define clStencilMask CL_OpenGL::functions->stencilMask
 #define clColorMask CL_OpenGL::functions->colorMask
 #define clDepthMask CL_OpenGL::functions->depthMask

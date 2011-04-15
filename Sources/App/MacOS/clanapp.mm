@@ -29,10 +29,36 @@
 #include <cstdlib>
 #include <iostream>
 #include "API/Core/System/setup_core.h"
+#include "API/Core/System/keep_alive.h"
 #include "API/App/clanapp.h"
+#import <UIKit/UIKit.h>
+
+void cl_runloop_callout();
+void *cl_app_on_thread_id();
+void cl_app_on_awake_thread(void *thread_id);
+
+@interface CL_ClanAppDelegate : NSObject <UIApplicationDelegate> 
+{
+}
+@end
+
+@implementation CL_ClanAppDelegate
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+    CFRunLoopRef runloop = CFRunLoopGetCurrent();
+    CFRunLoopPerformBlock(runloop, kCFRunLoopCommonModes, ^(){ cl_runloop_callout(); });
+    CFRunLoopWakeUp(runloop);
+
+    return YES;
+}
+
+@end
 
 /////////////////////////////////////////////////////////////////////////////
 // main:
+
+static std::vector<CL_String> cl_main_args;
 
 int main(int argc, char **argv)
 {
@@ -42,14 +68,34 @@ int main(int argc, char **argv)
 		return 255;
 	}
 
-	std::vector<CL_String> args;
 	for (int i = 0; i < argc; i++)
-		args.push_back(argv[i]);
-	int retval = CL_ClanApplication::main(args);
-
-	return retval;
+		cl_main_args.push_back(argv[i]);
+    
+    CL_KeepAlive::func_thread_id().set(&cl_app_on_thread_id);
+    CL_KeepAlive::func_awake_thread().set(&cl_app_on_awake_thread);
+    
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    int result = UIApplicationMain(argc, argv, nil, @"CL_ClanAppDelegate");
+    [pool release];
+    return result;
 }
 
+void cl_runloop_callout()
+{
+	CL_ClanApplication::main(cl_main_args);
+}
+
+void *cl_app_on_thread_id()
+{
+    return CFRunLoopGetCurrent();
+}
+
+void cl_app_on_awake_thread(void *thread_id)
+{
+    CFRunLoopRef runloop = (CFRunLoopRef)thread_id;
+    CFRunLoopPerformBlock(runloop, kCFRunLoopCommonModes, ^(){ CL_KeepAlive::process(); });
+    CFRunLoopWakeUp(runloop);
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // CL_ClanApplication:

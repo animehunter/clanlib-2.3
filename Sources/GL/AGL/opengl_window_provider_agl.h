@@ -29,16 +29,17 @@
 #pragma once
 
 #include "../opengl_window_provider.h"
+#include "API/Display/Image/pixel_buffer.h"
+#include "API/Display/TargetProviders/render_window_provider.h"
+#include "API/GL/opengl_wrap.h"
 
 void cl_agl_make_none_current();
 CL_OpenGLWindowProvider *cl_alloc_display_window_agl();
+void cl_set_default_frame_buffer(CL_RenderWindowProvider *provider);
 
 #ifdef __OBJC__
 
 #include "cocoa_window.h"
-#include "API/Display/Image/pixel_buffer.h"
-#include "API/Display/TargetProviders/render_window_provider.h"
-#include "API/GL/opengl_wrap.h"
 
 #import <OpenGLES/EAGL.h>
 #import <OpenGLES/ES2/gl.h>
@@ -55,10 +56,10 @@ public:
 	virtual int get_viewport_height() const;
 	virtual void flip_buffers(int interval) const;
 	virtual void make_current() const;
-//	CL_ProcAddress *get_proc_address(const CL_String8& function_name) const;
 
 	EAGLContext *get_context() const {return agl_context;}
-
+    void set_default_frame_buffer();
+    
 private:
 	CL_OpenGLWindowProvider_AGL & window;
 	EAGLContext *agl_context;
@@ -127,8 +128,9 @@ public:
 	void process_messages();
 
 	EAGLContext *create_context();
+    void setup_default_framebuffer();
+    void set_default_frame_buffer();
 
-//	bool has_messages() { return cocoa_window.has_messages(); }
 	void set_clipboard_text(const CL_StringRef &text) { cocoa_window.set_clipboard_text(text); }
 	void set_clipboard_image(const CL_PixelBuffer &buf) { cocoa_window.set_clipboard_image(buf); }
 	void request_repaint(const CL_Rect &rect) { cocoa_window.request_repaint(rect); }
@@ -144,6 +146,9 @@ private:
 
 	CL_CocoaWindow cocoa_window;
 	EAGLContext *opengl_context;
+    GLuint default_framebuffer_handle;
+    GLuint default_colorbuffer_handle;
+    GLuint default_depthbuffer_handle;
 	CL_DisplayWindowSite *site;
 	int swap_interval;
 /// \}

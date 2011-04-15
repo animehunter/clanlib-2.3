@@ -35,10 +35,15 @@
 #import <OpenGLES/ES2/gl.h>
 #import <OpenGLES/ES2/glext.h>
 
+class CL_CocoaWindow;
+
 @interface CL_CocoaController : UIViewController
 {
 @private
     CADisplayLink *display_link;
+    CL_CocoaWindow *clanlib_window;
 }
+
+-(void) setClanLibWindow:(CL_CocoaWindow *)window;
 
 @end
