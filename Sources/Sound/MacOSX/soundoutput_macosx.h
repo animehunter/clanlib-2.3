@@ -30,17 +30,14 @@
 
 #include "../soundoutput_impl.h"
 #include "API/Core/System/databuffer.h"
-
-#include <OpenAL/al.h>
-#include <OpenAL/alc.h>
-#include <OpenAL/oalStaticBufferExtension.h>
+#include <AudioToolbox/AudioToolbox.h>
 
 class CL_SoundOutput_MacOSX : public CL_SoundOutput_Impl
 {
 public:
 	CL_SoundOutput_MacOSX(int mixing_frequency, int mixing_latency);
 	~CL_SoundOutput_MacOSX();
-
+    
 	/// \brief Called when we have no samples to play - and wants to tell the soundcard
 	/// \brief about this possible event.
 	virtual void silence();
@@ -53,19 +50,26 @@ public:
     
 	/// \brief Waits until output source isn't full anymore.
 	virtual void wait();
+
+    /// \brief Called by the mixer thread when it starts
+    virtual void mixer_thread_starting();
+    
+    /// \brief Called by the mixer thread when it stops
+    virtual void mixer_thread_stopping();
     
 private:
-    void init_openal();
+    void audio_queue_callback(AudioQueueRef queue, AudioQueueBufferRef buffer);
+    static void static_audio_queue_callback(void *userdata, AudioQueueRef queue, AudioQueueBufferRef buffer);
     
-    int frequency, latency;
-    ALCdevice *device;
-    ALCcontext *context;
     static const int fragment_buffer_count = 4;
-    ALuint fragment_buffers[fragment_buffer_count];
-    ALuint source;
+    int frequency, latency;
     int fragment_size;
-    int next_fragment;
+    int next_fragment, read_cursor;
     int fragments_available;
-    alBufferDataStaticProcPtr alBufferDataStatic;
     CL_DataBuffer fragment_data;
+    
+    AudioStreamBasicDescription audio_format;
+    AudioQueueRef audio_queue;
+    AudioQueueBufferRef audio_buffers[fragment_buffer_count];
+    
 };

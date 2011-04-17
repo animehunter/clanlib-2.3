@@ -30,87 +30,56 @@
 #include "soundoutput_macosx.h"
 #include "API/Core/System/exception.h"
 #include "API/Core/System/system.h"
-#include <sys/time.h>
 
 CL_SoundOutput_MacOSX::CL_SoundOutput_MacOSX(int frequency, int latency)
-: CL_SoundOutput_Impl(frequency, latency), frequency(frequency), latency(latency), device(0), context(0), source(0), fragment_size(0), next_fragment(0)
+: CL_SoundOutput_Impl(frequency, latency), frequency(frequency), latency(latency), fragment_size(0), next_fragment(0), read_cursor(0), fragments_available(0)
 {
     fragment_size = frequency * latency / fragment_buffer_count / 1000;
     fragment_size = (fragment_size + 3) & ~3; // Force to be a multiple of 4
     fragments_available = fragment_buffer_count;
     fragment_data = CL_DataBuffer(fragment_size * sizeof(short) * 2 * fragment_buffer_count);
-    
+        
     start_mixer_thread();
-}
-
-void CL_SoundOutput_MacOSX::init_openal()
-{
-    device = alcOpenDevice(0);
-    if (device == 0)
-        throw CL_Exception("Unable to open default sound device");
-    
-    context = alcCreateContext(device, 0);
-    if (context == 0)
-    {
-        alcCloseDevice(device);
-        device = 0;
-        throw CL_Exception("Unable to create OpenAL context for the sound device");
-    }
-    
-    alcMakeContextCurrent(context);
-    
-    alBufferDataStatic = reinterpret_cast<alBufferDataStaticProcPtr>(alGetProcAddress("alBufferDataStatic"));
-    if (alBufferDataStatic == 0)
-    {
-        alcMakeContextCurrent(0);
-        alcDestroyContext(context);
-        alcCloseDevice(device);
-        context = 0;
-        device = 0;
-        throw CL_Exception("OpenAL does not have alBufferDataStatic");
-    }
-    
-    alGenBuffers(fragment_buffer_count, fragment_buffers);
-
-    for (size_t i = 0; i < fragment_buffer_count; i++)
-    {
-        short *data = reinterpret_cast<short*>(fragment_data.get_data());
-        alBufferDataStatic(fragment_buffers[next_fragment], AL_FORMAT_STEREO16, data + fragment_size * 2 * i, fragment_size * sizeof(short) * 2, frequency);
-    }
-    
-    alGenSources(1, &source);
-    alSource3f(source, AL_POSITION, 0.0f, 0.0f, 0.0f);
-    alSource3f(source, AL_VELOCITY, 0.0f, 0.0f, 0.0f);
-    alSource3f(source, AL_DIRECTION, 0.0f, 0.0f, 0.0f);
-    alSourcef(source, AL_ROLLOFF_FACTOR, 0.0f);
-    alSourcei(source, AL_SOURCE_RELATIVE, AL_TRUE);
-    
-    if (alGetError() != AL_NO_ERROR)
-    {
-        alcMakeContextCurrent(0);
-        alcDestroyContext(context);
-        alcCloseDevice(device);
-        device = 0;
-        context = 0;
-        throw CL_Exception("OpenAL initialization failed");
-    }
-    
-    alcMakeContextCurrent(0);
 }
 
 CL_SoundOutput_MacOSX::~CL_SoundOutput_MacOSX()
 {
 	stop_mixer_thread();
-    if (device)
+}
+
+void CL_SoundOutput_MacOSX::mixer_thread_starting()
+{
+    audio_format.mSampleRate = frequency;
+    audio_format.mFormatID = kAudioFormatLinearPCM;
+    audio_format.mFormatFlags = kAudioFormatFlagsCanonical;
+    audio_format.mBytesPerPacket = 2 * sizeof(short);
+    audio_format.mFramesPerPacket = 1;
+    audio_format.mBytesPerFrame = 2 * sizeof(short);
+    audio_format.mChannelsPerFrame = 2;
+    audio_format.mBitsPerChannel = sizeof(short) * 8;
+    audio_format.mReserved = 0;
+
+    OSStatus result = AudioQueueNewOutput(&audio_format, &CL_SoundOutput_MacOSX::static_audio_queue_callback, this, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode, 0, &audio_queue);
+    if (result != 0)
+        throw CL_Exception("AudioQueueNewOutput failed");
+
+    for (int i = 0; i < fragment_buffer_count; i++)
     {
-        alcMakeContextCurrent(context);
-        alSourceStop(source);
-        alDeleteSources(1, &source);
-        alDeleteBuffers(fragment_buffer_count, fragment_buffers);
-        alcMakeContextCurrent(0);
-        alcDestroyContext(context);
-        alcCloseDevice(device);
+        result = AudioQueueAllocateBuffer(audio_queue, fragment_size * sizeof(short) * 2, &audio_buffers[i]);
+        if (result != 0)
+            throw CL_Exception("AudioQueueAllocateBuffer failed");
+        audio_queue_callback(audio_queue, audio_buffers[i]);
     }
+    
+    result = AudioQueueStart(audio_queue, 0);
+    if (result != 0)
+        throw CL_Exception("AudioQueueStart failed");
+}
+
+void CL_SoundOutput_MacOSX::mixer_thread_stopping()
+{
+    AudioQueueStop(audio_queue, true);
+    AudioQueueDispose(audio_queue, true);
 }
 
 void CL_SoundOutput_MacOSX::silence()
@@ -124,86 +93,54 @@ int CL_SoundOutput_MacOSX::get_fragment_size()
 
 void CL_SoundOutput_MacOSX::write_fragment(float *dataf)
 {
-    if (device == 0)
-        init_openal();
-    
     if (fragments_available == 0)
         wait();
     
-    short *data16 = reinterpret_cast<short*>(fragment_data.get_data()) + next_fragment * fragment_size * 2;
+    short *databuf = reinterpret_cast<short*>(fragment_data.get_data()) + next_fragment * fragment_size * 2;
     for (int i = 0; i < fragment_size * 2; i++)
     {
-        data16[i] = (short)(dataf[i]*32767);
-    }
-
-    alcMakeContextCurrent(context);
-    alSourceQueueBuffers(source, 1, &fragment_buffers[next_fragment]);
-
-    ALint source_state = 0;
-    alGetSourcei(source, AL_SOURCE_STATE, &source_state);
-    if (source_state != AL_PLAYING)
-        alSourcePlay(source);
-
-    if (alGetError() != AL_NO_ERROR)
-    {
-        alcMakeContextCurrent(0);
-        alcDestroyContext(context);
-        alcCloseDevice(device);
-        throw CL_Exception("OpenAL mixing failed");
+        databuf[i] = (short)(dataf[i]*32767);
     }
     
-    alcMakeContextCurrent(0);
-    
-    fragments_available--;
     next_fragment++;
     if (next_fragment == fragment_buffer_count)
         next_fragment = 0;
+    fragments_available--;
 }
 
 void CL_SoundOutput_MacOSX::wait()
 {
-    if (device == 0)
-        init_openal();
-    
-    alcMakeContextCurrent(context);
-    
     while (fragments_available == 0)
     {
-        ALint processed = 0;
-        alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
-        fragments_available += processed;
-        
-        if (processed != 0)
-        {
-            ALuint processed_buffers[fragment_buffer_count];
-            alSourceUnqueueBuffers(source, processed, processed_buffers);
-            break;
-        }
-        else
-        {
-            ALint source_state = 0;
-            alGetSourcei(source, AL_SOURCE_STATE, &source_state);
-            if (source_state != AL_PLAYING)
-                alSourcePlay(source);
-
-            ALint queued = 0;
-            alGetSourcei(source, AL_BUFFERS_QUEUED, &queued);
-            if (queued == 0)
-            {
-                fragments_available = fragment_buffer_count;
-                break;
-            }
-        }
-        
-        if (fragments_available == 0)
-        {
-            // Sigh.  No official way to wait for a buffer to be processed?
-            timeval timeout;
-            timeout.tv_sec = 0;
-            timeout.tv_usec = latency * 1000 / 4;
-            select(0, 0, 0, 0, &timeout);
-        }
+        CFRunLoopRunInMode(kCFRunLoopDefaultMode, 1, true);
     }
-                     
-    alcMakeContextCurrent(0);
+}
+
+void CL_SoundOutput_MacOSX::audio_queue_callback(AudioQueueRef queue, AudioQueueBufferRef buffer)
+{
+    if (fragments_available != fragment_buffer_count)
+    {
+        short *databuf = reinterpret_cast<short*>(fragment_data.get_data()) + read_cursor * fragment_size * 2;
+        memcpy(buffer->mAudioData, databuf, fragment_size * sizeof(short) * 2);
+        buffer->mAudioDataByteSize = fragment_size * sizeof(short) * 2;
+        fragments_available++;
+        read_cursor++;
+        if (read_cursor == fragment_buffer_count)
+            read_cursor = 0;
+    }
+    else
+    {
+        memset(buffer->mAudioData, 0, fragment_size * sizeof(short) * 2);
+        buffer->mAudioDataByteSize = fragment_size * sizeof(short) * 2;
+    }
+
+    OSStatus result = AudioQueueEnqueueBuffer(queue, buffer, 0, 0);
+    if (result != 0)
+        throw CL_Exception("AudioQueueEnqueueBuffer failed");
+}
+
+void CL_SoundOutput_MacOSX::static_audio_queue_callback(void *userdata, AudioQueueRef queue, AudioQueueBufferRef buffer)
+{
+    CL_SoundOutput_MacOSX *self = reinterpret_cast<CL_SoundOutput_MacOSX *>(userdata);
+    self->audio_queue_callback(queue, buffer);
 }
