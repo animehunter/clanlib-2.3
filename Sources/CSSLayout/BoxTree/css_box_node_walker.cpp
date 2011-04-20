@@ -92,7 +92,7 @@ bool CL_CSSBoxNodeWalker::next(bool traverse_children)
 		level++;
 	else
 		next = cur->get_next_sibling();
-	while (!next && level > 0)
+	while (cur && !next && level > 0)
 	{
 		level--;
 		cur = cur->get_parent();
