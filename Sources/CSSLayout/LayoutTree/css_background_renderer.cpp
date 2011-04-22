@@ -33,7 +33,7 @@
 #include "../BoxTree/css_box_element.h"
 
 CL_CSSBackgroundRenderer::CL_CSSBackgroundRenderer(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resource_cache, CL_CSSBoxElement *element_node)
-: graphics(graphics), resource_cache(resource_cache), element_node(element_node)
+: graphics(graphics), resource_cache(resource_cache), element_node(element_node), is_root(false)
 {
 }
 
