@@ -41,6 +41,7 @@
 #include "PropertyTypes/css_box_border_spacing.h"
 #include "PropertyTypes/css_box_border_style.h"
 #include "PropertyTypes/css_box_border_width.h"
+#include "PropertyTypes/css_box_border_radius.h"
 #include "PropertyTypes/css_box_bottom.h"
 #include "PropertyTypes/css_box_caption_side.h"
 #include "PropertyTypes/css_box_clear.h"
@@ -125,6 +126,11 @@ public:
 	CL_CSSBoxBorderWidth border_width_top;
 	CL_CSSBoxBorderWidth border_width_right;
 	CL_CSSBoxBorderWidth border_width_bottom;
+
+	CL_CSSBoxBorderRadius border_radius_top_right;
+	CL_CSSBoxBorderRadius border_radius_bottom_right;
+	CL_CSSBoxBorderRadius border_radius_bottom_left;
+	CL_CSSBoxBorderRadius border_radius_top_left;
 
 	CL_CSSBoxBackgroundAttachment background_attachment;
 	CL_CSSBoxBackgroundColor background_color;

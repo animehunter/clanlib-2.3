@@ -49,6 +49,8 @@
 #include "PropertyParsers/css_parser_border_spacing.h"
 #include "PropertyParsers/css_parser_border_style.h"
 #include "PropertyParsers/css_parser_border_width.h"
+#include "PropertyParsers/css_parser_border_radius.h"
+#include "PropertyParsers/css_parser_border_radius_corner.h"
 #include "PropertyParsers/css_parser_bottom.h"
 #include "PropertyParsers/css_parser_caption_side.h"
 #include "PropertyParsers/css_parser_clear.h"
@@ -132,6 +134,8 @@ CL_CSSPropertyParsers::CL_CSSPropertyParsers()
 	add(new CL_CSSParserBorderSpacing());
 	add(new CL_CSSParserBorderStyle());
 	add(new CL_CSSParserBorderWidth());
+	add(new CL_CSSParserBorderRadius());
+	add(new CL_CSSParserBorderRadiusCorner());
 	add(new CL_CSSParserBottom());
 	add(new CL_CSSParserCaptionSide());
 	add(new CL_CSSParserClear());

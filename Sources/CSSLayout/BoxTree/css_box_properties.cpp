@@ -86,6 +86,10 @@ void CL_CSSBoxProperties::compute(const CL_CSSBoxProperties *parent, CL_CSSResou
 		border_width_top.compute(&parent->border_width_top, layout, em_size, ex_size, border_style_top);
 		border_width_right.compute(&parent->border_width_right, layout, em_size, ex_size, border_style_right);
 		border_width_bottom.compute(&parent->border_width_bottom, layout, em_size, ex_size, border_style_bottom);
+		border_radius_top_left.compute(&parent->border_radius_top_left, layout, em_size, ex_size);
+		border_radius_top_right.compute(&parent->border_radius_top_right, layout, em_size, ex_size);
+		border_radius_bottom_left.compute(&parent->border_radius_bottom_left, layout, em_size, ex_size);
+		border_radius_bottom_right.compute(&parent->border_radius_bottom_right, layout, em_size, ex_size);
 		background_attachment.compute(&parent->background_attachment, layout, em_size, ex_size);
 		background_color.compute(&parent->background_color, layout, em_size, ex_size);
 		background_image.compute(&parent->background_image, layout, em_size, ex_size);
@@ -177,6 +181,10 @@ void CL_CSSBoxProperties::compute(const CL_CSSBoxProperties *parent, CL_CSSResou
 		border_width_top.compute(0, layout, em_size, ex_size, border_style_top);
 		border_width_right.compute(0, layout, em_size, ex_size, border_style_right);
 		border_width_bottom.compute(0, layout, em_size, ex_size, border_style_bottom);
+		border_radius_top_left.compute(0, layout, em_size, ex_size);
+		border_radius_top_right.compute(0, layout, em_size, ex_size);
+		border_radius_bottom_left.compute(0, layout, em_size, ex_size);
+		border_radius_bottom_right.compute(0, layout, em_size, ex_size);
 		background_attachment.compute(0, layout, em_size, ex_size);
 		background_color.compute(0, layout, em_size, ex_size);
 		background_image.compute(0, layout, em_size, ex_size);
