@@ -42,6 +42,13 @@
 #include "PropertyTypes/css_box_border_style.h"
 #include "PropertyTypes/css_box_border_width.h"
 #include "PropertyTypes/css_box_border_radius.h"
+#include "PropertyTypes/css_box_border_image_source.h"
+#include "PropertyTypes/css_box_border_image_slice.h"
+#include "PropertyTypes/css_box_border_image_width.h"
+#include "PropertyTypes/css_box_border_image_outset.h"
+#include "PropertyTypes/css_box_border_image_repeat.h"
+#include "PropertyTypes/css_box_decoration_break.h"
+#include "PropertyTypes/css_box_shadow.h"
 #include "PropertyTypes/css_box_bottom.h"
 #include "PropertyTypes/css_box_caption_side.h"
 #include "PropertyTypes/css_box_clear.h"
@@ -131,6 +138,15 @@ public:
 	CL_CSSBoxBorderRadius border_radius_bottom_right;
 	CL_CSSBoxBorderRadius border_radius_bottom_left;
 	CL_CSSBoxBorderRadius border_radius_top_left;
+
+	CL_CSSBoxBorderImageSource border_image_source;
+	CL_CSSBoxBorderImageSlice border_image_slice;
+	CL_CSSBoxBorderImageWidth border_image_width;
+	CL_CSSBoxBorderImageOutset border_image_outset;
+	CL_CSSBoxBorderImageRepeat border_image_repeat;
+
+	CL_CSSBoxDecorationBreak decoration_break;
+	CL_CSSBoxShadow shadow;
 
 	CL_CSSBoxBackgroundAttachment background_attachment;
 	CL_CSSBoxBackgroundColor background_color;

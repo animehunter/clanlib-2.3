@@ -90,6 +90,13 @@ void CL_CSSBoxProperties::compute(const CL_CSSBoxProperties *parent, CL_CSSResou
 		border_radius_top_right.compute(&parent->border_radius_top_right, layout, em_size, ex_size);
 		border_radius_bottom_left.compute(&parent->border_radius_bottom_left, layout, em_size, ex_size);
 		border_radius_bottom_right.compute(&parent->border_radius_bottom_right, layout, em_size, ex_size);
+		border_image_source.compute(&parent->border_image_source, layout, em_size, ex_size);
+		border_image_slice.compute(&parent->border_image_slice, layout, em_size, ex_size);
+		border_image_width.compute(&parent->border_image_width, layout, em_size, ex_size);
+		border_image_outset.compute(&parent->border_image_outset, layout, em_size, ex_size);
+		border_image_repeat.compute(&parent->border_image_repeat, layout, em_size, ex_size);
+		decoration_break.compute(&parent->decoration_break, layout, em_size, ex_size);
+		shadow.compute(&parent->shadow, layout, em_size, ex_size);
 		background_attachment.compute(&parent->background_attachment, layout, em_size, ex_size);
 		background_color.compute(&parent->background_color, layout, em_size, ex_size);
 		background_image.compute(&parent->background_image, layout, em_size, ex_size);
@@ -185,6 +192,13 @@ void CL_CSSBoxProperties::compute(const CL_CSSBoxProperties *parent, CL_CSSResou
 		border_radius_top_right.compute(0, layout, em_size, ex_size);
 		border_radius_bottom_left.compute(0, layout, em_size, ex_size);
 		border_radius_bottom_right.compute(0, layout, em_size, ex_size);
+		border_image_source.compute(0, layout, em_size, ex_size);
+		border_image_slice.compute(0, layout, em_size, ex_size);
+		border_image_width.compute(0, layout, em_size, ex_size);
+		border_image_outset.compute(0, layout, em_size, ex_size);
+		border_image_repeat.compute(0, layout, em_size, ex_size);
+		decoration_break.compute(0, layout, em_size, ex_size);
+		shadow.compute(0, layout, em_size, ex_size);
 		background_attachment.compute(0, layout, em_size, ex_size);
 		background_color.compute(0, layout, em_size, ex_size);
 		background_image.compute(0, layout, em_size, ex_size);
