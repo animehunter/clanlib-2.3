@@ -51,6 +51,14 @@
 #include "PropertyParsers/css_parser_border_width.h"
 #include "PropertyParsers/css_parser_border_radius.h"
 #include "PropertyParsers/css_parser_border_radius_corner.h"
+#include "PropertyParsers/css_parser_border_image.h"
+#include "PropertyParsers/css_parser_border_image_outset.h"
+#include "PropertyParsers/css_parser_border_image_repeat.h"
+#include "PropertyParsers/css_parser_border_image_slice.h"
+#include "PropertyParsers/css_parser_border_image_source.h"
+#include "PropertyParsers/css_parser_border_image_width.h"
+#include "PropertyParsers/css_parser_decoration_break.h"
+#include "PropertyParsers/css_parser_shadow.h"
 #include "PropertyParsers/css_parser_bottom.h"
 #include "PropertyParsers/css_parser_caption_side.h"
 #include "PropertyParsers/css_parser_clear.h"
@@ -136,6 +144,14 @@ CL_CSSPropertyParsers::CL_CSSPropertyParsers()
 	add(new CL_CSSParserBorderWidth());
 	add(new CL_CSSParserBorderRadius());
 	add(new CL_CSSParserBorderRadiusCorner());
+	add(new CL_CSSParserBorderImage());
+	add(new CL_CSSParserBorderImageOutset());
+	add(new CL_CSSParserBorderImageRepeat());
+	add(new CL_CSSParserBorderImageSlice());
+	add(new CL_CSSParserBorderImageSource());
+	add(new CL_CSSParserBorderImageWidth());
+	add(new CL_CSSParserDecorationBreak());
+	add(new CL_CSSParserShadow());
 	add(new CL_CSSParserBottom());
 	add(new CL_CSSParserCaptionSide());
 	add(new CL_CSSParserClear());
