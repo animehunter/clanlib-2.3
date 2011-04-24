@@ -33,6 +33,7 @@
 #include "css_block_formatting_context.h"
 #include "css_layout_graphics.h"
 #include "css_background_renderer.h"
+#include "css_border_renderer.h"
 #include "../BoxTree/css_box_text.h"
 #include "../css_resource_cache.h"
 #include "API/CSSLayout/css_box_properties.h"
@@ -631,11 +632,14 @@ void CL_CSSInlineLayout::render_layer_background(CL_CSSLayoutGraphics *graphics,
 					background.set_border_box(border_box);
 					background.render();
 
-					render_border(graphics, element, border_box,
+					CL_CSSBorderRenderer border(graphics, resources, element);
+					border.set_border_box(border_box);
+					border.set_border_values(
 						cur->opening ? element->computed_properties.border_width_left.length.value : 0,
 						element->computed_properties.border_width_top.length.value,
 						cur->closing ? element->computed_properties.border_width_right.length.value : 0,
 						element->computed_properties.border_width_bottom.length.value);
+					border.render();
 				}
 			}
 

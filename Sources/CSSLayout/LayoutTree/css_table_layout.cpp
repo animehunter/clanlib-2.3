@@ -35,6 +35,7 @@
 #include "css_block_formatting_context.h"
 #include "css_stacking_context.h"
 #include "css_background_renderer.h"
+#include "css_border_renderer.h"
 #include "../css_resource_cache.h"
 #include "../BoxTree/css_box_element.h"
 #include "../BoxTree/css_box_text.h"
@@ -662,7 +663,10 @@ void CL_CSSTableLayout::render_layer_background(CL_CSSLayoutGraphics *graphics, 
 	background.set_border_box(border_box);
 	background.render();
 
-	render_border(graphics, element_node, border_box, border.left, border.top, border.right, border.bottom);
+	CL_CSSBorderRenderer border_renderer(graphics, resources, element_node);
+	border_renderer.set_border_values(border.left, border.top, border.right, border.bottom);
+	border_renderer.set_border_box(border_box);
+	border_renderer.render();
 
 	for (size_t row = 0; row < rows.size(); row++)
 	{

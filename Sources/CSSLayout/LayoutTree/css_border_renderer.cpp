@@ -33,8 +33,16 @@
 #include "../BoxTree/css_box_element.h"
 
 CL_CSSBorderRenderer::CL_CSSBorderRenderer(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resource_cache, CL_CSSBoxElement *element_node)
-: graphics(graphics), resource_cache(resource_cache), element_node(element_node)
+: graphics(graphics), resource_cache(resource_cache), element_node(element_node), border_left(0), border_top(0), border_right(0), border_bottom(0)
 {
+}
+
+void CL_CSSBorderRenderer::set_border_values(CL_CSSUsedValue new_border_left, CL_CSSUsedValue new_border_top, CL_CSSUsedValue new_border_right, CL_CSSUsedValue new_border_bottom)
+{
+	border_left = new_border_left;
+	border_top = new_border_top;
+	border_right = new_border_right;
+	border_bottom = new_border_bottom;
 }
 
 void CL_CSSBorderRenderer::set_border_box(CL_Rect new_border_box)
@@ -44,4 +52,20 @@ void CL_CSSBorderRenderer::set_border_box(CL_Rect new_border_box)
 
 void CL_CSSBorderRenderer::render()
 {
+	if (element_node->computed_properties.border_style_top.type == CL_CSSBoxBorderStyle::type_solid)
+	{
+		graphics->fill(CL_Rect(border_box.left, border_box.top, border_box.right, border_box.top+border_top), element_node->computed_properties.border_color_top.color);
+	}
+	if (element_node->computed_properties.border_style_bottom.type == CL_CSSBoxBorderStyle::type_solid)
+	{
+		graphics->fill(CL_Rect(border_box.left, border_box.bottom-border_bottom, border_box.right, border_box.bottom), element_node->computed_properties.border_color_bottom.color);
+	}
+	if (element_node->computed_properties.border_style_left.type == CL_CSSBoxBorderStyle::type_solid)
+	{
+		graphics->fill(CL_Rect(border_box.left, border_box.top+border_top, border_box.left+border_left, border_box.bottom-border_bottom), element_node->computed_properties.border_color_left.color);
+	}
+	if (element_node->computed_properties.border_style_right.type == CL_CSSBoxBorderStyle::type_solid)
+	{
+		graphics->fill(CL_Rect(border_box.right-border_right, border_box.top+border_top, border_box.right, border_box.bottom-border_bottom), element_node->computed_properties.border_color_right.color);
+	}
 }

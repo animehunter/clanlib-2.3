@@ -39,6 +39,7 @@ class CL_CSSBorderRenderer
 {
 public:
 	CL_CSSBorderRenderer(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resource_cache, CL_CSSBoxElement *element_node);
+	void set_border_values(CL_CSSUsedValue border_left, CL_CSSUsedValue border_top, CL_CSSUsedValue border_right, CL_CSSUsedValue border_bottom);
 	void set_border_box(CL_Rect border_box);
 	void render();
 
@@ -47,4 +48,8 @@ private:
 	CL_CSSResourceCache *resource_cache;
 	CL_CSSBoxElement *element_node;
 	CL_Rect border_box;
+	CL_CSSUsedValue border_left;
+	CL_CSSUsedValue border_top;
+	CL_CSSUsedValue border_right;
+	CL_CSSUsedValue border_bottom;
 };
