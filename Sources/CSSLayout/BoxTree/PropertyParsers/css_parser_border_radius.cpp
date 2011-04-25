@@ -148,8 +148,8 @@ void CL_CSSParserBorderRadius::parse(CL_CSSBoxProperties &properties, const CL_S
 		}
 	}
 
-	for (int i = num_x_values; i + 1 < 4; i++)
-		radius[i + 1] = radius[i];
+	for (int i = num_x_values; i < 4; i++)
+		radius[i] = radius[i-1];
 
 	properties.border_radius_top_right = radius[0];
 	properties.border_radius_bottom_right = radius[1];
