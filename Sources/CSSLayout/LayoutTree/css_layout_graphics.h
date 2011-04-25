@@ -49,6 +49,10 @@ public:
 	CL_FontMetrics get_font_metrics(CL_Font &font);
 
 	void fill(const CL_Rect &box, const CL_Colorf &color);
+	void dot_vertical(const CL_Rect &box, const CL_Colorf &color);
+	void dot_horizontal(const CL_Rect &box, const CL_Colorf &color);
+	void dash_vertical(const CL_Rect &box, const CL_Colorf &color);
+	void dash_horizontal(const CL_Rect &box, const CL_Colorf &color);
 	void draw_image(CL_Image &image, int x, int y);
 	void draw_image(CL_Image &image, const CL_Rect &box);
 	void draw_text(CL_Font &font, int x, int y, const CL_StringRef &text, const CL_Colorf &color);

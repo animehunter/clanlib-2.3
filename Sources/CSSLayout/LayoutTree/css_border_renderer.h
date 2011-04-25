@@ -46,6 +46,8 @@ public:
 private:
 	CL_CSSUsedValue get_horizontal_radius(const CL_CSSBoxBorderRadius &border_radius) const;
 	CL_CSSUsedValue get_vertical_radius(const CL_CSSBoxBorderRadius &border_radius) const;
+	CL_Colorf get_light_color(const CL_CSSBoxBorderColor &border_color) const;
+	CL_Colorf get_dark_color(const CL_CSSBoxBorderColor &border_color) const;
 
 	CL_CSSLayoutGraphics *graphics;
 	CL_CSSResourceCache *resource_cache;

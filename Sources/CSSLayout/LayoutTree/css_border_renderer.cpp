@@ -77,23 +77,146 @@ void CL_CSSBorderRenderer::render()
 
 	if (element_node->computed_properties.border_style_top.type == CL_CSSBoxBorderStyle::type_solid)
 	{
-		//graphics->fill(CL_Rect(border_box.left, border_box.top, border_box.right, border_box.top+border_top), element_node->computed_properties.border_color_top.color);
 		graphics->fill(CL_Rect(center_top_left.x, border_box.top, center_top_right.x, border_box.top+border_top), element_node->computed_properties.border_color_top.color);
 	}
+	else if (element_node->computed_properties.border_style_top.type == CL_CSSBoxBorderStyle::type_dotted)
+	{
+		graphics->dot_horizontal(CL_Rect(center_top_left.x, border_box.top, center_top_right.x, border_box.top+border_top), element_node->computed_properties.border_color_top.color);
+	}
+	else if (element_node->computed_properties.border_style_top.type == CL_CSSBoxBorderStyle::type_dashed)
+	{
+		graphics->dash_horizontal(CL_Rect(center_top_left.x, border_box.top, center_top_right.x, border_box.top+border_top), element_node->computed_properties.border_color_top.color);
+	}
+	else if (element_node->computed_properties.border_style_top.type == CL_CSSBoxBorderStyle::type_double)
+	{
+		graphics->fill(CL_Rect(center_top_left.x, border_box.top, center_top_right.x, border_box.top+border_top/3), element_node->computed_properties.border_color_top.color);
+		graphics->fill(CL_Rect(center_top_left.x, border_box.top+border_top*2/3, center_top_right.x, border_box.top+border_top), element_node->computed_properties.border_color_top.color);
+	}
+	else if (element_node->computed_properties.border_style_top.type == CL_CSSBoxBorderStyle::type_groove)
+	{
+		graphics->fill(CL_Rect(center_top_left.x, border_box.top, center_top_right.x, border_box.top+border_top/2), get_dark_color(element_node->computed_properties.border_color_top));
+		graphics->fill(CL_Rect(center_top_left.x, border_box.top+border_top/2, center_top_right.x, border_box.top+border_top), get_light_color(element_node->computed_properties.border_color_top));
+	}
+	else if (element_node->computed_properties.border_style_top.type == CL_CSSBoxBorderStyle::type_ridge)
+	{
+		graphics->fill(CL_Rect(center_top_left.x, border_box.top, center_top_right.x, border_box.top+border_top/2), get_light_color(element_node->computed_properties.border_color_top));
+		graphics->fill(CL_Rect(center_top_left.x, border_box.top+border_top/2, center_top_right.x, border_box.top+border_top), get_dark_color(element_node->computed_properties.border_color_top));
+	}
+	else if (element_node->computed_properties.border_style_top.type == CL_CSSBoxBorderStyle::type_inset)
+	{
+		graphics->fill(CL_Rect(center_top_left.x, border_box.top, center_top_right.x, border_box.top+border_top), get_dark_color(element_node->computed_properties.border_color_top));
+	}
+	else if (element_node->computed_properties.border_style_top.type == CL_CSSBoxBorderStyle::type_outset)
+	{
+		graphics->fill(CL_Rect(center_top_left.x, border_box.top, center_top_right.x, border_box.top+border_top), get_light_color(element_node->computed_properties.border_color_top));
+	}
+
 	if (element_node->computed_properties.border_style_bottom.type == CL_CSSBoxBorderStyle::type_solid)
 	{
-		//graphics->fill(CL_Rect(border_box.left, border_box.bottom-border_bottom, border_box.right, border_box.bottom), element_node->computed_properties.border_color_bottom.color);
 		graphics->fill(CL_Rect(center_bottom_left.x, border_box.bottom-border_bottom, center_bottom_right.x, border_box.bottom), element_node->computed_properties.border_color_bottom.color);
 	}
+	else if (element_node->computed_properties.border_style_bottom.type == CL_CSSBoxBorderStyle::type_dotted)
+	{
+		graphics->dot_horizontal(CL_Rect(center_bottom_left.x, border_box.bottom-border_bottom, center_bottom_right.x, border_box.bottom), element_node->computed_properties.border_color_bottom.color);
+	}
+	else if (element_node->computed_properties.border_style_bottom.type == CL_CSSBoxBorderStyle::type_dashed)
+	{
+		graphics->dash_horizontal(CL_Rect(center_bottom_left.x, border_box.bottom-border_bottom, center_bottom_right.x, border_box.bottom), element_node->computed_properties.border_color_bottom.color);
+	}
+	else if (element_node->computed_properties.border_style_bottom.type == CL_CSSBoxBorderStyle::type_double)
+	{
+		graphics->fill(CL_Rect(center_bottom_left.x, border_box.bottom-border_bottom, center_bottom_right.x, border_box.bottom-border_bottom*2/3), element_node->computed_properties.border_color_bottom.color);
+		graphics->fill(CL_Rect(center_bottom_left.x, border_box.bottom-border_bottom*1/3, center_bottom_right.x, border_box.bottom), element_node->computed_properties.border_color_bottom.color);
+	}
+	else if (element_node->computed_properties.border_style_bottom.type == CL_CSSBoxBorderStyle::type_groove)
+	{
+		graphics->fill(CL_Rect(center_bottom_left.x, border_box.bottom-border_bottom, center_bottom_right.x, border_box.bottom-border_bottom/2), get_dark_color(element_node->computed_properties.border_color_bottom));
+		graphics->fill(CL_Rect(center_bottom_left.x, border_box.bottom-border_bottom/2, center_bottom_right.x, border_box.bottom), get_light_color(element_node->computed_properties.border_color_bottom));
+	}
+	else if (element_node->computed_properties.border_style_bottom.type == CL_CSSBoxBorderStyle::type_ridge)
+	{
+		graphics->fill(CL_Rect(center_bottom_left.x, border_box.bottom-border_bottom, center_bottom_right.x, border_box.bottom-border_bottom/2), get_light_color(element_node->computed_properties.border_color_bottom));
+		graphics->fill(CL_Rect(center_bottom_left.x, border_box.bottom-border_bottom/2, center_bottom_right.x, border_box.bottom), get_dark_color(element_node->computed_properties.border_color_bottom));
+	}
+	else if (element_node->computed_properties.border_style_bottom.type == CL_CSSBoxBorderStyle::type_inset)
+	{
+		graphics->fill(CL_Rect(center_bottom_left.x, border_box.bottom-border_bottom, center_bottom_right.x, border_box.bottom), get_light_color(element_node->computed_properties.border_color_bottom));
+	}
+	else if (element_node->computed_properties.border_style_bottom.type == CL_CSSBoxBorderStyle::type_outset)
+	{
+		graphics->fill(CL_Rect(center_bottom_left.x, border_box.bottom-border_bottom, center_bottom_right.x, border_box.bottom), get_dark_color(element_node->computed_properties.border_color_bottom));
+	}
+
 	if (element_node->computed_properties.border_style_left.type == CL_CSSBoxBorderStyle::type_solid)
 	{
-		//graphics->fill(CL_Rect(border_box.left, border_box.top+border_top, border_box.left+border_left, border_box.bottom-border_bottom), element_node->computed_properties.border_color_left.color);
 		graphics->fill(CL_Rect(border_box.left, center_top_left.y, border_box.left+border_left, center_bottom_left.y), element_node->computed_properties.border_color_left.color);
 	}
+	else if (element_node->computed_properties.border_style_left.type == CL_CSSBoxBorderStyle::type_dotted)
+	{
+		graphics->dot_vertical(CL_Rect(border_box.left, center_top_left.y, border_box.left+border_left, center_bottom_left.y), element_node->computed_properties.border_color_left.color);
+	}
+	else if (element_node->computed_properties.border_style_left.type == CL_CSSBoxBorderStyle::type_dashed)
+	{
+		graphics->dash_vertical(CL_Rect(border_box.left, center_top_left.y, border_box.left+border_left, center_bottom_left.y), element_node->computed_properties.border_color_left.color);
+	}
+	else if (element_node->computed_properties.border_style_left.type == CL_CSSBoxBorderStyle::type_double)
+	{
+		graphics->fill(CL_Rect(border_box.left, center_top_left.y, border_box.left+border_left/3, center_bottom_left.y), element_node->computed_properties.border_color_left.color);
+		graphics->fill(CL_Rect(border_box.left+border_left*2/3, center_top_left.y, border_box.left+border_left, center_bottom_left.y), element_node->computed_properties.border_color_left.color);
+	}
+	else if (element_node->computed_properties.border_style_left.type == CL_CSSBoxBorderStyle::type_groove)
+	{
+		graphics->fill(CL_Rect(border_box.left, center_top_left.y, border_box.left+border_left/2, center_bottom_left.y), get_dark_color(element_node->computed_properties.border_color_left));
+		graphics->fill(CL_Rect(border_box.left+border_left/2, center_top_left.y, border_box.left+border_left, center_bottom_left.y), get_light_color(element_node->computed_properties.border_color_left));
+	}
+	else if (element_node->computed_properties.border_style_left.type == CL_CSSBoxBorderStyle::type_ridge)
+	{
+		graphics->fill(CL_Rect(border_box.left, center_top_left.y, border_box.left+border_left/2, center_bottom_left.y), get_light_color(element_node->computed_properties.border_color_left));
+		graphics->fill(CL_Rect(border_box.left+border_left/2, center_top_left.y, border_box.left+border_left, center_bottom_left.y), get_dark_color(element_node->computed_properties.border_color_left));
+	}
+	else if (element_node->computed_properties.border_style_left.type == CL_CSSBoxBorderStyle::type_inset)
+	{
+		graphics->fill(CL_Rect(border_box.left, center_top_left.y, border_box.left+border_left, center_bottom_left.y), get_dark_color(element_node->computed_properties.border_color_left));
+	}
+	else if (element_node->computed_properties.border_style_left.type == CL_CSSBoxBorderStyle::type_outset)
+	{
+		graphics->fill(CL_Rect(border_box.left, center_top_left.y, border_box.left+border_left, center_bottom_left.y), get_light_color(element_node->computed_properties.border_color_left));
+	}
+
 	if (element_node->computed_properties.border_style_right.type == CL_CSSBoxBorderStyle::type_solid)
 	{
-		//graphics->fill(CL_Rect(border_box.right-border_right, border_box.top+border_top, border_box.right, border_box.bottom-border_bottom), element_node->computed_properties.border_color_right.color);
 		graphics->fill(CL_Rect(border_box.right-border_right, center_top_right.y, border_box.right, center_bottom_right.y), element_node->computed_properties.border_color_right.color);
+	}
+	else if (element_node->computed_properties.border_style_right.type == CL_CSSBoxBorderStyle::type_dotted)
+	{
+		graphics->dot_vertical(CL_Rect(border_box.right-border_right, center_top_right.y, border_box.right, center_bottom_right.y), element_node->computed_properties.border_color_right.color);
+	}
+	else if (element_node->computed_properties.border_style_right.type == CL_CSSBoxBorderStyle::type_dashed)
+	{
+		graphics->dash_vertical(CL_Rect(border_box.right-border_right, center_top_right.y, border_box.right, center_bottom_right.y), element_node->computed_properties.border_color_right.color);
+	}
+	else if (element_node->computed_properties.border_style_right.type == CL_CSSBoxBorderStyle::type_double)
+	{
+		graphics->fill(CL_Rect(border_box.right-border_right, center_top_right.y, border_box.right-border_right*2/3, center_bottom_right.y), element_node->computed_properties.border_color_right.color);
+		graphics->fill(CL_Rect(border_box.right-border_right/3, center_top_right.y, border_box.right, center_bottom_right.y), element_node->computed_properties.border_color_right.color);
+	}
+	else if (element_node->computed_properties.border_style_right.type == CL_CSSBoxBorderStyle::type_groove)
+	{
+		graphics->fill(CL_Rect(border_box.right-border_right, center_top_right.y, border_box.right-border_right/2, center_bottom_right.y), get_dark_color(element_node->computed_properties.border_color_right));
+		graphics->fill(CL_Rect(border_box.right-border_right/2, center_top_right.y, border_box.right, center_bottom_right.y), get_light_color(element_node->computed_properties.border_color_right));
+	}
+	else if (element_node->computed_properties.border_style_right.type == CL_CSSBoxBorderStyle::type_ridge)
+	{
+		graphics->fill(CL_Rect(border_box.right-border_right, center_top_right.y, border_box.right-border_right/2, center_bottom_right.y), get_light_color(element_node->computed_properties.border_color_right));
+		graphics->fill(CL_Rect(border_box.right-border_right/2, center_top_right.y, border_box.right, center_bottom_right.y), get_dark_color(element_node->computed_properties.border_color_right));
+	}
+	else if (element_node->computed_properties.border_style_right.type == CL_CSSBoxBorderStyle::type_inset)
+	{
+		graphics->fill(CL_Rect(border_box.right-border_right, center_top_right.y, border_box.right, center_bottom_right.y), get_light_color(element_node->computed_properties.border_color_right));
+	}
+	else if (element_node->computed_properties.border_style_right.type == CL_CSSBoxBorderStyle::type_outset)
+	{
+		graphics->fill(CL_Rect(border_box.right-border_right, center_top_right.y, border_box.right, center_bottom_right.y), get_dark_color(element_node->computed_properties.border_color_right));
 	}
 }
 
@@ -115,4 +238,22 @@ CL_CSSUsedValue CL_CSSBorderRenderer::get_vertical_radius(const CL_CSSBoxBorderR
 		return border_radius.percentage2 * border_box.get_height() / 100.0f;
 	else
 		return 0.0f;
+}
+
+CL_Colorf CL_CSSBorderRenderer::get_light_color(const CL_CSSBoxBorderColor &border_color) const
+{
+	CL_Colorf light = border_color.color;
+	light.r = cl_min(1.0f, light.r * 1.2f);
+	light.g = cl_min(1.0f, light.g * 1.2f);
+	light.b = cl_min(1.0f, light.b * 1.2f);
+	return light;
+}
+
+CL_Colorf CL_CSSBorderRenderer::get_dark_color(const CL_CSSBoxBorderColor &border_color) const
+{
+	CL_Colorf dark = border_color.color;
+	dark.r *= 0.8f;
+	dark.g *= 0.8f;
+	dark.b *= 0.8f;
+	return dark;
 }

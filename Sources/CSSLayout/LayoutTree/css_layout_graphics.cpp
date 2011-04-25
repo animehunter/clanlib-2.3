@@ -59,6 +59,22 @@ void CL_CSSLayoutGraphics::fill(const CL_Rect &box, const CL_Colorf &color)
 	CL_Draw::fill(gc, box, color);
 }
 
+void CL_CSSLayoutGraphics::dot_vertical(const CL_Rect &box, const CL_Colorf &color)
+{
+}
+
+void CL_CSSLayoutGraphics::dot_horizontal(const CL_Rect &box, const CL_Colorf &color)
+{
+}
+
+void CL_CSSLayoutGraphics::dash_vertical(const CL_Rect &box, const CL_Colorf &color)
+{
+}
+
+void CL_CSSLayoutGraphics::dash_horizontal(const CL_Rect &box, const CL_Colorf &color)
+{
+}
+
 void CL_CSSLayoutGraphics::draw_image(CL_Image &image, int x, int y)
 {
 	image.draw(gc, x + viewport.left, y + viewport.top);
