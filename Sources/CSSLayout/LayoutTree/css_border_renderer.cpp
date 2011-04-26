@@ -79,7 +79,8 @@ void CL_CSSBorderRenderer::render()
 			{
 				for (int xx = 0; xx < 3; xx++)
 				{
-					draw_area(image, x[xx], y[yy], x[xx+1] - x[xx], y[yy+1] - y[yy], sx[xx], sy[yy], sx[xx+1] - sx[xx], sy[yy+1] - sy[yy]);
+					if ((xx != 1 && yy != 1) || fill_center)
+						draw_area(image, x[xx], y[yy], x[xx+1] - x[xx], y[yy+1] - y[yy], sx[xx], sy[yy], sx[xx+1] - sx[xx], sy[yy+1] - sy[yy]);
 				}
 			}
 		}
