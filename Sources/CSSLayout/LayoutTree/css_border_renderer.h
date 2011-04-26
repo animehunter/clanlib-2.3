@@ -44,6 +44,16 @@ public:
 	void render();
 
 private:
+	void draw_area(CL_Image &image, int x, int y, int w, int h, int sx, int sy, int sw, int sh);
+	CL_Rect get_border_image_area() const;
+	int get_left_grid(const CL_CSSBoxBorderImageWidth &border_image_width, int image_area_width, int auto_width) const;
+	int get_right_grid(const CL_CSSBoxBorderImageWidth &border_image_width, int image_area_width, int auto_width) const;
+	int get_top_grid(const CL_CSSBoxBorderImageWidth &border_image_width, int image_area_height, int auto_height) const;
+	int get_bottom_grid(const CL_CSSBoxBorderImageWidth &border_image_width, int image_area_height, int auto_height) const;
+	int get_left_slice_value(const CL_CSSBoxBorderImageSlice &border_image_slice, int image_width) const;
+	int get_right_slice_value(const CL_CSSBoxBorderImageSlice &border_image_slice, int image_width) const;
+	int get_top_slice_value(const CL_CSSBoxBorderImageSlice &border_image_slice, int image_height) const;
+	int get_bottom_slice_value(const CL_CSSBoxBorderImageSlice &border_image_slice, int image_height) const;
 	CL_CSSUsedValue get_horizontal_radius(const CL_CSSBoxBorderRadius &border_radius) const;
 	CL_CSSUsedValue get_vertical_radius(const CL_CSSBoxBorderRadius &border_radius) const;
 	CL_Colorf get_light_color(const CL_CSSBoxBorderColor &border_color) const;

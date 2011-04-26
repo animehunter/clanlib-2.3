@@ -87,6 +87,13 @@ void CL_CSSLayoutGraphics::draw_image(CL_Image &image, const CL_Rect &box)
 	image.draw(gc, box2);
 }
 
+void CL_CSSLayoutGraphics::draw_image(CL_Image &image, const CL_Rect &box, const CL_Rect &src_box)
+{
+	CL_Rect box2 = box;
+	box2.translate(viewport.left, viewport.top);
+	image.draw(gc, src_box, box2);
+}
+
 void CL_CSSLayoutGraphics::draw_text(CL_Font &font, int x, int y, const CL_StringRef &text, const CL_Colorf &color)
 {
 	font.draw_text(gc, x + viewport.left, y + viewport.top, text, color);

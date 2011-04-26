@@ -52,6 +52,42 @@ void CL_CSSBorderRenderer::set_border_box(CL_Rect new_border_box)
 
 void CL_CSSBorderRenderer::render()
 {
+	if (element_node->computed_properties.border_image_source.type == CL_CSSBoxBorderImageSource::type_image)
+	{
+		CL_Image &image = graphics->get_image(element_node->computed_properties.border_image_source.url);
+		if (!image.is_null())
+		{
+			int slice_left = get_left_slice_value(element_node->computed_properties.border_image_slice, image.get_width());
+			int slice_right = get_right_slice_value(element_node->computed_properties.border_image_slice, image.get_width());
+			int slice_top = get_top_slice_value(element_node->computed_properties.border_image_slice, image.get_height());
+			int slice_bottom = get_bottom_slice_value(element_node->computed_properties.border_image_slice, image.get_height());
+			bool fill_center = element_node->computed_properties.border_image_slice.fill_center;
+
+			CL_Rect border_image_area = get_border_image_area();
+
+			int grid_left = get_left_grid(element_node->computed_properties.border_image_width, border_image_area.get_width(), slice_left);
+			int grid_right = get_right_grid(element_node->computed_properties.border_image_width, border_image_area.get_width(), slice_right);
+			int grid_top = get_top_grid(element_node->computed_properties.border_image_width, border_image_area.get_height(), slice_top);
+			int grid_bottom = get_bottom_grid(element_node->computed_properties.border_image_width, border_image_area.get_height(), slice_bottom);
+
+			CL_CSSBoxBorderImageRepeat::RepeatType repeat_x = element_node->computed_properties.border_image_repeat.repeat_x;
+			CL_CSSBoxBorderImageRepeat::RepeatType repeat_y = element_node->computed_properties.border_image_repeat.repeat_y;
+
+			int x[4] = { border_image_area.left, border_image_area.left + grid_left, border_image_area.right - grid_right, border_image_area.right };
+			int y[4] = { border_image_area.top, border_image_area.top + grid_top, border_image_area.bottom - grid_bottom, border_image_area.bottom };
+			int sx[4] = { 0, slice_left, image.get_width()-slice_right, image.get_width() };
+			int sy[4] = { 0, slice_top, image.get_height()-slice_bottom, image.get_height() };
+
+			for (int yy = 0; yy < 3; yy++)
+			{
+				for (int xx = 0; xx < 3; xx++)
+				{
+					draw_area(image, x[xx], y[yy], x[xx+1] - x[xx], y[yy+1] - y[yy], sx[xx], sy[yy], sx[xx+1] - sx[xx], sy[yy+1] - sy[yy]);
+				}
+			}
+		}
+	}
+
 	CL_CSSUsedValue outer_radius_top_left_x = get_horizontal_radius(element_node->computed_properties.border_radius_top_left);
 	CL_CSSUsedValue outer_radius_top_left_y = get_vertical_radius(element_node->computed_properties.border_radius_top_left);
 	CL_CSSUsedValue outer_radius_top_right_x = get_horizontal_radius(element_node->computed_properties.border_radius_top_right);
@@ -218,6 +254,120 @@ void CL_CSSBorderRenderer::render()
 	{
 		graphics->fill(CL_Rect(border_box.right-border_right, center_top_right.y, border_box.right, center_bottom_right.y), get_dark_color(element_node->computed_properties.border_color_right));
 	}
+}
+
+void CL_CSSBorderRenderer::draw_area(CL_Image &image, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
+{
+	// To do: Support other repeat types than stretch
+
+	graphics->draw_image(image, CL_Rect(x, y, x + w, y + h), CL_Rect(sx, sy, sx + sw, sy + sh));
+}
+
+CL_Rect CL_CSSBorderRenderer::get_border_image_area() const
+{
+	CL_Rect box = border_box;
+
+	if (element_node->computed_properties.border_image_outset.value_left == CL_CSSBoxBorderImageOutset::value_type_length)
+		box.left -= cl_used_to_actual(element_node->computed_properties.border_image_outset.length_left.value);
+	else if (element_node->computed_properties.border_image_outset.value_left == CL_CSSBoxBorderImageOutset::value_type_number)
+		box.left -= cl_used_to_actual(element_node->computed_properties.border_image_outset.number_left);
+
+	if (element_node->computed_properties.border_image_outset.value_right == CL_CSSBoxBorderImageOutset::value_type_length)
+		box.right += cl_used_to_actual(element_node->computed_properties.border_image_outset.length_right.value);
+	else if (element_node->computed_properties.border_image_outset.value_right == CL_CSSBoxBorderImageOutset::value_type_number)
+		box.right += cl_used_to_actual(element_node->computed_properties.border_image_outset.number_right);
+
+	if (element_node->computed_properties.border_image_outset.value_top == CL_CSSBoxBorderImageOutset::value_type_length)
+		box.top -= cl_used_to_actual(element_node->computed_properties.border_image_outset.length_top.value);
+	else if (element_node->computed_properties.border_image_outset.value_top == CL_CSSBoxBorderImageOutset::value_type_number)
+		box.top -= cl_used_to_actual(element_node->computed_properties.border_image_outset.number_top);
+
+	if (element_node->computed_properties.border_image_outset.value_bottom == CL_CSSBoxBorderImageOutset::value_type_length)
+		box.bottom += cl_used_to_actual(element_node->computed_properties.border_image_outset.length_bottom.value);
+	else if (element_node->computed_properties.border_image_outset.value_bottom == CL_CSSBoxBorderImageOutset::value_type_number)
+		box.bottom += cl_used_to_actual(element_node->computed_properties.border_image_outset.number_bottom);
+
+	return box;
+}
+
+int CL_CSSBorderRenderer::get_left_grid(const CL_CSSBoxBorderImageWidth &border_image_width, int image_area_width, int auto_width) const
+{
+	if (border_image_width.value_left == CL_CSSBoxBorderImageWidth::value_type_percentage)
+		return cl_used_to_actual(border_image_width.percentage_left * image_area_width);
+	else if (border_image_width.value_left == CL_CSSBoxBorderImageWidth::value_type_percentage)
+		return cl_used_to_actual(border_image_width.number_left * border_left);
+	else
+		return auto_width;
+}
+
+int CL_CSSBorderRenderer::get_right_grid(const CL_CSSBoxBorderImageWidth &border_image_width, int image_area_width, int auto_width) const
+{
+	if (border_image_width.value_right == CL_CSSBoxBorderImageWidth::value_type_percentage)
+		return cl_used_to_actual(border_image_width.percentage_right * image_area_width);
+	else if (border_image_width.value_right == CL_CSSBoxBorderImageWidth::value_type_percentage)
+		return cl_used_to_actual(border_image_width.number_right * border_right);
+	else
+		return auto_width;
+}
+
+int CL_CSSBorderRenderer::get_top_grid(const CL_CSSBoxBorderImageWidth &border_image_width, int image_area_height, int auto_height) const
+{
+	if (border_image_width.value_top == CL_CSSBoxBorderImageWidth::value_type_percentage)
+		return cl_used_to_actual(border_image_width.percentage_top * image_area_height);
+	else if (border_image_width.value_top == CL_CSSBoxBorderImageWidth::value_type_percentage)
+		return cl_used_to_actual(border_image_width.number_top * border_top);
+	else
+		return auto_height;
+}
+
+int CL_CSSBorderRenderer::get_bottom_grid(const CL_CSSBoxBorderImageWidth &border_image_width, int image_area_height, int auto_height) const
+{
+	if (border_image_width.value_bottom == CL_CSSBoxBorderImageWidth::value_type_percentage)
+		return cl_used_to_actual(border_image_width.percentage_bottom * image_area_height);
+	else if (border_image_width.value_bottom == CL_CSSBoxBorderImageWidth::value_type_percentage)
+		return cl_used_to_actual(border_image_width.number_bottom * border_bottom);
+	else
+		return auto_height;
+}
+
+int CL_CSSBorderRenderer::get_left_slice_value(const CL_CSSBoxBorderImageSlice &border_image_slice, int image_width) const
+{
+	int v = 0;
+	if (border_image_slice.value_left == CL_CSSBoxBorderImageSlice::value_type_percentage)
+		v = cl_used_to_actual(border_image_slice.percentage_left * image_width);
+	else
+		v = cl_used_to_actual(border_image_slice.number_left);
+	return cl_max(0, cl_min(image_width, v));
+}
+
+int CL_CSSBorderRenderer::get_right_slice_value(const CL_CSSBoxBorderImageSlice &border_image_slice, int image_width) const
+{
+	int v = 0;
+	if (border_image_slice.value_right == CL_CSSBoxBorderImageSlice::value_type_percentage)
+		v = cl_used_to_actual(border_image_slice.percentage_right * image_width);
+	else
+		v = cl_used_to_actual(border_image_slice.number_right);
+	return cl_max(0, cl_min(image_width, v));
+}
+
+int CL_CSSBorderRenderer::get_top_slice_value(const CL_CSSBoxBorderImageSlice &border_image_slice, int image_height) const
+{
+	int v = 0;
+	if (border_image_slice.value_top == CL_CSSBoxBorderImageSlice::value_type_percentage)
+		v = cl_used_to_actual(border_image_slice.percentage_top * image_height);
+	else
+		v = cl_used_to_actual(border_image_slice.number_top);
+	return cl_max(0, cl_min(image_height, v));
+}
+
+int CL_CSSBorderRenderer::get_bottom_slice_value(const CL_CSSBoxBorderImageSlice &border_image_slice, int image_height) const
+{
+	int v = 0;
+	if (border_image_slice.value_bottom == CL_CSSBoxBorderImageSlice::value_type_percentage)
+		v = cl_used_to_actual(border_image_slice.percentage_bottom * image_height);
+	else
+		v = cl_used_to_actual(border_image_slice.number_bottom);
+	return cl_max(0, cl_min(image_height, v));
 }
 
 CL_CSSUsedValue CL_CSSBorderRenderer::get_horizontal_radius(const CL_CSSBoxBorderRadius &border_radius) const

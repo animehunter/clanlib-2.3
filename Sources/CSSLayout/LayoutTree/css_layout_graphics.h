@@ -55,6 +55,7 @@ public:
 	void dash_horizontal(const CL_Rect &box, const CL_Colorf &color);
 	void draw_image(CL_Image &image, int x, int y);
 	void draw_image(CL_Image &image, const CL_Rect &box);
+	void draw_image(CL_Image &image, const CL_Rect &box, const CL_Rect &src_box);
 	void draw_text(CL_Font &font, int x, int y, const CL_StringRef &text, const CL_Colorf &color);
 	CL_Size get_text_size(CL_Font &font, const CL_StringRef &text);
 
