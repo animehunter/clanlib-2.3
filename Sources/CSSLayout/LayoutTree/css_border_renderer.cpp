@@ -70,9 +70,6 @@ void CL_CSSBorderRenderer::render()
 			int grid_top = get_top_grid(element_node->computed_properties.border_image_width, border_image_area.get_height(), slice_top);
 			int grid_bottom = get_bottom_grid(element_node->computed_properties.border_image_width, border_image_area.get_height(), slice_bottom);
 
-			CL_CSSBoxBorderImageRepeat::RepeatType repeat_x = element_node->computed_properties.border_image_repeat.repeat_x;
-			CL_CSSBoxBorderImageRepeat::RepeatType repeat_y = element_node->computed_properties.border_image_repeat.repeat_y;
-
 			int x[4] = { border_image_area.left, border_image_area.left + grid_left, border_image_area.right - grid_right, border_image_area.right };
 			int y[4] = { border_image_area.top, border_image_area.top + grid_top, border_image_area.bottom - grid_bottom, border_image_area.bottom };
 			int sx[4] = { 0, slice_left, image.get_width()-slice_right, image.get_width() };
@@ -259,6 +256,9 @@ void CL_CSSBorderRenderer::render()
 void CL_CSSBorderRenderer::draw_area(CL_Image &image, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
 {
 	// To do: Support other repeat types than stretch
+	//
+	// CL_CSSBoxBorderImageRepeat::RepeatType repeat_x = element_node->computed_properties.border_image_repeat.repeat_x;
+	// CL_CSSBoxBorderImageRepeat::RepeatType repeat_y = element_node->computed_properties.border_image_repeat.repeat_y;
 
 	graphics->draw_image(image, CL_Rect(x, y, x + w, y + h), CL_Rect(sx, sy, sx + sw, sy + sh));
 }
