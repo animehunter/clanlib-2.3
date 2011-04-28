@@ -90,13 +90,13 @@ int CL_DirectoryScanner_Win32::get_size()
 CL_String CL_DirectoryScanner_Win32::get_name()
 {
 	if (first_next) return CL_String();
-	return CL_String(fileinfo.cFileName);
+	return CL_StringHelp::ucs2_to_utf8(fileinfo.cFileName);
 }
 	
 CL_String CL_DirectoryScanner_Win32::get_pathname()
 {
 	if (first_next) return CL_String();
-	return directory_path + CL_String(fileinfo.cFileName);
+	return directory_path + CL_StringHelp::ucs2_to_utf8(fileinfo.cFileName);
 }
 	
 bool CL_DirectoryScanner_Win32::is_directory()
