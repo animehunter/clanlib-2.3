@@ -380,8 +380,10 @@ int CL_StringData8::compare(const CL_StringData8 &s) const
 	size_type l2 = s.data_length;
 	size_type l = (l1 < l2) ? l1 : l2;
 	for (size_type i = 0; i < l; i++)
+	{
 		if (d1[i] != d2[i])
 			return (int) (((unsigned int) d1[i]) - ((unsigned int) d2[i]));
+	}
 	return l1-l2;
 }
 
@@ -401,8 +403,10 @@ int CL_StringData8::compare(size_type pos, size_type n, const CL_StringData8 &s)
 
 	size_type l = (l1 < l2) ? l1 : l2;
 	for (size_type i = 0; i < l; i++)
+	{
 		if (d1[i] != d2[i])
 			return (int) (((unsigned int) d1[i]) - ((unsigned int) d2[i]));
+	}
 	return l1-l2;
 }
 
@@ -429,8 +433,10 @@ int CL_StringData8::compare(size_type pos, size_type n, const CL_StringData8 &s,
 
 	size_type l = (l1 < l2) ? l1 : l2;
 	for (size_type i = 0; i < l; i++)
+	{
 		if (d1[i] != d2[i])
 			return (int) (((unsigned int) d1[i]) - ((unsigned int) d2[i]));
+	}
 	return l1-l2;
 }
 
@@ -444,8 +450,10 @@ int CL_StringData8::compare(const char *s) const
 
 	size_type l = (l1 < l2) ? l1 : l2;
 	for (size_type i = 0; i < l; i++)
+	{
 		if (d1[i] != d2[i])
 			return (int) (((unsigned int) d1[i]) - ((unsigned int) d2[i]));
+	}
 	return l1-l2;
 }
 
@@ -468,8 +476,10 @@ int CL_StringData8::compare(size_type pos, size_type n, const char *s, size_type
 
 	size_type l = (l1 < l2) ? l1 : l2;
 	for (size_type i = 0; i < l; i++)
+	{
 		if (d1[i] != d2[i])
 			return (int) (((unsigned int) d1[i]) - ((unsigned int) d2[i]));
+	}
 	return l1-l2;
 }
 
