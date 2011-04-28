@@ -225,7 +225,7 @@ void TestApp::test_virtual_directory_part2(void)
 	str = dir.make_path_absolute("../IOData/ABC/DEF");
 	strpath = dir2.get_path();
 #ifdef WIN32
-	if (str != "Core\\IOData\\ABC\\DEF") fail();
+	if (str != "Core/IOData/ABC/DEF") fail();
 #else
 	if (str != "Core/IOData/ABC/DEF") fail();
 #endif
@@ -237,7 +237,7 @@ void TestApp::test_virtual_directory_part2(void)
 	CL_String str2 = "/Core/IOData/ABC/DEF";
 	str = dir3.make_path_relative(str2);
 #ifdef WIN32
-	if (str != "ABC\\DEF") fail();
+	if (str != "ABC/DEF") fail();
 #else
 	if (str != "ABC/DEF") fail();
 #endif
