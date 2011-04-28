@@ -130,6 +130,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="test.cpp" />
+    <ClCompile Include="test_string.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="test.h" />

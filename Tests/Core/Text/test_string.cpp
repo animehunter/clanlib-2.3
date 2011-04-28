@@ -27,54 +27,26 @@
 **    (if your name is missing here, please add it)
 */
 
-#include <ClanLib/core.h>
-#include <ClanLib/application.h>
+#include "test.h"
 
-#ifndef WIN32
-#include <unistd.h>
-#include <stdio.h>
-#ifndef MAX_PATH
-#define MAX_PATH PATH_MAX
-#endif
-#else
-#include <direct.h>
-#ifndef chdir
-#define _chdir chdir
-#endif
-#ifndef MAX_PATH
-#define _MAX_PATH MAX_PATH
-#endif
-#include <tchar.h>
-#endif
-
-
-#ifndef WIN32
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#endif
-
-extern int g_bConstructor;
-extern int g_bDestructor;
-
-class MyClass
+void TestApp::test_string()
 {
-public:
-	MyClass() { g_bConstructor++; };
-	~MyClass() { g_bDestructor++; };	
-};
+	CL_Console::write_line(" Header: ");
+	CL_Console::write_line("  Class: CL_String");
+	
+	CL_Console::write_line("   Function: String compare");
 
-class TestApp
-{
-public:
-	virtual int main(const std::vector<CL_String> &args);
+	CL_String string_a = "ABCDEF";
+	CL_String string_b = "ABCDEF";
+	CL_String string_c = "ABCDRF";
+	CL_String string_d = "ABCDEFG";
+	if (string_a != string_b)
+		fail();
+	if (string_a == string_c)
+		fail();
+	if (string_a == string_d)
+		fail();
 
-private:
-	CL_StringRef test_stringref();
-	CL_String str;
-	void test_string();
+}
 
-	void fail();
-};
 
