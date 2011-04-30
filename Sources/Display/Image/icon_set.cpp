@@ -175,9 +175,7 @@ CL_PixelBuffer CL_IconSet_Impl::create_bitmap_data(const CL_PixelBuffer &image)
 {
 	// Convert pixel buffer to DIB compatible format:
 
-	CL_PixelBuffer bmp_image(image.get_width(), image.get_height(), cl_argb8);
-
-	image.convert(bmp_image, CL_Rect(0, 0, bmp_image.get_width(), bmp_image.get_height()));
+	CL_PixelBuffer bmp_image = image.to_format(cl_argb8);
 
 	// Note that the APIs use pre-multiplied alpha, which means that the red,
 	// green and blue channel values in the bitmap must be pre-multiplied with
