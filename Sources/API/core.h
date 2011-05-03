@@ -78,6 +78,7 @@
 #include "Core/System/thread_local_storage.h"
 #include "Core/System/weakptr.h"
 #include "Core/System/sharedptr.h"
+#include "Core/System/autoptr.h"
 #include "Core/System/system.h"
 #include "Core/System/command_line.h"
 #include "Core/System/keep_alive.h"

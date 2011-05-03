@@ -24,28 +24,22 @@
 **  File Author(s):
 **
 **    Magnus Norddahl
-**    Thomas Gottschalk Larsen
 */
-
-/// \addtogroup clanCore_System clanCore System
-/// \{
 
 #pragma once
 
 #include "../api_core.h"
-#include "system.h"
 
 #if defined(__APPLE__) 
 	#include <tr1/memory>
-	#define CL_SharedPtr std::tr1::shared_ptr
-	#define cl_dynamic_pointer_cast std::tr1::dynamic_pointer_cast
+	#define CL_AutoPtr std::tr1::auto_ptr
+
 #else
 	#include <memory>
 	#if defined(_MSC_VER) && _MSC_VER < 1600
-		#define CL_SharedPtr std::tr1::shared_ptr
-		#define cl_dynamic_pointer_cast std::tr1::dynamic_pointer_cast
+		#define CL_AutoPtr std::tr1::auto_ptr
 	#else
-		#define CL_SharedPtr std::shared_ptr
-		#define cl_dynamic_pointer_cast std::dynamic_pointer_cast
+		#define CL_AutoPtr std::auto_ptr
 	#endif
 #endif
+
