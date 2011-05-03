@@ -275,7 +275,12 @@ CL_PixelBuffer CL_PixelBuffer::copy(const CL_Rect &rect) const
 
 CL_PixelBuffer::operator bool() const
 {
-	return impl;
+	// Silly fix for gcc
+	if (impl)
+	{
+		return true;
+	}
+	return false;
 }
 
 void CL_PixelBuffer::convert(CL_PixelBuffer &target) const

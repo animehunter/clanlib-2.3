@@ -100,6 +100,11 @@ AC_PROG_GCC_TRADITIONAL
 dnl Find absolute name to pkg-config
 AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
 
+dnl -----------------------------------------------------------------------
+dnl TODO: Is this the correct way to enable c++0x?
+dnl -----------------------------------------------------------------------
+CXXFLAGS="$CXXFLAGS -std=c++0x"
+
 case $target in
 	*cygwin* )
 		X11="no"
@@ -245,11 +250,6 @@ if test "$use_sse2" != "no"; then
 else
 	extra_CFLAGS_clanCore="$extra_CFLAGS_clanCore -DCL_DISABLE_SSE2"
 fi
-
-dnl -----------------------------------------------------------------------
-dnl TODO: Is this the correct way to enable c++0x?
-dnl -----------------------------------------------------------------------
-extra_CFLAGS_clanCore="$extra_CFLAGS_clanCore -std=c++0x"
 
 dnl -----------------------------------------------------------------------
 dnl Check system endianess
