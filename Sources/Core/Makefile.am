@@ -101,7 +101,6 @@ System/runnable.cpp \
 System/service.cpp \
 System/service_impl.cpp \
 System/setup_core.cpp \
-System/static_memory_pool.cpp \
 System/system.cpp \
 System/thread.cpp \
 System/timer.cpp \
