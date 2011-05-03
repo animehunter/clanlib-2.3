@@ -255,7 +255,7 @@ void App::select_font()
 			break;
 	}
 
-	font_metrics = selected_font.get_font_metrics(gc);
+	font_metrics = selected_font.get_font_metrics();
 	font_size = selected_font.get_text_size(gc, font_text);
 }
 

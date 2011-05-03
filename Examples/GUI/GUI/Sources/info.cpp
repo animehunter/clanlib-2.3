@@ -71,7 +71,7 @@ void Info::draw(CL_GraphicContext &gc)
 
 	CL_Font font = gui->get_font();
 
-	CL_FontMetrics metrics = font.get_font_metrics(gc);
+	CL_FontMetrics metrics = font.get_font_metrics();
 	draw_ypos += (int) metrics.get_ascent();
 
 	CL_Colorf color;
