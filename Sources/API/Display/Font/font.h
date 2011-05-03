@@ -131,7 +131,7 @@ public:
 	CL_Size get_text_size(CL_GraphicContext &gc, const CL_StringRef &text);
 
 	/// \brief Retrieves font metrics description for the selected font.
-	CL_FontMetrics get_font_metrics(CL_GraphicContext &gc);
+	CL_FontMetrics get_font_metrics();
 
 	/// \brief Get the character index at a specified point
 	///

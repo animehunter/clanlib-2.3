@@ -135,7 +135,7 @@ CL_FontProvider_Sprite::~CL_FontProvider_Sprite()
 /////////////////////////////////////////////////////////////////////////////
 // CL_FontProvider_Sprite Attributes:
 
-CL_FontMetrics CL_FontProvider_Sprite::get_font_metrics(CL_GraphicContext &gc)
+CL_FontMetrics CL_FontProvider_Sprite::get_font_metrics()
 {
 	return font_metrics;
 }
@@ -193,7 +193,7 @@ int CL_FontProvider_Sprite::get_character_index(CL_GraphicContext &gc, const CL_
 	int dest_y = 0;
 	int character_counter = 0;
 
-	CL_FontMetrics fm = get_font_metrics(gc);
+	CL_FontMetrics fm = get_font_metrics();
 	int font_height = fm.get_height();
 	int font_external_leading = fm.get_external_leading();
 

@@ -252,7 +252,7 @@ void CL_ListViewLayoutDetails::create_parts()
 	icon_offset_y = part_cell.get_property_int(prop_icon_offset_y);
 
 	CL_Font font = part_cell.get_font();
-	CL_FontMetrics metrics = font.get_font_metrics(gc);
+	CL_FontMetrics metrics = font.get_font_metrics();
 	//height_text = gc.get_text_size("l").height; // todo: use font metrics
 	height_text = (int)metrics.get_height();
 	descent = (int)metrics.get_descent();

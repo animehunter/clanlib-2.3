@@ -83,9 +83,9 @@ CL_FontProvider_System::~CL_FontProvider_System()
 /////////////////////////////////////////////////////////////////////////////
 // CL_FontProvider_System Attributes:
 
-CL_FontMetrics CL_FontProvider_System::get_font_metrics(CL_GraphicContext &gc)
+CL_FontMetrics CL_FontProvider_System::get_font_metrics()
 {
-	return glyph_cache.get_font_metrics(gc);
+	return glyph_cache.get_font_metrics();
 }
 
 CL_Font_TextureGlyph *CL_FontProvider_System::get_glyph(CL_GraphicContext &gc, unsigned int glyph)

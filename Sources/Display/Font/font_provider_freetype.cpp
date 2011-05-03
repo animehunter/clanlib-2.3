@@ -69,9 +69,9 @@ CL_FontProvider_Freetype::~CL_FontProvider_Freetype()
 /////////////////////////////////////////////////////////////////////////////
 // CL_FontProvider_Freetype Attributes:
 
-CL_FontMetrics CL_FontProvider_Freetype::get_font_metrics(CL_GraphicContext &gc)
+CL_FontMetrics CL_FontProvider_Freetype::get_font_metrics()
 {
-	return glyph_cache.get_font_metrics(gc);
+	return glyph_cache.get_font_metrics();
 }
 
 CL_Font_TextureGlyph *CL_FontProvider_Freetype::get_glyph(CL_GraphicContext &gc, unsigned int glyph)

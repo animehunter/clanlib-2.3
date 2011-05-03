@@ -55,7 +55,7 @@ public:
 /// \{
 public:
 	/// \brief Returns information about the current font.
-	CL_FontMetrics get_font_metrics(CL_GraphicContext &gc);
+	CL_FontMetrics get_font_metrics();
 
 	/// \brief Get a glyph. Returns NULL if the glyph was not found
 	CL_Font_TextureGlyph *get_glyph(CL_GraphicContext &gc, unsigned int glyph);

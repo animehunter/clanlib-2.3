@@ -301,7 +301,7 @@ CL_SpanLayout_Impl::TextSizeResult CL_SpanLayout_Impl::find_text_size(CL_Graphic
 	if (layout_cache.object_index != object_index)
 	{
 		layout_cache.object_index = object_index;
-		layout_cache.metrics = font.get_font_metrics(gc);
+		layout_cache.metrics = font.get_font_metrics();
 	}
 
 	TextSizeResult result;
@@ -344,7 +344,7 @@ CL_SpanLayout_Impl::TextSizeResult CL_SpanLayout_Impl::find_text_size(CL_Graphic
 			{
 				layout_cache.object_index = object_index;
 				font = objects[object_index].font;
-				layout_cache.metrics = font.get_font_metrics(gc);
+				layout_cache.metrics = font.get_font_metrics();
 			}
 		}
 	}

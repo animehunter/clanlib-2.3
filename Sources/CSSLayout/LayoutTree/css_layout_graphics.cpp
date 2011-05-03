@@ -51,7 +51,7 @@ CL_Font CL_CSSLayoutGraphics::get_font(const CL_CSSBoxProperties &properties)
 
 CL_FontMetrics CL_CSSLayoutGraphics::get_font_metrics(CL_Font &font)
 {
-	return font.get_font_metrics(gc);
+	return font.get_font_metrics();
 }
 
 void CL_CSSLayoutGraphics::fill(const CL_Rect &box, const CL_Colorf &color)

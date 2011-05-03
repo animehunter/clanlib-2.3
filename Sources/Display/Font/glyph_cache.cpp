@@ -73,7 +73,7 @@ CL_GlyphCache::~CL_GlyphCache()
 /////////////////////////////////////////////////////////////////////////////
 // CL_GlyphCache Attributes:
 
-CL_FontMetrics CL_GlyphCache::get_font_metrics(CL_GraphicContext &gc)
+CL_FontMetrics CL_GlyphCache::get_font_metrics()
 {
 	return font_metrics;
 }
@@ -138,7 +138,7 @@ int CL_GlyphCache::get_character_index(CL_FontEngine *font_engine, CL_GraphicCon
 
 	int character_counter = 0;
 
-	CL_FontMetrics fm = get_font_metrics(gc);
+	CL_FontMetrics fm = get_font_metrics();
 	int font_height = fm.get_height();
 	int font_ascent = fm.get_ascent();
 	int font_external_leading = fm.get_external_leading();

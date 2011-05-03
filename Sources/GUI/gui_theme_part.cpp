@@ -292,7 +292,7 @@ CL_GUIThemePart::VerticalTextPosition CL_GUIThemePart::get_vertical_text_align(C
 {
 	// See diagram in: Documentation\Overview\fonts.html (Font Metrics)
 
-	CL_FontMetrics metrics = font.get_font_metrics(gc);
+	CL_FontMetrics metrics = font.get_font_metrics();
 	float align_height = metrics.get_ascent() - metrics.get_internal_leading();
 	float content_height = content_rect.get_height();
 	float baseline = (content_height + align_height) / 2.0f;

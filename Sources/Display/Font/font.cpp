@@ -113,7 +113,7 @@ void CL_Font::draw_text(CL_GraphicContext &gc, float dest_x, float dest_y, const
 {
 	if (impl)
 	{
-		CL_FontMetrics fm = get_font_metrics(gc);
+		CL_FontMetrics fm = get_font_metrics();
 		int line_spacing = fm.get_height() + fm.get_external_leading();
 		std::vector<CL_String> lines = CL_StringHelp::split_text(text, "\n", false);
 		for (std::vector<CL_String>::size_type i=0; i<lines.size(); i++)
@@ -140,7 +140,7 @@ CL_Size CL_Font::get_text_size(CL_GraphicContext &gc, const CL_StringRef &text)
 
 	if (impl)
 	{
-		CL_FontMetrics fm = get_font_metrics(gc);
+		CL_FontMetrics fm = get_font_metrics();
 		int line_spacing = fm.get_external_leading();
 		std::vector<CL_String> lines = CL_StringHelp::split_text(text, "\n", false);
 		for (std::vector<CL_String>::size_type i=0; i<lines.size(); i++)
@@ -163,10 +163,10 @@ CL_Size CL_Font::get_text_size(CL_GraphicContext &gc, const CL_StringRef &text)
 	return total_size;
 }
 
-CL_FontMetrics CL_Font::get_font_metrics(CL_GraphicContext &gc)
+CL_FontMetrics CL_Font::get_font_metrics()
 {
 	if (impl)
-		return get_provider()->get_font_metrics(gc);
+		return get_provider()->get_font_metrics();
 	return CL_FontMetrics();
 }
 
