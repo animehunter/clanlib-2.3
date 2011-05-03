@@ -39,10 +39,10 @@ void Server::exec(CL_Event &stop_event)
 
 		while (true)
 		{
-			int wakeup_reason = CL_Event::wait(stop_event, network_server.get_event_arrived());
-			if (wakeup_reason <= 0)
+			CL_KeepAlive::process(10);
+
+			if (stop_event.wait(0)) 
 				break;
-			network_server.process_events();
 		}
 
 		network_server.stop();

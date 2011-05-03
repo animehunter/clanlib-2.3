@@ -377,7 +377,6 @@ void CL_Sprite::set_angle(CL_Angle angle)
 		degrees = fmod(degrees, 360.0f) + 360.0f;
 
 	impl->angle = CL_Angle(degrees, cl_degrees);
-
 }
 
 void CL_Sprite::set_angle_pitch(CL_Angle angle)
@@ -417,7 +416,6 @@ void CL_Sprite::rotate(CL_Angle angle)
 		degrees = fmod(degrees, 360.0f) + 360.0f;
 
 	impl->angle = CL_Angle(degrees, cl_degrees);
-
 }
 
 void CL_Sprite::rotate_pitch(CL_Angle angle)
