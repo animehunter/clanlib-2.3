@@ -494,8 +494,14 @@ void CL_PixelCommandSprite::render_linear_scanline(Scanline *d)
 	__m128i one = _mm_set1_epi16(0x0100);
 	__m128i half7f = _mm_set1_epi16(0x007f);
 
+#ifdef WIN32
 	__declspec(align(16)) int xx_input[4];
 	__declspec(align(16)) int yy_input[4];
+#else
+	__attribute__ ((aligned (16))) int xx_input[4];
+	__attribute__ ((aligned (16))) int yy_input[4];
+#endif
+
 	for (int i = 0; i < 4; i++)
 	{
 		xx_input[i] = xx;
@@ -547,7 +553,15 @@ void CL_PixelCommandSprite::render_linear_scanline(Scanline *d)
 		ty0 = _mm_or_si128(_mm_slli_epi32(_mm_mulhi_epi16(ty0, xmmtexwidth), 16), _mm_mullo_epi16(ty0, xmmtexwidth));
 		ty1 = _mm_or_si128(_mm_slli_epi32(_mm_mulhi_epi16(ty1, xmmtexwidth), 16), _mm_mullo_epi16(ty1, xmmtexwidth));
 
+
+
+#ifdef WIN32
 		__declspec(align(16)) int ioffsetp0[4], ioffsetp1[4], ioffsetp2[4], ioffsetp3[4];
+#else
+		__attribute__ ((aligned (16))) int ioffsetp0[4], ioffsetp1[4], ioffsetp2[4], ioffsetp3[4];
+#endif
+
+
 		_mm_store_si128((__m128i*)ioffsetp0, _mm_add_epi32(tx0, ty0));
 		_mm_store_si128((__m128i*)ioffsetp1, _mm_add_epi32(tx1, ty0));
 		_mm_store_si128((__m128i*)ioffsetp2, _mm_add_epi32(tx0, ty1));
@@ -681,7 +695,12 @@ void CL_PixelCommandSprite::render_linear_scanline(Scanline *d)
 		ty0 = _mm_or_si128(_mm_slli_epi32(_mm_mulhi_epi16(ty0, xmmtexwidth), 16), _mm_mullo_epi16(ty0, xmmtexwidth));
 		ty1 = _mm_or_si128(_mm_slli_epi32(_mm_mulhi_epi16(ty1, xmmtexwidth), 16), _mm_mullo_epi16(ty1, xmmtexwidth));
 
+#ifdef WIN32
 		__declspec(align(16)) int ioffsetp0[4], ioffsetp1[4], ioffsetp2[4], ioffsetp3[4];
+#else
+		__attribute__ ((aligned (16))) int ioffsetp0[4], ioffsetp1[4], ioffsetp2[4], ioffsetp3[4];
+#endif
+
 		_mm_store_si128((__m128i*)ioffsetp0, _mm_add_epi32(tx0, ty0));
 		_mm_store_si128((__m128i*)ioffsetp1, _mm_add_epi32(tx1, ty0));
 		_mm_store_si128((__m128i*)ioffsetp2, _mm_add_epi32(tx0, ty1));
@@ -697,7 +716,12 @@ void CL_PixelCommandSprite::render_linear_scanline(Scanline *d)
 		c2 = _mm_packs_epi32(c2, c2);
 		c3 = _mm_packs_epi32(c3, c3);
 
+#ifdef WIN32
 		__declspec(align(16)) unsigned int dpixels[4];
+#else
+		__attribute__ ((aligned (16))) unsigned int dpixels[4];
+#endif
+
 		for (int c = 0; c < length-sselength; c++)
 			dpixels[c] = dest[x+c];
 

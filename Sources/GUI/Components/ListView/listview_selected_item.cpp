@@ -185,7 +185,7 @@ void CL_ListViewSelectedItem::throw_if_null() const
 
 bool CL_ListViewSelectedItem::is_item() const
 {
-	return impl;
+	return impl ? true : false;
 }
 
 CL_ListViewItem CL_ListViewSelectedItem::get_item()

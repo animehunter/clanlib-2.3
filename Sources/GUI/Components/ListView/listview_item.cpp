@@ -73,7 +73,7 @@ void CL_ListViewItem::throw_if_null() const
 
 bool CL_ListViewItem::is_item() const
 {
-	return impl;
+	return impl ? true : false;
 }
 
 CL_ListViewColumnData CL_ListViewItem::get_column(const CL_StringRef &column_id)
@@ -140,7 +140,7 @@ bool CL_ListViewItem::is_selected() const
 
 bool CL_ListViewItem::has_children() const
 {
-	return impl->first_child;
+	return impl->first_child ? true : false;;
 }
 
 int CL_ListViewItem::get_parent_count()
