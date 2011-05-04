@@ -155,7 +155,12 @@ void CL_JPEGRGBDecoder::convert_ycrcb_sse()
 	__m128 max_value = _mm_set1_ps(255.0f);
 	__m128i ypack8, cbpack8, crpack8, ypack4, cbpack4, crpack4;
 	__m128 y, cb, cr, r, g, b, zero;
+
+#ifdef WIN32
 	__declspec(align(16)) unsigned char temp[32];
+#else
+	__attribute__ ((aligned (16))) unsigned char temp[32];
+#endif
 
 	int height = mcu_y*8;
 	int width = mcu_x*8;

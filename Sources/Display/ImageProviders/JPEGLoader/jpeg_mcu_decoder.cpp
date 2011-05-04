@@ -248,7 +248,11 @@ void CL_JPEGMCUDecoder::idct_sse(short *inptr, unsigned char *outptr, int pitch,
 	__m128 z5, z10, z11, z12, z13;
 	float * wsptr;
 	int ctr;
+#ifdef WIN32
 	__declspec(align(16)) float workspace[64]; /* buffers data between passes */
+#else
+	__attribute__ ((aligned (16)))  float workspace[64]; /* buffers data between passes */
+#endif
 
 	__m128 constant1 = _mm_set1_ps(1.414213562f);
 	__m128 constant2 = _mm_set1_ps(1.847759065f);

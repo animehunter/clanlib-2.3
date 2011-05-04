@@ -175,8 +175,8 @@ void CL_DisplayMessageQueue_X11::set_mouse_capture(CL_X11Window *window, bool st
 
 CL_SharedPtr<CL_DisplayMessageQueue_X11::ThreadData> CL_DisplayMessageQueue_X11::get_thread_data()
 {
-	CL_SharedPtr<ThreadData> data(CL_ThreadLocalStorage::get_variable("CL_DisplayMessageQueue_X11::thread_data"));
-	if (data.is_null())
+	CL_SharedPtr<ThreadData> data = cl_dynamic_pointer_cast<ThreadData>(CL_ThreadLocalStorage::get_variable("CL_DisplayMessageQueue_X11::thread_data"));
+	if (!data)
 	{
 		data = CL_SharedPtr<ThreadData>(new ThreadData);
 		CL_ThreadLocalStorage::set_variable("CL_DisplayMessageQueue_X11::thread_data", data);

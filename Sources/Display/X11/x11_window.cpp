@@ -78,7 +78,7 @@ CL_X11Window::~CL_X11Window()
 	CL_DisplayMessageQueue_X11::message_queue.remove_client(this);
 	CL_DisplayMessageQueue_X11::message_queue.set_mouse_capture(this, false);
 
-	if (!ic.impl.is_null())
+	if (ic.impl)
 		ic.impl->dispose();
 
 	get_keyboard()->dispose();
