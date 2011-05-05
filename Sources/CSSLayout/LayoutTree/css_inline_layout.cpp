@@ -937,7 +937,7 @@ CL_CSSInlinePosition CL_CSSInlineLayout::end() const
 
 void CL_CSSInlineLayout::generate_block_line(CL_CSSInlinePosition pos)
 {
-	std::auto_ptr<CL_CSSInlineGeneratedBox> line(new CL_CSSInlineGeneratedBox());
+	std::unique_ptr<CL_CSSInlineGeneratedBox> line(new CL_CSSInlineGeneratedBox());
 	line->box_node = pos.box->box_node;
 	line->layout_node = pos.box->layout_node;
 	line->relative_x = pos.box->relative_x;
@@ -983,7 +983,7 @@ CL_CSSInlineGeneratedBox *CL_CSSInlineLayout::begin_tree(CL_CSSInlinePosition st
 
 void CL_CSSInlineLayout::generate_line(CL_CSSInlinePosition start, CL_CSSInlinePosition end)
 {
-	std::auto_ptr<CL_CSSInlineGeneratedBox> line(new CL_CSSInlineGeneratedBox());
+	std::unique_ptr<CL_CSSInlineGeneratedBox> line(new CL_CSSInlineGeneratedBox());
 	CL_CSSInlineGeneratedBox *parent = begin_tree(start, line.get());
 
 	line->relative_x = boxes.relative_x;
@@ -1603,7 +1603,7 @@ void CL_CSSInlineLayout::split_text(CL_CSSInlineGeneratedBox *box, size_t text_p
 {
 	// Duplicate box:
 	{
-		std::auto_ptr<CL_CSSInlineGeneratedBox> box2(new CL_CSSInlineGeneratedBox());
+		std::unique_ptr<CL_CSSInlineGeneratedBox> box2(new CL_CSSInlineGeneratedBox());
 		box2->box_node = box->box_node;
 		box2->relative_x = box->relative_x;
 		box2->relative_y = box->relative_y;

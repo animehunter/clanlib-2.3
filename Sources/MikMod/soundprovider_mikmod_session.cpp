@@ -46,7 +46,7 @@
 CL_SoundProvider_MikMod_Session::CL_SoundProvider_MikMod_Session(CL_SoundProvider_MikMod &source) :
 	source(source), num_samples(0), position(0), stream_eof(false)
 {
-	std::auto_ptr<CL_IODevice_Memory> input_autoptr(new CL_IODevice_Memory(source.impl->buffer));
+	std::unique_ptr<CL_IODevice_Memory> input_autoptr(new CL_IODevice_Memory(source.impl->buffer));
 	CL_IODevice_Memory *input = input_autoptr.get();
 
 	MREADER *reader = new_clanlib_reader((void *) input);

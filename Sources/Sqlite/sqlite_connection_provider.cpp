@@ -94,7 +94,7 @@ CL_DBReaderProvider *CL_SqliteConnectionProvider::execute_reader(CL_DBCommandPro
 
 CL_String CL_SqliteConnectionProvider::execute_scalar_string(CL_DBCommandProvider *command)
 {
-	std::auto_ptr<CL_DBReaderProvider> reader(execute_reader(command));
+	std::unique_ptr<CL_DBReaderProvider> reader(execute_reader(command));
 	if (!reader->retrieve_row())
 		throw CL_Exception("Database command statement returned no value");
 	CL_String value = reader->get_column_string(0);
@@ -104,7 +104,7 @@ CL_String CL_SqliteConnectionProvider::execute_scalar_string(CL_DBCommandProvide
 
 int CL_SqliteConnectionProvider::execute_scalar_int(CL_DBCommandProvider *command)
 {
-	std::auto_ptr<CL_DBReaderProvider> reader(execute_reader(command));
+	std::unique_ptr<CL_DBReaderProvider> reader(execute_reader(command));
 	if (!reader->retrieve_row())
 		throw CL_Exception("Database command statement returned no value");
 	int value = reader->get_column_int(0);
@@ -114,7 +114,7 @@ int CL_SqliteConnectionProvider::execute_scalar_int(CL_DBCommandProvider *comman
 
 void CL_SqliteConnectionProvider::execute_non_query(CL_DBCommandProvider *command)
 {
-	std::auto_ptr<CL_DBReaderProvider> reader(execute_reader(command));
+	std::unique_ptr<CL_DBReaderProvider> reader(execute_reader(command));
 	reader->retrieve_row();
 	reader->close();
 }

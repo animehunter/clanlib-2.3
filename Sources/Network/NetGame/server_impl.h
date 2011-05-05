@@ -36,7 +36,7 @@ class CL_NetGameServer_Impl : public CL_KeepAliveObject
 public:
 	void process();
 
-	std::auto_ptr<CL_TCPListen> tcp_listen;
+	std::unique_ptr<CL_TCPListen> tcp_listen;
 	CL_Thread listen_thread;
 
 	CL_Mutex mutex;

@@ -59,7 +59,7 @@ public:
 	template<typename GUIComponent>
 	void render(CL_GraphicContext &gc, GUIComponent *component)
 	{
-		render_impl(gc, std::auto_ptr<ClipWrapper>(new GUIComponentWrapper<GUIComponent>(component)));
+		render_impl(gc, std::unique_ptr<ClipWrapper>(new GUIComponentWrapper<GUIComponent>(component)));
 	}
 
 	CL_CSSHitTestResult hit_test(CL_GraphicContext &gc, const CL_Point &pos);
@@ -93,7 +93,7 @@ public:
 	};
 
 private:
-	void render_impl(CL_GraphicContext &gc, std::auto_ptr<ClipWrapper> wrapper = std::auto_ptr<ClipWrapper>());
+	void render_impl(CL_GraphicContext &gc, std::unique_ptr<ClipWrapper> wrapper = std::unique_ptr<ClipWrapper>());
 
 	template<typename GUIComponent>
 	class GUIComponentWrapper : public ClipWrapper

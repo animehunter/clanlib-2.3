@@ -55,7 +55,7 @@ CL_SqliteTransactionProvider::CL_SqliteTransactionProvider(CL_SqliteConnectionPr
 	default:
 		throw CL_Exception("Unknown transaction type");
 	}
-	std::auto_ptr<CL_DBCommandProvider> command(connection->create_command(text, CL_DBCommand::sql_statement));
+	std::unique_ptr<CL_DBCommandProvider> command(connection->create_command(text, CL_DBCommand::sql_statement));
 	connection->execute_non_query(command.get());
 	command.reset();
 	connection->active_transaction = this;
@@ -79,7 +79,7 @@ void CL_SqliteTransactionProvider::commit()
 {
 	if (connection && connection->active_transaction)
 	{
-		std::auto_ptr<CL_DBCommandProvider> command(connection->create_command("COMMIT TRANSACTION", CL_DBCommand::sql_statement));
+		std::unique_ptr<CL_DBCommandProvider> command(connection->create_command("COMMIT TRANSACTION", CL_DBCommand::sql_statement));
 		connection->execute_non_query(command.get());
 		command.reset();
 		connection->active_transaction = 0;
@@ -90,7 +90,7 @@ void CL_SqliteTransactionProvider::rollback()
 {
 	if (connection && connection->active_transaction)
 	{
-		std::auto_ptr<CL_DBCommandProvider> command(connection->create_command("ROLLBACK TRANSACTION", CL_DBCommand::sql_statement));
+		std::unique_ptr<CL_DBCommandProvider> command(connection->create_command("ROLLBACK TRANSACTION", CL_DBCommand::sql_statement));
 		try
 		{
 			connection->execute_non_query(command.get());

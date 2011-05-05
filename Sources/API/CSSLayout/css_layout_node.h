@@ -57,8 +57,8 @@ public:
 
 	CL_CSSLayoutUserData *get_user_data();
 	const CL_CSSLayoutUserData *get_user_data() const;
-	void set_user_data(CL_CSSLayoutUserData *data) { set_user_data(std::auto_ptr<CL_CSSLayoutUserData>(data)); }
-	void set_user_data(std::auto_ptr<CL_CSSLayoutUserData> data);
+	void set_user_data(CL_CSSLayoutUserData *data) { set_user_data(std::unique_ptr<CL_CSSLayoutUserData>(data)); }
+	void set_user_data(std::unique_ptr<CL_CSSLayoutUserData> &data);
 
 	CL_String print_node() const;
 

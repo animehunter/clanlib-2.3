@@ -40,7 +40,7 @@ public:
 	void push_back(CL_CSSBoxNode *new_child);
 	void insert(CL_CSSBoxNode *new_child, CL_CSSBoxNode *insert_point);
 	void remove();
-	void set_user_data(std::auto_ptr<CL_CSSLayoutUserData> data);
+	void set_user_data(std::unique_ptr<CL_CSSLayoutUserData> &data);
 	CL_CSSLayoutUserData *get_user_data();
 	const CL_CSSLayoutUserData *get_user_data() const;
 
@@ -62,5 +62,5 @@ private:
 	CL_CSSBoxNode *prev;
 	CL_CSSBoxNode *first_child;
 	CL_CSSBoxNode *last_child;
-	std::auto_ptr<CL_CSSLayoutUserData> user_data;
+	std::unique_ptr<CL_CSSLayoutUserData> user_data;
 };

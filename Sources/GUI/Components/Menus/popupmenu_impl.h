@@ -49,5 +49,5 @@ public:
 	int joiner_width;
 	CL_Callback_v0 func_close;
 
-	std::auto_ptr<CL_MenuModalLoop> menu_ptr;
+	std::unique_ptr<CL_MenuModalLoop> menu_ptr;
 };

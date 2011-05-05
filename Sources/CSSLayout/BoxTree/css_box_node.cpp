@@ -101,9 +101,9 @@ void CL_CSSBoxNode::remove()
 	parent = 0;
 }
 
-void CL_CSSBoxNode::set_user_data(std::auto_ptr<CL_CSSLayoutUserData> data)
+void CL_CSSBoxNode::set_user_data(std::unique_ptr<CL_CSSLayoutUserData> &data)
 {
-	user_data = data;
+	user_data = std::move(data);
 }
 
 CL_CSSLayoutUserData *CL_CSSBoxNode::get_user_data()

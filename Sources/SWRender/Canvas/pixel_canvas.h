@@ -63,7 +63,7 @@ public:
 	void clear(const CL_Colorf &color);
 	void draw_pixels(const CL_Rect &dest, const CL_PixelBuffer &image, const CL_Rect &src_rect, const CL_Colorf &primary_color);
 	void draw_pixels_bicubic(int x, int y, int zoom_number, int zoom_denominator, const CL_PixelBuffer &pixels);
-	void queue_command(std::auto_ptr<CL_PixelCommand> command);
+	void queue_command(std::unique_ptr<CL_PixelCommand> &command);
 
 	void set_sampler(int index, const CL_PixelBuffer &new_sampler);
 	void reset_sampler(int index);
@@ -89,5 +89,5 @@ private:
 	CL_BlendFunc cur_blend_dest_alpha;
 	CL_Colorf cur_blend_color;
 
-	std::auto_ptr<CL_PixelPipeline> pipeline;
+	std::unique_ptr<CL_PixelPipeline> pipeline;
 };

@@ -100,7 +100,7 @@ public:
 	void reset_primitives_array();
 	void draw_pixels(CL_GraphicContext &gc, float x, float y, float zoom_x, float zoom_y, const CL_PixelBuffer &pixel_buffer, const CL_Rect &src_rect, const CL_Colorf &color);
 	void draw_pixels_bicubic(float x, float y, int zoom_number, int zoom_denominator, const CL_PixelBuffer &pixels);
-	void queue_command(std::auto_ptr<CL_PixelCommand> command);
+	void queue_command(std::unique_ptr<CL_PixelCommand> &command);
 	void set_clip_rect(const CL_Rect &rect);
 	void reset_clip_rect();
 	void clear(const CL_Colorf &color);
@@ -122,7 +122,7 @@ private:
 
 
 	CL_SWRenderDisplayWindowProvider *window;
-	std::auto_ptr<CL_PixelCanvas> canvas;
+	std::unique_ptr<CL_PixelCanvas> canvas;
 	std::map<int, CL_Texture> bound_textures;
 	const CL_PrimitivesArrayData * current_prim_array;
 	CL_Mat4f modelview_matrix;
