@@ -81,6 +81,10 @@ CL_SoundOutput::CL_SoundOutput(const CL_SoundOutput_Description &desc)
 	{
 		impl = alsa_impl;
 	}
+	else
+	{
+		alsa_impl.reset();
+	}
 
 	if (!impl)
 	{
