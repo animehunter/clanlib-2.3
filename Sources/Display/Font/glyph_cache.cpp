@@ -261,7 +261,7 @@ void CL_GlyphCache::insert_glyph(CL_FontEngine *font_engine, CL_GraphicContext &
 {
 	if (enable_subpixel)
 	{
-		CL_FontPixelBuffer pb = font_engine->get_font_glyph_subpixel(glyph, CL_Colorf::white);
+		CL_FontPixelBuffer pb = font_engine->get_font_glyph_subpixel(glyph);
 		if (pb.glyph)	// Ignore invalid glyphs
 		{
 			insert_glyph(gc, pb);
@@ -269,7 +269,7 @@ void CL_GlyphCache::insert_glyph(CL_FontEngine *font_engine, CL_GraphicContext &
 	}
 	else
 	{
-		CL_FontPixelBuffer pb = font_engine->get_font_glyph_standard(glyph, anti_alias, CL_Colorf::white);
+		CL_FontPixelBuffer pb = font_engine->get_font_glyph_standard(glyph, anti_alias);
 		if (pb.glyph)	// Ignore invalid glyphs
 		{
 			insert_glyph(gc, pb);

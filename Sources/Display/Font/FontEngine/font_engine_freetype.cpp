@@ -294,7 +294,7 @@ CL_GlyphOutline *CL_FontEngine_Freetype::load_glyph_outline(int c)
 	return outline;
 }
 
-CL_FontPixelBuffer CL_FontEngine_Freetype::get_font_glyph_standard(int glyph, bool anti_alias, const CL_Colorf &color)
+CL_FontPixelBuffer CL_FontEngine_Freetype::get_font_glyph_standard(int glyph, bool anti_alias)
 {
 	CL_FontPixelBuffer font_buffer;
 	FT_GlyphSlot slot = face->glyph;
@@ -347,16 +347,6 @@ CL_FontPixelBuffer CL_FontEngine_Freetype::get_font_glyph_standard(int glyph, bo
 	unsigned char *dest_data;
 	int dest_pitch = font_buffer.buffer.get_pitch();
 
-	unsigned int src_red = (unsigned int) (color.r * 256);
-	unsigned int src_green = (unsigned int) (color.g * 256);
-	unsigned int src_blue = (unsigned int) (color.b * 256);
-	unsigned int src_alpha = (unsigned int) (color.a * 256);
-
-	if (src_red > 255) src_red = 255;
-	if (src_green > 255) src_green = 255;
-	if (src_blue > 255) src_blue = 255;
-	if (src_alpha > 255) src_alpha = 255;
-
 	// Convert the bitmap
 	if (anti_alias)
 	{
@@ -367,9 +357,9 @@ CL_FontPixelBuffer CL_FontEngine_Freetype::get_font_glyph_standard(int glyph, bo
 			for (int xcnt = 0; xcnt < src_width; xcnt++)
 			{
 				*(dest_data++)= src_data[xcnt];
-				*(dest_data++)= src_blue;
-				*(dest_data++)= src_green;
-				*(dest_data++)= src_red;
+				*(dest_data++)= 255;
+				*(dest_data++)= 255;
+				*(dest_data++)= 255;
 			}
 			pixel_data += dest_pitch;
 			src_data += src_pitch;
@@ -400,9 +390,9 @@ CL_FontPixelBuffer CL_FontEngine_Freetype::get_font_glyph_standard(int glyph, bo
 					*(dest_data++) = 0;
 				}
 				src_byte = src_byte << 1;
-				*(dest_data++)= src_blue;
-				*(dest_data++)= src_green;
-				*(dest_data++)= src_red;
+				*(dest_data++)= 255;
+				*(dest_data++)= 255;
+				*(dest_data++)= 255;
 			}
 			pixel_data += dest_pitch;
 			src_data += src_pitch;
@@ -412,7 +402,7 @@ CL_FontPixelBuffer CL_FontEngine_Freetype::get_font_glyph_standard(int glyph, bo
 	return font_buffer;
 }
 
-CL_FontPixelBuffer CL_FontEngine_Freetype::get_font_glyph_subpixel(int glyph, const CL_Colorf &color)
+CL_FontPixelBuffer CL_FontEngine_Freetype::get_font_glyph_subpixel(int glyph)
 {
 	CL_FontPixelBuffer font_buffer;
 	FT_GlyphSlot slot = face->glyph;
