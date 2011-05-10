@@ -126,6 +126,7 @@ int App::start(const std::vector<CL_String> &args)
 	checkbox3.set_text("Italic");
 
 	CL_CheckBox checkbox4(&gui_window);
+	checkbox4.set_checked(true);
 	checkbox4.set_geometry(CL_Rect(offset_x+100, offset_y, offset_x + 180, offset_y + height));
 	checkbox4.func_state_changed().set(this, &App::on_checkbox_state_antialias, &checkbox4);
 	checkbox4.set_text("Anti Alias");
