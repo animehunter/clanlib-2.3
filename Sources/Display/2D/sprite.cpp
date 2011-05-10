@@ -54,14 +54,6 @@ CL_Sprite::CL_Sprite()
 {
 }
 
-CL_Sprite::CL_Sprite(const CL_Sprite &other)
-{
-	if (other.impl)
-		impl = CL_SharedPtr<CL_Sprite_Impl>(new CL_Sprite_Impl(*other.impl.get()));
-	else
-		impl = CL_SharedPtr<CL_Sprite_Impl>();
-}
-
 CL_Sprite::CL_Sprite(CL_GraphicContext &gc, const CL_StringRef &fullname, const CL_ImageImportDescription &import_desc)
 {
 	CL_String path = CL_PathHelp::get_fullpath(fullname, CL_PathHelp::path_type_file);
@@ -258,14 +250,9 @@ bool CL_Sprite::is_looping() const
 /////////////////////////////////////////////////////////////////////////////
 // CL_Sprite Operations:
 
-CL_Sprite &CL_Sprite::operator =(const CL_Sprite &other)
+CL_Sprite &CL_Sprite::operator =(const CL_Sprite &copy)
 {
-	if (!other.impl)
-		impl = CL_SharedPtr<CL_Sprite_Impl>();
-	else if (impl)
-		*impl.get() = *other.impl.get();
-	else
-		impl = CL_SharedPtr<CL_Sprite_Impl>(new CL_Sprite_Impl(*other.impl.get()));
+	impl = copy.impl;
 //	resource_data_session = copy.resource_data_session;
 	return *this;
 }
@@ -279,6 +266,31 @@ void CL_Sprite::set_image_data(const CL_Sprite &image_source)
 	impl->play_backward = image_source.is_play_backward();
 	impl->play_pingpong = image_source.is_play_pingpong();
 	impl->base_angle = image_source.get_base_angle();
+
+	restart();
+}
+
+void CL_Sprite::clone(const CL_Sprite &source)
+{
+	impl->angle = source.impl->angle;
+	impl->angle_pitch = source.impl->angle_pitch;
+	impl->angle_yaw = source.impl->angle_yaw;
+	impl->base_angle = source.impl->base_angle;
+	impl->scale_x = source.impl->scale_x;
+	impl->scale_y = source.impl->scale_y;
+	impl->color = source.impl->color;
+	impl->linear_filter = source.impl->linear_filter;
+	impl->translation_hotspot = source.impl->translation_hotspot;
+	impl->rotation_hotspot = source.impl->rotation_hotspot;
+	impl->translation_origin = source.impl->translation_origin;
+	impl->rotation_origin = source.impl->rotation_origin;
+	impl->id = source.impl->id;
+	impl->play_loop = source.impl->play_loop;
+	impl->play_backward = source.impl->play_backward;
+	impl->play_pingpong = source.impl->play_pingpong;
+	impl->show_on_finish = source.impl->show_on_finish;
+	impl->texture_group = source.impl->texture_group;
+	impl->frames = source.impl->frames;
 
 	restart();
 }

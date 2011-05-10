@@ -64,21 +64,7 @@ CL_Sprite_Impl::CL_Sprite_Impl() :
 	play_loop(true),
 	play_backward(false),
 	play_pingpong(false),
-	show_on_finish(CL_Sprite::show_blank),
-	texture_group(CL_Size(1,1))
-{
-}
-
-CL_Sprite_Impl::CL_Sprite_Impl(const CL_Sprite_Impl &other)
-: angle(other.angle), angle_pitch(other.angle_pitch), angle_yaw(other.angle_yaw),
-  base_angle(other.base_angle), scale_x(other.scale_x), scale_y(other.scale_y),
-  color(other.color), translation_hotspot(other.translation_hotspot),
-  rotation_hotspot(other.rotation_hotspot), translation_origin(other.translation_origin),
-  rotation_origin(other.rotation_origin), current_frame(other.current_frame),
-  delta_frame(other.delta_frame), update_time_ms(other.update_time_ms),
-  last_time_ms(other.last_time_ms), id(other.id), finished(other.finished), play_loop(other.play_loop),
-  play_backward(other.play_backward), play_pingpong(other.play_pingpong), show_on_finish(other.show_on_finish),
-  frames(other.frames), texture_group(other.texture_group)
+	show_on_finish(CL_Sprite::show_blank)
 {
 }
 
@@ -283,8 +269,9 @@ CL_Sprite_Impl &CL_Sprite_Impl::operator =(const CL_Sprite_Impl &copy)
 	play_backward = copy.play_backward;
 	play_pingpong = copy.play_pingpong;
 	show_on_finish = copy.show_on_finish;
+
 	frames = copy.frames;
-	texture_group = copy.texture_group;
+
 	return *this;
 }
 
@@ -593,7 +580,7 @@ void CL_Sprite_Impl::create_textures(CL_GraphicContext &gc, const CL_SpriteDescr
 	std::vector<CL_SpriteDescriptionFrame>::const_iterator it_frames;
 
 	// Calculate estimated texture group size
-	if (texture_group.get_texture_sizes().width <=1)
+	if (texture_group.is_null())
 	{
 		// *** This algorithm may not work! ***
 		int max_width = 1;
@@ -662,6 +649,21 @@ void CL_Sprite_Impl::create_textures(CL_GraphicContext &gc, const CL_SpriteDescr
 		}
 	}
 
+	int texture_group_width;
+	int texture_group_height;
+
+	if (texture_group.is_null())
+	{
+		texture_group_width = -1;
+		texture_group_height = -1;
+	}
+	else
+	{
+		CL_Size size = texture_group.get_texture_sizes();
+		texture_group_width = size.width;
+		texture_group_height = size.height;
+	}
+
 	for (it_frames = description_frames.begin(); it_frames != description_frames.end(); ++it_frames)
 	{
 		CL_SpriteDescriptionFrame description_frame = (*it_frames);
@@ -669,8 +671,9 @@ void CL_Sprite_Impl::create_textures(CL_GraphicContext &gc, const CL_SpriteDescr
 		if(description_frame.type == CL_SpriteDescriptionFrame::type_pixelbuffer)
 		{
 			CL_PixelBuffer image = description_frame.pixelbuffer;
-			if (description_frame.rect.get_width() <= texture_group.get_texture_sizes().width &&
-				description_frame.rect.get_height() <= texture_group.get_texture_sizes().height)
+			if (texture_group_width >0 &&
+				description_frame.rect.get_width() <= texture_group_width &&
+				description_frame.rect.get_height() <= texture_group_height)
 			{
 				CL_Subtexture subtexture = texture_group.add(gc, description_frame.rect.get_size());
 				subtexture.get_texture().set_subimage(subtexture.get_geometry().get_top_left(), image, description_frame.rect);

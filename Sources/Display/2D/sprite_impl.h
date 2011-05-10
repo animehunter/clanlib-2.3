@@ -84,7 +84,6 @@ class CL_Sprite_Impl
 /// \{
 public:
 	CL_Sprite_Impl();
-	CL_Sprite_Impl(const CL_Sprite_Impl &other);
 
 	virtual ~CL_Sprite_Impl();
 
