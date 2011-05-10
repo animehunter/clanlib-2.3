@@ -60,7 +60,7 @@ CL_Sprite::CL_Sprite(CL_GraphicContext &gc, const CL_StringRef &fullname, const 
 	CL_String filename = CL_PathHelp::get_filename(fullname, CL_PathHelp::path_type_file);
 	CL_VirtualFileSystem vfs(path);
 	CL_VirtualDirectory dir = vfs.get_root_directory();
-	*this = CL_Sprite(gc, filename, dir, import_desc );
+	*this = CL_Sprite(gc, filename, dir, import_desc);
 }
 
 CL_Sprite::CL_Sprite(CL_GraphicContext &gc, const CL_StringRef &filename, CL_VirtualDirectory &dir, const CL_ImageImportDescription &import_desc)
@@ -272,6 +272,9 @@ void CL_Sprite::set_image_data(const CL_Sprite &image_source)
 
 void CL_Sprite::clone(const CL_Sprite &source)
 {
+	if(!impl)
+		impl = CL_SharedPtr<CL_Sprite_Impl>(new CL_Sprite_Impl());
+
 	impl->angle = source.impl->angle;
 	impl->angle_pitch = source.impl->angle_pitch;
 	impl->angle_yaw = source.impl->angle_yaw;

@@ -191,7 +191,6 @@ public:
 
 	/// \brief Returns true if animation has looped in the last update cycle
 	bool is_looping() const;
-
 /// \}
 
 /// \name Operators
@@ -214,7 +213,7 @@ public:
 	{
 		return impl < other.impl;
 	}
-	/// \}
+/// \}
 	
 /// \name Operations
 /// \{
@@ -353,7 +352,6 @@ public:
 /// \name Signals
 /// \{
 public:
-
 	/// \brief Sig animation finished
 	///
 	/// \return Signal_v0
