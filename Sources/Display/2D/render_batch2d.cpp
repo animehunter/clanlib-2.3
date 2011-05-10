@@ -90,7 +90,7 @@ void CL_RenderBatch2D::draw_image(CL_GraphicContext &gc, const CL_Rectf &src, co
 	position += 6;
 }
 
-void CL_RenderBatch2D::draw_glyph(CL_GraphicContext &gc, const CL_Rectf &src, const CL_Rectf &dest, const CL_Colorf &color, const CL_Texture &texture)
+void CL_RenderBatch2D::draw_glyph_subpixel(CL_GraphicContext &gc, const CL_Rectf &src, const CL_Rectf &dest, const CL_Colorf &color, const CL_Texture &texture)
 {
 	int texindex = set_batcher_active(gc, texture, true, color);
 	vertices[position+0].position = to_position(dest.left, dest.top);

@@ -41,7 +41,7 @@ public:
 	CL_RenderBatch2D();
 	void draw_sprite(CL_GraphicContext &gc, const CL_Surface_DrawParams1 *params, const CL_Texture &texture);
 	void draw_image(CL_GraphicContext &gc, const CL_Rectf &src, const CL_Rectf &dest, const CL_Colorf &color, const CL_Texture &texture);
-	void draw_glyph(CL_GraphicContext &gc, const CL_Rectf &src, const CL_Rectf &dest, const CL_Colorf &color, const CL_Texture &texture);
+	void draw_glyph_subpixel(CL_GraphicContext &gc, const CL_Rectf &src, const CL_Rectf &dest, const CL_Colorf &color, const CL_Texture &texture);
 	void fill(CL_GraphicContext &gc, float x1, float y1, float x2, float y2, const CL_Colorf &color);
 
 public:

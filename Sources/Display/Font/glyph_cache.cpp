@@ -303,7 +303,13 @@ void CL_GlyphCache::draw_text(CL_FontEngine *font_engine, CL_GraphicContext &gc,
 			float yp = ypos + gptr->offset.y;
 
 			CL_Rectf dest_size(xp, yp, CL_Sizef(gptr->geometry.get_size()));
-			batcher->draw_glyph(gc, gptr->geometry, dest_size, color, gptr->subtexture.get_texture());
+			if (enable_subpixel)
+			{
+				batcher->draw_glyph_subpixel(gc, gptr->geometry, dest_size, color, gptr->subtexture.get_texture());
+			}else
+			{
+				batcher->draw_image(gc, gptr->geometry, dest_size, color, gptr->subtexture.get_texture());
+			}
 		}
 		xpos += gptr->increment.x;
 		ypos += gptr->increment.y;
