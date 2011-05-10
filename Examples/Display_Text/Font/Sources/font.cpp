@@ -131,6 +131,13 @@ int App::start(const std::vector<CL_String> &args)
 	checkbox4.set_text("Anti Alias");
 	offset_y += gap;
 
+	CL_CheckBox checkbox5(&gui_window);
+	checkbox5.set_checked(true);
+	checkbox5.set_geometry(CL_Rect(offset_x, offset_y, offset_x + 80, offset_y + height));
+	checkbox5.func_state_changed().set(this, &App::on_checkbox_state_subpixel, &checkbox5);
+	checkbox5.set_text("SubPixel Rendering");
+	offset_y += gap;
+
 	CL_PushButton button_weight_light(&gui_window);
 	button_weight_light.set_geometry(CL_Rect(offset_x, offset_y, offset_x + 60, offset_y + height));
 	button_weight_light.func_clicked().set(this, &App::on_button_clicked_weight_light, &button_weight_light);
