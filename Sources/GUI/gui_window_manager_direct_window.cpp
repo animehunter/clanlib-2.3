@@ -26,52 +26,51 @@
 **    Mark Page
 */
 
-#include "precomp.h"
+#include "GUI/precomp.h"
 
 #include "gui_window_manager_direct_window.h"
 
 /////////////////////////////////////////////////////////////////////////////
-// GUIWindowManagerDirectWindow_Impl class:
+// CL_GUIWindowManagerDirectWindow_Impl class:
 
-class GUIWindowManagerDirectWindow_Impl
+class CL_GUIWindowManagerDirectWindow_Impl
 {
 public:
-	CL_Subtexture texture;
 	CL_Rect geometry;
 	CL_GUITopLevelWindow *window;
 };
 
 /////////////////////////////////////////////////////////////////////////////
-// GUIWindowManagerDirectWindow construction:
+// CL_GUIWindowManagerDirectWindow construction:
 
-GUIWindowManagerDirectWindow::GUIWindowManagerDirectWindow()
+CL_GUIWindowManagerDirectWindow::CL_GUIWindowManagerDirectWindow()
 {
 }
 
-GUIWindowManagerDirectWindow::GUIWindowManagerDirectWindow(CL_GUITopLevelWindow *window, const CL_Rect &geometry)
-: impl(new GUIWindowManagerDirectWindow_Impl)
+CL_GUIWindowManagerDirectWindow::CL_GUIWindowManagerDirectWindow(CL_GUITopLevelWindow *window, const CL_Rect &geometry)
+: impl(new CL_GUIWindowManagerDirectWindow_Impl)
 {
 	impl->geometry = geometry;
 	impl->window = window;
 }
 
-GUIWindowManagerDirectWindow::~GUIWindowManagerDirectWindow()
+CL_GUIWindowManagerDirectWindow::~CL_GUIWindowManagerDirectWindow()
 {
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// GUIWindowManagerDirectWindow attributes:
+// CL_GUIWindowManagerDirectWindow attributes:
 
-CL_Rect GUIWindowManagerDirectWindow::get_geometry() const
+CL_Rect CL_GUIWindowManagerDirectWindow::get_geometry() const
 {
 	return impl->geometry;
 }
 
-CL_GUITopLevelWindow *GUIWindowManagerDirectWindow::get_window() const
+CL_GUITopLevelWindow *CL_GUIWindowManagerDirectWindow::get_window() const
 {
 	return impl->window;
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
-// GUIWindowManagerDirectWindow implementation:
+// CL_GUIWindowManagerDirectWindow implementation:

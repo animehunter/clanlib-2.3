@@ -141,9 +141,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Sources\app.cpp" />
-    <ClCompile Include="Sources\gui_window_manager_direct.cpp" />
-    <ClCompile Include="Sources\gui_window_manager_direct_window.cpp" />
-    <ClCompile Include="Sources\gui_window_manager_provider_direct.cpp" />
     <ClCompile Include="Sources\options.cpp" />
     <ClCompile Include="Sources\precomp.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -153,9 +150,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\app.h" />
-    <ClInclude Include="Sources\gui_window_manager_direct.h" />
-    <ClInclude Include="Sources\gui_window_manager_direct_window.h" />
-    <ClInclude Include="Sources\gui_window_manager_provider_direct.h" />
     <ClInclude Include="Sources\options.h" />
     <ClInclude Include="Sources\precomp.h" />
     <ClInclude Include="Sources\program.h" />

@@ -29,13 +29,17 @@
 #pragma once
 
 #include <map>
+#include "API/Core/Signals/slot_container.h"
+#include "API/Core/Signals/callback_v0.h"
+#include "API/Display/Window/display_window.h"
+#include "API/GUI/Providers/gui_window_manager_provider.h"
 
-class GUIWindowManagerDirectWindow;
+class CL_GUIWindowManagerDirectWindow;
 
-class GUITopLevelWindowDirect
+class CL_GUITopLevelWindowDirect
 {
 public:
-	GUITopLevelWindowDirect(CL_GUITopLevelWindow *window) : window(window), enabled(true), visible(true), dirty(true), owner_window(NULL) { }
+	CL_GUITopLevelWindowDirect(CL_GUITopLevelWindow *window) : window(window), enabled(true), visible(true), dirty(true), owner_window(NULL) { }
 
 	CL_GUITopLevelWindow *window;	// The window that this texture belongs to
 	CL_Rect geometry;
@@ -43,22 +47,20 @@ public:
 	bool visible;
 	bool dirty;
 
-	GUITopLevelWindowDirect *owner_window;
-	std::vector<GUITopLevelWindowDirect *> child_windows_zorder;	// Beginning is at the top
+	CL_GUITopLevelWindowDirect *owner_window;
+	std::vector<CL_GUITopLevelWindowDirect *> child_windows_zorder;	// Beginning is at the top
 
 	std::vector<CL_Rect> update_region_list;		// Only valid when "dirty" is set to true
 };
 
-class GUIWindowManagerProvider_Direct : public CL_GUIWindowManagerProvider
+class CL_GUIWindowManagerProvider_Direct : public CL_GUIWindowManagerProvider
 {
 
 public:
-	GUIWindowManagerProvider_Direct(CL_DisplayWindow &display_window);
-	~GUIWindowManagerProvider_Direct();
+	CL_GUIWindowManagerProvider_Direct(CL_DisplayWindow &display_window);
+	~CL_GUIWindowManagerProvider_Direct();
 
 public:
-
-	std::vector<GUIWindowManagerDirectWindow> get_windows(bool only_visible = true) const;
 
 	/// \brief Retrieves the provider.
 	CL_GUIWindowManagerProvider *get_provider();
@@ -66,14 +68,14 @@ public:
 	CL_GUIWindowManager::CL_WindowManagerType get_window_manager_type() const;
 
 	CL_GUIWindowManagerSite *site;
-	std::map<CL_GUITopLevelWindow *, GUITopLevelWindowDirect *> window_map;
-	std::vector<GUITopLevelWindowDirect *> root_window_z_order;	// Beginning is at the top
+	std::map<CL_GUITopLevelWindow *, CL_GUITopLevelWindowDirect *> window_map;
+	std::vector<CL_GUITopLevelWindowDirect *> root_window_z_order;	// Beginning is at the top
 	CL_Callback_v2<CL_InputEvent &, CL_InputState &> func_input_intercept;
 	CL_GUITopLevelWindow *activated_window;
 	CL_GUITopLevelWindow *capture_mouse_window;
 	CL_DisplayWindow display_window;
 	CL_SlotContainer slots;
-	bool setup_painting_called; // True when setup_painting() was called in GUIWindowManagerDirect
+	bool setup_painting_called; // True when setup_painting() was called in CL_GUIWindowManagerDirect
 	bool painting_set;	// True when the frame buffer is active (used by setup_painting() )
 
 public:
@@ -137,10 +139,10 @@ public:
 
 private:
 	CL_GUITopLevelWindow *get_window_at_point(const CL_Point &point);
-	CL_GUITopLevelWindow *get_window_at_point(const CL_Point &point, const std::vector<GUITopLevelWindowDirect *> &z_order);
+	CL_GUITopLevelWindow *get_window_at_point(const CL_Point &point, const std::vector<CL_GUITopLevelWindowDirect *> &z_order);
 
-	GUITopLevelWindowDirect *get_window_texture(CL_GUITopLevelWindow *handle);
-	void get_all_windows_zorder(bool only_visible, std::vector<GUIWindowManagerDirectWindow> &windows_dest_list, const std::vector<GUITopLevelWindowDirect *> &z_order) const;
+	CL_GUITopLevelWindowDirect *get_window_texture(CL_GUITopLevelWindow *handle);
+	void get_all_windows_zorder(bool only_visible, std::vector<CL_GUIWindowManagerDirectWindow> &windows_dest_list, const std::vector<CL_GUITopLevelWindowDirect *> &z_order) const;
 	void invoke_input_received(CL_GUITopLevelWindow *window, const CL_InputEvent &input_event, const CL_InputState &input_state);
 	bool is_constant_repaint_enabled(CL_GUIComponent *component) const;
 

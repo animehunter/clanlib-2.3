@@ -56,6 +56,7 @@
 #include "GUI/gui_window_manager_system.h"
 #include "GUI/gui_window_manager_texture.h"
 #include "GUI/gui_window_manager_texture_window.h"
+#include "GUI/gui_window_manager_direct.h"
 #include "GUI/gui_theme.h"
 #include "GUI/gui_theme_default.h"
 #include "GUI/gui_theme_part.h"

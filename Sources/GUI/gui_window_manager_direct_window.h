@@ -26,22 +26,36 @@
 **    Mark Page
 */
 
+/// \addtogroup clanGUI_System clanGUI System
+/// \{
+
 #pragma once
 
-class GUIWindowManagerDirectWindow_Impl;
+#include "API/GUI/gui_window_manager.h"
 
-class GUIWindowManagerDirectWindow
+class CL_GUIWindowManagerDirectWindow_Impl;
+
+/// \brief Direct window manager window.
+///
+/// \xmlonly !group=GUI/System! !header=gui.h! \endxmlonly
+class CL_GUIWindowManagerDirectWindow
 {
+/// \name Construction
+/// \{
 public:
-	GUIWindowManagerDirectWindow();
+	CL_GUIWindowManagerDirectWindow();
 
 	/// \brief Constructs a GUIWindowManagerTextureWindow
 	///
 	/// \param window = GUITop Level Window
 	/// \param geometry = Rect
-	GUIWindowManagerDirectWindow(CL_GUITopLevelWindow *window, const CL_Rect &geometry);
+	CL_GUIWindowManagerDirectWindow(CL_GUITopLevelWindow *window, const CL_Rect &geometry);
 
-	~GUIWindowManagerDirectWindow();
+	~CL_GUIWindowManagerDirectWindow();
+
+/// \}
+/// \name Attributes
+/// \{
 
 public:
 
@@ -55,8 +69,13 @@ public:
 	/// \return window
 	CL_GUITopLevelWindow *get_window() const;
 
-private:
-	CL_SharedPtr<GUIWindowManagerDirectWindow_Impl> impl;
+/// \}
+/// \name Implementation
+/// \{
 
+private:
+	CL_SharedPtr<CL_GUIWindowManagerDirectWindow_Impl> impl;
+/// \}
 };
 
+/// \}

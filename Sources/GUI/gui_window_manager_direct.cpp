@@ -26,56 +26,51 @@
 **    Mark Page
 */
 
-#include "precomp.h"
+#include "GUI/precomp.h"
 
-#include "gui_window_manager_direct.h"
+#include "API/GUI/gui_window_manager_direct.h"
 #include "gui_window_manager_provider_direct.h"
 #include "gui_window_manager_direct_window.h"
 
 /////////////////////////////////////////////////////////////////////////////
-// GUIWindowManagerDirect Construction:
+// CL_GUIWindowManagerDirect Construction:
 
-GUIWindowManagerDirect::GUIWindowManagerDirect()
+CL_GUIWindowManagerDirect::CL_GUIWindowManagerDirect()
 {
 }
 
-GUIWindowManagerDirect::GUIWindowManagerDirect(CL_DisplayWindow display_window) 
-: CL_GUIWindowManager(new GUIWindowManagerProvider_Direct(display_window))
+CL_GUIWindowManagerDirect::CL_GUIWindowManagerDirect(CL_DisplayWindow display_window) 
+: CL_GUIWindowManager(new CL_GUIWindowManagerProvider_Direct(display_window))
 {
 }
 
-GUIWindowManagerDirect::GUIWindowManagerDirect(const CL_GUIWindowManager &wm)
+CL_GUIWindowManagerDirect::CL_GUIWindowManagerDirect(const CL_GUIWindowManager &wm)
 : CL_GUIWindowManager(wm)
 {
-	if (dynamic_cast<GUIWindowManagerProvider_Direct *>(get_provider()) == 0)
-		throw CL_Exception("CL_GUIWindowManager object is not a GUIWindowManagerDirect!");
+	if (dynamic_cast<CL_GUIWindowManagerProvider_Direct *>(get_provider()) == 0)
+		throw CL_Exception("CL_GUIWindowManager object is not a CL_GUIWindowManagerDirect!");
 }
 
-GUIWindowManagerDirect::~GUIWindowManagerDirect()
+CL_GUIWindowManagerDirect::~CL_GUIWindowManagerDirect()
 {
 }
 /////////////////////////////////////////////////////////////////////////////
-// GUIWindowManagerDirect Attributes:
-GUIWindowManagerProvider_Direct *GUIWindowManagerDirect::get_provider() const
+// CL_GUIWindowManagerDirect Attributes:
+CL_GUIWindowManagerProvider_Direct *CL_GUIWindowManagerDirect::get_provider() const
 {
-	return static_cast <GUIWindowManagerProvider_Direct *> (CL_GUIWindowManager::get_provider());
-}
-
-std::vector<GUIWindowManagerDirectWindow> GUIWindowManagerDirect::get_windows(bool only_visible) const
-{
-	return get_provider()->get_windows(only_visible);
+	return static_cast <CL_GUIWindowManagerProvider_Direct *> (CL_GUIWindowManager::get_provider());
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// GUIWindowManagerDirect Events:
+// CL_GUIWindowManagerDirect Events:
 
-CL_Callback_v2<CL_InputEvent &, CL_InputState &> &GUIWindowManagerDirect::func_input_intercept()
+CL_Callback_v2<CL_InputEvent &, CL_InputState &> &CL_GUIWindowManagerDirect::func_input_intercept()
 {
 	return get_provider()->func_input_intercept;
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// GUIWindowManagerDirect Operations:
+// CL_GUIWindowManagerDirect Operations:
 
 /////////////////////////////////////////////////////////////////////////////
-// GUIWindowManagerDirect Implementation:
+// CL_GUIWindowManagerDirect Implementation:

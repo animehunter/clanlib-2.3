@@ -29,7 +29,6 @@
 #include "precomp.h"
 #include "app.h"
 #include "options.h"
-#include "gui_window_manager_direct.h"
 
 #include <cstdlib>
 
@@ -57,7 +56,7 @@ int App::start(const std::vector<CL_String> &args)
 	else
 		throw CL_Exception("No themes found");
 
-	GUIWindowManagerDirect wm(window);
+	CL_GUIWindowManagerDirect wm(window);
 	CL_GUIManager gui(wm, theme);
 	
 	CL_GraphicContext gc = window.get_gc();

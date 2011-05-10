@@ -37,12 +37,17 @@ gui_theme_part_property_impl.h \
 precomp.cpp \
 gui_window_manager_provider_texture.cpp \
 gui_window_manager_provider_texture.h \
+gui_window_manager_provider_direct.cpp \
+gui_window_manager_provider_direct.h \
+gui_window_manager_direct_window.h \
 gui_window_manager.cpp \
 gui_window_manager_system.cpp \
 gui_window_manager_texture.cpp \
+gui_window_manager_direct.cpp \
 gui_window_manager_provider_system.h \
 gui_window_manager_provider_system.cpp \
 gui_window_manager_texture_window.cpp \
+gui_window_manager_direct_window.cpp \
 accelerator_table.cpp \
 accelerator_key.cpp \
 Components/checkbox.cpp \

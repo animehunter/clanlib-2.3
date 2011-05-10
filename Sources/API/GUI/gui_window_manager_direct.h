@@ -26,41 +26,57 @@
 **    Mark Page
 */
 
+/// \addtogroup clanGUI_System clanGUI System
+/// \{
+
 #pragma once
 
-class GUIWindowManagerDirect_Impl;
-class GUIWindowManagerProvider_Direct;
-class GUIWindowManagerDirectWindow;
+#include "api_gui.h"
+#include "gui_window_manager.h"
 
-class CL_API_GUI GUIWindowManagerDirect : public CL_GUIWindowManager
+class CL_GUIWindowManagerProvider_Direct;
+class CL_GUIWindowManagerDirectWindow;
+
+/// \brief Direct window manager.
+///
+/// \xmlonly !group=GUI/System! !header=gui.h! \endxmlonly
+class CL_API_GUI CL_GUIWindowManagerDirect : public CL_GUIWindowManager
 {
-
+/// \name Construction
+/// \{
 public:
 
 	/// \brief Constructs a null instance.
-	GUIWindowManagerDirect();
+	CL_GUIWindowManagerDirect();
 
 	/// \brief Constructs a GUIWindowManagerTexture
 	///
 	/// \param display_window = Display Window
-	GUIWindowManagerDirect(CL_DisplayWindow display_window);
-	GUIWindowManagerDirect(const CL_GUIWindowManager &wm);
-	~GUIWindowManagerDirect();
+	CL_GUIWindowManagerDirect(CL_DisplayWindow display_window);
+	CL_GUIWindowManagerDirect(const CL_GUIWindowManager &wm);
+	~CL_GUIWindowManagerDirect();
+/// \}
 
+/// \name Attributes
+/// \{
 public:
 	/// \brief Retrieves the provider.
-	GUIWindowManagerProvider_Direct *get_provider() const;
+	CL_GUIWindowManagerProvider_Direct *get_provider() const;
 
-	/// \brief Get the window textures
-	///
-	/// \param only_visible = True = Only return windows when they are visible
-	/// \return The window textures
-	std::vector<GUIWindowManagerDirectWindow> get_windows(bool only_visible = true) const;
+/// \}
 
+/// \name Events
+/// \{
 public:
 	/// \brief void func_input_intercept(const CL_InputEvent &input_event, const CL_InputState &input_state)
 	CL_Callback_v2<CL_InputEvent &, CL_InputState &> &func_input_intercept();
+/// \}
 
+/// \name Implementation
+/// \{
 private:
+/// \}
 
 };
+
+/// \}

@@ -218,30 +218,6 @@
 			>
 		</File>
 		<File
-			RelativePath=".\Sources\gui_window_manager_direct.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\Sources\gui_window_manager_direct.h"
-			>
-		</File>
-		<File
-			RelativePath=".\Sources\gui_window_manager_direct_window.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\Sources\gui_window_manager_direct_window.h"
-			>
-		</File>
-		<File
-			RelativePath=".\Sources\gui_window_manager_provider_direct.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\Sources\gui_window_manager_provider_direct.h"
-			>
-		</File>
-		<File
 			RelativePath=".\Sources\options.cpp"
 			>
 		</File>
