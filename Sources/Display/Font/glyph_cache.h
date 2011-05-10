@@ -100,6 +100,10 @@ private:
 public:
 	// Contains the anti alias setting
 	bool anti_alias;
+
+	// true to enable subpixel rendering setting (implies anti_alias is true)
+	bool enable_subpixel;
+
 	CL_FontMetrics font_metrics;
 /// \}
 };

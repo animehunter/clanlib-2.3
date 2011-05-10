@@ -48,6 +48,7 @@ public:
 		fixed_pitch = false;
 		anti_alias = true;
 		anti_alias_set = false;
+		subpixel = true;
 	}
 
 	virtual ~CL_FontDescription_Impl() { return; }
@@ -70,6 +71,7 @@ public:
 	bool fixed_pitch;
 	bool anti_alias;
 	bool anti_alias_set;
+	bool subpixel;
 
 /// \}
 };

@@ -106,6 +106,9 @@ public:
 	/// \brief Returns true if set_anti_alias() was called. (Else, the anti-alias default setting depends on the implementation
 	bool get_anti_alias_set() const;
 
+	/// \brief Get the font subpixel rendering setting (defaults to true)
+	bool get_subpixel() const;
+
 	/// \brief Returns true if the font is identical
 	bool operator==(const CL_FontDescription &other) const;
 
@@ -152,6 +155,9 @@ public:
 
 	/// \brief Sets the font anti-alias setting
 	void set_anti_alias(bool setting = true);
+
+	/// \brief Sets the font subpixel rendering setting (defaults to true)
+	void set_subpixel(bool setting = true);
 
 /// \}
 /// \name Implementation

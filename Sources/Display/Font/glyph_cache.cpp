@@ -61,7 +61,8 @@ CL_GlyphCache::CL_GlyphCache()
 		0,0, 0, 0,0,0,0,0, 0,0,
 		false, false, false, false);
 
-	anti_alias = false;
+	anti_alias = true;
+	enable_subpixel = true;
 }
 
 CL_GlyphCache::~CL_GlyphCache()
@@ -258,12 +259,21 @@ void CL_GlyphCache::insert_glyph(CL_GraphicContext &gc, CL_Font_System_Position 
 
 void CL_GlyphCache::insert_glyph(CL_FontEngine *font_engine, CL_GraphicContext &gc, int glyph)
 {
-//	CL_FontPixelBuffer pb = font_engine->get_font_glyph(glyph, anti_alias, CL_Colorf::white);
-	CL_FontPixelBuffer pb = font_engine->get_font_glyph_subpixel(glyph, CL_Colorf::white);
-
-	if (pb.glyph)	// Ignore invalid glyphs
+	if (enable_subpixel)
 	{
-		insert_glyph(gc, pb);
+		CL_FontPixelBuffer pb = font_engine->get_font_glyph_subpixel(glyph, CL_Colorf::white);
+		if (pb.glyph)	// Ignore invalid glyphs
+		{
+			insert_glyph(gc, pb);
+		}
+	}
+	else
+	{
+		CL_FontPixelBuffer pb = font_engine->get_font_glyph_standard(glyph, anti_alias, CL_Colorf::white);
+		if (pb.glyph)	// Ignore invalid glyphs
+		{
+			insert_glyph(gc, pb);
+		}
 	}
 }
 

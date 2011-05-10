@@ -140,15 +140,25 @@ void CL_FontProvider_Freetype::load_font(const CL_FontDescription &desc, CL_IODe
 {
 	free_font();
 
-	glyph_cache.anti_alias = true;	// Default, anti_alias enabled
+	if (desc.get_subpixel())
+	{
+		glyph_cache.enable_subpixel = true;
+		glyph_cache.anti_alias = true;	// Implies anti_alias is set
+	}
+	else
+	{
+		if (desc.get_anti_alias_set())	// Anti-alias was set
+		{
+			glyph_cache.anti_alias = desc.get_anti_alias();	// Override the default
+		}
+		else
+		{
+			glyph_cache.anti_alias = true;
+		}
+	}
 
 	 // Load font from the opened file.
 	font_engine = new CL_FontEngine_Freetype(io_dev, desc.get_height(), desc.get_average_width());
-
-	if (desc.get_anti_alias_set())	// Anti-alias was set
-	{
-		glyph_cache.anti_alias = desc.get_anti_alias();	// Override the default
-	}
 
 	glyph_cache.font_metrics = font_engine->get_metrics();
 }
