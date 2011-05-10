@@ -147,6 +147,7 @@ void CL_FontProvider_Freetype::load_font(const CL_FontDescription &desc, CL_IODe
 	}
 	else
 	{
+		glyph_cache.enable_subpixel = false;
 		if (desc.get_anti_alias_set())	// Anti-alias was set
 		{
 			glyph_cache.anti_alias = desc.get_anti_alias();	// Override the default
