@@ -39,18 +39,15 @@ class CL_GUIWindowManagerDirectWindow;
 class CL_GUITopLevelWindowDirect
 {
 public:
-	CL_GUITopLevelWindowDirect(CL_GUITopLevelWindow *window) : window(window), enabled(true), visible(true), dirty(true), owner_window(NULL) { }
+	CL_GUITopLevelWindowDirect(CL_GUITopLevelWindow *window) : window(window), enabled(true), visible(true), owner_window(NULL) { }
 
 	CL_GUITopLevelWindow *window;	// The window that this texture belongs to
 	CL_Rect geometry;
 	bool enabled;
 	bool visible;
-	bool dirty;
 
 	CL_GUITopLevelWindowDirect *owner_window;
 	std::vector<CL_GUITopLevelWindowDirect *> child_windows_zorder;	// Beginning is at the top
-
-	std::vector<CL_Rect> update_region_list;		// Only valid when "dirty" is set to true
 };
 
 class CL_GUIWindowManagerProvider_Direct : public CL_GUIWindowManagerProvider
@@ -87,9 +84,7 @@ public:
 	void on_input_mouse_up(const CL_InputEvent &event, const CL_InputState &input_state);
 	void on_input_mouse_down(const CL_InputEvent &event, const CL_InputState &input_state);
 	void on_input_mouse_move(const CL_InputEvent &event, const CL_InputState &input_state);
-
-	void update_paint();
-
+	
 	void set_site(CL_GUIWindowManagerSite *site);
 	void create_window(
 		CL_GUITopLevelWindow *handle,

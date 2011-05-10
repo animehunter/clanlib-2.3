@@ -89,23 +89,6 @@ void CL_GUIWindowManagerProvider_Direct::destroy()
 	delete this;
 }
 
-void CL_GUIWindowManagerProvider_Direct::update_paint()
-{
-	std::map<CL_GUITopLevelWindow *, CL_GUITopLevelWindowDirect *>::iterator it;
-	for (it = window_map.begin(); it != window_map.end(); ++it)
-	{
-		if (it->second->dirty)
-		{
-			it->second->dirty = false;
-			std::vector<CL_Rect>::size_type size = it->second->update_region_list.size();
-			for (unsigned int i = 0; i < size; i++)
-			{
-				site->func_paint->invoke(it->first, it->second->update_region_list[i]);
-			}
-		}
-	}
-}
-
 void CL_GUIWindowManagerProvider_Direct::on_displaywindow_window_close()
 {
 	if (activated_window == 0)
@@ -468,51 +451,11 @@ bool CL_GUIWindowManagerProvider_Direct::is_maximized(CL_GUITopLevelWindow *hand
 
 void CL_GUIWindowManagerProvider_Direct::request_repaint(CL_GUITopLevelWindow *handle, const CL_Rect &update_region)
 {
-	// Only invalidate when a valid rect was given
-	if ((update_region.left >= update_region.right) || (update_region.top >= update_region.bottom))
-	{
-		return;
-	}
-
-	CL_GUITopLevelWindowDirect *wptr = get_window_texture(handle);
-	if (wptr->dirty)
-	{
-		// If the update region is already set, then check to see if it is a seperate rect or if it
-		// should be extended to include the new update region
-
-		bool updated = false;
-		std::vector<CL_Rect>::size_type size = wptr->update_region_list.size();
-		for (unsigned int i = 0; i < size; i++)
-		{
-			if (wptr->update_region_list[i].is_overlapped(update_region))
-			{
-				// Found an overlapping section
-				wptr->update_region_list[i].bounding_rect(update_region);
-				updated = true;
-				break;
-			}
-		}
-
-		if (!updated)
-		{
-			wptr->update_region_list.push_back(update_region);
-		}
-		else
-		{
-			//TODO: Check for overlapping rects in the wptr->update_region_list
-		}
-	}
-	else
-	{
-		wptr->dirty = true;
-		wptr->update_region_list.clear();
-		wptr->update_region_list.push_back(update_region);
-	}
+	// Since this window manager always redraws, request_repaint() is not required
 }
 
 void CL_GUIWindowManagerProvider_Direct::update()
 {
-	update_paint();
 }
 
 void CL_GUIWindowManagerProvider_Direct::setup_painting()
