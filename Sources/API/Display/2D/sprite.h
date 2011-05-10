@@ -69,9 +69,6 @@ public:
 	/// \brief Constructs a null instance.
 	CL_Sprite();
 
-	/// \brief Constructs a copy of another sprite.
-	CL_Sprite(const CL_Sprite &other);
-
 	/// \brief Constructs a Sprite
 	///
 	/// \param gc = Graphic Context
