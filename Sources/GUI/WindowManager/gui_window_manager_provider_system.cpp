@@ -37,7 +37,7 @@
 #include "API/Display/Window/input_device.h"
 #include "API/GUI/gui_window_manager_system.h"
 #include "API/Display/Render/blend_mode.h"
-#include "gui_manager_impl.h"
+#include "../gui_manager_impl.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CL_GUIWindowManagerProvider_System Construction:

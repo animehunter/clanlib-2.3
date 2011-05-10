@@ -42,8 +42,8 @@
 #include "API/Core/CSS/css_property.h"
 #include "API/Core/CSS/css_document.h"
 #include "API/Core/Math/hash_functions.h"
-#include "gui_manager_impl.h"
-#include "Components/../gui_css_strings.h"
+#include "../gui_manager_impl.h"
+#include "../gui_css_strings.h"
 #include <map>
 
 class CL_GUIThemePart_Impl

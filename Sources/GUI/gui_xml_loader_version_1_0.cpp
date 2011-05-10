@@ -54,7 +54,7 @@
 #include "API/GUI/Components/imageview.h"
 
 #include "gui_xml_loader_version_1_0.h"
-#include "gui_layout_provider_corners.h"
+#include "Layout/gui_layout_provider_corners.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CL_GUIXMLLoaderVersion_1_0 Construction:

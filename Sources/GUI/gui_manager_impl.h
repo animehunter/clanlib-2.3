@@ -42,7 +42,7 @@
 #include "API/GUI/gui_window_manager.h"
 #include "API/GUI/gui_theme.h"
 #include "gui_font_cache.h"
-#include "gui_theme_layout_manager.h"
+#include "Theme/gui_theme_layout_manager.h"
 #include <vector>
 #include <map>
 

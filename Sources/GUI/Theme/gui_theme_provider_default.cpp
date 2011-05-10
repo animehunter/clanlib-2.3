@@ -36,7 +36,7 @@
 #include "API/GUI/gui_theme_part.h"
 #include "API/GUI/gui_component.h"
 #include "gui_theme_provider_default.h"
-#include "gui_css_strings.h"
+#include "../gui_css_strings.h"
 #include "API/Display/Font/font.h"
 
 /////////////////////////////////////////////////////////////////////////////

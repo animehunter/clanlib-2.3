@@ -42,7 +42,7 @@
 #include "API/Display/2D/draw.h"
 #include "API/Display/2D/image.h"
 #include "API/Display/Render/blend_mode.h"
-#include "gui_manager_impl.h"
+#include "../gui_manager_impl.h"
 #include <algorithm>
 
 /////////////////////////////////////////////////////////////////////////////
