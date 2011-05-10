@@ -47,7 +47,6 @@ public:
 		strikeout = false;
 		fixed_pitch = false;
 		anti_alias = true;
-		anti_alias_set = false;
 		subpixel = true;
 	}
 
@@ -70,7 +69,6 @@ public:
 	bool strikeout;
 	bool fixed_pitch;
 	bool anti_alias;
-	bool anti_alias_set;
 	bool subpixel;
 
 /// \}

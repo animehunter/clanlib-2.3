@@ -98,17 +98,8 @@ void App::draw_font_info()
 	}
 	else
 	{
-		if (font_desc.get_anti_alias_set())
-		{
-			small_font.draw_text(gc, offset_x, offset_y, cl_format("Anti Alias : %1", font_desc.get_anti_alias() ? "true" : "false"),  CL_Colorf::white);
-		}else
-		{
-			small_font.draw_text(gc, offset_x, offset_y, "Anti Alias : Not Applicable",  CL_Colorf::white);
-		}
+		small_font.draw_text(gc, offset_x, offset_y, cl_format("Anti Alias : %1", font_desc.get_anti_alias() ? "true" : "false"),  CL_Colorf::white);
 	}
-	offset_y += gap;
-
-	small_font.draw_text(gc, offset_x, offset_y, cl_format("Anti Alias Set : %1", font_desc.get_anti_alias_set() ? "true" : "false"),  CL_Colorf::white);
 	offset_y += gap;
 
 	small_font.draw_text(gc, offset_x - 10, offset_y, "Example Text Size:", CL_Colorf::yellow);

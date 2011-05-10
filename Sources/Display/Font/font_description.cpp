@@ -121,20 +121,10 @@ bool CL_FontDescription::get_subpixel() const
 	return impl->subpixel;
 }
 
-bool CL_FontDescription::get_anti_alias_set() const
-{
-	return impl->anti_alias_set;
-}
-
 bool CL_FontDescription::operator==(const CL_FontDescription &other) const
 {
-	if ( (impl->anti_alias_set) && (other.impl->anti_alias_set) )
-	{
-		if (impl->anti_alias != other.impl->anti_alias)
-			return false;
-	}
-
 	return impl->typeface_name == other.impl->typeface_name && 
+			impl->anti_alias == other.impl->anti_alias && 
 			impl->subpixel == other.impl->subpixel && 
 			impl->height == other.impl->height && 
 			impl->average_width == other.impl->average_width && 
@@ -171,7 +161,6 @@ void CL_FontDescription::clone(const CL_FontDescription &copy)
 		impl->strikeout = copy.impl->strikeout;
 		impl->fixed_pitch = copy.impl->fixed_pitch;
 		impl->anti_alias = copy.impl->anti_alias;
-		impl->anti_alias_set = copy.impl->anti_alias_set; 
 		impl->subpixel = copy.impl->subpixel;
 	}
 }
@@ -229,7 +218,6 @@ void CL_FontDescription::set_fixed_pitch(bool setting)
 void CL_FontDescription::set_anti_alias(bool setting)
 {
 	impl->anti_alias = setting;
-	impl->anti_alias_set = true;
 }
 
 void CL_FontDescription::set_subpixel(bool setting)

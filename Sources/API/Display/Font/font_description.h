@@ -100,11 +100,8 @@ public:
 	/// \brief Returns the font fixed pitch setting
 	bool get_fixed_pitch() const;
 
-	/// \brief Get the font anti-alias setting
+	/// \brief Get the font anti-alias setting (defaults to true)
 	bool get_anti_alias() const;
-
-	/// \brief Returns true if set_anti_alias() was called. (Else, the anti-alias default setting depends on the implementation
-	bool get_anti_alias_set() const;
 
 	/// \brief Get the font subpixel rendering setting (defaults to true)
 	bool get_subpixel() const;
@@ -153,7 +150,7 @@ public:
 	/// \brief Sets the font fixed pitch setting
 	void set_fixed_pitch(bool setting = true);
 
-	/// \brief Sets the font anti-alias setting
+	/// \brief Sets the font anti-alias setting (defaults to true)
 	void set_anti_alias(bool setting = true);
 
 	/// \brief Sets the font subpixel rendering setting (defaults to true)
