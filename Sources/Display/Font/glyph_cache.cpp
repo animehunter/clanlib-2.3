@@ -258,7 +258,8 @@ void CL_GlyphCache::insert_glyph(CL_GraphicContext &gc, CL_Font_System_Position 
 
 void CL_GlyphCache::insert_glyph(CL_FontEngine *font_engine, CL_GraphicContext &gc, int glyph)
 {
-	CL_FontPixelBuffer pb = font_engine->get_font_glyph(glyph, anti_alias, CL_Colorf::white);
+//	CL_FontPixelBuffer pb = font_engine->get_font_glyph(glyph, anti_alias, CL_Colorf::white);
+	CL_FontPixelBuffer pb = font_engine->get_font_glyph_subpixel(glyph, CL_Colorf::white);
 
 	if (pb.glyph)	// Ignore invalid glyphs
 	{

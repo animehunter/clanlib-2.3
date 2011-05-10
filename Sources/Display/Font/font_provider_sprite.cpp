@@ -181,11 +181,18 @@ CL_Size CL_FontProvider_Sprite::get_text_size(CL_GraphicContext &gc, const CL_St
 /////////////////////////////////////////////////////////////////////////////
 // CL_FontProvider_Sprite Operations:
 
-CL_FontPixelBuffer CL_FontProvider_Sprite::get_font_glyph(int glyph, bool anti_alias, const CL_Colorf &color)
+CL_FontPixelBuffer CL_FontProvider_Sprite::get_font_glyph_standard(int glyph, bool anti_alias, const CL_Colorf &color)
 {
 	// Not supported
 	return CL_FontPixelBuffer();
 }
+
+CL_FontPixelBuffer CL_FontProvider_Sprite::get_font_glyph_subpixel(int glyph, const CL_Colorf &color)
+{
+	// Not supported
+	return CL_FontPixelBuffer();
+}
+
 
 int CL_FontProvider_Sprite::get_character_index(CL_GraphicContext &gc, const CL_String &text, const CL_Point &point)
 {

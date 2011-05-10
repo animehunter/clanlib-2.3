@@ -82,8 +82,13 @@ public:
 	/// \param glyph The glyph
 	/// \param anti_alias If anti_aliasing should be used
 	/// \param color The glyph colour
-	CL_FontPixelBuffer get_font_glyph(int glyph, bool anti_alias, const CL_Colorf &color);
+	CL_FontPixelBuffer get_font_glyph_standard(int glyph, bool anti_alias, const CL_Colorf &color);
 
+	/// \brief Constructs a pixel buffer using subpixel rendering from a Freetype glyph.
+	///
+	/// \param glyph The glyph
+	/// \param color The glyph colour
+	CL_FontPixelBuffer get_font_glyph_subpixel(int glyph, const CL_Colorf &color);
 
 /// \}
 /// \name Operations

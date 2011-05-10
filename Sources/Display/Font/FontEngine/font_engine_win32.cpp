@@ -95,12 +95,17 @@ CL_FontMetrics CL_FontEngine_Win32::get_metrics()
 		metrics.tmAveCharWidth == metrics.tmMaxCharWidth);
 }
 
-CL_FontPixelBuffer CL_FontEngine_Win32::get_font_glyph(int glyph, bool anti_alias, const CL_Colorf &color)
+CL_FontPixelBuffer CL_FontEngine_Win32::get_font_glyph_standard(int glyph, bool anti_alias, const CL_Colorf &color)
 {
 	if (anti_alias)
-		return get_font_glyph_lcd(glyph, color);
+		return get_font_glyph_gray8(glyph, color);
 	else
 		return get_font_glyph_mono(glyph, color);
+}
+
+CL_FontPixelBuffer CL_FontEngine_Win32::get_font_glyph_subpixel(int glyph, const CL_Colorf &color)
+{
+	return get_font_glyph_lcd(glyph, color);
 }
 
 CL_FontPixelBuffer CL_FontEngine_Win32::get_font_glyph_lcd(int glyph, const CL_Colorf &color)
@@ -204,16 +209,15 @@ CL_FontPixelBuffer CL_FontEngine_Win32::get_font_glyph_gray8(int glyph, const CL
 		DWORD d_width = glyph_metrics.gmBlackBoxX;
 		DWORD *d = (DWORD *) pixelbuffer.get_data();
 
-		// CL_Color icolor = color;
-		// unsigned int c = (icolor.get_red() << 24) + (icolor.get_green() << 16) + (icolor.get_blue() << 8);
+		CL_Color icolor = color;
+		unsigned int c = (icolor.get_red() << 24) + (icolor.get_green() << 16) + (icolor.get_blue() << 8);
 
 		for (DWORD py = 0; py < glyph_metrics.gmBlackBoxY; py++)
 		{
 			for (DWORD px = 0; px < glyph_metrics.gmBlackBoxX; px++)
 			{
 				DWORD gray = s[px + py*s_pitch];
-				// d[px + py*d_width] = c + (gray*255+32)/64;
-				d[px + py*d_width] = (gray << 24) + (gray << 16) + (gray << 8) + 255;
+				d[px + py*d_width] = c + (gray*255+32)/64;
 			}
 		}
 
@@ -251,15 +255,15 @@ CL_FontPixelBuffer CL_FontEngine_Win32::get_font_glyph_mono(int glyph, const CL_
 		DWORD d_width = glyph_metrics.gmBlackBoxX;
 		DWORD *d = (DWORD *) pixelbuffer.get_data();
 
-		// CL_Color icolor = color;
-		// unsigned int c = (icolor.get_red() << 24) + (icolor.get_green() << 16) + (icolor.get_blue() << 8);
+		CL_Color icolor = color;
+		unsigned int c = (icolor.get_red() << 24) + (icolor.get_green() << 16) + (icolor.get_blue() << 8);
 
 		for (DWORD py = 0; py < glyph_metrics.gmBlackBoxY; py++)
 		{
 			for (DWORD px = 0; px < glyph_metrics.gmBlackBoxX; px++)
 			{
-				DWORD gray = ((s[px/8 + py*s_pitch] >> (7-px%8)) & 1) * 255;
-				d[px + py*d_width] = (gray << 24) + (gray << 16) + (gray << 8) + 255;
+				DWORD gray = c + ((s[px/8 + py*s_pitch] >> (7-px%8)) & 1) * 255;
+				d[px + py*d_width] = gray;
 			}
 		}
 

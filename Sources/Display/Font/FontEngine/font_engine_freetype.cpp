@@ -294,7 +294,7 @@ CL_GlyphOutline *CL_FontEngine_Freetype::load_glyph_outline(int c)
 	return outline;
 }
 
-CL_FontPixelBuffer CL_FontEngine_Freetype::get_font_glyph(int glyph, bool anti_alias, const CL_Colorf &color)
+CL_FontPixelBuffer CL_FontEngine_Freetype::get_font_glyph_standard(int glyph, bool anti_alias, const CL_Colorf &color)
 {
 	CL_FontPixelBuffer font_buffer;
 	FT_GlyphSlot slot = face->glyph;
@@ -308,16 +308,16 @@ CL_FontPixelBuffer CL_FontEngine_Freetype::get_font_glyph(int glyph, bool anti_a
 	// Use FT_RENDER_MODE_NORMAL for 8bit anti-aliased bitmaps. Use FT_RENDER_MODE_MONO for 1-bit bitmaps
 	if (anti_alias)
 	{
-		error = FT_Load_Glyph(face, glyph_index, FT_LOAD_TARGET_LCD );
+		error = FT_Load_Glyph(face, glyph_index, FT_LOAD_TARGET_LIGHT );
 		if (error) return font_buffer;
-
-		error = FT_Render_Glyph( face->glyph, FT_RENDER_MODE_LCD);
+	
+		error = FT_Render_Glyph( face->glyph, FT_RENDER_MODE_NORMAL);
 	}
 	else
 	{
 		error = FT_Load_Glyph(face, glyph_index, FT_LOAD_TARGET_MONO);
 		if (error) return font_buffer;
-
+				
 		error = FT_Render_Glyph( face->glyph, FT_RENDER_MODE_MONO);
 	}
 
@@ -337,28 +337,39 @@ CL_FontPixelBuffer CL_FontEngine_Freetype::get_font_glyph(int glyph, bool anti_a
 	int src_height = slot->bitmap.rows;
 	int src_pitch = slot->bitmap.pitch;
 
+	CL_PixelBuffer pixelbuffer(src_width, src_height, cl_rgba8);
+	font_buffer.buffer = pixelbuffer;
+	font_buffer.buffer_rect = pixelbuffer.get_size();
+	font_buffer.empty_buffer = false;
+
+	unsigned char *src_data = slot->bitmap.buffer;
+	unsigned char *pixel_data = (unsigned char *) font_buffer.buffer.get_data();
+	unsigned char *dest_data;
+	int dest_pitch = font_buffer.buffer.get_pitch();
+
+	unsigned int src_red = (unsigned int) (color.r * 256);
+	unsigned int src_green = (unsigned int) (color.g * 256);
+	unsigned int src_blue = (unsigned int) (color.b * 256);
+	unsigned int src_alpha = (unsigned int) (color.a * 256);
+
+	if (src_red > 255) src_red = 255;
+	if (src_green > 255) src_green = 255;
+	if (src_blue > 255) src_blue = 255;
+	if (src_alpha > 255) src_alpha = 255;
+
 	// Convert the bitmap
 	if (anti_alias)
 	{
-		CL_PixelBuffer pixelbuffer(src_width/3, src_height, cl_rgba8);
-		font_buffer.buffer = pixelbuffer;
-		font_buffer.buffer_rect = pixelbuffer.get_size();
-		font_buffer.empty_buffer = false;
-
-		unsigned char *src_data = slot->bitmap.buffer;
-		unsigned char *pixel_data = (unsigned char *) font_buffer.buffer.get_data();
-		int dest_pitch = font_buffer.buffer.get_pitch();
-
 		// For 8bit bitmaps
 		for (int ycnt = 0; ycnt < src_height; ycnt++)
 		{
-			unsigned char *dest_data = pixel_data;
-			for (int xcnt = 0; xcnt < src_width/3; xcnt++)
+			dest_data = pixel_data;
+			for (int xcnt = 0; xcnt < src_width; xcnt++)
 			{
-				*(dest_data++)= 0;
-				*(dest_data++)= src_data[xcnt*3+2];
-				*(dest_data++)= src_data[xcnt*3+1];
-				*(dest_data++)= src_data[xcnt*3+0];
+				*(dest_data++)= src_data[xcnt];
+				*(dest_data++)= src_blue;
+				*(dest_data++)= src_green;
+				*(dest_data++)= src_red;
 			}
 			pixel_data += dest_pitch;
 			src_data += src_pitch;
@@ -366,26 +377,6 @@ CL_FontPixelBuffer CL_FontEngine_Freetype::get_font_glyph(int glyph, bool anti_a
 	}
 	else
 	{
-		CL_PixelBuffer pixelbuffer(src_width, src_height, cl_rgba8);
-		font_buffer.buffer = pixelbuffer;
-		font_buffer.buffer_rect = pixelbuffer.get_size();
-		font_buffer.empty_buffer = false;
-
-		unsigned char *src_data = slot->bitmap.buffer;
-		unsigned char *pixel_data = (unsigned char *) font_buffer.buffer.get_data();
-		unsigned char *dest_data;
-		int dest_pitch = font_buffer.buffer.get_pitch();
-
-		unsigned int src_red = (unsigned int) (color.r * 256);
-		unsigned int src_green = (unsigned int) (color.g * 256);
-		unsigned int src_blue = (unsigned int) (color.b * 256);
-		unsigned int src_alpha = (unsigned int) (color.a * 256);
-
-		if (src_red > 255) src_red = 255;
-		if (src_green > 255) src_green = 255;
-		if (src_blue > 255) src_blue = 255;
-		if (src_alpha > 255) src_alpha = 255;
-
 		int src_byte;
 		unsigned char *src_work_ptr;
 
@@ -402,23 +393,81 @@ CL_FontPixelBuffer CL_FontEngine_Freetype::get_font_glyph(int glyph, bool anti_a
 				}
 				if (src_byte & 0x80)	// Bit set
 				{
-					*(dest_data++) = 255;	// Alpha
-					*(dest_data++)= src_blue;
-					*(dest_data++)= src_green;
-					*(dest_data++)= src_red;	
+					*(dest_data++) = 255;
 				}
 				else
 				{
-					*(dest_data++) = 255;		// Alpha
-					*(dest_data++)= 0;
-					*(dest_data++)= 0;
-					*(dest_data++)= 0;
+					*(dest_data++) = 0;
 				}
 				src_byte = src_byte << 1;
+				*(dest_data++)= src_blue;
+				*(dest_data++)= src_green;
+				*(dest_data++)= src_red;
 			}
 			pixel_data += dest_pitch;
 			src_data += src_pitch;
 		}
+	}
+
+	return font_buffer;
+}
+
+CL_FontPixelBuffer CL_FontEngine_Freetype::get_font_glyph_subpixel(int glyph, const CL_Colorf &color)
+{
+	CL_FontPixelBuffer font_buffer;
+	FT_GlyphSlot slot = face->glyph;
+	FT_UInt glyph_index;
+
+	// Get glyph index
+	glyph_index = FT_Get_Char_Index(face, glyph);
+
+	FT_Error error;
+
+	error = FT_Load_Glyph(face, glyph_index, FT_LOAD_TARGET_LCD );
+	if (error) return font_buffer;
+
+	error = FT_Render_Glyph( face->glyph, FT_RENDER_MODE_LCD);
+
+	font_buffer.glyph = glyph;
+	// Set Increment pen position
+	font_buffer.increment.x = (slot->advance.x+32) >> 6;
+	font_buffer.increment.y = (slot->advance.y+32) >> 6;
+ 
+	if (error || slot->bitmap.rows == 0 || slot->bitmap.width == 0)
+		return font_buffer;
+
+	// Set destination offset
+	font_buffer.offset.x = slot->bitmap_left;
+	font_buffer.offset.y = -slot->bitmap_top;
+
+	int src_width = slot->bitmap.width;
+	int src_height = slot->bitmap.rows;
+	int src_pitch = slot->bitmap.pitch;
+
+	// Convert the bitmap
+
+	CL_PixelBuffer pixelbuffer(src_width/3, src_height, cl_rgba8);
+	font_buffer.buffer = pixelbuffer;
+	font_buffer.buffer_rect = pixelbuffer.get_size();
+	font_buffer.empty_buffer = false;
+
+	unsigned char *src_data = slot->bitmap.buffer;
+	unsigned char *pixel_data = (unsigned char *) font_buffer.buffer.get_data();
+	int dest_pitch = font_buffer.buffer.get_pitch();
+
+	// For 8bit bitmaps
+	for (int ycnt = 0; ycnt < src_height; ycnt++)
+	{
+		unsigned char *dest_data = pixel_data;
+		for (int xcnt = 0; xcnt < src_width/3; xcnt++)
+		{
+			*(dest_data++)= 0;
+			*(dest_data++)= src_data[xcnt*3+2];
+			*(dest_data++)= src_data[xcnt*3+1];
+			*(dest_data++)= src_data[xcnt*3+0];
+		}
+		pixel_data += dest_pitch;
+		src_data += src_pitch;
 	}
 
 	return font_buffer;
