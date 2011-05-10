@@ -214,7 +214,7 @@ CL_FontPixelBuffer CL_FontEngine_Win32::get_font_glyph_gray8(int glyph)
 			for (DWORD px = 0; px < glyph_metrics.gmBlackBoxX; px++)
 			{
 				DWORD gray = s[px + py*s_pitch];
-				d[px + py*d_width] = (gray << 24) + (gray << 16) + (gray << 8) + 255;
+				d[px + py*d_width] = 0xFFFFFF00 + (gray * 255 + 32) / 64;
 			}
 		}
 
@@ -256,8 +256,8 @@ CL_FontPixelBuffer CL_FontEngine_Win32::get_font_glyph_mono(int glyph)
 		{
 			for (DWORD px = 0; px < glyph_metrics.gmBlackBoxX; px++)
 			{
-				DWORD gray = ((s[px/8 + py*s_pitch] >> (7-px%8)) & 1) * 255;
-				d[px + py*d_width] = (gray << 24) + (gray << 16) + (gray << 8) + 255;
+				DWORD gray = 0xFFFFFF00 + ((s[px/8 + py*s_pitch] >> (7-px%8)) & 1) * 255;
+				d[px + py*d_width] = gray;
 			}
 		}
 
