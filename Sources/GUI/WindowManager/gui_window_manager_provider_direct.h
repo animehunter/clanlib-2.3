@@ -136,7 +136,6 @@ private:
 	CL_GUITopLevelWindow *get_window_at_point(const CL_Point &point, const std::vector<CL_GUITopLevelWindowDirect *> &z_order);
 
 	CL_GUITopLevelWindowDirect *get_direct_window(CL_GUITopLevelWindow *handle);
-	void get_all_windows_zorder(bool only_visible, std::vector<CL_GUIWindowManagerDirectWindow> &windows_dest_list, const std::vector<CL_GUITopLevelWindowDirect *> &z_order) const;
 	void invoke_input_received(CL_GUITopLevelWindow *window, const CL_InputEvent &input_event, const CL_InputState &input_state);
 	bool is_constant_repaint_enabled(CL_GUIComponent *component) const;
 

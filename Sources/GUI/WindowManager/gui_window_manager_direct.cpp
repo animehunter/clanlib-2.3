@@ -30,7 +30,6 @@
 
 #include "API/GUI/gui_window_manager_direct.h"
 #include "gui_window_manager_provider_direct.h"
-#include "gui_window_manager_direct_window.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CL_GUIWindowManagerDirect Construction:

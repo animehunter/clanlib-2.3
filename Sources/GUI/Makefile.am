@@ -41,7 +41,6 @@ Manager/gui_window_manager_provider_texture.cpp \
 Manager/gui_window_manager_provider_texture.h \
 Manager/gui_window_manager_provider_direct.cpp \
 Manager/gui_window_manager_provider_direct.h \
-Manager/gui_window_manager_direct_window.h \
 Manager/gui_window_manager.cpp \
 Manager/gui_window_manager_system.cpp \
 Manager/gui_window_manager_texture.cpp \
@@ -49,7 +48,6 @@ Manager/gui_window_manager_direct.cpp \
 Manager/gui_window_manager_provider_system.h \
 Manager/gui_window_manager_provider_system.cpp \
 Manager/gui_window_manager_texture_window.cpp \
-Manager/gui_window_manager_direct_window.cpp \
 accelerator_table.cpp \
 accelerator_key.cpp \
 Components/checkbox.cpp \

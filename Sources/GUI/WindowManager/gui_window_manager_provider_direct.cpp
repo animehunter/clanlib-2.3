@@ -29,7 +29,6 @@
 #include "GUI/precomp.h"
 
 #include "gui_window_manager_provider_direct.h"
-#include "gui_window_manager_direct_window.h"
 #include "API/GUI/gui_window_manager.h"
 #include "API/Display/Render/graphic_context.h"
 #include "API/Display/Window/input_context.h"
@@ -554,21 +553,4 @@ CL_GUITopLevelWindowDirect *CL_GUIWindowManagerProvider_Direct::get_direct_windo
 	return it->second;
 }
 
-// Used by get_windows() to get child windows z order
-void CL_GUIWindowManagerProvider_Direct::get_all_windows_zorder(bool only_visible, std::vector<CL_GUIWindowManagerDirectWindow> &windows_dest_list, const std::vector<CL_GUITopLevelWindowDirect *> &z_order) const
-{
-	std::vector<CL_GUITopLevelWindowDirect *>::size_type index, size;
-	size = z_order.size();
-	for (index = size; index > 0; index--)
-	{
-		CL_GUITopLevelWindowDirect *toplevel_window = z_order[index-1];
-		if ( (only_visible == false) || (toplevel_window->visible) )
-		{
-			windows_dest_list.push_back(CL_GUIWindowManagerDirectWindow(toplevel_window->window, toplevel_window->geometry));
-
-			// Get all children
-			get_all_windows_zorder(only_visible, windows_dest_list, toplevel_window->child_windows_zorder);
-		}
-	}
-}
 
