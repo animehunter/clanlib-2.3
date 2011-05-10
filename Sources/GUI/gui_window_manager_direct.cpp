@@ -62,14 +62,6 @@ CL_GUIWindowManagerProvider_Direct *CL_GUIWindowManagerDirect::get_provider() co
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// CL_GUIWindowManagerDirect Events:
-
-CL_Callback_v2<CL_InputEvent &, CL_InputState &> &CL_GUIWindowManagerDirect::func_input_intercept()
-{
-	return get_provider()->func_input_intercept;
-}
-
-/////////////////////////////////////////////////////////////////////////////
 // CL_GUIWindowManagerDirect Operations:
 
 /////////////////////////////////////////////////////////////////////////////

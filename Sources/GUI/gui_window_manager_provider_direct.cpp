@@ -118,23 +118,12 @@ void CL_GUIWindowManagerProvider_Direct::on_input(const CL_InputEvent &input_eve
 {
 	if (activated_window == 0)
 		return;
-
-	CL_InputEvent new_input_event = input_event;
-	CL_InputState new_input_state = input_state;
-
-	if (!func_input_intercept.is_null())
-		func_input_intercept.invoke(new_input_event, new_input_state);
-
-	invoke_input_received(activated_window, new_input_event, new_input_state);
+	
+	invoke_input_received(activated_window, input_event, input_state);
 }
 
 void CL_GUIWindowManagerProvider_Direct::on_input_mouse_move(const CL_InputEvent &input_event, const CL_InputState &input_state)
 {
-	CL_InputEvent new_input_event = input_event;
-	CL_InputState new_input_state = input_state;
-
-	if (!func_input_intercept.is_null())
-				func_input_intercept.invoke(new_input_event, new_input_state);
 
 	bool capture_mouse_flag = false;
 	if (capture_mouse_window)
@@ -149,11 +138,11 @@ void CL_GUIWindowManagerProvider_Direct::on_input_mouse_move(const CL_InputEvent
 	}
 	else
 	{
-		toplevel_window = get_window_at_point(new_input_event.mouse_pos);
+		toplevel_window = get_window_at_point(input_event.mouse_pos);
 	}
 
 	if (toplevel_window)
-		invoke_input_received(toplevel_window, new_input_event, new_input_state);
+		invoke_input_received(toplevel_window, input_event, input_state);
 }
 
 void CL_GUIWindowManagerProvider_Direct::on_input_mouse_up(const CL_InputEvent &input_event, const CL_InputState &input_state)
@@ -166,33 +155,22 @@ void CL_GUIWindowManagerProvider_Direct::on_input_mouse_up(const CL_InputEvent &
 		return;
 	}
 
-	CL_InputEvent new_input_event = input_event;
-	CL_InputState new_input_state = input_state;
-
-	if (!func_input_intercept.is_null())
-		func_input_intercept.invoke(new_input_event, new_input_state);
-
-	invoke_input_received(capture_mouse_window, new_input_event, new_input_state);
+	invoke_input_received(capture_mouse_window, input_event, input_state);
 
 
 }
 void CL_GUIWindowManagerProvider_Direct::on_input_mouse_down(const CL_InputEvent &input_event, const CL_InputState &input_state)
 {
-	CL_InputEvent new_input_event = input_event;
-	CL_InputState new_input_state = input_state;
-
-	if (!func_input_intercept.is_null())
-		func_input_intercept.invoke(new_input_event, new_input_state);
 
 	// It seems multiple windows in the same app act differently for window SetCapture()
 	if (capture_mouse_window)
 	{
-		invoke_input_received(capture_mouse_window, new_input_event, new_input_state);
+		invoke_input_received(capture_mouse_window, input_event, input_state);
 		return;
 	}
 
 	CL_GUITopLevelWindow *toplevel_window;
-	toplevel_window = get_window_at_point(new_input_event.mouse_pos);
+	toplevel_window = get_window_at_point(input_event.mouse_pos);
 
 	if (toplevel_window)
 		bring_to_front(toplevel_window);
@@ -208,7 +186,7 @@ void CL_GUIWindowManagerProvider_Direct::on_input_mouse_down(const CL_InputEvent
 			if (activated_window)
 			{
 				site->func_focus_lost->invoke(activated_window);
-				toplevel_window = get_window_at_point(new_input_event.mouse_pos);
+				toplevel_window = get_window_at_point(input_event.mouse_pos);
 			}
 		}
 	}
@@ -220,14 +198,14 @@ void CL_GUIWindowManagerProvider_Direct::on_input_mouse_down(const CL_InputEvent
 		{
 			activated_window = toplevel_window;
 			site->func_focus_gained->invoke(activated_window);
-			toplevel_window = get_window_at_point(new_input_event.mouse_pos);
+			toplevel_window = get_window_at_point(input_event.mouse_pos);
 		}
 	}
 
 	// Send mouse click event to toplevel window
 	if (toplevel_window)
 	{
-		invoke_input_received(toplevel_window, new_input_event, new_input_state);
+		invoke_input_received(toplevel_window, input_event,input_state);
 	}
 
 }

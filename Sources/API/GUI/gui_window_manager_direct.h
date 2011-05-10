@@ -65,13 +65,6 @@ public:
 
 /// \}
 
-/// \name Events
-/// \{
-public:
-	/// \brief void func_input_intercept(const CL_InputEvent &input_event, const CL_InputState &input_state)
-	CL_Callback_v2<CL_InputEvent &, CL_InputState &> &func_input_intercept();
-/// \}
-
 /// \name Implementation
 /// \{
 private:

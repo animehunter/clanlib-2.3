@@ -70,7 +70,6 @@ public:
 	CL_GUIWindowManagerSite *site;
 	std::map<CL_GUITopLevelWindow *, CL_GUITopLevelWindowDirect *> window_map;
 	std::vector<CL_GUITopLevelWindowDirect *> root_window_z_order;	// Beginning is at the top
-	CL_Callback_v2<CL_InputEvent &, CL_InputState &> func_input_intercept;
 	CL_GUITopLevelWindow *activated_window;
 	CL_GUITopLevelWindow *capture_mouse_window;
 	CL_DisplayWindow display_window;
