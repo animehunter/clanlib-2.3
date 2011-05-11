@@ -171,6 +171,7 @@ clanCore_includes = \
 	Core/IOData/directory_scanner.h \
 	Core/IOData/file.h \
 	Core/IOData/file_help.h \
+	Core/IOData/html_url.h \
 	Core/IOData/iodevice.h \
 	Core/IOData/iodevice_memory.h \
 	Core/IOData/iodevice_provider.h \

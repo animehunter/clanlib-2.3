@@ -250,6 +250,7 @@ if test "$use_sse2" != "no"; then
 else
 	extra_CFLAGS_clanCore="$extra_CFLAGS_clanCore -DCL_DISABLE_SSE2"
 fi
+extra_CFLAGS_clanCore="$extra_CFLAGS_clanCore -pthread -std=c++0x"
 
 dnl -----------------------------------------------------------------------
 dnl Check system endianess

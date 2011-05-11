@@ -11,6 +11,7 @@ precomp.h \
 swr_render_buffer_provider.h \
 swr_program_object_provider.h \
 swr_display_window_provider.h \
+software_program_standard.h \
 Canvas/pixel_canvas.h \
 Canvas/Renderers/pixel_fill_renderer.h \
 Canvas/Renderers/pixel_bicubic_renderer.h \
@@ -32,6 +33,7 @@ vertex_attribute_fetcher.h \
 swr_frame_buffer_provider.h \
 swr_occlusion_query_provider.h \
 swr_graphic_context_provider.h \
+software_program_standard.cpp \
 swr_vertex_array_buffer_provider.cpp \
 swr_shader_object_provider.cpp \
 swr_program_object_provider.cpp \
