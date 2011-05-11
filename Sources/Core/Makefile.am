@@ -16,6 +16,7 @@ IOData/directory.cpp \
 IOData/directory_scanner.cpp \
 IOData/endianess.cpp \
 IOData/file.cpp \
+IOData/html_url.cpp \
 IOData/file_help.cpp \
 IOData/iodevice.cpp \
 IOData/iodevice_memory.cpp \
