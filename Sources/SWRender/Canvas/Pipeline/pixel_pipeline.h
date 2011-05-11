@@ -44,7 +44,7 @@ public:
 	CL_PixelPipeline();
 	~CL_PixelPipeline();
 
-	void queue(CL_PixelCommand *command) { queue(std::unique_ptr<CL_PixelCommand>(command)); } 
+	void queue(CL_PixelCommand *command) { std::unique_ptr<CL_PixelCommand> cmd(command); queue(cmd); } 
 	void queue(std::unique_ptr<CL_PixelCommand> &command);
 
 	void wait_for_workers();

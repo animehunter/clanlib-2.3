@@ -3,12 +3,10 @@ lib_LTLIBRARIES = libclan23GUI.la
 libclan23GUI_la_SOURCES = \
 setup_gui.h \
 setup_gui.cpp \
-
 gui_font_cache.h \
 gui_font_cache.cpp \
 gui_xml_loader_version_1_0.cpp \
 gui_xml_loader_version_1_0.h \
-gui_message_activation_change.cpp \
 Layout/gui_layout_corners.cpp \
 Layout/gui_layout.cpp \
 Layout/gui_layout_provider_corners.cpp \
@@ -22,6 +20,7 @@ Message/gui_message_focus_change.cpp \
 Message/gui_message_input.cpp \
 Message/gui_message_pointer.cpp \
 Message/gui_message_resize.cpp \
+Message/gui_message_activation_change.cpp \
 Theme/gui_theme.cpp \
 Theme/gui_theme_default.cpp \
 Theme/gui_theme_provider_default.cpp \
@@ -37,17 +36,17 @@ Theme/gui_theme_default_impl.h \
 precomp.cpp \
 gui_manager.cpp \
 gui_manager_impl.cpp \
-Manager/gui_window_manager_provider_texture.cpp \
-Manager/gui_window_manager_provider_texture.h \
-Manager/gui_window_manager_provider_direct.cpp \
-Manager/gui_window_manager_provider_direct.h \
-Manager/gui_window_manager.cpp \
-Manager/gui_window_manager_system.cpp \
-Manager/gui_window_manager_texture.cpp \
-Manager/gui_window_manager_direct.cpp \
-Manager/gui_window_manager_provider_system.h \
-Manager/gui_window_manager_provider_system.cpp \
-Manager/gui_window_manager_texture_window.cpp \
+WindowManager/gui_window_manager_provider_texture.cpp \
+WindowManager/gui_window_manager_provider_texture.h \
+WindowManager/gui_window_manager_provider_direct.cpp \
+WindowManager/gui_window_manager_provider_direct.h \
+WindowManager/gui_window_manager.cpp \
+WindowManager/gui_window_manager_system.cpp \
+WindowManager/gui_window_manager_texture.cpp \
+WindowManager/gui_window_manager_direct.cpp \
+WindowManager/gui_window_manager_provider_system.h \
+WindowManager/gui_window_manager_provider_system.cpp \
+WindowManager/gui_window_manager_texture_window.cpp \
 accelerator_table.cpp \
 accelerator_key.cpp \
 Components/checkbox.cpp \
