@@ -62,7 +62,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CL_TextEdit Construction:
 
-CL_TextEdit::CL_TextEdit(const CL_GUIComponentDescription &desc, CL_GUIComponent *parent)
+CL_TextEdit::CL_TextEdit(CL_GUIComponent *parent)
 : CL_GUIComponent(parent), impl(new CL_TextEdit_Impl)
 {
 	set_type_name(CssStr::TextEdit::type_name);
