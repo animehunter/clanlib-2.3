@@ -78,6 +78,13 @@ namespace CssStr
 		const CL_StringRef part_cursor = "cursor";
 	}
 
+	namespace TextEdit
+	{
+		const CL_StringRef type_name = "textedit";
+		const CL_StringRef part_selection = "selection";
+		const CL_StringRef part_cursor = "cursor";
+	}
+
 	namespace Label
 	{
 		const CL_StringRef type_name = "label";

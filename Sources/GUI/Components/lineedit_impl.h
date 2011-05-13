@@ -150,7 +150,6 @@ public:
 	} undo_info;
 
 	bool select_all_on_focus_gain;
+
+	static const CL_StringRef numeric_mode_characters;
 };
-
-
-

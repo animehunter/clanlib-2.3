@@ -58,7 +58,7 @@
 #include "stdlib.h"
 #endif
 
-const CL_StringRef numeric_mode_characters = "0123456789";
+const CL_StringRef CL_LineEdit_Impl::numeric_mode_characters = "0123456789";
 
 /////////////////////////////////////////////////////////////////////////////
 // CL_LineEdit Construction:
