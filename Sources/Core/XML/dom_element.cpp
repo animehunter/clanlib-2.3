@@ -398,16 +398,11 @@ void CL_DomElement::set_child_string(const CL_DomString &name, const CL_DomStrin
 		append_child(element);
 	}
 
+	while (!element.get_first_child().is_null())
+		element.remove_child(element.get_first_child());
+
 	CL_DomText dom_text = get_owner_document().create_text_node(value);
-	if (element.get_first_child().is_text())
-	{
-		CL_DomNode temp_domnode = element.get_first_child();
-		replace_child(dom_text, temp_domnode);
-	}
-	else
-	{
-		element.append_child(dom_text);
-	}
+	element.append_child(dom_text);
 }
 
 void CL_DomElement::set_child_string_ns(const CL_DomString &namespace_uri, const CL_DomString &qualified_name, const CL_DomString &value)
