@@ -915,8 +915,8 @@ CL_Vec2i CL_TextEdit_Impl::from_offset(CL_String::size_type offset) const
 	int line = 0;
 	while (offset > lines[line].text.size())
 	{
-		line++;
 		offset -= lines[line].text.size() + 1;
+		line++;
 	}
 	return CL_Vec2i(offset, line);
 }
