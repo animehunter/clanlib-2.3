@@ -47,7 +47,7 @@ public:
 		clip_end_offset(0),
 		ignore_mouse_events(false),
 		cursor_drawing_enabled_when_parent_focused(false),
-		select_all_on_focus_gain(true)
+		select_all_on_focus_gain(false)
 	{
 		prop_text_color = CL_GUIThemePartProperty(CssStr::text_color, "black");
 		lines.resize(1);

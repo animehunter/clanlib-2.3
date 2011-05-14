@@ -409,6 +409,60 @@ void CL_TextEdit_Impl::on_process_message(CL_GUIMessage &msg)
 					// Do not consume messages on read only component (only allow CTRL-A and CTRL-C)
 					return;
 				}
+				else if (e.id == CL_KEY_UP)
+				{
+					if (e.shift && selection_length == 0)
+						selection_start = cursor_pos;
+
+					if (cursor_pos.y > 0)
+					{
+						cursor_pos.y--;
+						cursor_pos.x = cl_min(lines[cursor_pos.y].text.size(), cursor_pos.x);
+					}
+
+					if (e.shift)
+					{
+						selection_length = to_offset(cursor_pos) - to_offset(selection_start);
+					}
+					else
+					{
+						// Clear the selection if a cursor key is pressed but shift isn't down. 
+						selection_start = CL_Vec2i(0,0);
+						selection_length = 0;
+					}
+
+					textedit->request_repaint();
+					undo_info.first_text_insert = true;
+
+					msg.set_consumed();
+				}
+				else if (e.id == CL_KEY_DOWN)
+				{
+					if (e.shift && selection_length == 0)
+						selection_start = cursor_pos;
+
+					if (cursor_pos.y < lines.size() - 1)
+					{
+						cursor_pos.y++;
+						cursor_pos.x = cl_min(lines[cursor_pos.y].text.size(), cursor_pos.x);
+					}
+
+					if (e.shift)
+					{
+						selection_length = to_offset(cursor_pos) - to_offset(selection_start);
+					}
+					else
+					{
+						// Clear the selection if a cursor key is pressed but shift isn't down. 
+						selection_start = CL_Vec2i(0,0);
+						selection_length = 0;
+					}
+
+					textedit->request_repaint();
+					undo_info.first_text_insert = true;
+
+					msg.set_consumed();
+				}
 				else if (e.id == CL_KEY_LEFT)
 				{
 					move(-1, e);
@@ -483,11 +537,8 @@ void CL_TextEdit_Impl::on_process_message(CL_GUIMessage &msg)
 				}
 				else if (e.id == CL_KEY_SHIFT)
 				{
-					if (selection_start == -1)
-					{
+					if (selection_length == 0)
 						selection_start = cursor_pos;
-						selection_length = 0;
-					}
 					msg.set_consumed();
 				}
 				else if (!e.str.empty() && !(e.str[0] >= 0 && e.str[0] < 32) && (!e.alt && !e.ctrl) || (e.ctrl && e.alt)) // Alt Gr translates to Ctrl+Alt sometimes!
@@ -498,14 +549,14 @@ void CL_TextEdit_Impl::on_process_message(CL_GUIMessage &msg)
 					{
 						// not in any special mode, just insert the string.
 						insert_text(cursor_pos, e.str);
-						cursor_pos += e.str.size();
+						cursor_pos.x += e.str.size();
 					}
 					else
 					{
 						if (input_mask_accepts_input(cursor_pos, e.str))
 						{
 							insert_text(cursor_pos, e.str);
-							cursor_pos += e.str.size();
+							cursor_pos.x += e.str.size();
 						}
 					}
 					msg.set_consumed();
@@ -689,15 +740,11 @@ void CL_TextEdit_Impl::move(int steps, CL_InputEvent &e)
 	{
 		CL_Vec2i new_pos;
 		if (steps < 0)
-			new_pos = find_previous_break_character(cursor_pos) - cursor_pos.x;
+			new_pos = find_previous_break_character(cursor_pos);
 		else 
-			new_pos = find_next_break_character(cursor_pos) - cursor_pos.x;
+			new_pos = find_next_break_character(cursor_pos);
 
-		cursor_pos.x += steps;
-		if (cursor_pos.x < 0)
-			cursor_pos.x = 0;
-		if (cursor_pos.x > (int)lines[cursor_pos.y].text.size())
-			cursor_pos.x = lines[cursor_pos.y].text.size();
+		cursor_pos = new_pos;
 	}
 	else
 	{
@@ -714,7 +761,7 @@ void CL_TextEdit_Impl::move(int steps, CL_InputEvent &e)
 				utf8_reader.prev();
 		}
 
-		cursor_pos = utf8_reader.get_position();
+		cursor_pos.x = utf8_reader.get_position();
 	}
 
 	if (e.shift)
@@ -724,7 +771,7 @@ void CL_TextEdit_Impl::move(int steps, CL_InputEvent &e)
 	else
 	{
 		// Clear the selection if a cursor key is pressed but shift isn't down. 
-		selection_start = -1;
+		selection_start = CL_Vec2i(0,0);
 		selection_length = 0;
 	}
 
@@ -794,7 +841,7 @@ void CL_TextEdit_Impl::backspace()
 	}
 	else
 	{
-		if (cursor_pos > 0)
+		if (cursor_pos.x > 0)
 		{
 			CL_UTF8_Reader utf8_reader(lines[cursor_pos.y].text);
 			utf8_reader.set_position(cursor_pos.x);
@@ -806,10 +853,6 @@ void CL_TextEdit_Impl::backspace()
 			textedit->request_repaint();
 		}
 	}
-
-	int old_pos = textedit->get_cursor_pos();
-	textedit->set_cursor_pos(0);
-	textedit->set_cursor_pos(old_pos);
 }
 
 void CL_TextEdit_Impl::del()
@@ -904,21 +947,38 @@ bool CL_TextEdit_Impl::input_mask_accepts_input(CL_Vec2i cursor_pos, const CL_St
 
 CL_String::size_type CL_TextEdit_Impl::to_offset(CL_Vec2i pos) const
 {
-	CL_String::size_type offset = pos.x;
-	for (size_t i = 0; i < pos.y; i++)
-		offset += lines[i].text.size() + 1;
-	return offset;
+	if (pos.y < lines.size())
+	{
+		CL_String::size_type offset = 0;
+		for (int line = 0; line < pos.y; line++)
+		{
+			offset += lines[line].text.size() + 1;
+		}
+		return offset + cl_min(pos.x, lines[pos.y].text.size());
+	}
+	else
+	{
+		CL_String::size_type offset = 0;
+		for (size_t line = 0; line < lines.size(); line++)
+		{
+			offset += lines[line].text.size() + 1;
+		}
+		return offset - 1;
+	}
 }
 
 CL_Vec2i CL_TextEdit_Impl::from_offset(CL_String::size_type offset) const
 {
-	int line = 0;
-	while (offset > lines[line].text.size())
+	int line_offset = 0;
+	for (int line = 0; line < lines.size(); line++)
 	{
-		offset -= lines[line].text.size() + 1;
-		line++;
+		if (offset <= line_offset + lines[line].text.size())
+		{
+			return CL_Vec2i(offset - line_offset, line);
+		}
+		line_offset += lines[line].text.size() + 1;
 	}
-	return CL_Vec2i(offset, line);
+	return CL_Vec2i(lines.back().text.size(), lines.size() - 1);
 }
 
 void CL_TextEdit_Impl::on_render(CL_GraphicContext &gc, const CL_Rect &update_rect)
@@ -960,6 +1020,10 @@ void CL_TextEdit_Impl::on_render(CL_GraphicContext &gc, const CL_Rect &update_re
 		if (sel_start != sel_end && sel_start.y <= i && sel_end.y >= i)
 		{
 			line.layout.set_selection_range(sel_start.y < i ? 0 : sel_start.x, sel_end.y > i ? line.text.size() : sel_end.x);
+		}
+		else
+		{
+			line.layout.set_selection_range(0,0);
 		}
 
 		line.layout.hide_cursor();
