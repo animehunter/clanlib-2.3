@@ -150,6 +150,8 @@ private:
 
 	void calculate_absolute_widths(LayoutStrategy strategy);
 	void calculate_absolute_heights();
+	void apply_absolute_widths_constraint(CL_CSSUsedValue constraint_width, CL_CSSUsedValue left, CL_CSSUsedValue right);
+	void apply_absolute_heights_constraint(CL_CSSUsedValue constraint_height, CL_CSSUsedValue top, CL_CSSUsedValue bottom);
 	void calculate_static_widths(LayoutStrategy strategy);
 	void calculate_static_heights();
 };
