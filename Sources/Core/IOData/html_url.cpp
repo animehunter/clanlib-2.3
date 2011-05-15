@@ -53,17 +53,25 @@ CL_HTMLUrl::CL_HTMLUrl(const CL_String &url, const CL_HTMLUrl &base)
 
 		if (CL_StringHelp::compare(scheme, "data", true) == 0)
 		{
-			CL_String::size_type semicolon = input.find_first_of(';', pos);
-			CL_String::size_type comma = input.find_first_of(',', semicolon);
-			if (semicolon == CL_String::npos || comma == CL_String::npos)
+			CL_String::size_type comma = input.find_first_of(',', pos);
+			if (comma == CL_String::npos)
 			{
 				data = input.substr(pos);
 			}
 			else
 			{
-				content_type = input.substr(pos, semicolon-pos);
-				encoding = input.substr(semicolon+1, comma-semicolon-1);
-				data = input.substr(comma+1);
+				CL_String::size_type semicolon = input.find_first_of(';', pos);
+				if (semicolon < comma)
+				{
+					content_type = input.substr(pos, semicolon-pos);
+					encoding = input.substr(semicolon+1, comma-semicolon-1);
+					data = input.substr(comma+1);
+				}
+				else
+				{
+					content_type = input.substr(pos, comma-pos);
+					data = input.substr(comma+1);
+				}
 			}
 			return;
 		}

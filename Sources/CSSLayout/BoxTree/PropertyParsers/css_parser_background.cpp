@@ -175,7 +175,13 @@ bool CL_CSSParserBackground::parse_image(CL_CSSBoxBackgroundImage::Image &layer_
 {
 	size_t pos = parse_pos;
 	CL_CSSToken token = next_token(pos, tokens);
-	if (token.type == CL_CSSToken::type_uri)
+	if (token.type == CL_CSSToken::type_ident && equals(token.value, "none"))
+	{
+		layer_image = CL_CSSBoxBackgroundImage::Image(CL_CSSBoxBackgroundImage::image_type_none);
+		parse_pos = pos;
+		return true;
+	}
+	else if (token.type == CL_CSSToken::type_uri)
 	{
 		layer_image.type = CL_CSSBoxBackgroundImage::image_type_uri;
 		layer_image.url = token.value;

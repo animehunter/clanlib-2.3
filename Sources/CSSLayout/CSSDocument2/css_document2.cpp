@@ -82,9 +82,9 @@ CL_CSSPropertyList2 CL_CSSDocument2::select(CL_CSSSelectNode2 *node, const CL_St
 
 CL_CSSPropertyList2 CL_CSSDocument2::get_style_properties(const CL_String &style_string, const CL_String &base_uri)
 {
-	CL_CSSPropertyList2 properties;
 	CL_CSSTokenizer tokenizer(style_string);
 	CL_CSSToken token;
+	std::vector<CL_CSSProperty2> property_list;
 	while (true)
 	{
 		tokenizer.read(token, true);
@@ -100,7 +100,7 @@ CL_CSSPropertyList2 CL_CSSDocument2::get_style_properties(const CL_String &style
 				property.set_name(property_name);
 				CL_CSSDocument2_Impl::read_property_value(tokenizer, token, property, base_uri);
 				if (!property.get_value_tokens().empty())
-					properties.push_back(property);
+					property_list.push_back(property);
 			}
 			else
 			{
@@ -114,5 +114,10 @@ CL_CSSPropertyList2 CL_CSSDocument2::get_style_properties(const CL_String &style
 			break;
 		}
 	}
+
+	CL_CSSPropertyList2 properties;
+	for (size_t i = property_list.size(); i > 0; i--)
+		properties.push_back(property_list[i - 1]);
+
 	return properties;
 }
