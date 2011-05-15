@@ -30,13 +30,14 @@
 
 #include "API/Network/Socket/tcp_listen.h"
 #include "API/Core/System/keep_alive.h"
+#include "API/Core/System/uniqueptr.h"
 
 class CL_NetGameServer_Impl : public CL_KeepAliveObject
 {
 public:
 	void process();
 
-	std::unique_ptr<CL_TCPListen> tcp_listen;
+	CL_UniquePtr<CL_TCPListen> tcp_listen;
 	CL_Thread listen_thread;
 
 	CL_Mutex mutex;

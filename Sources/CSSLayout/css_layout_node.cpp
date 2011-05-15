@@ -147,7 +147,7 @@ CL_String CL_CSSLayoutNode::print_node() const
 		return impl->print_node(impl->box_node);
 }
 
-void CL_CSSLayoutNode::set_user_data(std::unique_ptr<CL_CSSLayoutUserData> &data)
+void CL_CSSLayoutNode::set_user_data(CL_UniquePtr<CL_CSSLayoutUserData> &data)
 {
 	if (!is_null())
 		impl->box_node->set_user_data(data);

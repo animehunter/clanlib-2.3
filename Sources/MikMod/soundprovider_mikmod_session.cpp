@@ -32,6 +32,7 @@
 #include "API/Core/IOData/iodevice.h"
 #include "API/Core/IOData/iodevice_memory.h"
 #include "API/Core/System/exception.h"
+#include "API/Core/System/uniqueptr.h"
 
 #include "soundprovider_mikmod_session.h"
 #include "soundprovider_mikmod_impl.h"
@@ -46,7 +47,7 @@
 CL_SoundProvider_MikMod_Session::CL_SoundProvider_MikMod_Session(CL_SoundProvider_MikMod &source) :
 	source(source), num_samples(0), position(0), stream_eof(false)
 {
-	std::unique_ptr<CL_IODevice_Memory> input_autoptr(new CL_IODevice_Memory(source.impl->buffer));
+	CL_UniquePtr<CL_IODevice_Memory> input_autoptr(new CL_IODevice_Memory(source.impl->buffer));
 	CL_IODevice_Memory *input = input_autoptr.get();
 
 	MREADER *reader = new_clanlib_reader((void *) input);

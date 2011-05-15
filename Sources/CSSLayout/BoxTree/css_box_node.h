@@ -28,6 +28,8 @@
 
 #pragma once
 
+#include "API/Core/System/uniqueptr.h"
+
 class CL_CSSLayoutUserData;
 
 class CL_CSSBoxNode
@@ -40,7 +42,7 @@ public:
 	void push_back(CL_CSSBoxNode *new_child);
 	void insert(CL_CSSBoxNode *new_child, CL_CSSBoxNode *insert_point);
 	void remove();
-	void set_user_data(std::unique_ptr<CL_CSSLayoutUserData> &data);
+	void set_user_data(CL_UniquePtr<CL_CSSLayoutUserData> &data);
 	CL_CSSLayoutUserData *get_user_data();
 	const CL_CSSLayoutUserData *get_user_data() const;
 
@@ -62,5 +64,5 @@ private:
 	CL_CSSBoxNode *prev;
 	CL_CSSBoxNode *first_child;
 	CL_CSSBoxNode *last_child;
-	std::unique_ptr<CL_CSSLayoutUserData> user_data;
+	CL_UniquePtr<CL_CSSLayoutUserData> user_data;
 };

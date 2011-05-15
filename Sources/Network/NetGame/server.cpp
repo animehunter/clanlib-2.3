@@ -104,7 +104,7 @@ void CL_NetGameServer::listen_thread_main()
 			break;
 
 		CL_TCPConnection connection = impl->tcp_listen->accept();
-		std::unique_ptr<CL_NetGameConnection> game_connection(new CL_NetGameConnection(this, connection));
+		CL_UniquePtr<CL_NetGameConnection> game_connection(new CL_NetGameConnection(this, connection));
 		CL_MutexSection mutex_lock(&impl->mutex);
 		impl->connections.push_back(game_connection.release());
 	}

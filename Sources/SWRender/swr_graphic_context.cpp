@@ -88,7 +88,7 @@ void CL_GraphicContext_SWRender::draw_pixels_bicubic(int x, int y, int zoom_numb
 	impl->provider->draw_pixels_bicubic(x, y, zoom_number, zoom_denominator, pixels);
 }
 
-void CL_GraphicContext_SWRender::queue_command(std::unique_ptr<CL_PixelCommand> &command)
+void CL_GraphicContext_SWRender::queue_command(CL_UniquePtr<CL_PixelCommand> &command)
 {
 	impl->provider->queue_command(command);
 }

@@ -33,6 +33,7 @@
 
 #include "api_swrender.h"
 #include "../Core/System/sharedptr.h"
+#include "../Core/System/uniqueptr.h"
 #include "../Display/Render/graphic_context.h"
 
 class CL_PixelCommand;
@@ -72,7 +73,7 @@ public:
 	/// \brief Queues a pixel command in the pipeline
 	template<typename T>
 	void queue_command(T *command) { queue_command(std::unique_ptr<T>(command)); }
-	void queue_command(std::unique_ptr<CL_PixelCommand> &command);
+	void queue_command(CL_UniquePtr<CL_PixelCommand> &command);
 
 //!Implementation
 private:

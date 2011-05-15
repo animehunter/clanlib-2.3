@@ -32,6 +32,7 @@
 #include "API/Display/TargetProviders/graphic_context_provider.h"
 #include "API/Display/Font/font.h"
 #include "API/SWRender/swr_program_object.h"
+#include "API/Core/System/uniqueptr.h"
 #include "vertex_attribute_fetcher.h"
 #include "software_program_standard.h"
 #include <map>
@@ -100,7 +101,7 @@ public:
 	void reset_primitives_array();
 	void draw_pixels(CL_GraphicContext &gc, float x, float y, float zoom_x, float zoom_y, const CL_PixelBuffer &pixel_buffer, const CL_Rect &src_rect, const CL_Colorf &color);
 	void draw_pixels_bicubic(float x, float y, int zoom_number, int zoom_denominator, const CL_PixelBuffer &pixels);
-	void queue_command(std::unique_ptr<CL_PixelCommand> &command);
+	void queue_command(CL_UniquePtr<CL_PixelCommand> &command);
 	void set_clip_rect(const CL_Rect &rect);
 	void reset_clip_rect();
 	void clear(const CL_Colorf &color);
@@ -122,7 +123,7 @@ private:
 
 
 	CL_SWRenderDisplayWindowProvider *window;
-	std::unique_ptr<CL_PixelCanvas> canvas;
+	CL_UniquePtr<CL_PixelCanvas> canvas;
 	std::map<int, CL_Texture> bound_textures;
 	const CL_PrimitivesArrayData * current_prim_array;
 	CL_Mat4f modelview_matrix;
