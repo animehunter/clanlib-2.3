@@ -254,7 +254,7 @@ void CL_TextEdit::set_text(const CL_StringRef &text)
 	impl->lines.push_back(line);
 
 	impl->clip_start_offset = 0;
-	set_cursor_pos(text.size());
+	set_cursor_pos(0);
 	clear_selection();
 	request_repaint();
 }
@@ -359,11 +359,19 @@ void CL_TextEdit_Impl::on_process_message(CL_GUIMessage &msg)
 
 		if (e.device.get_type() == CL_InputDevice::keyboard)
 		{
-			if (!func_enter_pressed.is_null() && 
-				e.type == CL_InputEvent::pressed &&
+			if (e.type == CL_InputEvent::pressed &&
 				(e.id == CL_KEY_ENTER || e.id == CL_KEY_RETURN || e.id == CL_KEY_NUMPAD_ENTER))
 			{
-				func_enter_pressed.invoke();
+				if (!func_enter_pressed.is_null())
+				{
+					func_enter_pressed.invoke();
+				}
+				else
+				{
+					textedit->clear_selection();
+					insert_text(cursor_pos, "\n");
+					textedit->set_cursor_pos(textedit->get_cursor_pos() + 1);
+				}
 				msg.set_consumed();
 				return;
 			}
@@ -485,10 +493,12 @@ void CL_TextEdit_Impl::on_process_message(CL_GUIMessage &msg)
 				}
 				else if (e.id == CL_KEY_HOME)
 				{
-					selection_start = cursor_pos;
-					cursor_pos.x = 0;
+					if (e.ctrl)
+						cursor_pos = CL_Vec2i(0, 0);
+					else
+						cursor_pos.x = 0;
 					if (e.shift)
-						selection_length = -selection_start.x;
+						selection_length = to_offset(cursor_pos) - to_offset(selection_start);
 					else
 						textedit->clear_selection();
 					textedit->request_repaint();
@@ -496,10 +506,13 @@ void CL_TextEdit_Impl::on_process_message(CL_GUIMessage &msg)
 				}
 				else if (e.id == CL_KEY_END)
 				{
-					selection_start = cursor_pos;
-					cursor_pos.x = lines[cursor_pos.y].text.size();
+					if (e.ctrl)
+						cursor_pos = CL_Vec2i(lines.back().text.length(), lines.size() - 1);
+					else
+						cursor_pos.x = lines[cursor_pos.y].text.size();
+
 					if (e.shift)
-						selection_length = lines[cursor_pos.y].text.size() - selection_start.x;
+						selection_length = to_offset(cursor_pos) - to_offset(selection_start);
 					else
 						textedit->clear_selection();
 					textedit->request_repaint();
@@ -515,7 +528,6 @@ void CL_TextEdit_Impl::on_process_message(CL_GUIMessage &msg)
 				else if (e.id == CL_KEY_V && e.ctrl)
 				{
 					CL_String str = textedit->get_gui_manager().get_clipboard_text();
-					std::remove(str.begin(), str.end(), '\n');
 					std::remove(str.begin(), str.end(), '\r');
 					textedit->delete_selected_text();
 
@@ -587,18 +599,12 @@ void CL_TextEdit_Impl::on_process_message(CL_GUIMessage &msg)
 		{
 			if (e.type == CL_InputEvent::pressed && e.id == CL_MOUSE_LEFT)
 			{
-				if (textedit->has_focus())
-				{
-					textedit->capture_mouse(true);
-					mouse_selecting = true;
-					cursor_pos = get_character_index(e.mouse_pos);
-					selection_start = cursor_pos;
-					selection_length = 0;
-				}
-				else
-				{
-					textedit->set_focus();
-				}
+				textedit->capture_mouse(true);
+				mouse_selecting = true;
+				cursor_pos = get_character_index(e.mouse_pos);
+				selection_start = cursor_pos;
+				selection_length = 0;
+
 				textedit->request_repaint();
 				msg.set_consumed();
 			}
@@ -738,6 +744,17 @@ void CL_TextEdit_Impl::move(int steps, CL_InputEvent &e)
 	// Jump over words if control is pressed.
 	if (e.ctrl)
 	{
+		if (steps < 0 && cursor_pos.x == 0 && cursor_pos.y > 0)
+		{
+			cursor_pos.x = lines[cursor_pos.y - 1].text.size();
+			cursor_pos.y--;
+		}
+		else if (steps > 0 && cursor_pos.x == lines[cursor_pos.y].text.size() && cursor_pos.y + 1 < lines.size())
+		{
+			cursor_pos.x = 0;
+			cursor_pos.y++;
+		}
+
 		CL_Vec2i new_pos;
 		if (steps < 0)
 			new_pos = find_previous_break_character(cursor_pos);
@@ -745,6 +762,16 @@ void CL_TextEdit_Impl::move(int steps, CL_InputEvent &e)
 			new_pos = find_next_break_character(cursor_pos);
 
 		cursor_pos = new_pos;
+	}
+	else if (steps < 0 && cursor_pos.x == 0 && cursor_pos.y > 0)
+	{
+		cursor_pos.x = lines[cursor_pos.y - 1].text.size();
+		cursor_pos.y--;
+	}
+	else if (steps > 0 && cursor_pos.x == lines[cursor_pos.y].text.size() && cursor_pos.y + 1 < lines.size())
+	{
+		cursor_pos.x = 0;
+		cursor_pos.y++;
 	}
 	else
 	{
@@ -819,8 +846,29 @@ void CL_TextEdit_Impl::insert_text(CL_Vec2i pos, const CL_StringRef &str)
 	{
 		return;
 	}
-	lines[pos.y].text.insert(pos.x, str);
-	lines[pos.y].invalidated = true;
+
+	CL_String::size_type start = 0;
+	while (true)
+	{
+		CL_String::size_type next_newline = str.find('\n', start);
+
+		lines[pos.y].text.insert(pos.x, str.substr(start, next_newline - start));
+		lines[pos.y].invalidated = true;
+
+		if (next_newline == CL_String::npos)
+			break;
+
+		pos.x += next_newline - start;
+
+		Line line;
+		line.text = lines[pos.y].text.substr(pos.x);
+		lines.insert(lines.begin() + pos.y + 1, line);
+		lines[pos.y].text = lines[pos.y].text.substr(0, pos.x);
+		lines[pos.y].invalidated = true;
+		pos = CL_Vec2i(0, pos.y + 1);
+
+		start = next_newline + 1;
+	}
 
 	textedit->request_repaint();
 }
@@ -852,6 +900,12 @@ void CL_TextEdit_Impl::backspace()
 			cursor_pos.x -= length;
 			textedit->request_repaint();
 		}
+		else if (cursor_pos.y > 0)
+		{
+			selection_start = CL_Vec2i(lines[cursor_pos.y - 1].text.length(), cursor_pos.y - 1);
+			selection_length = 1;
+			textedit->delete_selected_text();
+		}
 	}
 }
 
@@ -879,6 +933,12 @@ void CL_TextEdit_Impl::del()
 			lines[cursor_pos.y].text.erase(cursor_pos.x,length);
 			lines[cursor_pos.y].invalidated = true;
 			textedit->request_repaint();
+		}
+		else if (cursor_pos.y + 1 < lines.size())
+		{
+			selection_start = CL_Vec2i(lines[cursor_pos.y].text.length(), cursor_pos.y);
+			selection_length = 1;
+			textedit->delete_selected_text();
 		}
 	}
 }
@@ -1011,7 +1071,10 @@ void CL_TextEdit_Impl::on_render(CL_GraphicContext &gc, const CL_Rect &update_re
 		if (line.invalidated)
 		{
 			line.layout.clear();
-			line.layout.add_text(line.text, font, CL_Colorf::black);
+			if (!line.text.empty())
+				line.layout.add_text(line.text, font, CL_Colorf::black);
+			else
+				line.layout.add_text(CL_StringHelp::wchar_to_utf8(0xa0), font, CL_Colorf::black); // Draw one NBSP character to get the correct height
 			line.layout.layout(gc, content_box.get_width());
 			line.box = CL_Rect(draw_pos, line.layout.get_size());
 			line.invalidated = false;
@@ -1058,7 +1121,7 @@ CL_Vec2i CL_TextEdit_Impl::get_character_index(CL_Point mouse_wincoords)
 			switch (result.type)
 			{
 			case CL_SpanLayout::HitTestResult::inside:
-				return CL_Vec2i(result.offset, i);
+				return CL_Vec2i(cl_clamp(0, line.text.size(), result.offset), i);
 			case CL_SpanLayout::HitTestResult::outside_left:
 				return CL_Vec2i(0, i);
 			case CL_SpanLayout::HitTestResult::outside_right:
