@@ -134,19 +134,18 @@ void CL_SpanLayout_Impl::draw_layout_text(CL_GraphicContext &gc, Line &line, Lin
 {
 	CL_StringRef segment_text = text.substr(segment.start, segment.end - segment.start);
 
-	int s1 = cl_max(0, (int)sel_start - (int)segment.start);
-	int s2 = cl_max(0, (int)sel_end - (int)segment.start);
 	int length = (int)segment_text.length();
-	if (s1 > length)
-		s1 = length;
-	if (s2 > length)
-		s2 = length;
+	int s1 = cl_clamp(0, length, (int)sel_start - (int)segment.start);
+	int s2 = cl_clamp(0, length, (int)sel_end - (int)segment.start);
 
 	if (s1 != s2)
 	{
 		int xx = x + segment.x_position;
+		int xx0 = xx + segment.font.get_text_size(gc, segment_text.substr(0, s1)).width;
+		int xx1 = xx0 + segment.font.get_text_size(gc, segment_text.substr(s1, s2 - s1)).width;
 		int sel_width = segment.font.get_text_size(gc, segment_text.substr(s1, s2 - s1)).width;
-		CL_Draw::fill(gc, xx, y + line.ascender-segment.ascender, xx+sel_width, y+line.ascender+segment.descender, sel_background);
+
+		CL_Draw::fill(gc, xx0, y + line.ascender-segment.ascender, xx1, y+line.ascender+segment.descender, sel_background);
 
 		if (cursor_visible && cursor_pos >= segment.start && cursor_pos < segment.end)
 		{
@@ -158,12 +157,11 @@ void CL_SpanLayout_Impl::draw_layout_text(CL_GraphicContext &gc, Line &line, Lin
 		if (s1 > 0)
 		{
 			segment.font.draw_text(gc, xx, y + line.ascender, segment_text.substr(0, s1), segment.color);
-			xx += segment.font.get_text_size(gc, segment_text.substr(0, s1)).width;
 		}
-		segment.font.draw_text(gc, xx, y+line.ascender, segment_text.substr(s1, s2 - s1), sel_foreground);
+		segment.font.draw_text(gc, xx0, y+line.ascender, segment_text.substr(s1, s2 - s1), sel_foreground);
 		xx += sel_width;
 		if (s2 < length)
-			segment.font.draw_text(gc, xx, y + line.ascender, segment_text.substr(s2), segment.color);
+			segment.font.draw_text(gc, xx1, y + line.ascender, segment_text.substr(s2), segment.color);
 	}
 	else
 	{
