@@ -1121,7 +1121,7 @@ CL_Vec2i CL_TextEdit_Impl::get_character_index(CL_Point mouse_wincoords)
 			switch (result.type)
 			{
 			case CL_SpanLayout::HitTestResult::inside:
-				return CL_Vec2i(cl_clamp(0, line.text.size(), result.offset), i);
+				return CL_Vec2i(cl_clamp(result.offset, 0, line.text.size()), i);
 			case CL_SpanLayout::HitTestResult::outside_left:
 				return CL_Vec2i(0, i);
 			case CL_SpanLayout::HitTestResult::outside_right:

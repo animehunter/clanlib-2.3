@@ -135,8 +135,8 @@ void CL_SpanLayout_Impl::draw_layout_text(CL_GraphicContext &gc, Line &line, Lin
 	CL_StringRef segment_text = text.substr(segment.start, segment.end - segment.start);
 
 	int length = (int)segment_text.length();
-	int s1 = cl_clamp(0, length, (int)sel_start - (int)segment.start);
-	int s2 = cl_clamp(0, length, (int)sel_end - (int)segment.start);
+	int s1 = cl_clamp((int)sel_start - (int)segment.start, 0, length);
+	int s2 = cl_clamp((int)sel_end - (int)segment.start, 0, length);
 
 	if (s1 != s2)
 	{
