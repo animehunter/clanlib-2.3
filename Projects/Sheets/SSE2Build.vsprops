@@ -2,14 +2,10 @@
 <VisualStudioPropertySheet
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="Win32 Platform"
+	Name="SSE2 Build"
 	>
 	<Tool
 		Name="VCCLCompilerTool"
-		PreprocessorDefinitions="WIN32"
-	/>
-	<Tool
-		Name="VCLinkerTool"
-		TargetMachine="1"
+		EnableEnhancedInstructionSet="2"
 	/>
 </VisualStudioPropertySheet>

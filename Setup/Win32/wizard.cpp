@@ -110,6 +110,11 @@ BOOL Wizard::finish()
 			hKey, TEXT("IncludeMTDLL"), 0, REG_DWORD,
 			(LPBYTE) &include_mtdll, sizeof(DWORD));
 
+		DWORD include_sse2 = (page_target.include_sse2 ? 1 : 0);
+		RegSetValueEx(
+			hKey, TEXT("IncludeSSE2"), 0, REG_DWORD,
+			(LPBYTE) &include_sse2, sizeof(DWORD));
+
 		DWORD include_dll = (page_target.include_dll ? 1 : 0);
 		RegSetValueEx(
 			hKey, TEXT("IncludeDLL"), 0, REG_DWORD,
@@ -129,7 +134,7 @@ BOOL Wizard::finish()
 	{
 		WorkspaceGenerator_MSVC8 generator8;
 		generator8.set_target_version(page_target.target_version);
-		generator8.set_platforms(true, page_target.include_x64);
+		generator8.set_platforms(true, page_target.include_x64, page_target.include_sse2);
 		generator8.enable_configurations(page_target.include_mtdll, page_target.include_dll);
 		generator8.write(workspace);
 	}
@@ -137,7 +142,7 @@ BOOL Wizard::finish()
 	{
 		WorkspaceGenerator_MSVC8 generator10;
 		generator10.set_target_version(page_target.target_version);
-		generator10.set_platforms(true, page_target.include_x64);
+		generator10.set_platforms(true, page_target.include_x64, page_target.include_sse2);
 		generator10.enable_configurations(page_target.include_mtdll, page_target.include_dll);
 		generator10.write(workspace);
 	}

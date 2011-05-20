@@ -49,6 +49,7 @@ WorkspaceGenerator_MSVC8::ConfigurationType WorkspaceGenerator_MSVC8::types[] =
 
 WorkspaceGenerator_MSVC8::WorkspaceGenerator_MSVC8()
 {
+	is_enable_sse2 = true;	// Set by set_platforms()
 }
 
 void WorkspaceGenerator_MSVC8::enable_configurations(bool include_mtdll, bool include_dll)
@@ -74,8 +75,9 @@ void WorkspaceGenerator_MSVC8::set_target_version(int version)
 	target_version = version;
 }
 
-void WorkspaceGenerator_MSVC8::set_platforms(bool include_win32, bool include_x64)
+void WorkspaceGenerator_MSVC8::set_platforms(bool include_win32, bool include_x64, bool include_sse2)
 {
+	is_enable_sse2 = include_sse2;
 	include_platform_win32 = include_win32;
 	include_platform_x64 = include_x64;
 }
@@ -256,15 +258,15 @@ void WorkspaceGenerator_MSVC8::write_project(const Workspace &workspace, const P
 			{
 			case runtime_dll_debug:
 				if(include_platform_win32)
-					vc80proj.configurations.push_back(create_debug_dll_config("Win32", project.name, types[i], has_precomp, precomp_header));
+					vc80proj.configurations.push_back(create_debug_dll_config("Win32", project.name, types[i], has_precomp, precomp_header, is_enable_sse2));
 				if(include_platform_x64)
-					vc80proj.configurations.push_back(create_debug_dll_config("x64", project.name, types[i], has_precomp, precomp_header));
+					vc80proj.configurations.push_back(create_debug_dll_config("x64", project.name, types[i], has_precomp, precomp_header, false));
 				break;
 			case runtime_dll_release:
 				if(include_platform_win32)
-					vc80proj.configurations.push_back(create_release_dll_config("Win32", project.name, types[i], has_precomp, precomp_header));
+					vc80proj.configurations.push_back(create_release_dll_config("Win32", project.name, types[i], has_precomp, precomp_header, is_enable_sse2));
 				if(include_platform_x64)
-					vc80proj.configurations.push_back(create_release_dll_config("x64", project.name, types[i], has_precomp, precomp_header));
+					vc80proj.configurations.push_back(create_release_dll_config("x64", project.name, types[i], has_precomp, precomp_header, false));
 				break;
 			}
 		}
@@ -274,27 +276,27 @@ void WorkspaceGenerator_MSVC8::write_project(const Workspace &workspace, const P
 			{
 			case runtime_static_debug:
 				if(include_platform_win32)
-					vc80proj.configurations.push_back(create_debug_mt_config("Win32", project.name, types[i], has_precomp, precomp_header));
+					vc80proj.configurations.push_back(create_debug_mt_config("Win32", project.name, types[i], has_precomp, precomp_header, is_enable_sse2));
 				if(include_platform_x64)
-					vc80proj.configurations.push_back(create_debug_mt_config("x64", project.name, types[i], has_precomp, precomp_header));
+					vc80proj.configurations.push_back(create_debug_mt_config("x64", project.name, types[i], has_precomp, precomp_header, false));
 				break;
 			case runtime_static_release:
 				if(include_platform_win32)
-					vc80proj.configurations.push_back(create_release_mt_config("Win32", project.name, types[i], has_precomp, precomp_header));
+					vc80proj.configurations.push_back(create_release_mt_config("Win32", project.name, types[i], has_precomp, precomp_header, is_enable_sse2));
 				if(include_platform_x64)
-					vc80proj.configurations.push_back(create_release_mt_config("x64", project.name, types[i], has_precomp, precomp_header));
+					vc80proj.configurations.push_back(create_release_mt_config("x64", project.name, types[i], has_precomp, precomp_header, false));
 				break;
 			case runtime_dll_debug:
 				if(include_platform_win32)
-					vc80proj.configurations.push_back(create_debug_mtdll_config("Win32", project.name, types[i], has_precomp, precomp_header));
+					vc80proj.configurations.push_back(create_debug_mtdll_config("Win32", project.name, types[i], has_precomp, precomp_header, is_enable_sse2));
 				if(include_platform_x64)
-					vc80proj.configurations.push_back(create_debug_mtdll_config("x64", project.name, types[i], has_precomp, precomp_header));
+					vc80proj.configurations.push_back(create_debug_mtdll_config("x64", project.name, types[i], has_precomp, precomp_header, false));
 				break;
 			case runtime_dll_release:
 				if(include_platform_win32)
-					vc80proj.configurations.push_back(create_release_mtdll_config("Win32", project.name, types[i], has_precomp, precomp_header));
+					vc80proj.configurations.push_back(create_release_mtdll_config("Win32", project.name, types[i], has_precomp, precomp_header, is_enable_sse2));
 				if(include_platform_x64)
-					vc80proj.configurations.push_back(create_release_mtdll_config("x64", project.name, types[i], has_precomp, precomp_header));
+					vc80proj.configurations.push_back(create_release_mtdll_config("x64", project.name, types[i], has_precomp, precomp_header, false));
 				break;
 			}
 		}
@@ -606,7 +608,7 @@ MSVC8_Configuration *WorkspaceGenerator_MSVC8::create_debug_mt_config(
 	const std::string &project_name,
 	const ConfigurationType &config,
 	bool has_precomp,
-	const std::string &precomp_header)
+	const std::string &precomp_header, bool is_enable_sse2)
 {
 	SharedConfig shared = create_shared_config(platform, project_name, config, has_precomp, precomp_header);
 	shared.config->inherited_property_sheets +=
@@ -617,6 +619,13 @@ MSVC8_Configuration *WorkspaceGenerator_MSVC8::create_debug_mt_config(
 	shared.config->inherited_property_sheets_vs100.push_back("Sheets\\" + platform + "Platform.props");
 	shared.config->inherited_property_sheets_vs100.push_back("Sheets\\MTDebugRuntime.props");
 	shared.config->inherited_property_sheets_vs100.push_back("Sheets\\DebugBuild.props");
+
+	if (is_enable_sse2)
+	{
+		shared.config->inherited_property_sheets += ";Sheets\\SSE2Build.vsprops";
+		shared.config->inherited_property_sheets_vs100.push_back("Sheets\\SSE2Build.props");
+	}
+
 	shared.config->target_name_vs100 = make_target_name(config, platform, project_name);
 
 	shared.tool_librarian->output_file.set(make_output_filename(config, false, platform, project_name));
@@ -628,7 +637,7 @@ MSVC8_Configuration *WorkspaceGenerator_MSVC8::create_release_mt_config(
 	const std::string &project_name,
 	const ConfigurationType &config,
 	bool has_precomp,
-	const std::string &precomp_header)
+	const std::string &precomp_header, bool is_enable_sse2)
 {
 	SharedConfig shared = create_shared_config(platform, project_name, config, has_precomp, precomp_header);
 	shared.config->inherited_property_sheets +=
@@ -639,6 +648,13 @@ MSVC8_Configuration *WorkspaceGenerator_MSVC8::create_release_mt_config(
 	shared.config->inherited_property_sheets_vs100.push_back("Sheets\\" + platform + "Platform.props");
 	shared.config->inherited_property_sheets_vs100.push_back("Sheets\\MTReleaseRuntime.props");
 	shared.config->inherited_property_sheets_vs100.push_back("Sheets\\ReleaseBuild.props");
+
+	if (is_enable_sse2)
+	{
+		shared.config->inherited_property_sheets += ";Sheets\\SSE2Build.vsprops";
+		shared.config->inherited_property_sheets_vs100.push_back("Sheets\\SSE2Build.props");
+	}
+
 	shared.config->target_name_vs100 = make_target_name(config, platform, project_name);
 
 	shared.tool_librarian->output_file.set(make_output_filename(config, false, platform, project_name));
@@ -650,7 +666,7 @@ MSVC8_Configuration *WorkspaceGenerator_MSVC8::create_debug_mtdll_config(
 	const std::string &project_name,
 	const ConfigurationType &config,
 	bool has_precomp,
-	const std::string &precomp_header)
+	const std::string &precomp_header, bool is_enable_sse2)
 {
 	SharedConfig shared = create_shared_config(platform, project_name, config, has_precomp, precomp_header);
 	shared.config->inherited_property_sheets +=
@@ -661,6 +677,13 @@ MSVC8_Configuration *WorkspaceGenerator_MSVC8::create_debug_mtdll_config(
 	shared.config->inherited_property_sheets_vs100.push_back("Sheets\\" + platform + "Platform.props");
 	shared.config->inherited_property_sheets_vs100.push_back("Sheets\\MTDLLDebugRuntime.props");
 	shared.config->inherited_property_sheets_vs100.push_back("Sheets\\DebugBuild.props");
+
+	if (is_enable_sse2)
+	{
+		shared.config->inherited_property_sheets += ";Sheets\\SSE2Build.vsprops";
+		shared.config->inherited_property_sheets_vs100.push_back("Sheets\\SSE2Build.props");
+	}
+
 	shared.config->target_name_vs100 = make_target_name(config, platform, project_name);
 
 	shared.tool_librarian->output_file.set(make_output_filename(config, false, platform, project_name));
@@ -672,7 +695,7 @@ MSVC8_Configuration *WorkspaceGenerator_MSVC8::create_release_mtdll_config(
 	const std::string &project_name,
 	const ConfigurationType &config,
 	bool has_precomp,
-	const std::string &precomp_header)
+	const std::string &precomp_header, bool is_enable_sse2)
 {
 	SharedConfig shared = create_shared_config(platform, project_name, config, has_precomp, precomp_header);
 	shared.config->inherited_property_sheets +=
@@ -683,6 +706,13 @@ MSVC8_Configuration *WorkspaceGenerator_MSVC8::create_release_mtdll_config(
 	shared.config->inherited_property_sheets_vs100.push_back("Sheets\\" + platform + "Platform.props");
 	shared.config->inherited_property_sheets_vs100.push_back("Sheets\\MTDLLReleaseRuntime.props");
 	shared.config->inherited_property_sheets_vs100.push_back("Sheets\\ReleaseBuild.props");
+
+	if (is_enable_sse2)
+	{
+		shared.config->inherited_property_sheets += ";Sheets\\SSE2Build.vsprops";
+		shared.config->inherited_property_sheets_vs100.push_back("Sheets\\SSE2Build.props");
+	}
+
 	shared.config->target_name_vs100 = make_target_name(config, platform, project_name);
 
 	shared.tool_librarian->output_file.set(make_output_filename(config, false, platform, project_name));
@@ -694,7 +724,7 @@ MSVC8_Configuration *WorkspaceGenerator_MSVC8::create_debug_dll_config(
 	const std::string &project_name,
 	const ConfigurationType &config,
 	bool has_precomp,
-	const std::string &precomp_header)
+	const std::string &precomp_header, bool is_enable_sse2)
 {
 	SharedConfig shared = create_shared_config(platform, project_name, config, has_precomp, precomp_header);
 	shared.config->inherited_property_sheets +=
@@ -705,6 +735,13 @@ MSVC8_Configuration *WorkspaceGenerator_MSVC8::create_debug_dll_config(
 	shared.config->inherited_property_sheets_vs100.push_back("Sheets\\" + platform + "Platform.props");
 	shared.config->inherited_property_sheets_vs100.push_back("Sheets\\MTDLLDebugRuntime.props");
 	shared.config->inherited_property_sheets_vs100.push_back("Sheets\\DebugBuild.props");
+
+	if (is_enable_sse2)
+	{
+		shared.config->inherited_property_sheets += ";Sheets\\SSE2Build.vsprops";
+		shared.config->inherited_property_sheets_vs100.push_back("Sheets\\SSE2Build.props");
+	}
+
 	shared.config->target_name_vs100 = make_target_name(config, platform, project_name);
 
 	shared.tool_compiler->preprocessor_definitions = "CL_API_DLL;CL_" + make_upper(project_name) + "_EXPORT";
@@ -717,7 +754,7 @@ MSVC8_Configuration *WorkspaceGenerator_MSVC8::create_release_dll_config(
 	const std::string &project_name,
 	const ConfigurationType &config,
 	bool has_precomp,
-	const std::string &precomp_header)
+	const std::string &precomp_header, bool is_enable_sse2)
 {
 	SharedConfig shared = create_shared_config(platform, project_name, config, has_precomp, precomp_header);
 	shared.config->configuration_type = "2";
@@ -729,6 +766,13 @@ MSVC8_Configuration *WorkspaceGenerator_MSVC8::create_release_dll_config(
 	shared.config->inherited_property_sheets_vs100.push_back("Sheets\\" + platform + "Platform.props");
 	shared.config->inherited_property_sheets_vs100.push_back("Sheets\\MTDLLReleaseRuntime.props");
 	shared.config->inherited_property_sheets_vs100.push_back("Sheets\\ReleaseBuild.props");
+
+	if (is_enable_sse2)
+	{
+		shared.config->inherited_property_sheets += ";Sheets\\SSE2Build.vsprops";
+		shared.config->inherited_property_sheets_vs100.push_back("Sheets\\SSE2Build.props");
+	}
+
 	shared.config->target_name_vs100 = make_target_name(config, platform, project_name);
 
 	shared.tool_compiler->preprocessor_definitions = "CL_API_DLL;CL_" + make_upper(project_name) + "_EXPORT";
