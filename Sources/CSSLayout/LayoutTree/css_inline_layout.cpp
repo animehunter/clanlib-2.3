@@ -589,6 +589,72 @@ bool CL_CSSInlineLayout::find_content_box(CL_CSSBoxElement *search_element, CL_R
 	return false;
 }
 
+bool CL_CSSInlineLayout::get_cursor_box(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources, CL_CSSBoxText *text_node, CL_String::size_type pos, CL_Rect &out_box)
+{
+	for (size_t i = 0; i < lines.size(); i++)
+	{
+		CL_CSSInlineGeneratedBox *cur = lines[i];
+		while (cur)
+		{
+			CL_CSSBoxNode *node = cur->box_node;
+			CL_CSSBoxText *text = dynamic_cast<CL_CSSBoxText*>(node);
+			if (text && text == text_node && cur->text_start <= pos && cur->text_end >= pos)
+			{
+				const CL_CSSBoxProperties &properties = text->get_properties();
+				if (properties.visibility.type == CL_CSSBoxVisibility::type_visible)
+				{
+					CL_Font font = graphics->get_font(properties);
+					CL_FontMetrics metrics = graphics->get_font_metrics(font);
+					int pos_x = cl_used_to_actual(cur->relative_x) + formatting_context->get_x();
+					int pos_y = cl_used_to_actual(cur->relative_y) + formatting_context->get_y();
+					CL_Size size = graphics->get_text_size(font, text->processed_text.substr(cur->text_start, cl_clamp(pos, cur->text_start, cur->text_end) - cur->text_start));
+					out_box = CL_Rect(CL_Point(pos_x + cur->x + size.width, pos_y + cur->y), CL_Size(1, (int)metrics.get_height()));
+					return true;
+				}
+			}
+			else if (cur->layout_node)
+			{
+				CL_CSSLayoutTreeNode *object_node = cur->layout_node;
+				bool is_same_stacking_context = (stacking_context == object_node->get_stacking_context());
+				bool is_positioned = (object_node->get_element_node()->computed_properties.position.type != CL_CSSBoxPosition::type_static);
+				if (is_same_stacking_context && !is_positioned)
+				{
+					if (object_node->get_cursor_box(graphics, resources, text_node, pos, out_box))
+						return true;
+				}
+			}
+
+			if (cur->first_child)
+			{
+				cur = cur->first_child;
+			}
+			else if (cur->next_sibling)
+			{
+				cur = cur->next_sibling;
+			}
+			else
+			{
+				while (cur && !cur->next_sibling)
+				{
+					cur = cur->parent;
+				}
+				if (cur)
+				{
+					cur = cur->next_sibling;
+				}
+			}
+		}
+	}
+
+	for (size_t i = 0; i < floats.size(); i++)
+	{
+		if (floats[i]->get_cursor_box(graphics, resources, text_node, pos, out_box))
+			return true;
+	}
+
+	return false;
+}
+
 void CL_CSSInlineLayout::render_layer_background(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources, bool root)
 {
 	render_non_content(graphics, resources, root);

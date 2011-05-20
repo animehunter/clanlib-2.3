@@ -39,18 +39,9 @@ public:
 
 	CL_String get_text() const;
 	void set_text(const CL_String &text);
-/*
-	struct LineSpan
-	{
-		LineSpan() : text_start(0), text_end(0) { }
 
-		CL_Rect box;
-		size_t text_start;
-		size_t text_end;
-	};
-	std::vector<LineSpan> get_line_spans();
 	CL_Rect get_cursor_box(CL_GraphicContext &gc, CL_String::size_type pos);
-*/
+
 private:
 	CL_CSSLayoutText(const CL_SharedPtr<CL_CSSLayoutNode_Impl> &impl);
 	friend class CL_CSSLayoutNode;

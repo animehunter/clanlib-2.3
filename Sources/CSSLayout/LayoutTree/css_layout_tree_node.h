@@ -31,6 +31,7 @@
 #include "css_used_values.h"
 #include "css_layout_hit_test_result.h"
 
+class CL_CSSBoxText;
 class CL_CSSBoxElement;
 class CL_CSSBlockFormattingContext;
 class CL_CSSStackingContext;
@@ -59,6 +60,7 @@ public:
 	virtual int get_first_line_baseline() = 0;
 	virtual int get_last_line_baseline() = 0;
 	virtual bool find_content_box(CL_CSSBoxElement *element, CL_Rect &out_rect) { return false; }
+	virtual bool get_cursor_box(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources, CL_CSSBoxText *text_node, CL_String::size_type pos, CL_Rect &out_box) { return false; }
 
 	virtual void render_layer_background(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources, bool root) = 0;
 	virtual void render_layer_non_inline(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources) = 0;

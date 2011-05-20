@@ -53,8 +53,7 @@ public:
 	void layout(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resource_cache, const CL_Size &viewport);
 	void render(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resource_cache);
 	CL_CSSLayoutHitTestResult hit_test(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resource_cache, const CL_Point &pos);
-	//CL_CSSInlineLayout *find_inline_layout(CL_CSSBoxText *text_node);
-	//CL_Rect get_cursor_box(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources, CL_CSSBoxText *text_node, CL_String::size_type pos);
+	CL_Rect get_cursor_box(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources, CL_CSSBoxText *text_node, CL_String::size_type pos);
 	CL_Rect get_content_box(CL_CSSBoxElement *element);
 
 private:

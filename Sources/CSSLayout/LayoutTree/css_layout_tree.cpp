@@ -89,46 +89,19 @@ void CL_CSSLayoutTree::render(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCach
 {
 	root_stacking_context->render(graphics, resource_cache, true);
 }
-/*
-CL_CSSInlineLayout *CL_CSSLayoutTree::find_inline_layout(CL_CSSBoxText *text_node)
-{
-	CL_CSSBlockLayout *block_layout = dynamic_cast<CL_CSSBlockLayout*>(root_layout);
-	CL_CSSInlineLayout *inline_layout = dynamic_cast<CL_CSSInlineLayout*>(root_layout);
-	if (inline_layout)
-	{
-		if (inline_layout->contains_node(text_node))
-			return inline_layout;
-		else
-			return 0;
-	}
-	else if (block_layout)
-	{
-		return block_layout->find_inline_layout(text_node);
-	}
-	else
-	{
-		return 0;
-	}
-}
-*/
+
 CL_CSSLayoutHitTestResult CL_CSSLayoutTree::hit_test(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resource_cache, const CL_Point &pos)
 {
 	return root_layout->hit_test(graphics, resource_cache, pos);
 }
-/*
-CL_Rect CL_CSSLayoutTree::get_cursor_box(CL_GraphicContext &gc, CL_CSSResourceCache *resources, CL_CSSBoxText *text_node, CL_String::size_type pos)
+
+CL_Rect CL_CSSLayoutTree::get_cursor_box(CL_CSSLayoutGraphics *graphics, CL_CSSResourceCache *resources, CL_CSSBoxText *text_node, CL_String::size_type pos)
 {
-	CL_CSSInlineLayout *inline_layout = find_inline_layout(text_node);
-	if (inline_layout)
-	{
-		return inline_layout->get_cursor_box(gc, resources, text_node, pos);
-	}
-	else
-	{
-		return CL_Rect();
-	}
+	CL_Rect box;
+	root_layout->get_cursor_box(graphics, resources, text_node, pos, box);
+	return box;
 }
-*/
+
 CL_Rect CL_CSSLayoutTree::get_content_box(CL_CSSBoxElement *element)
 {
 	CL_Rect rect;
