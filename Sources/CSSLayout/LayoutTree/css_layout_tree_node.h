@@ -107,6 +107,10 @@ public:
 	LTRB padding;
 	CL_CSSUsedWidth width;
 	CL_CSSUsedHeight height;
+	CL_CSSUsedValue css_min_width;
+	CL_CSSUsedValue css_min_height;
+	CL_CSSUsedWidth css_max_width;
+	CL_CSSUsedHeight css_max_height;
 	CL_CSSUsedWidth containing_width;
 	CL_CSSUsedHeight containing_height;
 	CL_CSSUsedValue preferred_width;

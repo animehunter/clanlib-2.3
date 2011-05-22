@@ -210,23 +210,26 @@ void CL_CSSLayoutTreeNode::calculate_absolute_widths(LayoutStrategy strategy)
 			cl_used_to_actual(padding.right));
 	}
 
+	css_max_width.expanding = true;
+	css_max_width.value = 0.0f;
 	if (element_node->computed_properties.max_width.type != CL_CSSBoxMaxWidth::type_none)
 	{
-		CL_CSSUsedValue max_width = 0.0f;
 		if (element_node->computed_properties.max_width.type == CL_CSSBoxMaxWidth::type_length)
-			max_width = element_node->computed_properties.max_width.length.value;
+		{
+			css_max_width.value = element_node->computed_properties.max_width.length.value;
+			css_max_width.expanding = false;
+		}
 		else if (element_node->computed_properties.max_width.type == CL_CSSBoxMaxWidth::type_percentage && !containing_width.expanding)
-			max_width = element_node->computed_properties.max_width.percentage * containing_width.value / 100.0f;
-		if (width.value > max_width)
-			apply_absolute_widths_constraint(max_width, left, right);
+		{
+			css_max_width.value = element_node->computed_properties.max_width.percentage * containing_width.value / 100.0f;
+			css_max_width.expanding = false;
+		}
 	}
 
-	CL_CSSUsedValue min_width = 0.0f;
-	if (element_node->computed_properties.min_width.type == CL_CSSBoxMinWidth::type_length)
-		min_width = element_node->computed_properties.min_width.length.value;
-	else if (element_node->computed_properties.min_width.type == CL_CSSBoxMinWidth::type_percentage && !containing_width.expanding)
-		min_width = element_node->computed_properties.min_width.percentage * containing_width.value / 100.0f;
-	if (width.value < min_width)
+	if (!css_max_width.expanding && width.value > css_max_width.value)
+		apply_absolute_widths_constraint(css_max_width.value, left, right);
+
+	if (width.value < css_min_width)
 		apply_absolute_widths_constraint(min_width, left, right);
 }
 
@@ -354,24 +357,11 @@ void CL_CSSLayoutTreeNode::calculate_absolute_heights()
 		height.value = containing_height.value - border.top - border.bottom - padding.top - padding.bottom - margin.top - margin.bottom - top - bottom;
 	}
 
-	if (element_node->computed_properties.max_height.type != CL_CSSBoxMaxHeight::type_none)
-	{
-		CL_CSSUsedValue max_height = 0.0f;
-		if (element_node->computed_properties.max_height.type == CL_CSSBoxMaxHeight::type_length)
-			max_height = element_node->computed_properties.max_height.length.value;
-		else if (element_node->computed_properties.max_height.type == CL_CSSBoxMaxHeight::type_percentage && !containing_height.use_content)
-			max_height = element_node->computed_properties.max_height.percentage * containing_height.value / 100.0f;
-		if (height.value > max_height)
-			apply_absolute_heights_constraint(max_height, top, bottom);
-	}
+	if (!css_max_height.use_content && height.value > css_max_height.value)
+		apply_absolute_heights_constraint(css_max_height.value, top, bottom);
 
-	CL_CSSUsedValue min_height = 0.0f;
-	if (element_node->computed_properties.min_height.type == CL_CSSBoxMinHeight::type_length)
-		min_height = element_node->computed_properties.min_height.length.value;
-	else if (element_node->computed_properties.min_height.type == CL_CSSBoxMinHeight::type_percentage && !containing_height.use_content)
-		min_height = element_node->computed_properties.min_height.percentage * containing_height.value / 100.0f;
-	if (height.value < min_height)
-		apply_absolute_heights_constraint(min_height, top, bottom);
+	if (height.value < css_min_height)
+		apply_absolute_heights_constraint(css_min_height, top, bottom);
 }
 
 void CL_CSSLayoutTreeNode::apply_absolute_heights_constraint(CL_CSSUsedValue constraint_height, CL_CSSUsedValue top, CL_CSSUsedValue bottom)
@@ -468,18 +458,16 @@ void CL_CSSLayoutTreeNode::calculate_static_widths(LayoutStrategy strategy)
 				cl_used_to_actual(border.right) -
 				cl_used_to_actual(padding.left) -
 				cl_used_to_actual(padding.right));
+
+		if (!css_max_width.expanding)
+			width.value = cl_min(width.value, css_max_width.value);
+		width.value = cl_max(width.value, css_min_width);
 	}
 	else
 	{
-		if (element_node->computed_properties.max_width.type == CL_CSSBoxMaxWidth::type_length)
-			width.value = cl_min(width.value, element_node->computed_properties.max_width.length.value);
-		else if (element_node->computed_properties.max_width.type == CL_CSSBoxMaxWidth::type_percentage && !containing_width.expanding)
-			width.value = cl_min(width.value, element_node->computed_properties.max_width.percentage * containing_width.value / 100.0f);
-
-		if (element_node->computed_properties.min_width.type == CL_CSSBoxMinWidth::type_length)
-			width.value = cl_max(width.value, element_node->computed_properties.min_width.length.value);
-		else if (element_node->computed_properties.min_width.type == CL_CSSBoxMinWidth::type_percentage && !containing_width.expanding)
-			width.value = cl_max(width.value, element_node->computed_properties.min_width.percentage * containing_width.value / 100.0f);
+		if (!css_max_width.expanding)
+			width.value = cl_min(width.value, css_max_width.value);
+		width.value = cl_max(width.value, css_min_width);
 
 		if (!containing_width.expanding && !is_float)
 		{
@@ -547,30 +535,36 @@ void CL_CSSLayoutTreeNode::calculate_static_heights()
 		height.use_content = false;
 	}
 
-	if (!height.use_content)
-	{
-		if (element_node->computed_properties.max_height.type == CL_CSSBoxMaxHeight::type_length)
-		{
-			height.value = cl_min(height.value, element_node->computed_properties.max_height.length.value);
-		}
-		else if (element_node->computed_properties.max_height.type == CL_CSSBoxMaxHeight::type_percentage && !containing_height.use_content)
-		{
-			height.value = cl_min(height.value, element_node->computed_properties.max_height.percentage * containing_height.value / 100.0f);
-		}
-
-		if (element_node->computed_properties.min_height.type == CL_CSSBoxMinHeight::type_length)
-		{
-			height.value = cl_max(height.value, element_node->computed_properties.min_height.length.value);
-		}
-		else if (element_node->computed_properties.min_height.type == CL_CSSBoxMinHeight::type_percentage && !containing_height.use_content)
-		{
-			height.value = cl_max(height.value, element_node->computed_properties.min_height.percentage * containing_height.value / 100.0f);
-		}
-	}
+	if (!css_max_height.use_content)
+		height.value = cl_min(height.value, css_max_width.value);
+	height.value = cl_max(height.value, css_min_width);
 }
 
 void CL_CSSLayoutTreeNode::calculate_top_down_widths(LayoutStrategy strategy)
 {
+	css_max_width.expanding = true;
+	css_max_width.value = 0.0f;
+	if (element_node->computed_properties.max_width.type != CL_CSSBoxMaxWidth::type_none)
+	{
+		if (element_node->computed_properties.max_width.type == CL_CSSBoxMaxWidth::type_length)
+		{
+			css_max_width.value = element_node->computed_properties.max_width.length.value;
+			css_max_width.expanding = false;
+		}
+		else if (element_node->computed_properties.max_width.type == CL_CSSBoxMaxWidth::type_percentage && !containing_width.expanding)
+		{
+			css_max_width.value = element_node->computed_properties.max_width.percentage * containing_width.value / 100.0f;
+			css_max_width.expanding = false;
+		}
+	}
+
+	css_min_width = 0.0f;
+	if (element_node->computed_properties.min_width.type == CL_CSSBoxMinWidth::type_length)
+		css_min_width = element_node->computed_properties.min_width.length.value;
+	else if (element_node->computed_properties.min_width.type == CL_CSSBoxMinWidth::type_percentage && !containing_width.expanding)
+		css_min_width = element_node->computed_properties.min_width.percentage * containing_width.value / 100.0f;
+
+
 	if (element_node->computed_properties.position.type == CL_CSSBoxPosition::type_absolute ||
 		element_node->computed_properties.position.type == CL_CSSBoxPosition::type_fixed)
 	{
@@ -584,6 +578,29 @@ void CL_CSSLayoutTreeNode::calculate_top_down_widths(LayoutStrategy strategy)
 
 void CL_CSSLayoutTreeNode::calculate_top_down_heights()
 {
+	css_max_height.value = 0.0f;
+	css_max_height.use_content = true;
+	if (element_node->computed_properties.max_height.type != CL_CSSBoxMaxHeight::type_none)
+	{
+		if (element_node->computed_properties.max_height.type == CL_CSSBoxMaxHeight::type_length)
+		{
+			css_max_height.value = element_node->computed_properties.max_height.length.value;
+			css_max_height.use_content = false;
+		}
+		else if (element_node->computed_properties.max_height.type == CL_CSSBoxMaxHeight::type_percentage && !containing_height.use_content)
+		{
+			css_max_height.value = element_node->computed_properties.max_height.percentage * containing_height.value / 100.0f;
+			css_max_height.use_content = false;
+		}
+	}
+
+	css_min_height = 0.0f;
+	if (element_node->computed_properties.min_height.type == CL_CSSBoxMinHeight::type_length)
+		css_min_height = element_node->computed_properties.min_height.length.value;
+	else if (element_node->computed_properties.min_height.type == CL_CSSBoxMinHeight::type_percentage && !containing_height.use_content)
+		css_min_height = element_node->computed_properties.min_height.percentage * containing_height.value / 100.0f;
+
+
 	if (element_node->computed_properties.position.type == CL_CSSBoxPosition::type_absolute ||
 		element_node->computed_properties.position.type == CL_CSSBoxPosition::type_fixed)
 	{
@@ -889,6 +906,10 @@ void CL_CSSLayoutTreeNode::layout_formatting_root_helper(CL_CSSLayoutGraphics *g
 		CL_CSSActualValue left_float_height = formatting_context->find_left_clearance();
 		CL_CSSActualValue right_float_height = formatting_context->find_right_clearance();
 		height.value = cl_max(height.value, cl_actual_to_used(cl_max(left_float_height, right_float_height)));
+
+		if (!css_max_height.use_content)
+			height.value = cl_min(height.value, css_max_height.value);
+		height.value = cl_max(height.value, css_min_height);
 	}
 
 	content_box = CL_Size(cl_used_to_actual(width.value), cl_used_to_actual(height.value));
@@ -933,16 +954,6 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_CSSLayoutGraphics *graphics, CL_CSSL
 		cursor.apply_margin();
 		cursor.y += cl_used_to_actual(border.top) + cl_used_to_actual(padding.top);
 	}
-/*
-	float min_height = 0.0f;
-	if (element_node->computed_properties.min_height.type == CL_CSSBoxMinHeight::type_length)
-		min_height = element_node->computed_properties.min_height.length.value;
-	else if (element_node->computed_properties.min_height.type == CL_CSSBoxMinHeight::type_percentage)
-		min_height = element_node->computed_properties.min_height.percentage * containing_height.value / 100.0f;
-
-	if (min_height > 0.0f)
-		cursor.apply_margin();
-*/
 
 	CL_CSSActualValue before_content_y = cursor.y;
 
@@ -964,23 +975,9 @@ void CL_CSSLayoutTreeNode::layout_normal(CL_CSSLayoutGraphics *graphics, CL_CSSL
 			height.value = cl_actual_to_used(cl_max(0, cursor.y + cursor.get_total_margin() - content_box.top));
 		}
 
-		if (element_node->computed_properties.max_height.type == CL_CSSBoxMaxHeight::type_length)
-		{
-			height.value = cl_min(height.value, element_node->computed_properties.max_height.length.value);
-		}
-		else if (element_node->computed_properties.max_height.type == CL_CSSBoxMaxHeight::type_percentage && !containing_height.use_content)
-		{
-			height.value = cl_min(height.value, element_node->computed_properties.max_height.percentage * containing_height.value / 100.0f);
-		}
-
-		if (element_node->computed_properties.min_height.type == CL_CSSBoxMinHeight::type_length)
-		{
-			height.value = cl_max(height.value, element_node->computed_properties.min_height.length.value);
-		}
-		else if (element_node->computed_properties.min_height.type == CL_CSSBoxMinHeight::type_percentage && !containing_height.use_content)
-		{
-			height.value = cl_max(height.value, element_node->computed_properties.min_height.percentage * containing_height.value / 100.0f);
-		}
+		if (!css_max_height.use_content)
+			height.value = cl_min(height.value, css_max_height.value);
+		height.value = cl_max(height.value, css_min_height);
 
 		content_box.bottom = content_box.top + cl_used_to_actual(height.value);
 	}

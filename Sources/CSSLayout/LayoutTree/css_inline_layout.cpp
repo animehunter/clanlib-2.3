@@ -300,16 +300,6 @@ bool CL_CSSInlineLayout::is_empty() const
 	{
 		return height.value == 0.0f;
 	}
-
-/*
-	if (height.use_content)
-	{
-		return is_empty_line(begin(), end());
-	}
-	else
-	{
-		return height.value == 0.0f;
-	}*/
 }
 
 void CL_CSSInlineLayout::layout_content(CL_CSSLayoutGraphics *graphics, CL_CSSLayoutCursor &cursor, LayoutStrategy strategy)
@@ -413,7 +403,12 @@ void CL_CSSInlineLayout::layout_content(CL_CSSLayoutGraphics *graphics, CL_CSSLa
 
 					CL_CSSActualValue w = cl_used_to_actual(width.value);
 					if (width.expanding && strategy == preferred_strategy)
+					{
 						w = 1000000;
+						if (!css_max_height.use_content)
+							w = cl_min(w, cl_used_to_actual(css_max_height.value));
+						w = cl_max(w, cl_used_to_actual(css_min_height));
+					}
 					line_box = formatting_context->find_line_box(cursor.x + text_indent, cursor.x + w, y, 1, segment_width);
 					available_width = line_box.get_width();
 				}
