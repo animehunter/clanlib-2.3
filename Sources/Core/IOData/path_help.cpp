@@ -715,3 +715,10 @@ CL_String CL_PathHelp::get_fullname(
 	return fullname;
 }
 
+CL_String CL_PathHelp::combine(const CL_String &part1, const CL_String &part2, PathType path_type)
+{
+	if (!part1.empty())
+		return add_trailing_slash(part1, path_type) + part2;
+	else
+		return part2;
+}
