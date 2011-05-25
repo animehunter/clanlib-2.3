@@ -69,6 +69,8 @@ static const char *exclude_from_build[] =
 	"Quartz",
 	"OSX",
 	"AGL",
+	"font_engine_cocoa.h",
+	"font_engine_cocoa.mm",
 	NULL
 };
 
