@@ -50,6 +50,7 @@
 #define IDC_CHECK_INCLUDE_X64           1027
 #define IDC_RADIO_VC100                 1028
 #define IDC_CHECK_INCLUDE_SSE2        1029
+#define IDC_CHECK_INCLUDE_INTRINSICS        1030
 
 // Next default values for new objects
 // 

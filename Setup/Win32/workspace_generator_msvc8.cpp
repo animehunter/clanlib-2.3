@@ -75,9 +75,10 @@ void WorkspaceGenerator_MSVC8::set_target_version(int version)
 	target_version = version;
 }
 
-void WorkspaceGenerator_MSVC8::set_platforms(bool include_win32, bool include_x64, bool include_sse2)
+void WorkspaceGenerator_MSVC8::set_platforms(bool include_win32, bool include_x64, bool include_sse2, bool include_intrinsics)
 {
 	is_enable_sse2 = include_sse2;
+	is_enable_intrinsics = include_intrinsics;
 	include_platform_win32 = include_win32;
 	include_platform_x64 = include_x64;
 }
@@ -571,6 +572,12 @@ WorkspaceGenerator_MSVC8::SharedConfig WorkspaceGenerator_MSVC8::create_shared_c
 	shared.config->inherited_property_sheets_vs100.push_back("Sheets\\DirectXVersion.props");
 	shared.config->inherited_property_sheets_vs100.push_back("Sheets\\LocalIncludes.props");
 	shared.config->inherited_property_sheets_vs100.push_back("Sheets\\MultiprocessorBuilding.props");
+
+	if (!is_enable_intrinsics)
+	{
+		shared.config->inherited_property_sheets +=  "Sheets\\DisableIntrinsics.vsprops;";
+		shared.config->inherited_property_sheets_vs100.push_back("Sheets\\DisableIntrinsics.props");
+	}
 
 	if (config.unicode)
 		shared.config->character_set.set("1");

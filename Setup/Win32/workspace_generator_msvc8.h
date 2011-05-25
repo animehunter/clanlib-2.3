@@ -53,7 +53,7 @@ class WorkspaceGenerator_MSVC8
 {
 public:
 	WorkspaceGenerator_MSVC8();
-	void set_platforms(bool include_win32, bool include_x64, bool include_sse2);
+	void set_platforms(bool include_win32, bool include_x64, bool include_sse2, bool include_intrinsics);
 	void enable_configurations(bool include_mtdll, bool include_dll);
 	void set_target_version(int version);
 	void write(const Workspace &workspace);
@@ -135,6 +135,7 @@ private:
 	bool include_platform_win32;
 	bool include_platform_x64;
 	bool is_enable_sse2;
+	bool is_enable_intrinsics;
 };
 
 /////////////////////////////////////////////////////////////////////////////

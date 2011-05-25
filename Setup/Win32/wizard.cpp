@@ -115,6 +115,11 @@ BOOL Wizard::finish()
 			hKey, TEXT("IncludeSSE2"), 0, REG_DWORD,
 			(LPBYTE) &include_sse2, sizeof(DWORD));
 
+		DWORD include_intrinsics = (page_target.include_intrinsics ? 1 : 0);
+		RegSetValueEx(
+			hKey, TEXT("IncludeIntrinsics"), 0, REG_DWORD,
+			(LPBYTE) &include_intrinsics, sizeof(DWORD));
+
 		DWORD include_dll = (page_target.include_dll ? 1 : 0);
 		RegSetValueEx(
 			hKey, TEXT("IncludeDLL"), 0, REG_DWORD,
@@ -134,7 +139,7 @@ BOOL Wizard::finish()
 	{
 		WorkspaceGenerator_MSVC8 generator8;
 		generator8.set_target_version(page_target.target_version);
-		generator8.set_platforms(true, page_target.include_x64, page_target.include_sse2);
+		generator8.set_platforms(true, page_target.include_x64, page_target.include_sse2, page_target.include_intrinsics);
 		generator8.enable_configurations(page_target.include_mtdll, page_target.include_dll);
 		generator8.write(workspace);
 	}
@@ -142,7 +147,7 @@ BOOL Wizard::finish()
 	{
 		WorkspaceGenerator_MSVC8 generator10;
 		generator10.set_target_version(page_target.target_version);
-		generator10.set_platforms(true, page_target.include_x64, page_target.include_sse2);
+		generator10.set_platforms(true, page_target.include_x64, page_target.include_sse2, page_target.include_intrinsics);
 		generator10.enable_configurations(page_target.include_mtdll, page_target.include_dll);
 		generator10.write(workspace);
 	}
@@ -165,11 +170,6 @@ Workspace Wizard::create_workspace()
 	std::list<std::string> libs_list_shared;
 	std::list<std::string> libs_list_release;
 	std::list<std::string> libs_list_debug;
-	std::list<std::string> defines_list;
-	
-	defines_list.push_back("DIRECTINPUT_VERSION=0x0800");
-	defines_list.push_back("WINVER=0x0501");
-	defines_list.push_back("_WIN32_WINNT=0x0501");
 	
 	Project clanCore(
 		"Core",
@@ -177,8 +177,7 @@ Workspace Wizard::create_workspace()
 		"core.h",
 		libs_list_shared,
 		libs_list_release,
-		libs_list_debug,
-		defines_list);
+		libs_list_debug);
 
 	Project clanDatabase(
 		"Database",
@@ -186,8 +185,7 @@ Workspace Wizard::create_workspace()
 		"database.h",
 		libs_list_shared,
 		libs_list_release,
-		libs_list_debug,
-		defines_list);
+		libs_list_debug);
 
 	Project clanSqlite(
 		"Sqlite",
@@ -195,8 +193,7 @@ Workspace Wizard::create_workspace()
 		"sqlite.h",
 		libs_list_shared,
 		libs_list_release,
-		libs_list_debug,
-		defines_list);
+		libs_list_debug);
 
 	Project clanRegExp(
 		"RegExp",
@@ -204,8 +201,7 @@ Workspace Wizard::create_workspace()
 		"regexp.h",
 		libs_list_shared,
 		libs_list_release,
-		libs_list_debug,
-		defines_list);
+		libs_list_debug);
 
 	Project clanApp(
 		"App",
@@ -213,8 +209,7 @@ Workspace Wizard::create_workspace()
 		"application.h",
 		libs_list_shared,
 		libs_list_release,
-		libs_list_debug,
-		defines_list);
+		libs_list_debug);
 
 	Project clanNetwork(
 		"Network",
@@ -222,8 +217,7 @@ Workspace Wizard::create_workspace()
 		"network.h",
 		libs_list_shared,
 		libs_list_release,
-		libs_list_debug,
-		defines_list);
+		libs_list_debug);
 
 	Project clanDisplay(
 		"Display",
@@ -231,8 +225,7 @@ Workspace Wizard::create_workspace()
 		"display.h",
 		libs_list_shared,
 		libs_list_release,
-		libs_list_debug,
-		defines_list);
+		libs_list_debug);
 
 	Project clanSound(
 		"Sound",
@@ -240,8 +233,7 @@ Workspace Wizard::create_workspace()
 		"sound.h",
 		libs_list_shared,
 		libs_list_release,
-		libs_list_debug,
-		defines_list);
+		libs_list_debug);
 
 	Project clanGL(
 		"GL",
@@ -249,8 +241,7 @@ Workspace Wizard::create_workspace()
 		"gl.h",
 		libs_list_shared,
 		libs_list_release,
-		libs_list_debug,
-		defines_list);
+		libs_list_debug);
 
 	Project clanGL1(
 		"GL1",
@@ -258,8 +249,7 @@ Workspace Wizard::create_workspace()
 		"gl1.h",
 		libs_list_shared,
 		libs_list_release,
-		libs_list_debug,
-		defines_list);
+		libs_list_debug);
 
 /*	Project clanD3D9(
 		"D3D9",
@@ -267,8 +257,7 @@ Workspace Wizard::create_workspace()
 		"d3d9.h",
 		libs_list_shared,
 		libs_list_release,
-		libs_list_debug,
-		defines_list);
+		libs_list_debug);
 
 	Project clanD3D10(
 		"D3D10",
@@ -276,8 +265,7 @@ Workspace Wizard::create_workspace()
 		"d3d10.h",
 		libs_list_shared,
 		libs_list_release,
-		libs_list_debug,
-		defines_list);
+		libs_list_debug);
 */
 	Project clanSWRender(
 		"SWRender",
@@ -285,8 +273,7 @@ Workspace Wizard::create_workspace()
 		"swrender.h",
 		libs_list_shared,
 		libs_list_release,
-		libs_list_debug,
-		defines_list);
+		libs_list_debug);
 
 	Project clanGUI(
 		"GUI",
@@ -294,8 +281,7 @@ Workspace Wizard::create_workspace()
 		"gui.h",
 		libs_list_shared,
 		libs_list_release,
-		libs_list_debug,
-		defines_list);
+		libs_list_debug);
 
 	Project clanVorbis(
 		"Vorbis",
@@ -303,8 +289,7 @@ Workspace Wizard::create_workspace()
 		"vorbis.h",
 		libs_list_shared,
 		libs_list_release,
-		libs_list_debug,
-		defines_list);
+		libs_list_debug);
 
 	Project clanMikMod(
 		"MikMod",
@@ -312,8 +297,7 @@ Workspace Wizard::create_workspace()
 		"mikmod.h",
 		libs_list_shared,
 		libs_list_release,
-		libs_list_debug,
-		defines_list);
+		libs_list_debug);
 
 	Project clanCSSLayout(
 		"CSSLayout",
@@ -321,8 +305,7 @@ Workspace Wizard::create_workspace()
 		"csslayout.h",
 		libs_list_shared,
 		libs_list_release,
-		libs_list_debug,
-		defines_list);
+		libs_list_debug);
 
 	// Add projects to workspace:
 	workspace.projects.push_back(clanCore);
@@ -336,7 +319,10 @@ Workspace Wizard::create_workspace()
 	workspace.projects.push_back(clanGL);
 //	workspace.projects.push_back(clanD3D9);
 //	workspace.projects.push_back(clanD3D10);
-	workspace.projects.push_back(clanSWRender);
+
+	if (page_target.include_intrinsics)
+		workspace.projects.push_back(clanSWRender);
+
 	workspace.projects.push_back(clanCSSLayout);
 	workspace.projects.push_back(clanGL1);
 
