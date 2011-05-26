@@ -479,7 +479,13 @@ bool CL_OpenGL::to_opengl_pixelformat(CL_TextureFormat texture_format, CLenum &f
 		}
 		case cl_rg16f: break;
 		case cl_rgb16f: break;
-		case cl_rgba16f: break;
+		case cl_rgba16f:
+		{
+			valid = true;
+			type = CL_HALF_FLOAT;
+			format = CL_BGRA;
+			break;
+		}
 
 		case cl_r32f:
 		{
