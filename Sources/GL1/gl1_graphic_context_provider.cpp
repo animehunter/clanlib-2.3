@@ -997,6 +997,7 @@ void CL_GL1GraphicContextProvider::draw_primitives_array(CL_PrimitivesType type,
 
 void CL_GL1GraphicContextProvider::draw_primitives_array_instanced(CL_PrimitivesType type, int offset, int num_vertices, int instance_count)
 {
+	throw CL_Exception("Cannot draw instanced for the OpenGL 1.3 target");
 }
 
 void CL_GL1GraphicContextProvider::draw_primitives_elements(CL_PrimitivesType type, int count, unsigned int *indices)
@@ -1017,12 +1018,38 @@ void CL_GL1GraphicContextProvider::draw_primitives_elements(CL_PrimitivesType ty
 	cl1DrawElements(to_enum(type), count, CL_UNSIGNED_BYTE, indices);
 }
 
+void CL_GL1GraphicContextProvider::draw_primitives_elements_instanced(CL_PrimitivesType type, int count, unsigned int *indices, int instance_count)
+{
+	throw CL_Exception("Cannot draw instanced for the OpenGL 1.3 target");
+}
+
+void CL_GL1GraphicContextProvider::draw_primitives_elements_instanced(CL_PrimitivesType type, int count, unsigned short *indices, int instance_count)
+{
+	throw CL_Exception("Cannot draw instanced for the OpenGL 1.3 target");
+}
+
+void CL_GL1GraphicContextProvider::draw_primitives_elements_instanced(CL_PrimitivesType type, int count, unsigned char *indices, int instance_count)
+{
+	throw CL_Exception("Cannot draw instanced for the OpenGL 1.3 target");
+}
+
 void CL_GL1GraphicContextProvider::draw_primitives_elements(
 	CL_PrimitivesType type,
 	int count,
 	CL_ElementArrayBufferProvider *array_provider,
 	CL_VertexAttributeDataType indices_type,
 	void *offset)
+{
+	throw CL_Exception("Cannot draw Element Array Buffers for the OpenGL 1.3 target");
+}
+
+void CL_GL1GraphicContextProvider::draw_primitives_elements_instanced(
+	CL_PrimitivesType type,
+	int count,
+	CL_ElementArrayBufferProvider *array_provider,
+	CL_VertexAttributeDataType indices_type,
+	void *offset,
+	int instance_count)
 {
 	throw CL_Exception("Cannot draw Element Array Buffers for the OpenGL 1.3 target");
 }

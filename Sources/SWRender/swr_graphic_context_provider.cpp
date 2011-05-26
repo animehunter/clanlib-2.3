@@ -378,7 +378,23 @@ void CL_SWRenderGraphicContextProvider::draw_primitives_elements(CL_PrimitivesTy
 	}
 }
 
+void CL_SWRenderGraphicContextProvider::draw_primitives_elements_instanced(CL_PrimitivesType type, int count, unsigned int *indices, int instance_count)
+{
+}
+
+void CL_SWRenderGraphicContextProvider::draw_primitives_elements_instanced(CL_PrimitivesType type, int count, unsigned short *indices, int instance_count)
+{
+}
+
+void CL_SWRenderGraphicContextProvider::draw_primitives_elements_instanced(CL_PrimitivesType type, int count, unsigned char *indices, int instance_count)
+{
+}
+
 void CL_SWRenderGraphicContextProvider::draw_primitives_elements(CL_PrimitivesType type, int count, CL_ElementArrayBufferProvider *array_provider, CL_VertexAttributeDataType indices_type, void *offset)
+{
+}
+
+void CL_SWRenderGraphicContextProvider::draw_primitives_elements_instanced(CL_PrimitivesType type, int count, CL_ElementArrayBufferProvider *array_provider, CL_VertexAttributeDataType indices_type, void *offset, int instance_count)
 {
 }
 

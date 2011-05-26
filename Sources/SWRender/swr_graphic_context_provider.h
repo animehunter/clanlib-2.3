@@ -96,7 +96,11 @@ public:
 	void draw_primitives_elements(CL_PrimitivesType type, int count, unsigned int *indices);
 	void draw_primitives_elements(CL_PrimitivesType type, int count, unsigned short *indices);
 	void draw_primitives_elements(CL_PrimitivesType type, int count, unsigned char *indices);
+	void draw_primitives_elements_instanced(CL_PrimitivesType type, int count, unsigned int *indices, int instance_count);
+	void draw_primitives_elements_instanced(CL_PrimitivesType type, int count, unsigned short *indices, int instance_count);
+	void draw_primitives_elements_instanced(CL_PrimitivesType type, int count, unsigned char *indices, int instance_count);
 	void draw_primitives_elements(CL_PrimitivesType type, int count, CL_ElementArrayBufferProvider *array_provider, CL_VertexAttributeDataType indices_type, void *offset);
+	void draw_primitives_elements_instanced(CL_PrimitivesType type, int count, CL_ElementArrayBufferProvider *array_provider, CL_VertexAttributeDataType indices_type, void *offset, int instance_count);
 	void primitives_array_freed(const CL_PrimitivesArrayData * const prim_array);
 	void reset_primitives_array();
 	void draw_pixels(CL_GraphicContext &gc, float x, float y, float zoom_x, float zoom_y, const CL_PixelBuffer &pixel_buffer, const CL_Rect &src_rect, const CL_Colorf &color);

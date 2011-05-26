@@ -326,6 +326,30 @@ public:
 	/// \param indices = char
 	void draw_primitives_elements(CL_PrimitivesType type, int count, unsigned char *indices);
 
+	/// \brief Draw primitives elements instanced
+	///
+	/// \param type = Primitives Type
+	/// \param count = value
+	/// \param indices = value
+	/// \param instance_count = number of instances drawn
+	void draw_primitives_elements_instanced(CL_PrimitivesType type, int count, unsigned int *indices, int instance_count);
+
+	/// \brief Draw primitives elements instanced
+	///
+	/// \param type = Primitives Type
+	/// \param count = value
+	/// \param indices = short
+	/// \param instance_count = number of instances drawn
+	void draw_primitives_elements_instanced(CL_PrimitivesType type, int count, unsigned short *indices, int instance_count);
+
+	/// \brief Draw primitives elements instanced
+	///
+	/// \param type = Primitives Type
+	/// \param count = value
+	/// \param indices = char
+	/// \param instance_count = number of instances drawn
+	void draw_primitives_elements_instanced(CL_PrimitivesType type, int count, unsigned char *indices, int instance_count);
+
 	/// \brief Draw primitives elements
 	///
 	/// \param type = Primitives Type
@@ -334,6 +358,16 @@ public:
 	/// \param indices_type = Vertex Attribute Data Type
 	/// \param offset = void
 	void draw_primitives_elements(CL_PrimitivesType type, int count, CL_ElementArrayBuffer &element_array, CL_VertexAttributeDataType indices_type, void *offset = 0);
+
+	/// \brief Draw primitives elements instanced
+	///
+	/// \param type = Primitives Type
+	/// \param count = value
+	/// \param element_array = Element Array Buffer
+	/// \param indices_type = Vertex Attribute Data Type
+	/// \param offset = void
+	/// \param instance_count = number of instances drawn
+	void draw_primitives_elements_instanced(CL_PrimitivesType type, int count, CL_ElementArrayBuffer &element_array, CL_VertexAttributeDataType indices_type, void *offset, int instance_count);
 
 	/// \brief Reset the primitives arrays.
 	void reset_primitives_array();

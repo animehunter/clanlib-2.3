@@ -412,6 +412,39 @@ void CL_GraphicContext::draw_primitives_elements(CL_PrimitivesType type, int cou
 	impl->provider->draw_primitives_elements(type, count, indices);
 }
 
+void CL_GraphicContext::draw_primitives_elements_instanced(CL_PrimitivesType type, int count, unsigned int *indices, int instance_count)
+{
+	impl->flush_batcher(*this);
+	if (impl->modelview_changed)
+	{
+		impl->provider->set_modelview(impl->modelviews[impl->modelview_index]);
+		impl->modelview_changed = false;
+	}
+	impl->provider->draw_primitives_elements_instanced(type, count, indices, instance_count);
+}
+
+void CL_GraphicContext::draw_primitives_elements_instanced(CL_PrimitivesType type, int count, unsigned short *indices, int instance_count)
+{
+	impl->flush_batcher(*this);
+	if (impl->modelview_changed)
+	{
+		impl->provider->set_modelview(impl->modelviews[impl->modelview_index]);
+		impl->modelview_changed = false;
+	}
+	impl->provider->draw_primitives_elements_instanced(type, count, indices, instance_count);
+}
+
+void CL_GraphicContext::draw_primitives_elements_instanced(CL_PrimitivesType type, int count, unsigned char *indices, int instance_count)
+{
+	impl->flush_batcher(*this);
+	if (impl->modelview_changed)
+	{
+		impl->provider->set_modelview(impl->modelviews[impl->modelview_index]);
+		impl->modelview_changed = false;
+	}
+	impl->provider->draw_primitives_elements_instanced(type, count, indices, instance_count);
+}
+
 void CL_GraphicContext::draw_primitives_elements(CL_PrimitivesType type, int count, CL_ElementArrayBuffer &elements_array, CL_VertexAttributeDataType indices_type, void *offset)
 {
 	impl->flush_batcher(*this);
@@ -421,6 +454,17 @@ void CL_GraphicContext::draw_primitives_elements(CL_PrimitivesType type, int cou
 		impl->modelview_changed = false;
 	}
 	impl->provider->draw_primitives_elements(type, count, elements_array.get_provider(), indices_type, offset);
+}
+
+void CL_GraphicContext::draw_primitives_elements_instanced(CL_PrimitivesType type, int count, CL_ElementArrayBuffer &elements_array, CL_VertexAttributeDataType indices_type, void *offset, int instance_count)
+{
+	impl->flush_batcher(*this);
+	if (impl->modelview_changed)
+	{
+		impl->provider->set_modelview(impl->modelviews[impl->modelview_index]);
+		impl->modelview_changed = false;
+	}
+	impl->provider->draw_primitives_elements_instanced(type, count, elements_array.get_provider(), indices_type, offset, instance_count);
 }
 
 void CL_GraphicContext::reset_primitives_array()

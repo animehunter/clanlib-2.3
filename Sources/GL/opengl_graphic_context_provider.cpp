@@ -770,6 +770,24 @@ void CL_OpenGLGraphicContextProvider::draw_primitives_elements(CL_PrimitivesType
 	clDrawElements(to_enum(type), count, CL_UNSIGNED_BYTE, indices);
 }
 
+void CL_OpenGLGraphicContextProvider::draw_primitives_elements_instanced(CL_PrimitivesType type, int count, unsigned int *indices, int instance_count)
+{
+	CL_OpenGL::set_active(this);
+	clDrawElementsInstanced(to_enum(type), count, CL_UNSIGNED_INT, indices, instance_count);
+}
+
+void CL_OpenGLGraphicContextProvider::draw_primitives_elements_instanced(CL_PrimitivesType type, int count, unsigned short *indices, int instance_count)
+{
+	CL_OpenGL::set_active(this);
+	clDrawElementsInstanced(to_enum(type), count, CL_UNSIGNED_SHORT, indices, instance_count);
+}
+
+void CL_OpenGLGraphicContextProvider::draw_primitives_elements_instanced(CL_PrimitivesType type, int count, unsigned char *indices, int instance_count)
+{
+	CL_OpenGL::set_active(this);
+	clDrawElementsInstanced(to_enum(type), count, CL_UNSIGNED_BYTE, indices, instance_count);
+}
+
 void CL_OpenGLGraphicContextProvider::draw_primitives_elements(
 	CL_PrimitivesType type,
 	int count,
@@ -780,6 +798,20 @@ void CL_OpenGLGraphicContextProvider::draw_primitives_elements(
 	CL_OpenGL::set_active(this);
 	clBindBuffer(CL_ELEMENT_ARRAY_BUFFER, static_cast<CL_OpenGLElementArrayBufferProvider *>(array_provider)->get_handle());
 	clDrawElements(to_enum(type), count, to_enum(indices_type), offset);
+	clBindBuffer(CL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+void CL_OpenGLGraphicContextProvider::draw_primitives_elements_instanced(
+	CL_PrimitivesType type,
+	int count,
+	CL_ElementArrayBufferProvider *array_provider,
+	CL_VertexAttributeDataType indices_type,
+	void *offset,
+	int instance_count)
+{
+	CL_OpenGL::set_active(this);
+	clBindBuffer(CL_ELEMENT_ARRAY_BUFFER, static_cast<CL_OpenGLElementArrayBufferProvider *>(array_provider)->get_handle());
+	clDrawElementsInstanced(to_enum(type), count, to_enum(indices_type), offset, instance_count);
 	clBindBuffer(CL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
