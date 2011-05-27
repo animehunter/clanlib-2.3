@@ -499,7 +499,7 @@ bool CL_OpenGL::to_opengl_pixelformat(CL_TextureFormat texture_format, CLenum &f
 		{
 			valid = true;
 			type = CL_FLOAT;
-			format = CL_BGR;
+			format = CL_RGB;
 			break;
 		}
 		
@@ -507,7 +507,7 @@ bool CL_OpenGL::to_opengl_pixelformat(CL_TextureFormat texture_format, CLenum &f
 		{
 			valid = true;
 			type = CL_FLOAT;
-			format = CL_BGRA;
+			format = CL_RGBA;
 			break;
 		}
 		
