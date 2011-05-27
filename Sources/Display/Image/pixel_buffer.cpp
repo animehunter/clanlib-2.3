@@ -359,30 +359,59 @@ void CL_PixelBuffer::premultiply_alpha()
 	if (impl->provider)
 		throw CL_Exception("GPU Provider currently does not support this function");
 
-	if (get_format() != cl_rgba8)
+	if (get_alpha_mask())
 	{
-		throw CL_Exception("The image is not rgba8");
-	}
-
-	int w = get_width();
-	int h = get_height();
-	cl_uint32 *p = (cl_uint32 *) get_data();
-	for (int y = 0; y < h; y++)
-	{
-		int index = y * w;
-		cl_uint32 *line = p + index;
-		for (int x = 0; x < w; x++)
+		if (get_format() == cl_rgba8)
 		{
-			cl_uint32 r = ((line[x] >> 24) & 0xff);
-			cl_uint32 g = ((line[x] >> 16) & 0xff);
-			cl_uint32 b = ((line[x] >> 8) & 0xff);
-			cl_uint32 a = (line[x] & 0xff);
+			int w = get_width();
+			int h = get_height();
+			cl_uint32 *p = (cl_uint32 *) get_data();
+			for (int y = 0; y < h; y++)
+			{
+				int index = y * w;
+				cl_uint32 *line = p + index;
+				for (int x = 0; x < w; x++)
+				{
+					cl_uint32 r = ((line[x] >> 24) & 0xff);
+					cl_uint32 g = ((line[x] >> 16) & 0xff);
+					cl_uint32 b = ((line[x] >> 8) & 0xff);
+					cl_uint32 a = (line[x] & 0xff);
 
-			r = r * a / 255;
-			g = g * a / 255;
-			b = b * a / 255;
+					r = r * a / 255;
+					g = g * a / 255;
+					b = b * a / 255;
 
-			line[x] = (r << 24) + (g << 16) + (b << 8) + a;
+					line[x] = (r << 24) + (g << 16) + (b << 8) + a;
+				}
+			}
+		}
+		else if (get_format() == cl_argb8)
+		{
+			int w = get_width();
+			int h = get_height();
+			cl_uint32 *p = (cl_uint32 *) get_data();
+			for (int y = 0; y < h; y++)
+			{
+				int index = y * w;
+				cl_uint32 *line = p + index;
+				for (int x = 0; x < w; x++)
+				{
+					cl_uint32 a = ((line[x] >> 24) & 0xff);
+					cl_uint32 r = ((line[x] >> 16) & 0xff);
+					cl_uint32 g = ((line[x] >> 8) & 0xff);
+					cl_uint32 b = (line[x] & 0xff);
+
+					r = r * a / 255;
+					g = g * a / 255;
+					b = b * a / 255;
+
+					line[x] = (a << 24) + (r << 16) + (g << 8) + b;
+				}
+			}
+		}
+		else
+		{
+			throw CL_Exception("The image is not rgba8");
 		}
 	}
 }
