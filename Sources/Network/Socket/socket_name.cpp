@@ -149,13 +149,10 @@ CL_String CL_SocketName::lookup_hostname() const
 	in_addr_t ipv4_address = inet_addr(CL_StringHelp::text_to_local8(impl->address).c_str());
 	if (ipv4_address != INADDR_NONE)
 	{
-		sockaddr_in addr;
-		memset(&addr, 0, sizeof(sockaddr_in));
-		addr.sin_family = AF_INET;
-		addr.sin_port = htons(CL_StringHelp::text_to_int(impl->port));
-		addr.sin_addr.s_addr = ipv4_address;
-
-		hostent *host = gethostbyaddr((const char *) &addr, sizeof(sockaddr_in), AF_INET);
+		in_addr addr;
+		memset(&addr, 0, sizeof(in_addr));
+		addr.s_addr = ipv4_address;
+		hostent *host = gethostbyaddr((const char *) &addr, sizeof(in_addr), AF_INET);
 		if (host == 0)
 			throw CL_Exception("Could not lookup DNS name");
 		
