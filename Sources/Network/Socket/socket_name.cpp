@@ -135,7 +135,13 @@ CL_String CL_SocketName::lookup_ipv4() const
 		ipv4_address = *((in_addr_t *) host->h_addr_list[0]);
 	}
 
-	return CL_String();
+	unsigned long addr_long = (unsigned long) ntohl(ipv4_address);
+	return cl_format(
+		"%1.%2.%3.%4",
+		int((addr_long & 0xff000000) >> 24),
+		int((addr_long & 0x00ff0000) >> 16),
+		int((addr_long & 0x0000ff00) >> 8),
+		int((addr_long & 0x000000ff)));
 }
 
 CL_String CL_SocketName::lookup_hostname() const
