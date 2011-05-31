@@ -112,8 +112,9 @@ void App::draw_font_info()
 	offset_y += gap;
 
 	small_font.draw_text(gc, offset_x - 10, offset_y, "Frames per second:", CL_Colorf::yellow);
+	offset_y += gap;
 	CL_String fps = cl_format("%1", last_fps);
-	small_font.draw_text(gc, offset_x + 110, offset_y, fps, CL_Colorf::white);
+	small_font.draw_text(gc, offset_x, offset_y, fps, CL_Colorf::white);
 	offset_y += gap;
 
 	offset_x = 620;
@@ -127,6 +128,7 @@ void App::draw_font_info()
 
 	small_font.draw_text(gc, offset_x, offset_y, cl_format("Ascender : %1", font_metrics.get_ascent()),  CL_Colorf::white);
 	offset_y += gap;
+	offset_y += gap;	// Allow long font names
 
 	small_font.draw_text(gc, offset_x, offset_y, cl_format("Descender : %1", font_metrics.get_descent()),  CL_Colorf::white);
 	offset_y += gap;

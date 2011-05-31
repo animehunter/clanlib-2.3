@@ -257,21 +257,6 @@ CL_FontDescription CL_FontProvider_System::get_registered_font(const CL_FontDesc
 	int average_width = desc.get_average_width();
 	int height = desc.get_height();
 
-	// Attempt to convert the point sizes (to match WIN32 with FreeType)
-	if (average_width==0)	// Unset width
-	{
-		if (height <0)
-		{
-			average_width = -height;
-			average_width = (average_width * 80) / 96;
-		}
-		else
-		{
-			// I do not know why this formula works,  but it seems to obtain the best result
-			average_width = ( height * 80 * 80 ) / (96 * 96);
-		}
-	}
-
 	CL_FontDescription new_desc;
 	new_desc.clone(desc);
 	new_desc.set_average_width(average_width);
