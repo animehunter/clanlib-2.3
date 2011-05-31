@@ -399,7 +399,10 @@ void CL_DomElement::set_child_string(const CL_DomString &name, const CL_DomStrin
 	}
 
 	while (!element.get_first_child().is_null())
-		element.remove_child(element.get_first_child());
+	{
+		CL_DomNode my_child = element.get_first_child();
+		element.remove_child(my_child);
+	}
 
 	CL_DomText dom_text = get_owner_document().create_text_node(value);
 	element.append_child(dom_text);
