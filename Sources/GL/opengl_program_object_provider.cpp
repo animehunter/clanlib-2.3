@@ -410,8 +410,8 @@ void CL_OpenGLProgramObjectProvider::fetch_attributes() const
 		clGetActiveAttrib(handle, i, name_size, &length, &size, &type, name);
 		CL_String attrib_name = CL_StringHelp::local8_to_text(CL_StringRef8(name, length, false));
 
-		// int loc = clGetAttribLocation(handle, CL_StringHelp::text_to_local8(name).c_str());
-		CL_ProgramAttribute attribute(attrib_name, size, type);
+		int loc = clGetAttribLocation(handle, CL_StringHelp::text_to_local8(name).c_str());
+		CL_ProgramAttribute attribute(attrib_name, size, type, loc);
 		cached_attribs.push_back(attribute);
 	}
 	delete [] name;

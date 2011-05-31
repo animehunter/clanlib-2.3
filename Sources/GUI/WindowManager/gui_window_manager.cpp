@@ -81,7 +81,7 @@ CL_GUIWindowManager::CL_WindowManagerType CL_GUIWindowManager::get_window_manage
 	return impl->provider->get_window_manager_type();
 }
 
-bool CL_GUIWindowManager::is_null()
+bool CL_GUIWindowManager::is_null() const
 {
 	return !impl;
 }

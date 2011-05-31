@@ -52,6 +52,8 @@ public:
 	int type;
 
 	int size;
+
+	int location;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -61,12 +63,13 @@ CL_ProgramAttribute::CL_ProgramAttribute()
 {
 }
 
-CL_ProgramAttribute::CL_ProgramAttribute(const CL_StringRef &name, int size, int type)
+CL_ProgramAttribute::CL_ProgramAttribute(const CL_StringRef &name, int size, int type, int location)
 : impl(new CL_ProgramAttribute_Impl)
 {
 	impl->name = name;
 	impl->size = size;
 	impl->type = type;
+	impl->location = location;
 }
 
 CL_ProgramAttribute::~CL_ProgramAttribute()
@@ -95,6 +98,11 @@ int CL_ProgramAttribute::get_size() const
 int CL_ProgramAttribute::get_type() const
 {
 	return impl->type;
+}
+
+int CL_ProgramAttribute::get_location() const
+{
+	return impl->location;
 }
 
 /////////////////////////////////////////////////////////////////////////////

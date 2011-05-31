@@ -1857,7 +1857,7 @@ void CL_Win32Window::get_styles_from_description(const CL_DisplayWindowDescripti
 		{
 			if (desc.has_minimize_button())
 				style |= WS_MINIMIZEBOX;
-			if (desc.has_maximize_button())
+			if (desc.has_maximize_button() && desc.get_allow_resize())
 				style |= WS_MAXIMIZEBOX;
 		}
 	}

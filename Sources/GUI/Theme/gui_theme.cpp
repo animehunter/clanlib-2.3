@@ -67,7 +67,7 @@ CL_GUITheme::~CL_GUITheme()
 /////////////////////////////////////////////////////////////////////////////
 // CL_GUITheme Attributes:
 
-bool CL_GUITheme::is_null()
+bool CL_GUITheme::is_null() const
 {
 	return !impl;
 }

@@ -55,7 +55,8 @@ public:
 	/// \param name = String Ref
 	/// \param size = value
 	/// \param type = value
-	CL_ProgramAttribute(const CL_StringRef &name, int size, int type);
+	/// \param location = value
+	CL_ProgramAttribute(const CL_StringRef &name, int size, int type, int location);
 
 	~CL_ProgramAttribute();
 
@@ -78,6 +79,9 @@ public:
 
 	/// \brief Get attribute OpenGL type.
 	int get_type() const;
+
+	/// \brief Get attribute location.
+	int get_location() const;
 
 /// \}
 /// \name Operations

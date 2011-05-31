@@ -69,7 +69,8 @@ CL_GUILayout::~CL_GUILayout()
 
 /////////////////////////////////////////////////////////////////////////////
 // CL_GUILayout Attributes:
-bool CL_GUILayout::is_null()
+
+bool CL_GUILayout::is_null() const
 {
 	return !impl;
 }

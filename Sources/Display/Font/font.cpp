@@ -94,7 +94,7 @@ CL_Font::~CL_Font()
 /////////////////////////////////////////////////////////////////////////////
 // CL_Font Attributes:
 
-bool CL_Font::is_null()
+bool CL_Font::is_null() const
 {
 	return !impl;
 }

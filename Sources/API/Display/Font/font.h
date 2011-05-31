@@ -79,7 +79,7 @@ public:
 	/// \brief Is Null
 	///
 	/// \return true = null
-	bool is_null();
+	bool is_null() const;
 
 	/// \brief Retrieves the font provider.
 	CL_FontProvider *get_provider() const;
