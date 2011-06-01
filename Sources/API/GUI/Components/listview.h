@@ -116,7 +116,10 @@ public:
 	/// \brief Returns a container class holding the selected items in a linked list structure.
 	CL_ListViewSelection get_selected_items() const;
 
-	/// \brief Returns the currently selected item in single selection mode. If multiple items are selected, the item selected first (chronological order) is returned.
+	/// \brief Returns the currently selected item in single selection mode. 
+	///
+	/// If multiple items are selected, the item selected first (chronological order) is returned.
+	/// If no element is selected, an empty CL_ListViewItem is returned.
 	CL_ListViewItem get_selected_item();
 
 	/// \brief Returns the preferred size of the component, as defined in its CSS file.
