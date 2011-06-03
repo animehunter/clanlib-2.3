@@ -37,7 +37,7 @@ std::vector<CL_String> CL_CSSParserShadow::get_names()
 	return names;
 }
 
-void CL_CSSParserShadow::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
+void CL_CSSParserShadow::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperty *> *out_change_set)
 {
 	size_t pos = 0;
 	size_t last_pos = pos;
@@ -123,4 +123,8 @@ void CL_CSSParserShadow::parse(CL_CSSBoxProperties &properties, const CL_String 
 	}
 
 	properties.shadow = box_shadow;
+	if (out_change_set)
+	{
+		(*out_change_set)["box-shadow"] = &properties.shadow;
+	}
 }

@@ -37,7 +37,7 @@ std::vector<CL_String> CL_CSSParserListStyleImage::get_names()
 	return names;
 }
 
-void CL_CSSParserListStyleImage::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
+void CL_CSSParserListStyleImage::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperty *> *out_change_set)
 {
 	size_t pos = 0;
 	CL_CSSToken token = next_token(pos, tokens);
@@ -52,5 +52,9 @@ void CL_CSSParserListStyleImage::parse(CL_CSSBoxProperties &properties, const CL
 	{
 		properties.list_style_image.type = CL_CSSBoxListStyleImage::type_uri;
 		properties.list_style_image.url = token.value;
+	}
+	if (out_change_set)
+	{
+		(*out_change_set)["list-style-image"] = &properties.list_style_image;
 	}
 }

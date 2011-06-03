@@ -37,7 +37,7 @@ std::vector<CL_String> CL_CSSParserBackgroundOrigin::get_names()
 	return names;
 }
 
-void CL_CSSParserBackgroundOrigin::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
+void CL_CSSParserBackgroundOrigin::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperty *> *out_change_set)
 {
 	size_t pos = 0;
 	CL_CSSToken token = next_token(pos, tokens);
@@ -84,5 +84,9 @@ void CL_CSSParserBackgroundOrigin::parse(CL_CSSBoxProperties &properties, const 
 		}
 
 		properties.background_origin = background_origin;
+	}
+	if (out_change_set)
+	{
+		(*out_change_set)["background-origin"] = &properties.background_origin;
 	}
 }

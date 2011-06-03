@@ -37,7 +37,7 @@ std::vector<CL_String> CL_CSSParserBorderImageRepeat::get_names()
 	return names;
 }
 
-void CL_CSSParserBorderImageRepeat::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
+void CL_CSSParserBorderImageRepeat::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperty *> *out_change_set)
 {
 	CL_CSSBoxBorderImageRepeat border_image_repeat;
 	border_image_repeat.type = CL_CSSBoxBorderImageRepeat::type_values;
@@ -47,6 +47,10 @@ void CL_CSSParserBorderImageRepeat::parse(CL_CSSBoxProperties &properties, const
 	if (token.type == CL_CSSToken::type_ident && pos == tokens.size() && equals(token.value, "inherit"))
 	{
 		properties.border_image_repeat.type = CL_CSSBoxBorderImageRepeat::type_inherit;
+		if (out_change_set)
+		{
+			(*out_change_set)["border-image-repeat"] = &properties.border_image_repeat;
+		}
 		return;
 	}
 	else if (token.type == CL_CSSToken::type_ident && equals(token.value, "stretch"))
@@ -90,5 +94,9 @@ void CL_CSSParserBorderImageRepeat::parse(CL_CSSBoxProperties &properties, const
 		{
 			return;
 		}
+	}
+	if (out_change_set)
+	{
+		(*out_change_set)["border-image-repeat"] = &properties.border_image_repeat;
 	}
 }

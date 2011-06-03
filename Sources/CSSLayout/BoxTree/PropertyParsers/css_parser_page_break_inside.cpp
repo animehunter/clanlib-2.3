@@ -37,7 +37,7 @@ std::vector<CL_String> CL_CSSParserPageBreakInside::get_names()
 	return names;
 }
 
-void CL_CSSParserPageBreakInside::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
+void CL_CSSParserPageBreakInside::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperty *> *out_change_set)
 {
 	size_t pos = 0;
 	CL_CSSToken token = next_token(pos, tokens);
@@ -49,5 +49,9 @@ void CL_CSSParserPageBreakInside::parse(CL_CSSBoxProperties &properties, const C
 			properties.page_break_inside.type = CL_CSSBoxPageBreakInside::type_avoid;
 		else if (equals(token.value, "inherit"))
 			properties.page_break_inside.type = CL_CSSBoxPageBreakInside::type_inherit;
+	}
+	if (out_change_set)
+	{
+		(*out_change_set)["page-break-inside"] = &properties.page_break_inside;
 	}
 }

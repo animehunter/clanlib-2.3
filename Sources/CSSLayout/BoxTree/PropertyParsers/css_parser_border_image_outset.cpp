@@ -37,7 +37,7 @@ std::vector<CL_String> CL_CSSParserBorderImageOutset::get_names()
 	return names;
 }
 
-void CL_CSSParserBorderImageOutset::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
+void CL_CSSParserBorderImageOutset::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperty *> *out_change_set)
 {
 	size_t pos = 0;
 	CL_CSSToken token = next_token(pos, tokens);
@@ -113,5 +113,9 @@ void CL_CSSParserBorderImageOutset::parse(CL_CSSBoxProperties &properties, const
 		properties.border_image_outset.number_right = numbers[1];
 		properties.border_image_outset.number_bottom = numbers[2];
 		properties.border_image_outset.number_left = numbers[3];
+	}
+	if (out_change_set)
+	{
+		(*out_change_set)["border-image-outset"] = &properties.border_image_outset;
 	}
 }

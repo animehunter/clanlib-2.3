@@ -37,7 +37,7 @@ std::vector<CL_String> CL_CSSParserFontVariant::get_names()
 	return names;
 }
 
-void CL_CSSParserFontVariant::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
+void CL_CSSParserFontVariant::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperty *> *out_change_set)
 {
 	size_t pos = 0;
 	CL_CSSToken token = next_token(pos, tokens);
@@ -49,5 +49,9 @@ void CL_CSSParserFontVariant::parse(CL_CSSBoxProperties &properties, const CL_St
 			properties.font_variant.type = CL_CSSBoxFontVariant::type_small_caps;
 		else if (equals(token.value, "inherit"))
 			properties.font_variant.type = CL_CSSBoxFontVariant::type_inherit;
+	}
+	if (out_change_set)
+	{
+		(*out_change_set)["font-variant"] = &properties.font_variant;
 	}
 }

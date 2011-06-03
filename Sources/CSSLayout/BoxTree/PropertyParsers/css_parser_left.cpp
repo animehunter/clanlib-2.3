@@ -37,7 +37,7 @@ std::vector<CL_String> CL_CSSParserLeft::get_names()
 	return names;
 }
 
-void CL_CSSParserLeft::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
+void CL_CSSParserLeft::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperty *> *out_change_set)
 {
 	size_t pos = 0;
 	CL_CSSToken token = next_token(pos, tokens);
@@ -80,5 +80,9 @@ void CL_CSSParserLeft::parse(CL_CSSBoxProperties &properties, const CL_String &n
 			properties.left.type = CL_CSSBoxLeft::type_percentage;
 			properties.left.percentage = -CL_StringHelp::text_to_float(token.value);
 		}
+	}
+	if (out_change_set)
+	{
+		(*out_change_set)["left"] = &properties.left;
 	}
 }

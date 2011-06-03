@@ -37,7 +37,7 @@ std::vector<CL_String> CL_CSSParserVisibility::get_names()
 	return names;
 }
 
-void CL_CSSParserVisibility::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
+void CL_CSSParserVisibility::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperty *> *out_change_set)
 {
 	size_t pos = 0;
 	CL_CSSToken token = next_token(pos, tokens);
@@ -51,5 +51,9 @@ void CL_CSSParserVisibility::parse(CL_CSSBoxProperties &properties, const CL_Str
 			properties.visibility.type = CL_CSSBoxVisibility::type_collapse;
 		else if (equals(token.value, "inherit"))
 			properties.visibility.type = CL_CSSBoxVisibility::type_inherit;
+	}
+	if (out_change_set)
+	{
+		(*out_change_set)["visibility"] = &properties.visibility;
 	}
 }

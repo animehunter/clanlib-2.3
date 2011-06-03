@@ -37,7 +37,7 @@ std::vector<CL_String> CL_CSSParserFont::get_names()
 	return names;
 }
 
-void CL_CSSParserFont::parse(CL_CSSBoxProperties &properties, const CL_String &propname, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
+void CL_CSSParserFont::parse(CL_CSSBoxProperties &properties, const CL_String &propname, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperty *> *out_change_set)
 {
 	CL_CSSBoxFontStyle style;
 	CL_CSSBoxFontVariant variant;
@@ -407,4 +407,14 @@ void CL_CSSParserFont::parse(CL_CSSBoxProperties &properties, const CL_String &p
 	properties.font_size = size;
 	properties.line_height = line_height;
 	properties.font_family = family;
+
+	if (out_change_set)
+	{
+		(*out_change_set)["font-style"] = &properties.font_style;
+		(*out_change_set)["font-variant"] = &properties.font_variant;
+		(*out_change_set)["font-weight"] = &properties.font_weight;
+		(*out_change_set)["font-size"] = &properties.font_size;
+		(*out_change_set)["line-height"] = &properties.line_height;
+		(*out_change_set)["font-family"] = &properties.font_family;
+	}
 }

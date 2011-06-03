@@ -37,7 +37,7 @@ std::vector<CL_String> CL_CSSParserBackground::get_names()
 	return names;
 }
 
-void CL_CSSParserBackground::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
+void CL_CSSParserBackground::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperty *> *out_change_set)
 {
 	if (tokens.size() == 1 && tokens[0].type == CL_CSSToken::type_ident && equals(tokens[0].value, "inherit"))
 	{
@@ -49,6 +49,18 @@ void CL_CSSParserBackground::parse(CL_CSSBoxProperties &properties, const CL_Str
 		properties.background_origin.type = CL_CSSBoxBackgroundOrigin::type_inherit;
 		properties.background_clip.type = CL_CSSBoxBackgroundClip::type_inherit;
 		properties.background_size.type = CL_CSSBoxBackgroundSize::type_inherit;
+
+		if (out_change_set)
+		{
+			(*out_change_set)["background-color"] = &properties.background_color;
+			(*out_change_set)["background-image"] = &properties.background_image;
+			(*out_change_set)["background-repeat"] = &properties.background_repeat;
+			(*out_change_set)["background-attachment"] = &properties.background_attachment;
+			(*out_change_set)["background-position"] = &properties.background_position;
+			(*out_change_set)["background-origin"] = &properties.background_origin;
+			(*out_change_set)["background-clip"] = &properties.background_clip;
+			(*out_change_set)["background-size"] = &properties.background_size;
+		}
 		return;
 	}
 
@@ -155,6 +167,18 @@ void CL_CSSParserBackground::parse(CL_CSSBoxProperties &properties, const CL_Str
 	properties.background_origin = bgorigin;
 	properties.background_clip = bgclip;
 	properties.background_size = bgsize;
+
+	if (out_change_set)
+	{
+		(*out_change_set)["background-color"] = &properties.background_color;
+		(*out_change_set)["background-image"] = &properties.background_image;
+		(*out_change_set)["background-repeat"] = &properties.background_repeat;
+		(*out_change_set)["background-attachment"] = &properties.background_attachment;
+		(*out_change_set)["background-position"] = &properties.background_position;
+		(*out_change_set)["background-origin"] = &properties.background_origin;
+		(*out_change_set)["background-clip"] = &properties.background_clip;
+		(*out_change_set)["background-size"] = &properties.background_size;
+	}
 }
 
 bool CL_CSSParserBackground::parse_bgcolor(CL_CSSBoxBackgroundColor &bgcolor, size_t &parse_pos, const std::vector<CL_CSSToken> &tokens)

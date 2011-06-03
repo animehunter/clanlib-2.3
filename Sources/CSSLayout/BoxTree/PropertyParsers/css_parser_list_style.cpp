@@ -37,7 +37,7 @@ std::vector<CL_String> CL_CSSParserListStyle::get_names()
 	return names;
 }
 
-void CL_CSSParserListStyle::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
+void CL_CSSParserListStyle::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperty *> *out_change_set)
 {
 	CL_CSSBoxListStyleType list_style_type;
 	CL_CSSBoxListStylePosition list_style_position;
@@ -179,4 +179,10 @@ void CL_CSSParserListStyle::parse(CL_CSSBoxProperties &properties, const CL_Stri
 	properties.list_style_type = list_style_type;
 	properties.list_style_position = list_style_position;
 	properties.list_style_image = list_style_image;
+	if (out_change_set)
+	{
+		(*out_change_set)["list-style-type"] = &properties.list_style_type;
+		(*out_change_set)["list-style-position"] = &properties.list_style_position;
+		(*out_change_set)["list-style-image"] = &properties.list_style_image;
+	}
 }

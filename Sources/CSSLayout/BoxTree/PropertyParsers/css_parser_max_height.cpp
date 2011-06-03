@@ -37,7 +37,7 @@ std::vector<CL_String> CL_CSSParserMaxHeight::get_names()
 	return names;
 }
 
-void CL_CSSParserMaxHeight::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
+void CL_CSSParserMaxHeight::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperty *> *out_change_set)
 {
 	size_t pos = 0;
 	CL_CSSToken token = next_token(pos, tokens);
@@ -61,5 +61,9 @@ void CL_CSSParserMaxHeight::parse(CL_CSSBoxProperties &properties, const CL_Stri
 	{
 		properties.max_height.type = CL_CSSBoxMaxHeight::type_percentage;
 		properties.max_height.percentage = CL_StringHelp::text_to_float(token.value);
+	}
+	if (out_change_set)
+	{
+		(*out_change_set)["max-height"] = &properties.max_height;
 	}
 }

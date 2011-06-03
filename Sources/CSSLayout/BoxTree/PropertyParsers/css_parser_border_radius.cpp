@@ -37,7 +37,7 @@ std::vector<CL_String> CL_CSSParserBorderRadius::get_names()
 	return names;
 }
 
-void CL_CSSParserBorderRadius::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
+void CL_CSSParserBorderRadius::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperty *> *out_change_set)
 {
 	CL_CSSBoxBorderRadius radius[4];
 
@@ -50,6 +50,13 @@ void CL_CSSParserBorderRadius::parse(CL_CSSBoxProperties &properties, const CL_S
 		properties.border_radius_top_right = radius[0];
 		properties.border_radius_bottom_left = radius[0];
 		properties.border_radius_bottom_right = radius[0];
+		if (out_change_set)
+		{
+			(*out_change_set)["border-top-left-radius"] = &properties.border_radius_top_left;
+			(*out_change_set)["border-top-right-radius"] = &properties.border_radius_top_right;
+			(*out_change_set)["border-bottom-left-radius"] = &properties.border_radius_bottom_left;
+			(*out_change_set)["border-bottom-right-radius"] = &properties.border_radius_bottom_right;
+		}
 		return;
 	}
 
@@ -155,4 +162,12 @@ void CL_CSSParserBorderRadius::parse(CL_CSSBoxProperties &properties, const CL_S
 	properties.border_radius_bottom_right = radius[1];
 	properties.border_radius_bottom_left = radius[2];
 	properties.border_radius_top_left = radius[3];
+
+	if (out_change_set)
+	{
+		(*out_change_set)["border-top-left-radius"] = &properties.border_radius_top_left;
+		(*out_change_set)["border-top-right-radius"] = &properties.border_radius_top_right;
+		(*out_change_set)["border-bottom-left-radius"] = &properties.border_radius_bottom_left;
+		(*out_change_set)["border-bottom-right-radius"] = &properties.border_radius_bottom_right;
+	}
 }

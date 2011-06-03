@@ -31,13 +31,14 @@
 class CL_CSSToken;
 class CL_CSSBoxProperties;
 class CL_CSSBoxLength;
+class CL_CSSBoxProperty;
 
 class CL_CSSPropertyParser
 {
 public:
 	virtual ~CL_CSSPropertyParser() { }
 	virtual std::vector<CL_String> get_names() = 0;
-	virtual void parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set) = 0;
+	virtual void parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperty *> *out_change_set) = 0;
 
 protected:
 	CL_CSSToken next_token(size_t &pos, const std::vector<CL_CSSToken> &tokens, bool skip_whitespace = true);

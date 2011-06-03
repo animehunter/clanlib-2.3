@@ -40,7 +40,7 @@ std::vector<CL_String> CL_CSSParserBorderLTRBStyle::get_names()
 	return names;
 }
 
-void CL_CSSParserBorderLTRBStyle::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
+void CL_CSSParserBorderLTRBStyle::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperty *> *out_change_set)
 {
 	CL_CSSBoxBorderStyle *style = 0;
 	if (equals(name, "border-top-style"))
@@ -80,6 +80,11 @@ void CL_CSSParserBorderLTRBStyle::parse(CL_CSSBoxProperties &properties, const C
 				style->type = CL_CSSBoxBorderStyle::type_outset;
 			else if (equals(token.value, "inherit"))
 				style->type = CL_CSSBoxBorderStyle::type_inherit;
+		}
+
+		if (out_change_set)
+		{
+			(*out_change_set)[name] = style;
 		}
 	}
 }

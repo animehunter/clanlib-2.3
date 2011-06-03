@@ -37,7 +37,7 @@ std::vector<CL_String> CL_CSSParserBorderImage::get_names()
 	return names;
 }
 
-void CL_CSSParserBorderImage::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
+void CL_CSSParserBorderImage::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperty *> *out_change_set)
 {
 	if (tokens.size() == 1 && tokens[0].type == CL_CSSToken::type_ident && equals(tokens[0].value, "inherit"))
 	{
@@ -46,6 +46,14 @@ void CL_CSSParserBorderImage::parse(CL_CSSBoxProperties &properties, const CL_St
 		properties.border_image_width.type = CL_CSSBoxBorderImageWidth::type_inherit;
 		properties.border_image_outset.type = CL_CSSBoxBorderImageOutset::type_inherit;
 		properties.border_image_repeat.type = CL_CSSBoxBorderImageRepeat::type_inherit;
+		if (out_change_set)
+		{
+			(*out_change_set)["border-image-source"] = &properties.border_image_source;
+			(*out_change_set)["border-image-slice"] = &properties.border_image_slice;
+			(*out_change_set)["border-image-width"] = &properties.border_image_width;
+			(*out_change_set)["border-image-outset"] = &properties.border_image_outset;
+			(*out_change_set)["border-image-repeat"] = &properties.border_image_repeat;
+		}
 		return;
 	}
 
@@ -109,6 +117,14 @@ void CL_CSSParserBorderImage::parse(CL_CSSBoxProperties &properties, const CL_St
 	properties.border_image_width = border_image_width;
 	properties.border_image_outset = border_image_outset;
 	properties.border_image_repeat = border_image_repeat;
+	if (out_change_set)
+	{
+		(*out_change_set)["border-image-source"] = &properties.border_image_source;
+		(*out_change_set)["border-image-slice"] = &properties.border_image_slice;
+		(*out_change_set)["border-image-width"] = &properties.border_image_width;
+		(*out_change_set)["border-image-outset"] = &properties.border_image_outset;
+		(*out_change_set)["border-image-repeat"] = &properties.border_image_repeat;
+	}
 }
 
 bool CL_CSSParserBorderImage::parse_source(CL_CSSBoxBorderImageSource &border_image_source, size_t &parse_pos, const std::vector<CL_CSSToken> &tokens)
@@ -397,6 +413,7 @@ bool CL_CSSParserBorderImage::parse_outset(CL_CSSBoxBorderImageOutset &border_im
 	border_image_outset.number_left = numbers[3];
 
 	parse_pos = pos;
+
 	return true;
 }
 

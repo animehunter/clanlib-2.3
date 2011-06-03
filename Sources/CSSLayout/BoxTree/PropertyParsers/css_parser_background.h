@@ -35,7 +35,7 @@ class CL_CSSParserBackground : public CL_CSSPropertyParser
 {
 public:
 	std::vector<CL_String> get_names();
-	void parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set);
+	void parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperty *> *out_change_set);
 
 private:
 	bool parse_bgcolor(CL_CSSBoxBackgroundColor &bgcolor, size_t &parse_pos, const std::vector<CL_CSSToken> &tokens);

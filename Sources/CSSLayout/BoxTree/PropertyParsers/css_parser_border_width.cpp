@@ -37,7 +37,7 @@ std::vector<CL_String> CL_CSSParserBorderWidth::get_names()
 	return names;
 }
 
-void CL_CSSParserBorderWidth::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
+void CL_CSSParserBorderWidth::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperty *> *out_change_set)
 {
 	CL_CSSBoxBorderWidth border_widths[4];
 	int count;
@@ -129,5 +129,12 @@ void CL_CSSParserBorderWidth::parse(CL_CSSBoxProperties &properties, const CL_St
 		default:
 			break;
 		}
+	}
+	if (out_change_set)
+	{
+		(*out_change_set)["border-left-width"] = &properties.border_width_left;
+		(*out_change_set)["border-right-width"] = &properties.border_width_right;
+		(*out_change_set)["border-top-width"] = &properties.border_width_top;
+		(*out_change_set)["border-bottom-width"] = &properties.border_width_bottom;
 	}
 }

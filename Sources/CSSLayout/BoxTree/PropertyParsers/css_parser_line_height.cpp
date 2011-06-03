@@ -37,7 +37,7 @@ std::vector<CL_String> CL_CSSParserLineHeight::get_names()
 	return names;
 }
 
-void CL_CSSParserLineHeight::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
+void CL_CSSParserLineHeight::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperty *> *out_change_set)
 {
 	size_t pos = 0;
 	CL_CSSToken token = next_token(pos, tokens);
@@ -66,5 +66,9 @@ void CL_CSSParserLineHeight::parse(CL_CSSBoxProperties &properties, const CL_Str
 	{
 		properties.line_height.type = CL_CSSBoxLineHeight::type_percentage;
 		properties.line_height.percentage = CL_StringHelp::text_to_float(token.value);
+	}
+	if (out_change_set)
+	{
+		(*out_change_set)["line-height"] = &properties.line_height;
 	}
 }

@@ -37,7 +37,7 @@ std::vector<CL_String> CL_CSSParserOutlineColor::get_names()
 	return names;
 }
 
-void CL_CSSParserOutlineColor::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
+void CL_CSSParserOutlineColor::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperty *> *out_change_set)
 {
 	size_t pos = 0;
 	CL_Colorf color;
@@ -60,5 +60,9 @@ void CL_CSSParserOutlineColor::parse(CL_CSSBoxProperties &properties, const CL_S
 				properties.outline_color.type = CL_CSSBoxOutlineColor::type_inherit;
 			}
 		}
+	}
+	if (out_change_set)
+	{
+		(*out_change_set)["outline-color"] = &properties.outline_color;
 	}
 }
