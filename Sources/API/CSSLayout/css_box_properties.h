@@ -225,8 +225,8 @@ public:
 	CL_CSSBoxVerticalAlign vertical_align;
 	CL_CSSBoxEmptyCells empty_cells;
 
-	void apply_properties(const CL_String &style_string);
-	void apply_properties(const CL_CSSPropertyList2 &css_properties);
+	void apply_properties(const CL_String &style_string, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set = 0);
+	void apply_properties(const CL_CSSPropertyList2 &css_properties, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set = 0);
 
 	void compute(const CL_CSSBoxProperties *parent, CL_CSSResourceCache *layout);
 };

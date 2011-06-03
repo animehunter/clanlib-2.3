@@ -37,7 +37,7 @@ std::vector<CL_String> CL_CSSParserFontFamily::get_names()
 	return names;
 }
 
-void CL_CSSParserFontFamily::parse(CL_CSSBoxProperties &properties, const CL_String &propname, const std::vector<CL_CSSToken> &tokens)
+void CL_CSSParserFontFamily::parse(CL_CSSBoxProperties &properties, const CL_String &propname, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
 {
 	CL_CSSBoxFontFamily family;
 	family.type = CL_CSSBoxFontFamily::type_names;

@@ -37,7 +37,7 @@ std::vector<CL_String> CL_CSSParserBorderImageRepeat::get_names()
 	return names;
 }
 
-void CL_CSSParserBorderImageRepeat::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens)
+void CL_CSSParserBorderImageRepeat::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
 {
 	CL_CSSBoxBorderImageRepeat border_image_repeat;
 	border_image_repeat.type = CL_CSSBoxBorderImageRepeat::type_values;

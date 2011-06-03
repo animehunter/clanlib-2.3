@@ -32,16 +32,16 @@
 #include "API/CSSLayout/css_property_list2.h"
 #include "css_property_parsers.h"
 
-void CL_CSSBoxProperties::apply_properties(const CL_String &style_string)
+void CL_CSSBoxProperties::apply_properties(const CL_String &style_string, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
 {
-	apply_properties(CL_CSSDocument2::get_style_properties(style_string));
+	apply_properties(CL_CSSDocument2::get_style_properties(style_string), out_change_set);
 }
 
-void CL_CSSBoxProperties::apply_properties(const CL_CSSPropertyList2 &css_properties)
+void CL_CSSBoxProperties::apply_properties(const CL_CSSPropertyList2 &css_properties, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
 {
 	CL_CSSPropertyParsers property_parsers;
 	for (size_t i = css_properties.size(); i > 0; i--)
-		property_parsers.parse(*this, css_properties[i-1]);
+		property_parsers.parse(*this, css_properties[i-1], out_change_set);
 }
 
 void CL_CSSBoxProperties::compute(const CL_CSSBoxProperties *parent, CL_CSSResourceCache *layout)

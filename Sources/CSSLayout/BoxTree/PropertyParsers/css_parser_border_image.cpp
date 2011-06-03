@@ -37,7 +37,7 @@ std::vector<CL_String> CL_CSSParserBorderImage::get_names()
 	return names;
 }
 
-void CL_CSSParserBorderImage::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens)
+void CL_CSSParserBorderImage::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
 {
 	if (tokens.size() == 1 && tokens[0].type == CL_CSSToken::type_ident && equals(tokens[0].value, "inherit"))
 	{

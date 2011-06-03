@@ -37,7 +37,7 @@ std::vector<CL_String> CL_CSSParserBorderStyle::get_names()
 	return names;
 }
 
-void CL_CSSParserBorderStyle::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens)
+void CL_CSSParserBorderStyle::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
 {
 	CL_CSSBoxBorderStyle border_styles[4];
 	int count;

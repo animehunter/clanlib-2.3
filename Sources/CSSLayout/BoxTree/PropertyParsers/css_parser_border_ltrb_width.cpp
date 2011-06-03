@@ -40,7 +40,7 @@ std::vector<CL_String> CL_CSSParserBorderLTRBWidth::get_names()
 	return names;
 }
 
-void CL_CSSParserBorderLTRBWidth::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens)
+void CL_CSSParserBorderLTRBWidth::parse(CL_CSSBoxProperties &properties, const CL_String &name, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
 {
 	CL_CSSBoxBorderWidth *width = 0;
 	if (equals(name, "border-top-width"))

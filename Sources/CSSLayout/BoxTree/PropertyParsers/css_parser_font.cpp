@@ -37,7 +37,7 @@ std::vector<CL_String> CL_CSSParserFont::get_names()
 	return names;
 }
 
-void CL_CSSParserFont::parse(CL_CSSBoxProperties &properties, const CL_String &propname, const std::vector<CL_CSSToken> &tokens)
+void CL_CSSParserFont::parse(CL_CSSBoxProperties &properties, const CL_String &propname, const std::vector<CL_CSSToken> &tokens, std::map<CL_String, CL_CSSBoxProperties *> *out_change_set)
 {
 	CL_CSSBoxFontStyle style;
 	CL_CSSBoxFontVariant variant;
