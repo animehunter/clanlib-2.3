@@ -44,3 +44,23 @@ void CL_CSSBoxTextAlign::compute(const CL_CSSBoxTextAlign *parent, CL_CSSResourc
 			type = type_get_from_direction_property;
 	}
 }
+
+CL_String CL_CSSBoxTextAlign::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_left:
+		return "left";
+	case type_right:
+		return "right";
+	case type_center:
+		return "center";
+	case type_justify:
+		return "justify";
+	case type_inherit:
+		return "inherit";
+	case type_get_from_direction_property:
+		return "-clan-get-from-direction-property";
+	}
+}

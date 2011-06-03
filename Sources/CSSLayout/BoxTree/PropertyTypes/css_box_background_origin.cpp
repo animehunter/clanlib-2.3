@@ -52,3 +52,29 @@ void CL_CSSBoxBackgroundOrigin::compute(const CL_CSSBoxBackgroundOrigin *parent,
 		}
 	}
 }
+
+CL_String CL_CSSBoxBackgroundOrigin::to_string() const
+{
+	if (type == type_inherit)
+		return "inherit";
+
+	CL_String s;
+	for (size_t i = 0; i < values.size(); i++)
+	{
+		if (i > 0)
+			s += ", ";
+		switch (values[i])
+		{
+		case origin_border_box:
+			s += "border-box";
+			break;
+		case origin_padding_box:
+			s += "padding-box";
+			break;
+		case origin_content_box:
+			s += "content-box";
+			break;
+		}
+	}
+	return s;
+}

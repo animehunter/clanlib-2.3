@@ -36,6 +36,7 @@ class CL_CSSBoxTextIndent : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxTextIndent();
 	void compute(const CL_CSSBoxTextIndent *parent, CL_CSSResourceCache *layout, float em_size, float ex_size);
+	CL_String to_string() const;
 
 	enum Type
 	{

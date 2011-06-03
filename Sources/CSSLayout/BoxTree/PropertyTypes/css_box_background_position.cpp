@@ -100,3 +100,54 @@ void CL_CSSBoxBackgroundPosition::compute(const CL_CSSBoxBackgroundPosition *par
 		}
 	}
 }
+
+CL_String CL_CSSBoxBackgroundPosition::to_string() const
+{
+	if (type == type_inherit)
+		return "inherit";
+
+	CL_String s;
+	for (size_t i = 0; i < positions.size(); i++)
+	{
+		if (i > 0)
+			s += ", ";
+		switch (positions[i].type_x)
+		{
+		case type1_left:
+			s += "left";
+			break;
+		case type1_center:
+			s += "center";
+			break;
+		case type1_right:
+			s += "right";
+			break;
+		case type1_percentage:
+			s += CL_StringHelp::float_to_text(positions[i].percentage_x) + "%";
+			break;
+		case type1_length:
+			s += positions[i].length_x.to_string();
+			break;
+		}
+		s += " ";
+		switch (positions[i].type_y)
+		{
+		case type2_top:
+			s += "top";
+			break;
+		case type2_center:
+			s += "center";
+			break;
+		case type2_bottom:
+			s += "bottom";
+			break;
+		case type2_percentage:
+			s += CL_StringHelp::float_to_text(positions[i].percentage_y) + "%";
+			break;
+		case type2_length:
+			s += positions[i].length_y.to_string();
+			break;
+		}
+	}
+	return s;
+}

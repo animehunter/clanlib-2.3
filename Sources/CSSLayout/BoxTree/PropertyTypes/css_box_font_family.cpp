@@ -52,3 +52,39 @@ void CL_CSSBoxFontFamily::compute(const CL_CSSBoxFontFamily *parent, CL_CSSResou
 		}
 	}
 }
+
+CL_String CL_CSSBoxFontFamily::to_string() const
+{
+	if (type == type_inherit)
+		return "inherit";
+
+	CL_String s;
+	for (size_t i = 0; i < names.size(); i++)
+	{
+		if (i > 0)
+			s += ", ";
+		switch (names[i].type)
+		{
+		default:
+		case CL_CSSBoxFontFamilyName::type_family_name:
+			s += cl_format("\"%1\"", names[i].name);
+			break;
+		case CL_CSSBoxFontFamilyName::type_serif:
+			s += "serif";
+			break;
+		case CL_CSSBoxFontFamilyName::type_sans_serif:
+			s += "sans-serif";
+			break;
+		case CL_CSSBoxFontFamilyName::type_cursive:
+			s += "cursive";
+			break;
+		case CL_CSSBoxFontFamilyName::type_fantasy:
+			s += "fantasy";
+			break;
+		case CL_CSSBoxFontFamilyName::type_monospace:
+			s += "monospace";
+			break;
+		}
+	}
+	return s;
+}

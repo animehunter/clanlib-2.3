@@ -35,6 +35,7 @@ class CL_CSSBoxPageBreakInside : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxPageBreakInside();
 	void compute(const CL_CSSBoxPageBreakInside *parent, CL_CSSResourceCache *layout, float em_size, float ex_size);
+	CL_String to_string() const;
 
 	enum Type
 	{

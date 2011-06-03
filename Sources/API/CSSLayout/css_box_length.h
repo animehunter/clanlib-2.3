@@ -54,6 +54,35 @@ public:
 	{
 	}
 
+	CL_String to_string() const
+	{
+		if (value == 0.0f)
+			return "0";
+		CL_String v = CL_StringHelp::float_to_text(value);
+		switch (type)
+		{
+		default:
+		case type_mm:
+			return v + "mm";
+		case type_cm:
+			return v + "cm";
+		case type_in:
+			return v + "in";
+		case type_pt:
+			return v + "pt";
+		case type_pc:
+			return v + "pc";
+		case type_px:
+			return v + "px";
+		case type_em:
+			return v + "em";
+		case type_ex:
+			return v + "ex";
+		case type_computed_px:
+			return v + "computed-px";
+		}
+	}
+
 	Type type;
 	float value;
 };

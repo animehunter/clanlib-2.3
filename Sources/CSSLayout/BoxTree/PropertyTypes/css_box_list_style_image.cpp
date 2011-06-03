@@ -51,3 +51,17 @@ void CL_CSSBoxListStyleImage::compute(const CL_CSSBoxListStyleImage *parent, CL_
 
 	// To do: absolute URI
 }
+
+CL_String CL_CSSBoxListStyleImage::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_uri:
+		return cl_format("uri(\"%1\")", url);
+	case type_none:
+		return "none";
+	case type_inherit:
+		return "inherit";
+	}
+}

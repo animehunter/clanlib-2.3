@@ -35,6 +35,7 @@ class CL_CSSBoxOutlineColor : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxOutlineColor();
 	void compute(const CL_CSSBoxOutlineColor *parent, CL_CSSResourceCache *layout, float em_size, float ex_size);
+	CL_String to_string() const;
 
 	enum Type
 	{

@@ -52,3 +52,45 @@ void CL_CSSBoxBorderImageRepeat::compute(const CL_CSSBoxBorderImageRepeat *paren
 		}
 	}
 }
+
+CL_String CL_CSSBoxBorderImageRepeat::to_string() const
+{
+	if (type == type_inherit)
+		return "inherit";
+
+	CL_String s;
+	switch (repeat_x)
+	{
+	default:
+	case repeat_type_stretch:
+		s += "stretch";
+		break;
+	case repeat_type_repeat:
+		s += "repeat";
+		break;
+	case repeat_type_round:
+		s += "round";
+		break;
+	case repeat_type_space:
+		s += "space";
+		break;
+	}
+	s += " ";
+	switch (repeat_y)
+	{
+	default:
+	case repeat_type_stretch:
+		s += "stretch";
+		break;
+	case repeat_type_repeat:
+		s += "repeat";
+		break;
+	case repeat_type_round:
+		s += "round";
+		break;
+	case repeat_type_space:
+		s += "space";
+		break;
+	}
+	return s;
+}

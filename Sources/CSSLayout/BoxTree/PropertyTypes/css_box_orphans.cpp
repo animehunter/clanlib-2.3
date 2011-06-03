@@ -50,3 +50,15 @@ void CL_CSSBoxOrphans::compute(const CL_CSSBoxOrphans *parent, CL_CSSResourceCac
 		}
 	}
 }
+
+CL_String CL_CSSBoxOrphans::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_integer:
+		return CL_StringHelp::int_to_text(value);
+	case type_inherit:
+		return "inherit";
+	}
+}

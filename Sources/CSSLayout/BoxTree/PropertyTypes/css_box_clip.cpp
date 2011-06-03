@@ -73,3 +73,17 @@ void CL_CSSBoxClip::compute(const CL_CSSBoxClip *parent, CL_CSSResourceCache *la
 		// computed values to actual values.
 	}
 }
+
+CL_String CL_CSSBoxClip::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_rect:
+		return cl_format("rect(%1,%2,%3,%4)", top.to_string(), right.to_string(), bottom.to_string(), left.to_string());
+	case type_auto:
+		return "auto";
+	case type_inherit:
+		return "inherit";
+	}
+}

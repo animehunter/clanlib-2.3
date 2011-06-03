@@ -35,6 +35,7 @@ class CL_CSSBoxOverflow : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxOverflow();
 	void compute(const CL_CSSBoxOverflow *parent, CL_CSSResourceCache *layout, float em_size, float ex_size);
+	CL_String to_string() const;
 
 	enum Type
 	{

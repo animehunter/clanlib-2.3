@@ -36,6 +36,7 @@ class CL_CSSBoxBackgroundSize : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxBackgroundSize();
 	void compute(const CL_CSSBoxBackgroundSize *parent, CL_CSSResourceCache *layout, float em_size, float ex_size);
+	CL_String to_string() const;
 
 	enum Type
 	{

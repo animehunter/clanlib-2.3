@@ -59,3 +59,26 @@ void CL_CSSBoxShadow::compute(const CL_CSSBoxShadow *parent, CL_CSSResourceCache
 		shadows[i].spread_distance = layout->compute_length(shadows[i].spread_distance, em_size, ex_size);
 	}
 }
+
+CL_String CL_CSSBoxShadow::to_string() const
+{
+	if (type == type_inherit)
+		return "inherit";
+	else if (type == type_none)
+		return "none";
+
+	CL_String s;
+	for (size_t i = 0; i < shadows.size(); i++)
+	{
+		if (i > 0)
+			s += ", ";
+		if (shadows[i].inset)
+			s += "inset ";
+		s += shadows[i].horizontal_offset.to_string() + " ";
+		s += shadows[i].vertical_offset.to_string() + " ";
+		s += shadows[i].blur_radius.to_string() + " ";
+		s += shadows[i].spread_distance.to_string() + " ";
+		s += cl_format("rgba(%1,%2,%3,%4)", (int)(shadows[i].color.r * 255.0f + 0.5f), (int)(shadows[i].color.g * 255.0f + 0.5f), (int)(shadows[i].color.b * 255.0f + 0.5f), (int)(shadows[i].color.a * 255.0f + 0.5f));
+	}
+	return s;
+}

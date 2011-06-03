@@ -35,6 +35,7 @@ class CL_CSSBoxDecorationBreak : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxDecorationBreak();
 	void compute(const CL_CSSBoxDecorationBreak *parent, CL_CSSResourceCache *layout, float em_size, float ex_size);
+	CL_String to_string() const;
 
 	enum Type
 	{

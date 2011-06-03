@@ -44,3 +44,17 @@ void CL_CSSBoxPageBreakInside::compute(const CL_CSSBoxPageBreakInside *parent, C
 			type = type_auto;
 	}
 }
+
+CL_String CL_CSSBoxPageBreakInside::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_avoid:
+		return "avoid";
+	case type_auto:
+		return "auto";
+	case type_inherit:
+		return "inherit";
+	}
+}

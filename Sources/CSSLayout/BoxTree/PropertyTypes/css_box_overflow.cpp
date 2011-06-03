@@ -44,3 +44,21 @@ void CL_CSSBoxOverflow::compute(const CL_CSSBoxOverflow *parent, CL_CSSResourceC
 			type = type_visible;
 	}
 }
+
+CL_String CL_CSSBoxOverflow::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_visible:
+		return "visible";
+	case type_hidden:
+		return "hidden";
+	case type_scroll:
+		return "scroll";
+	case type_auto:
+		return "auto";
+	case type_inherit:
+		return "inherit";
+	}
+}

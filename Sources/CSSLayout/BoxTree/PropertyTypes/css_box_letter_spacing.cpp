@@ -53,3 +53,17 @@ void CL_CSSBoxLetterSpacing::compute(const CL_CSSBoxLetterSpacing *parent, CL_CS
 	if (type == type_length)
 		length = layout->compute_length(length, em_size, ex_size);
 }
+
+CL_String CL_CSSBoxLetterSpacing::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_normal:
+		return "normal";
+	case type_length:
+		return length.to_string();
+	case type_inherit:
+		return "inherit";
+	}
+}

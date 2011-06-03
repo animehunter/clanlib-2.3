@@ -59,3 +59,21 @@ void CL_CSSBoxWidth::compute(const CL_CSSBoxWidth *parent, CL_CSSResourceCache *
 	if (type == type_length)
 		length = layout->compute_length(length, em_size, ex_size);
 }
+
+CL_String CL_CSSBoxWidth::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_length:
+		return length.to_string();
+	case type_percentage:
+		return CL_StringHelp::float_to_text(percentage) + "%";
+	case type_auto:
+		return "auto";
+	case type_inherit:
+		return "inherit";
+	case type_clan_expanding:
+		return "-clan-expanding";
+	}
+}

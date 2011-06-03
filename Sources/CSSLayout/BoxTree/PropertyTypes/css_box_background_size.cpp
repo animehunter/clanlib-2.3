@@ -52,3 +52,54 @@ void CL_CSSBoxBackgroundSize::compute(const CL_CSSBoxBackgroundSize *parent, CL_
 		}
 	}
 }
+
+CL_String CL_CSSBoxBackgroundSize::to_string() const
+{
+	if (type == type_inherit)
+		return "inherit";
+
+	CL_String s;
+	for (size_t i = 0; i < values.size(); i++)
+	{
+		if (i > 0)
+			s += ", ";
+
+		if (values[i].type == size_contain)
+		{
+			s += "contain";
+		}
+		else if (values[i].type == size_cover)
+		{
+			s += "cover";
+		}
+		else
+		{
+			switch (values[i].value_x)
+			{
+			case value_type_auto:
+				s += "auto";
+				break;
+			case value_type_percentage:
+				s += CL_StringHelp::float_to_text(values[i].percentage_x) + "%";
+				break;
+			case value_type_length:
+				s += values[i].length_x.to_string();
+				break;
+			}
+			s += " ";
+			switch (values[i].value_y)
+			{
+			case value_type_auto:
+				s += "auto";
+				break;
+			case value_type_percentage:
+				s += CL_StringHelp::float_to_text(values[i].percentage_y) + "%";
+				break;
+			case value_type_length:
+				s += values[i].length_y.to_string();
+				break;
+			}
+		}
+	}
+	return s;
+}

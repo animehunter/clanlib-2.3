@@ -50,3 +50,17 @@ void CL_CSSBoxBorderImageSource::compute(const CL_CSSBoxBorderImageSource *paren
 		}
 	}
 }
+
+CL_String CL_CSSBoxBorderImageSource::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_none:
+		return "none";
+	case type_image:
+		return cl_format("url(\"%1\")", url);
+	case type_inherit:
+		return "inherit";
+	}
+}

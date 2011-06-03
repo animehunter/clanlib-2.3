@@ -33,3 +33,19 @@ CL_CSSBoxLeft::CL_CSSBoxLeft()
 : type(type_auto)
 {
 }
+
+CL_String CL_CSSBoxLeft::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_length:
+		return length.to_string();
+	case type_percentage:
+		return CL_StringHelp::float_to_text(percentage) + "%";
+	case type_auto:
+		return "auto";
+	case type_inherit:
+		return "inherit";
+	}
+}

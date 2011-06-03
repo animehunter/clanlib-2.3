@@ -38,6 +38,7 @@ class CL_CSSBoxDisplay : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxDisplay();
 	void compute(const CL_CSSBoxDisplay *parent, CL_CSSResourceCache *layout, float em_size, float ex_size, const CL_CSSBoxPosition &position, CL_CSSBoxFloat &float_box);
+	CL_String to_string() const;
 
 	enum Type
 	{

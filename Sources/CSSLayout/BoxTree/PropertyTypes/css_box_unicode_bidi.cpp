@@ -44,3 +44,19 @@ void CL_CSSBoxUnicodeBidi::compute(const CL_CSSBoxUnicodeBidi *parent, CL_CSSRes
 			type = type_normal;
 	}
 }
+
+CL_String CL_CSSBoxUnicodeBidi::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_normal:
+		return "normal";
+	case type_embed:
+		return "embed";
+	case type_bidi_override:
+		return "bidi-override";
+	case type_inherit:
+		return "inherit";
+	}
+}

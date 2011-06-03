@@ -44,3 +44,17 @@ void CL_CSSBoxDirection::compute(const CL_CSSBoxDirection *parent, CL_CSSResourc
 			type = type_ltr;
 	}
 }
+
+CL_String CL_CSSBoxDirection::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_ltr:
+		return "ltr";
+	case type_rtl:
+		return "rtl";
+	case type_inherit:
+		return "inherit";
+	}
+}

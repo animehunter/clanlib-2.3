@@ -38,6 +38,7 @@ class CL_CSSBoxVerticalAlign : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxVerticalAlign();
 	void compute(const CL_CSSBoxVerticalAlign *parent, CL_CSSResourceCache *layout, float em_size, float ex_size, const CL_CSSBoxLineHeight &line_height);
+	CL_String to_string() const;
 
 	enum Type
 	{

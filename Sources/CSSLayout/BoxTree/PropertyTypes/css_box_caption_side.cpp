@@ -44,3 +44,17 @@ void CL_CSSBoxCaptionSide::compute(const CL_CSSBoxCaptionSide *parent, CL_CSSRes
 			type = type_top;
 	}
 }
+
+CL_String CL_CSSBoxCaptionSide::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_top:
+		return "top";
+	case type_bottom:
+		return "bottom";
+	case type_inherit:
+		return "inherit";
+	}
+}

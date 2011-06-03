@@ -35,6 +35,7 @@ class CL_CSSBoxBorderColor : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxBorderColor();
 	void compute(const CL_CSSBoxBorderColor *parent, CL_CSSResourceCache *layout, float em_size, float ex_size, const CL_Colorf &color_property_color);
+	CL_String to_string() const;
 
 	enum Type
 	{

@@ -36,6 +36,7 @@ class CL_CSSBoxZIndex : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxZIndex();
 	void compute(const CL_CSSBoxZIndex *parent, CL_CSSResourceCache *layout, float em_size, float ex_size);
+	CL_String to_string() const;
 
 	enum Type
 	{

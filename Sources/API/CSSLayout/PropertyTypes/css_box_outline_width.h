@@ -38,6 +38,7 @@ class CL_CSSBoxOutlineWidth : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxOutlineWidth();
 	void compute(const CL_CSSBoxOutlineWidth *parent, CL_CSSResourceCache *layout, float em_size, float ex_size, const CL_CSSBoxOutlineStyle &style);
+	CL_String to_string() const;
 
 	enum Type
 	{

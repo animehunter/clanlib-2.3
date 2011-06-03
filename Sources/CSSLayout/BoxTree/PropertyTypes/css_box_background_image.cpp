@@ -52,3 +52,26 @@ void CL_CSSBoxBackgroundImage::compute(const CL_CSSBoxBackgroundImage *parent, C
 		}
 	}
 }
+
+CL_String CL_CSSBoxBackgroundImage::to_string() const
+{
+	if (type == type_inherit)
+		return "inherit";
+
+	CL_String s;
+	for (size_t i = 0; i < images.size(); i++)
+	{
+		if (i > 0)
+			s += ", ";
+		switch (images[i].type)
+		{
+		case image_type_uri:
+			s += cl_format("uri(\"%1\")", images[i].url);
+			break;
+		case image_type_none:
+			s += "none";
+			break;
+		}
+	}
+	return s;
+}

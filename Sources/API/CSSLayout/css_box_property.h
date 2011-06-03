@@ -34,4 +34,6 @@ class CL_CSSBoxProperties;
 class CL_CSSBoxProperty
 {
 public:
+	virtual ~CL_CSSBoxProperty() { }
+	virtual CL_String to_string() const = 0;
 };

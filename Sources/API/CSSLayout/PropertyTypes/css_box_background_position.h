@@ -36,6 +36,7 @@ class CL_CSSBoxBackgroundPosition : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxBackgroundPosition();
 	void compute(const CL_CSSBoxBackgroundPosition *parent, CL_CSSResourceCache *layout, float em_size, float ex_size);
+	CL_String to_string() const;
 
 	enum Type
 	{

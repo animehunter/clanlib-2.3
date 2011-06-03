@@ -36,6 +36,7 @@ class CL_CSSBoxBorderSpacing : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxBorderSpacing();
 	void compute(const CL_CSSBoxBorderSpacing *parent, CL_CSSResourceCache *layout, float em_size, float ex_size);
+	CL_String to_string() const;
 
 	enum Type
 	{

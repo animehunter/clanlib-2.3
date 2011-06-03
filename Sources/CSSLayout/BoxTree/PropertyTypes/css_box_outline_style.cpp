@@ -44,3 +44,33 @@ void CL_CSSBoxOutlineStyle::compute(const CL_CSSBoxOutlineStyle *parent, CL_CSSR
 			type = type_none;
 	}
 }
+
+CL_String CL_CSSBoxOutlineStyle::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_none:
+		return "none";
+	case type_hidden:
+		return "hidden";
+	case type_dotted:
+		return "dotted";
+	case type_dashed:
+		return "dashed";
+	case type_solid:
+		return "solid";
+	case type_double:
+		return "double";
+	case type_groove:
+		return "groove";
+	case type_ridge:
+		return "ridge";
+	case type_inset:
+		return "inset";
+	case type_outset:
+		return "outset";
+	case type_inherit:
+		return "inherit";
+	}
+}

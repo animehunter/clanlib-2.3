@@ -35,6 +35,7 @@ class CL_CSSBoxTextDecoration : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxTextDecoration();
 	void compute(const CL_CSSBoxTextDecoration *parent, CL_CSSResourceCache *layout, float em_size, float ex_size);
+	CL_String to_string() const;
 
 	enum Type
 	{

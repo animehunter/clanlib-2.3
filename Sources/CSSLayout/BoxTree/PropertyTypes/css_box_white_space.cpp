@@ -44,3 +44,23 @@ void CL_CSSBoxWhiteSpace::compute(const CL_CSSBoxWhiteSpace *parent, CL_CSSResou
 			type = type_normal;
 	}
 }
+
+CL_String CL_CSSBoxWhiteSpace::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_normal:
+		return "normal";
+	case type_pre:
+		return "pre";
+	case type_nowrap:
+		return "nowrap";
+	case type_pre_wrap:
+		return "pre-wrap";
+	case type_pre_line:
+		return "pre-line";
+	case type_inherit:
+		return "inherit";
+	}
+}

@@ -44,3 +44,19 @@ void CL_CSSBoxVisibility::compute(const CL_CSSBoxVisibility *parent, CL_CSSResou
 			type = type_visible;
 	}
 }
+
+CL_String CL_CSSBoxVisibility::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_visible:
+		return "visible";
+	case type_hidden:
+		return "hidden";
+	case type_collapse:
+		return "collapse";
+	case type_inherit:
+		return "inherit";
+	}
+}

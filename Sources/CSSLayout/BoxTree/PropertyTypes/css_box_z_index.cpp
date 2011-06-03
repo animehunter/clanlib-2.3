@@ -49,3 +49,17 @@ void CL_CSSBoxZIndex::compute(const CL_CSSBoxZIndex *parent, CL_CSSResourceCache
 		}
 	}
 }
+
+CL_String CL_CSSBoxZIndex::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_auto:
+		return "auto";
+	case type_integer:
+		return CL_StringHelp::int_to_text(value);
+	case type_inherit:
+		return "inherit";
+	}
+}

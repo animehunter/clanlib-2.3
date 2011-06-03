@@ -55,3 +55,17 @@ void CL_CSSBoxMinHeight::compute(const CL_CSSBoxMinHeight *parent, CL_CSSResourc
 	if (type == type_length)
 		length = layout->compute_length(length, em_size, ex_size);
 }
+
+CL_String CL_CSSBoxMinHeight::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_length:
+		return length.to_string();
+	case type_percentage:
+		return CL_StringHelp::float_to_text(percentage) + "%";
+	case type_inherit:
+		return "inherit";
+	}
+}

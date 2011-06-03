@@ -35,6 +35,7 @@ class CL_CSSBoxTop : public CL_CSSBoxProperty
 {
 public:
 	CL_CSSBoxTop();
+	CL_String to_string() const;
 
 	enum Type
 	{

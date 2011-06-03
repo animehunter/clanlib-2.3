@@ -35,6 +35,7 @@ class CL_CSSBoxFontVariant : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxFontVariant();
 	void compute(const CL_CSSBoxFontVariant *parent, CL_CSSResourceCache *layout, float em_size, float ex_size);
+	CL_String to_string() const;
 
 	enum Type
 	{

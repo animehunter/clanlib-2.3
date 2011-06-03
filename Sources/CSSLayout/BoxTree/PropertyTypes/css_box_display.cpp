@@ -88,3 +88,45 @@ void CL_CSSBoxDisplay::apply_table_9_7()
 		break;
 	}
 }
+
+CL_String CL_CSSBoxDisplay::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_inline:
+		return "inline";
+	case type_block:
+		return "block";
+	case type_list_item:
+		return "list-item";
+	case type_run_in:
+		return "run-in";
+	case type_inline_block:
+		return "inline-block";
+	case type_table:
+		return "table";
+	case type_inline_table:
+		return "inline-table";
+	case type_table_row_group:
+		return "table-row-group";
+	case type_table_header_group:
+		return "table-header-group";
+	case type_table_footer_group:
+		return "table-footer-group";
+	case type_table_row:
+		return "table-row";
+	case type_table_column_group:
+		return "table-column-group";
+	case type_table_column:
+		return "table-column";
+	case type_table_cell:
+		return "table-cell";
+	case type_table_caption:
+		return "table-caption";
+	case type_none:
+		return "none";
+	case type_inherit:
+		return "inherit";
+	}
+}

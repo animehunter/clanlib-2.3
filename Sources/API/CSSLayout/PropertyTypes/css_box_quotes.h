@@ -35,6 +35,7 @@ class CL_CSSBoxQuotes : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxQuotes();
 	void compute(const CL_CSSBoxQuotes *parent, CL_CSSResourceCache *layout, float em_size, float ex_size);
+	CL_String to_string() const;
 
 	enum Type
 	{

@@ -44,3 +44,21 @@ void CL_CSSBoxPosition::compute(const CL_CSSBoxPosition *parent, CL_CSSResourceC
 			type = type_static;
 	}
 }
+
+CL_String CL_CSSBoxPosition::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_static:
+		return "static";
+	case type_relative:
+		return "relative";
+	case type_absolute:
+		return "absolute";
+	case type_fixed:
+		return "fixed";
+	case type_inherit:
+		return "inherit";
+	}
+}

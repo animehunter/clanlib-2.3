@@ -115,3 +115,19 @@ void CL_CSSBoxBottom::compute(CL_CSSBoxTop &top, CL_CSSBoxBottom &bottom, const 
 		}
 	}
 }
+
+CL_String CL_CSSBoxBottom::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_length:
+		return length.to_string();
+	case type_percentage:
+		return CL_StringHelp::float_to_text(percentage) + "%";
+	case type_auto:
+		return "auto";
+	case type_inherit:
+		return "inherit";
+	}
+}

@@ -39,6 +39,7 @@ class CL_CSSBoxRight : public CL_CSSBoxProperty
 {
 public:
 	CL_CSSBoxRight();
+	CL_String to_string() const;
 	static void compute(CL_CSSBoxLeft &left, CL_CSSBoxRight &right, const CL_CSSBoxProperties *parent, CL_CSSResourceCache *layout, float em_size, float ex_size, const CL_CSSBoxPosition &position, bool is_containing_block_ltr);
 
 	enum Type

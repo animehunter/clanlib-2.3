@@ -36,6 +36,7 @@ class CL_CSSBoxBorderImageWidth : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxBorderImageWidth();
 	void compute(const CL_CSSBoxBorderImageWidth *parent, CL_CSSResourceCache *layout, float em_size, float ex_size);
+	CL_String to_string() const;
 
 	enum Type
 	{

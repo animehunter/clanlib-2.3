@@ -51,3 +51,11 @@ void CL_CSSBoxBackgroundColor::compute(const CL_CSSBoxBackgroundColor *parent, C
 		}
 	}
 }
+
+CL_String CL_CSSBoxBackgroundColor::to_string() const
+{
+	if (type == type_inherit)
+		return "inherit";
+	else
+		return cl_format("rgba(%1,%2,%3,%4", (int)(color.r * 255.0f + 0.5f), (int)(color.g * 255.0f + 0.5f), (int)(color.b * 255.0f + 0.5f), (int)(color.a * 255.0f + 0.5f));
+}

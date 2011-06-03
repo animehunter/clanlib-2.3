@@ -35,6 +35,7 @@ class CL_CSSBoxDirection : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxDirection();
 	void compute(const CL_CSSBoxDirection *parent, CL_CSSResourceCache *layout, float em_size, float ex_size);
+	CL_String to_string() const;
 
 	enum Type
 	{

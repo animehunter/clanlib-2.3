@@ -54,6 +54,7 @@ class CL_CSSBoxFontFamily : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxFontFamily();
 	void compute(const CL_CSSBoxFontFamily *parent, CL_CSSResourceCache *layout, float em_size, float ex_size);
+	CL_String to_string() const;
 
 	enum Type
 	{

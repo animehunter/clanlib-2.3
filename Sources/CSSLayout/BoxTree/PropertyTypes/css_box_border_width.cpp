@@ -82,3 +82,21 @@ void CL_CSSBoxBorderWidth::compute(const CL_CSSBoxBorderWidth *parent, CL_CSSRes
 		length = layout->compute_length(length, em_size, ex_size);
 	}
 }
+
+CL_String CL_CSSBoxBorderWidth::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_thin:
+		return "thin";
+	case type_medium:
+		return "medium";
+	case type_thick:
+		return "thick";
+	case type_length:
+		return length.to_string();
+	case type_inherit:
+		return "inherit";
+	}
+}

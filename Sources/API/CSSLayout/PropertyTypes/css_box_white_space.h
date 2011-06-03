@@ -35,6 +35,7 @@ class CL_CSSBoxWhiteSpace : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxWhiteSpace();
 	void compute(const CL_CSSBoxWhiteSpace *parent, CL_CSSResourceCache *layout, float em_size, float ex_size);
+	CL_String to_string() const;
 
 	enum Type
 	{

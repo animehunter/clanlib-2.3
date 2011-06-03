@@ -35,6 +35,7 @@ class CL_CSSBoxVisibility : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxVisibility();
 	void compute(const CL_CSSBoxVisibility *parent, CL_CSSResourceCache *layout, float em_size, float ex_size);
+	CL_String to_string() const;
 
 	enum Type
 	{

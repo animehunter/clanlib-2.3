@@ -44,3 +44,21 @@ void CL_CSSBoxTextTransform::compute(const CL_CSSBoxTextTransform *parent, CL_CS
 			type = type_none;
 	}
 }
+
+CL_String CL_CSSBoxTextTransform::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_capitalize:
+		return "capitalize";
+	case type_uppercase:
+		return "uppercase";
+	case type_lowercase:
+		return "lowercase";
+	case type_none:
+		return "none";
+	case type_inherit:
+		return "inherit";
+	}
+}

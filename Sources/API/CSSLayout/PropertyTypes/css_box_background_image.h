@@ -35,6 +35,7 @@ class CL_CSSBoxBackgroundImage : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxBackgroundImage();
 	void compute(const CL_CSSBoxBackgroundImage *parent, CL_CSSResourceCache *layout, float em_size, float ex_size);
+	CL_String to_string() const;
 
 	enum Type
 	{

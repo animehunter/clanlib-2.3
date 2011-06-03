@@ -51,3 +51,28 @@ void CL_CSSBoxBackgroundAttachment::compute(const CL_CSSBoxBackgroundAttachment 
 		}
 	}
 }
+
+CL_String CL_CSSBoxBackgroundAttachment::to_string() const
+{
+	if (type == type_inherit)
+		return "inherit";
+	CL_String s;
+	for (size_t i = 0; i < attachments.size(); i++)
+	{
+		if (i > 0)
+			s += ", ";
+		switch (attachments[i])
+		{
+		case attachment_scroll:
+			s += "scroll";
+			break;
+		case attachment_fixed:
+			s += "fixed";
+			break;
+		case attachment_local:
+			s += "local";
+			break;
+		}
+	}
+	return s;
+}

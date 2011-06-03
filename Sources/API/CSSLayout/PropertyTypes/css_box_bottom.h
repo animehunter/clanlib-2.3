@@ -38,6 +38,7 @@ class CL_CSSBoxBottom : public CL_CSSBoxProperty
 {
 public:
 	CL_CSSBoxBottom();
+	CL_String to_string() const;
 
 	static void compute(CL_CSSBoxTop &top, CL_CSSBoxBottom &bottom, const CL_CSSBoxProperties *parent, CL_CSSResourceCache *layout, float em_size, float ex_size, const CL_CSSBoxPosition &position);
 

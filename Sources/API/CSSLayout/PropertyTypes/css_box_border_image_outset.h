@@ -36,6 +36,7 @@ class CL_CSSBoxBorderImageOutset : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxBorderImageOutset();
 	void compute(const CL_CSSBoxBorderImageOutset *parent, CL_CSSResourceCache *layout, float em_size, float ex_size);
+	CL_String to_string() const;
 
 	enum Type
 	{

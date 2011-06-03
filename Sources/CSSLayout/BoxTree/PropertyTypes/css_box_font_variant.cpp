@@ -44,3 +44,17 @@ void CL_CSSBoxFontVariant::compute(const CL_CSSBoxFontVariant *parent, CL_CSSRes
 			type = type_normal;
 	}
 }
+
+CL_String CL_CSSBoxFontVariant::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_normal:
+		return "normal";
+	case type_small_caps:
+		return "small-caps";
+	case type_inherit:
+		return "inherit";
+	}
+}

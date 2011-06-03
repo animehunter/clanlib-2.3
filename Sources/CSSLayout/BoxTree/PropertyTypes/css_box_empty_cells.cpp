@@ -44,3 +44,17 @@ void CL_CSSBoxEmptyCells::compute(const CL_CSSBoxEmptyCells *parent, CL_CSSResou
 			type = type_show;
 	}
 }
+
+CL_String CL_CSSBoxEmptyCells::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_show:
+		return "show";
+	case type_hide:
+		return "hide";
+	case type_inherit:
+		return "inherit";
+	}
+}

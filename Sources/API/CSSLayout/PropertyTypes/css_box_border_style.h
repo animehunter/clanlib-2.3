@@ -35,6 +35,7 @@ class CL_CSSBoxBorderStyle : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxBorderStyle();
 	void compute(const CL_CSSBoxBorderStyle *parent, CL_CSSResourceCache *layout, float em_size, float ex_size);
+	CL_String to_string() const;
 
 	enum Type
 	{

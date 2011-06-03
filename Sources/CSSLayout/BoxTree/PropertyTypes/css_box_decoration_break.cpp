@@ -48,3 +48,17 @@ void CL_CSSBoxDecorationBreak::compute(const CL_CSSBoxDecorationBreak *parent, C
 		}
 	}
 }
+
+CL_String CL_CSSBoxDecorationBreak::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_slice:
+		return "slice";
+	case type_clone:
+		return "clone";
+	case type_inherit:
+		return "inherit";
+	}
+}

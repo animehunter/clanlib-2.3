@@ -44,3 +44,17 @@ void CL_CSSBoxBorderCollapse::compute(const CL_CSSBoxBorderCollapse *parent, CL_
 			type = type_separate;
 	}
 }
+
+CL_String CL_CSSBoxBorderCollapse::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_collapse:
+		return "collapse";
+	case type_separate:
+		return "separate";
+	case type_inherit:
+		return "inherit";
+	}
+}

@@ -44,3 +44,17 @@ void CL_CSSBoxListStylePosition::compute(const CL_CSSBoxListStylePosition *paren
 			type = type_outside;
 	}
 }
+
+CL_String CL_CSSBoxListStylePosition::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_inside:
+		return "inside";
+	case type_outside:
+		return "outside";
+	case type_inherit:
+		return "inherit";
+	}
+}

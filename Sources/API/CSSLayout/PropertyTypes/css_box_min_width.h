@@ -36,6 +36,7 @@ class CL_CSSBoxMinWidth : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxMinWidth();
 	void compute(const CL_CSSBoxMinWidth *parent, CL_CSSResourceCache *layout, float em_size, float ex_size);
+	CL_String to_string() const;
 
 	enum Type
 	{

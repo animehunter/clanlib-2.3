@@ -35,6 +35,7 @@ class CL_CSSBoxListStyleImage : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxListStyleImage();
 	void compute(const CL_CSSBoxListStyleImage *parent, CL_CSSResourceCache *layout, float em_size, float ex_size);
+	CL_String to_string() const;
 
 	enum Type
 	{

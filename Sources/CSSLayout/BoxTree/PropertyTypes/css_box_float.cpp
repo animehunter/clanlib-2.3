@@ -44,3 +44,19 @@ void CL_CSSBoxFloat::compute(const CL_CSSBoxFloat *parent, CL_CSSResourceCache *
 			type = type_none;
 	}
 }
+
+CL_String CL_CSSBoxFloat::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_left:
+		return "left";
+	case type_right:
+		return "right";
+	case type_none:
+		return "none";
+	case type_inherit:
+		return "inherit";
+	}
+}

@@ -35,6 +35,7 @@ class CL_CSSBoxClear : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxClear();
 	void compute(const CL_CSSBoxClear *parent, CL_CSSResourceCache *layout, float em_size, float ex_size);
+	CL_String to_string() const;
 
 	enum Type
 	{

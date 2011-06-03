@@ -51,3 +51,15 @@ void CL_CSSBoxColor::compute(const CL_CSSBoxColor *parent, CL_CSSResourceCache *
 		}
 	}
 }
+
+CL_String CL_CSSBoxColor::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_color:
+		return cl_format("rgba(%1,%2,%3,%4)", (int)(color.r * 255.0f + 0.5f), (int)(color.g * 255.0f + 0.5f), (int)(color.b * 255.0f + 0.5f), (int)(color.a * 255.0f + 0.5f));
+	case type_inherit:
+		return "inherit";
+	}
+}

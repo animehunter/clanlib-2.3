@@ -78,3 +78,63 @@ void CL_CSSBoxBorderImageSlice::compute(const CL_CSSBoxBorderImageSlice *parent,
 		}
 	}
 }
+
+CL_String CL_CSSBoxBorderImageSlice::to_string() const
+{
+	if (type == type_inherit)
+		return "inherit";
+
+	CL_String s;
+
+	switch (value_top)
+	{
+	default:
+	case value_type_percentage:
+		s += CL_StringHelp::float_to_text(percentage_top) + "%";
+		break;
+	case value_type_number:
+		s += CL_StringHelp::float_to_text(number_top);
+		break;
+	}
+
+	s += " ";
+
+	switch (value_right)
+	{
+	default:
+	case value_type_percentage:
+		s += CL_StringHelp::float_to_text(percentage_right) + "%";
+		break;
+	case value_type_number:
+		s += CL_StringHelp::float_to_text(number_right);
+		break;
+	}
+
+	s += " ";
+
+	switch (value_bottom)
+	{
+	default:
+	case value_type_percentage:
+		s += CL_StringHelp::float_to_text(percentage_bottom) + "%";
+		break;
+	case value_type_number:
+		s += CL_StringHelp::float_to_text(number_bottom);
+		break;
+	}
+
+	s += " ";
+
+	switch (value_left)
+	{
+	default:
+	case value_type_percentage:
+		s += CL_StringHelp::float_to_text(percentage_left) + "%";
+		break;
+	case value_type_number:
+		s += CL_StringHelp::float_to_text(number_left);
+		break;
+	}
+
+	return s;
+}

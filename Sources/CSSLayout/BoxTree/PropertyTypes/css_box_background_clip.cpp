@@ -52,3 +52,28 @@ void CL_CSSBoxBackgroundClip::compute(const CL_CSSBoxBackgroundClip *parent, CL_
 		}
 	}
 }
+
+CL_String CL_CSSBoxBackgroundClip::to_string() const
+{
+	if (type == type_inherit)
+		return "inherit";
+	CL_String s;
+	for (size_t i = 0; i < values.size(); i++)
+	{
+		if (i > 0)
+			s += ", ";
+		switch (values[i])
+		{
+		case clip_border_box:
+			s += "border-box";
+			break;
+		case clip_padding_box:
+			s += "padding-box";
+			break;
+		case clip_content_box:
+			s += "content-box";
+			break;
+		}
+	}
+	return s;
+}

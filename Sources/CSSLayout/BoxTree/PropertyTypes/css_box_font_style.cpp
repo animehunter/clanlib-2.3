@@ -44,3 +44,19 @@ void CL_CSSBoxFontStyle::compute(const CL_CSSBoxFontStyle *parent, CL_CSSResourc
 			type = type_normal;
 	}
 }
+
+CL_String CL_CSSBoxFontStyle::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_normal:
+		return "normal";
+	case type_italic:
+		return "italic";
+	case type_oblique:
+		return "oblique";
+	case type_inherit:
+		return "inherit";
+	}
+}

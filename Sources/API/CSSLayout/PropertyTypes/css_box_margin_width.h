@@ -36,6 +36,7 @@ class CL_CSSBoxMarginWidth : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxMarginWidth();
 	void compute(const CL_CSSBoxMarginWidth *parent, CL_CSSResourceCache *layout, float em_size, float ex_size);
+	CL_String to_string() const;
 
 	enum Type
 	{

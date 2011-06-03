@@ -56,3 +56,33 @@ void CL_CSSBoxBackgroundRepeat::compute(const CL_CSSBoxBackgroundRepeat *parent,
 		}
 	}
 }
+
+CL_String CL_CSSBoxBackgroundRepeat::to_string() const
+{
+	if (type == type_inherit)
+		return "inherit";
+
+	CL_String s;
+	for (size_t i = 0; i < repeat_x.size(); i++)
+	{
+		if (i > 0)
+			s += ", ";
+		switch (repeat_x[i])
+		{
+		case style_no_repeat:
+			s += "no-repeat";
+			break;
+		case style_repeat:
+			s += "repeat";
+			break;
+		case style_round:
+			s += "round";
+			break;
+		case style_space:
+			s += "space";
+			break;
+		}
+	}
+	return s;
+
+}

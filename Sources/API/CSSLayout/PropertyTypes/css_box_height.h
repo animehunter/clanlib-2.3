@@ -36,6 +36,7 @@ class CL_CSSBoxHeight : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxHeight();
 	void compute(const CL_CSSBoxHeight *parent, CL_CSSResourceCache *layout, float em_size, float ex_size, bool is_containing_block_height_auto);
+	CL_String to_string() const;
 
 	enum Type
 	{

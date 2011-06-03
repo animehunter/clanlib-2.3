@@ -36,6 +36,7 @@ class CL_CSSBoxMinHeight : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxMinHeight();
 	void compute(const CL_CSSBoxMinHeight *parent, CL_CSSResourceCache *layout, float em_size, float ex_size);
+	CL_String to_string() const;
 
 	enum Type
 	{

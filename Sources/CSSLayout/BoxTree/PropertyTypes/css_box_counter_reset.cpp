@@ -44,3 +44,17 @@ void CL_CSSBoxCounterReset::compute(const CL_CSSBoxCounterReset *parent, CL_CSSR
 			type = type_none;
 	}
 }
+
+CL_String CL_CSSBoxCounterReset::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_identifier:
+		return "identifier";
+	case type_none:
+		return "none";
+	case type_inherit:
+		return "inherit";
+	}
+}

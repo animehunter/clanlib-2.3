@@ -44,3 +44,17 @@ void CL_CSSBoxTableLayout::compute(const CL_CSSBoxTableLayout *parent, CL_CSSRes
 			type = type_auto;
 	}
 }
+
+CL_String CL_CSSBoxTableLayout::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_auto:
+		return "auto";
+	case type_fixed:
+		return "fixed";
+	case type_inherit:
+		return "inherit";
+	}
+}

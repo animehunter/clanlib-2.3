@@ -66,3 +66,44 @@ void CL_CSSBoxBorderRadius::compute(const CL_CSSBoxBorderRadius *parent, CL_CSSR
 	length1 = layout->compute_length(length1, em_size, ex_size);
 	length2 = layout->compute_length(length2, em_size, ex_size);
 }
+
+CL_String CL_CSSBoxBorderRadius::to_string() const
+{
+	switch (type)
+	{
+	default:
+	case type_one_value:
+		switch (value_type1)
+		{
+		default:
+		case value_type_length:
+			return length1.to_string();
+		case value_type_percentage:
+			return CL_StringHelp::float_to_text(percentage1) + "%";
+		}
+	case type_two_values:
+		{
+			CL_String s;
+			switch (value_type1)
+			{
+			default:
+			case value_type_length:
+				s += length1.to_string();
+			case value_type_percentage:
+				s += CL_StringHelp::float_to_text(percentage1) + "%";
+			}
+			s += " ";
+			switch (value_type2)
+			{
+			default:
+			case value_type_length:
+				s += length2.to_string();
+			case value_type_percentage:
+				s += CL_StringHelp::float_to_text(percentage2) + "%";
+			}
+			return s;
+		}
+	case type_inherit:
+		return "inherit";
+	}
+}

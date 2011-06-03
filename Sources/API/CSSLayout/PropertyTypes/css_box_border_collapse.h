@@ -35,6 +35,7 @@ class CL_CSSBoxBorderCollapse : public CL_CSSBoxProperty
 public:
 	CL_CSSBoxBorderCollapse();
 	void compute(const CL_CSSBoxBorderCollapse *parent, CL_CSSResourceCache *layout, float em_size, float ex_size);
+	CL_String to_string() const;
 
 	enum Type
 	{
