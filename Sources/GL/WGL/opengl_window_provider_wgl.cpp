@@ -397,7 +397,9 @@ void CL_OpenGLWindowProvider_WGL::flip(int interval)
 		int width = get_viewport().get_width();
 		int height = get_viewport().get_height();
 
-		clReadBuffer(CL_BACK);
+		//clReadBuffer(CL_BACK);
+		clDrawBuffer(CL_BACK);
+		clReadBuffer(CL_FRONT);
 
 		CL_PixelBuffer pixelbuffer(width, height, cl_rgba8);
 		clReadPixels(
@@ -445,7 +447,9 @@ void CL_OpenGLWindowProvider_WGL::update(const CL_Rect &_rect)
 
 	if (shadow_window)
 	{
-		clReadBuffer(CL_BACK);
+		//clReadBuffer(CL_BACK);
+		clDrawBuffer(CL_BACK);
+		clReadBuffer(CL_FRONT);
 
 		// ** Currently update layered windows only supports full screen rect update **
 		rect = CL_Rect(0,0, width, height);
