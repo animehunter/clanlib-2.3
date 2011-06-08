@@ -18,7 +18,7 @@ OBJF =  Sources/checkbox.o \
  ../CommonCode/Sources/radiobutton.o \
  ../CommonCode/Sources/info.o
 
-LIBS=clanApp clanDisplay clanCore clanGL clanGUI
+LIBS=clanApp clanDisplay clanCore clanSWRender clanGUI
 
 CXXFLAGS += -I./ -I../../CommonCode/Sources -I Sources
 

@@ -40,9 +40,9 @@ GUI_Layered::GUI_Layered(GUI *gui) : gui(gui), window_ptr(gui->get_app()->get_wi
 	wm.func_input_intercept().set(this, &GUI_Layered::wm_input_intercept);
 
 	// Use a texture group to store all the gui textures
-	CL_GraphicContext gc = window_ptr->get_gc();
-	CL_TextureGroup texture_group(gc, CL_Size(1024, 1024));
-	wm.set_texture_group(texture_group);	// Note: This line is optional
+	//CL_GraphicContext gc = window_ptr->get_gc();
+	//CL_TextureGroup texture_group(CL_Size(1024, 1024));
+	//wm.set_texture_group(texture_group);	// Note: This line is optional
 
 	resources_gui = CL_ResourceManager(gui->get_resources_location());
 
