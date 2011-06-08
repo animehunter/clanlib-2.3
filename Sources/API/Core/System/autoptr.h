@@ -37,7 +37,8 @@
 #else
 	#include <memory>
 	#if defined(_MSC_VER) && _MSC_VER < 1600
-		#define CL_AutoPtr std::tr1::auto_ptr
+		//#define CL_AutoPtr std::tr1::auto_ptr	<-- auto_ptr does not exist on vstudio 2008 SP1
+		#define CL_AutoPtr std::tr1::shared_ptr
 	#else
 		#define CL_AutoPtr std::auto_ptr
 	#endif
