@@ -239,7 +239,6 @@ clanCore_includes = \
 	Core/System/setup_core.h \
 	Core/System/sharedptr.h \
 	Core/System/system.h \
-	Core/System/uniqueptr.h \
 	Core/System/timer.h \
 	Core/System/thread.h \
 	Core/System/keep_alive.h \
