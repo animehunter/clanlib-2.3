@@ -1,7 +1,35 @@
+/*
+**  ClanLib SDK
+**  Copyright (c) 1997-2011 The ClanLib Team
+**
+**  This software is provided 'as-is', without any express or implied
+**  warranty.  In no event will the authors be held liable for any damages
+**  arising from the use of this software.
+**
+**  Permission is granted to anyone to use this software for any purpose,
+**  including commercial applications, and to alter it and redistribute it
+**  freely, subject to the following restrictions:
+**
+**  1. The origin of this software must not be misrepresented; you must not
+**     claim that you wrote the original software. If you use this software
+**     in a product, an acknowledgment in the product documentation would be
+**     appreciated but is not required.
+**  2. Altered source versions must be plainly marked as such, and must not be
+**     misrepresented as being the original software.
+**  3. This notice may not be removed or altered from any source distribution.
+**
+**  Note: Some of the libraries ClanLib may link to may have additional
+**  requirements or restrictions.
+**
+**  File Author(s):
+**
+**    Mark Page
+*/
+
 #include <ClanLib/core.h>
 #include <ClanLib/application.h>
 #include <ClanLib/display.h>
-#include <ClanLib/gl.h>
+#include <ClanLib/gl1.h>
 
 #include <cmath>
 #include <cstdlib>
@@ -36,6 +64,7 @@ private:
 	void on_mouse_down(const CL_InputEvent &key, const CL_InputState &state);
 	void on_window_close(CL_DisplayWindow *window);
 	void on_lost_focus();
+	void on_input_up(const CL_InputEvent &key, const CL_InputState &state);
 private:
 
 	bool quit;
@@ -54,7 +83,7 @@ public:
 		CL_SetupDisplay setup_display;
 
 		// Initilize the OpenGL drivers
-		CL_SetupGL setup_gl;
+		CL_SetupGL1 setup_gl1;
 
 		// Start the Application
 		App app;
@@ -92,7 +121,9 @@ int App::start(const std::vector<CL_String> &args)
 		CL_DisplayWindow window_center(desc_window);
 
 		// Create the border layered windows
+#ifdef WIN32
 		desc_window.set_layered(true);
+#endif
 		desc_window.set_title("");
 		desc_window.set_owner_window(window_center);
 		desc_window.set_position(CL_Rect(window_initial_position.x, window_initial_position.y, CL_Size(entire_window_size.width, window_inner_offset)), false);
@@ -107,6 +138,7 @@ int App::start(const std::vector<CL_String> &args)
 		// Setup the slots
 		CL_Slot slot_quit = window_center.sig_window_close().connect(this, &App::on_window_close, &window_center);
 		CL_Slot slot_mouse_down = (window_center.get_ic().get_mouse()).sig_key_down().connect(this, &App::on_mouse_down);
+		CL_Slot slot_input_up = (window_center.get_ic().get_keyboard()).sig_key_up().connect(this, &App::on_input_up);
 
 		// Get the graphic context
 		CL_GraphicContext gc_center = window_center.get_gc();
@@ -226,6 +258,14 @@ void App::on_window_close(CL_DisplayWindow *window)
 	quit = true;
 }
 
+void App::on_input_up(const CL_InputEvent &key, const CL_InputState &state)
+{
+	if(key.id == CL_KEY_ESCAPE)
+	{
+		quit = true;
+	}
+}
+
 TuxBall::TuxBall(const CL_Sprite &image, const CL_Rect &new_boundary) : boundary(new_boundary), sprite(image)
 {
 	scale =  ((float) ((rand() % 512)) + 256) / 4096.0f;
@@ -280,5 +320,6 @@ void TuxBall::draw(CL_GraphicContext &gc)
 	sprite.set_alpha(0.5f);
 	sprite.draw(gc, xpos, ypos);
 }
+
 
 

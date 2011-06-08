@@ -1,3 +1,31 @@
+/*
+**  ClanLib SDK
+**  Copyright (c) 1997-2011 The ClanLib Team
+**
+**  This software is provided 'as-is', without any express or implied
+**  warranty.  In no event will the authors be held liable for any damages
+**  arising from the use of this software.
+**
+**  Permission is granted to anyone to use this software for any purpose,
+**  including commercial applications, and to alter it and redistribute it
+**  freely, subject to the following restrictions:
+**
+**  1. The origin of this software must not be misrepresented; you must not
+**     claim that you wrote the original software. If you use this software
+**     in a product, an acknowledgment in the product documentation would be
+**     appreciated but is not required.
+**  2. Altered source versions must be plainly marked as such, and must not be
+**     misrepresented as being the original software.
+**  3. This notice may not be removed or altered from any source distribution.
+**
+**  Note: Some of the libraries ClanLib may link to may have additional
+**  requirements or restrictions.
+**
+**  File Author(s):
+**
+**    Mark Page
+*/
+
 #include <ClanLib/core.h>
 #include <ClanLib/application.h>
 #include <ClanLib/display.h>
@@ -17,6 +45,8 @@ private:
 	void on_mouse_move(const CL_InputEvent &key, const CL_InputState &state, CL_DisplayWindow *window);
 	void on_window_close(CL_DisplayWindow *window);
 	void on_lost_focus();
+	void on_input_up(const CL_InputEvent &key, const CL_InputState &state);
+
 private:
 	int tux_radius;
 	CL_Pointf tux_position;
@@ -39,7 +69,7 @@ public:
 		CL_SetupDisplay setup_display;
 
 		// Initilize the OpenGL drivers
-		CL_SetupGL1 setup_gl;
+		CL_SetupGL1 setup_gl1;
 
 		// Start the Application
 		App app;
@@ -63,7 +93,9 @@ int App::start(const std::vector<CL_String> &args)
 		CL_DisplayWindowDescription desc_window;
 		desc_window.set_title("Layered Window Example");
 		desc_window.set_allow_resize(false);
+#ifdef WIN32
 		desc_window.set_layered(true);
+#endif
 		desc_window.set_decorations(false);
 		desc_window.set_size(CL_Size(600, 600), false);
 
@@ -74,6 +106,7 @@ int App::start(const std::vector<CL_String> &args)
 		CL_Slot slot_mouse_up = (window.get_ic().get_mouse()).sig_key_up().connect(this, &App::on_mouse_up);
 		CL_Slot slot_mouse_move = (window.get_ic().get_mouse()).sig_pointer_move().connect(this, &App::on_mouse_move, &window);
 		CL_Slot slot_lost_focus = window.sig_lost_focus().connect(this, &App::on_lost_focus);
+		CL_Slot slot_input_up = (window.get_ic().get_keyboard()).sig_key_up().connect(this, &App::on_input_up);
 
 		// Get the graphic context
 		CL_GraphicContext gc = window.get_gc();
@@ -148,8 +181,8 @@ int App::start(const std::vector<CL_String> &args)
 			// Draw text
 			font_large.draw_text(gc, 10-2, 50-2, "ClanLib Layered Window", CL_Colorf(0.1f, 0.1f, 0.1f, 1.0f));
 			font_large.draw_text(gc, 10, 50, "ClanLib Layered Window", CL_Colorf::green);
-			font_small.draw_text(gc, 90-2, 80-2, "Click button on the penguin to exit", CL_Colorf(0.1f, 0.1f, 0.1f, 1.0f));
-			font_small.draw_text(gc, 90, 80, "Click button on the penguin to exit", CL_Colorf::green);
+			font_small.draw_text(gc, 90-2, 80-2, "Click mouse on the penguin to exit", CL_Colorf(0.1f, 0.1f, 0.1f, 1.0f));
+			font_small.draw_text(gc, 90, 80, "Click mouse on the penguin to exit", CL_Colorf::green);
 			font_small.draw_text(gc, 140-2, 110-2, "Drag rock to move window", CL_Colorf(0.1f, 0.1f, 0.1f, 1.0f));
 			font_small.draw_text(gc, 140, 110, "Drag rock to move window", CL_Colorf::green);
 
@@ -216,4 +249,12 @@ void App::on_mouse_move(const CL_InputEvent &key, const CL_InputState &state, CL
 void App::on_window_close(CL_DisplayWindow *window)
 {
 	quit = true;
+}
+
+void App::on_input_up(const CL_InputEvent &key, const CL_InputState &state)
+{
+	if(key.id == CL_KEY_ESCAPE)
+	{
+		quit = true;
+	}
 }
