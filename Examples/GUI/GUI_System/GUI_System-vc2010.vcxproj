@@ -183,6 +183,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Sources\program.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\CommonCode\Sources\checkbox.h" />
@@ -202,6 +203,7 @@
     <ClInclude Include="Sources\GUI.h" />
     <ClInclude Include="Sources\gui_system.h" />
     <ClInclude Include="Sources\precomp.h" />
+    <ClInclude Include="Sources\program.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile" />

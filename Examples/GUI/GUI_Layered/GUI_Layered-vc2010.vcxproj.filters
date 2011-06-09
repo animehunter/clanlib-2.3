@@ -67,6 +67,12 @@
     <ClCompile Include="..\CommonCode\Sources\theme.cpp">
       <Filter>CommonCode</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\gui_3d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\panel3d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\app.h">
@@ -125,6 +131,9 @@
     </ClInclude>
     <ClInclude Include="..\CommonCode\Sources\theme.h">
       <Filter>CommonCode</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\panel3d.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

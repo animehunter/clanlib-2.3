@@ -179,7 +179,9 @@
     <ClCompile Include="..\CommonCode\Sources\theme.cpp" />
     <ClCompile Include="Sources\app.cpp" />
     <ClCompile Include="Sources\GUI.cpp" />
+    <ClCompile Include="Sources\gui_3d.cpp" />
     <ClCompile Include="Sources\gui_layered.cpp" />
+    <ClCompile Include="Sources\panel3d.cpp" />
     <ClCompile Include="Sources\precomp.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -204,6 +206,7 @@
     <ClInclude Include="Sources\app.h" />
     <ClInclude Include="Sources\GUI.h" />
     <ClInclude Include="Sources\gui_layered.h" />
+    <ClInclude Include="Sources\panel3d.h" />
     <ClInclude Include="Sources\precomp.h" />
     <ClInclude Include="Sources\program.h" />
   </ItemGroup>
