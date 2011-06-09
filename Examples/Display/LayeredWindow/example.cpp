@@ -128,10 +128,6 @@ int App::start(const std::vector<CL_String> &args)
 		float rotation = 0.0f;
 		unsigned int time_last = CL_System::get_time();
 
-		// Initially, we want to repair the whole screen
-		CL_Rect last_repair_rect(CL_Rect(0,0, gc.get_width(), gc.get_height()));
-		CL_Rect repair_rect;
-
 		CL_BlendMode blend_mode;
 		gc.set_blend_mode(blend_mode);
 
@@ -175,9 +171,8 @@ int App::start(const std::vector<CL_String> &args)
 			// Give tux circle blue outline, to mask the alpha channel
 			CL_Draw::circle(gc, tux_position.x + tux_radius, tux_position.y + tux_radius, tux_radius+2, CL_Colorf(0.0f, 0.0f, 1.0f, 1.0f));
 
-			// Draw tux, and set the repair rect
+			// Draw tux
 			tux.draw(gc, tux_position.x, tux_position.y);
-			repair_rect = CL_Rect((int)tux_position.x-tux_circle*2, (int) tux_position.y-tux_circle*2, CL_Size(tux.get_width()+tux_circle*4, tux.get_height()+tux_circle*4));
 
 			// Draw text
 			font_large.draw_text(gc, 10-2, 50-2, "ClanLib Layered Window", CL_Colorf(0.1f, 0.1f, 0.1f, 1.0f));
@@ -187,15 +182,7 @@ int App::start(const std::vector<CL_String> &args)
 			font_small.draw_text(gc, 140-2, 110-2, "Drag rock to move window", CL_Colorf(0.1f, 0.1f, 0.1f, 1.0f));
 			font_small.draw_text(gc, 140, 110, "Drag rock to move window", CL_Colorf::green);
 
-
-#ifndef REPAIR_WHOLE_WINDOW
 			window.flip(1);
-#else
-			// It's a lot faster to repair only what has changed
-			last_repair_rect.bounding_rect(repair_rect);
-			window.update(last_repair_rect);
-			last_repair_rect = repair_rect;
-#endif
 
 			// This call processes user input and other events
 			CL_KeepAlive::process();
