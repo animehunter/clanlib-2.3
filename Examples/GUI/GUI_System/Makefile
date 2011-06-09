@@ -1,5 +1,5 @@
 EXAMPLE_BIN=gui_system
-OBJF =  Sources/checkbox.o \
+OBJF =  ../CommonCode/Sources/checkbox.o \
  ../CommonCode/Sources/pushbutton.o \
  ../CommonCode/Sources/progressbar.o \
  ../CommonCode/Sources/spin.o \

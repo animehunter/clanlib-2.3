@@ -1,8 +1,9 @@
 EXAMPLE_BIN=gui_texture
-OBJF =  Sources/checkbox.o \
+OBJF =  ../CommonCode/Sources/checkbox.o \
  ../CommonCode/Sources/pushbutton.o \
  Sources/app.o \
  ../CommonCode/Sources/progressbar.o \
+ ../CommonCode/Sources/balls.o \
  ../CommonCode/Sources/spin.o \
  Sources/gui_texture.o \
  ../CommonCode/Sources/slider.o \

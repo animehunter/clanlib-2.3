@@ -1,6 +1,7 @@
 EXAMPLE_BIN=gui_direct
-OBJF =  Sources/checkbox.o \
+OBJF =  ../CommonCode/Sources/checkbox.o \
  ../CommonCode/Sources/pushbutton.o \
+ ../CommonCode/Sources/balls.o \
  Sources/app.o \
  ../CommonCode/Sources/progressbar.o \
  ../CommonCode/Sources/spin.o \

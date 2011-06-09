@@ -28,6 +28,7 @@
 
 #include "precomp.h"
 #include "balls.h"
+#include <cstdlib>
 
 Balls::Balls()
 {

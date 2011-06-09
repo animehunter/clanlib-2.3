@@ -1,6 +1,7 @@
 EXAMPLE_BIN=gui_layered
-OBJF =  Sources/checkbox.o \
+OBJF =  ../CommonCode/Sources/checkbox.o \
  ../CommonCode/Sources/pushbutton.o \
+ ../CommonCode/Sources/balls.o \
  Sources/app.o \
  Sources/gui_3d.o \
  ../CommonCode/Sources/progressbar.o \
@@ -11,7 +12,7 @@ OBJF =  Sources/checkbox.o \
  Sources/program.o \
  ../CommonCode/Sources/theme.o \
  Sources/GUI.o \
- Sources/panel3d.o
+ Sources/panel3d.o \
  ../CommonCode/Sources/scrollbar.o \
  ../CommonCode/Sources/listview.o \
  ../CommonCode/Sources/menubar.o \

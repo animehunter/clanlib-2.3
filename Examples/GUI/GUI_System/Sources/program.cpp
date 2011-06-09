@@ -29,7 +29,7 @@
 
 #include "precomp.h"
 #include "program.h"
-#include "gui.h"
+#include "GUI.h"
 
 // Choose the target renderer
 //#define USE_OPENGL_2
