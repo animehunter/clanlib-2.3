@@ -539,8 +539,10 @@ void CL_LineEdit_Impl::on_process_message(CL_GUIMessage &msg)
 				else if (e.id == CL_KEY_V && e.ctrl)
 				{
 					CL_String str = lineedit->get_gui_manager().get_clipboard_text();
-					std::remove(str.begin(), str.end(), '\n');
-					std::remove(str.begin(), str.end(), '\r');
+					CL_String::const_iterator end_str = std::remove(str.begin(), str.end(), '\n');
+					str.resize(end_str - str.begin());
+					end_str = std::remove(str.begin(), str.end(), '\r');
+					str.resize(end_str - str.begin());
 					lineedit->delete_selected_text();
 
 					if (input_mask.empty())

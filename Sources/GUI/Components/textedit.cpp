@@ -528,7 +528,8 @@ void CL_TextEdit_Impl::on_process_message(CL_GUIMessage &msg)
 				else if (e.id == CL_KEY_V && e.ctrl)
 				{
 					CL_String str = textedit->get_gui_manager().get_clipboard_text();
-					std::remove(str.begin(), str.end(), '\r');
+					CL_String::const_iterator end_str = std::remove(str.begin(), str.end(), '\r');
+					str.resize(end_str - str.begin());
 					textedit->delete_selected_text();
 
 					if (input_mask.empty())
