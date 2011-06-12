@@ -440,7 +440,7 @@ CL_Rect CL_GUIThemeProvider_Default::render_text(
 		y = part.get_vertical_text_align(gc, font, content_rect).bottom;
 	}
 
-	font.draw_text(gc, x,y,text,text_color);
+	font.draw_text_ellipsis(gc, x, y, content_rect, text, text_color);
 
 	return CL_Rect(CL_Point(x,y), text_size);
 }

@@ -385,6 +385,8 @@ void CL_ListViewLayoutDetails::update_shown_items_rows(CL_Font &font, CL_ListVie
 			si.rect_text.push_back(CL_Rect(CL_Point(rect_cell_content.left, rect_cell_content.top), text_size));
 		}
 
+		si.rect_text.back().right = cl_min(si.rect_text.back().right, x + col.get_width());
+
 		x += col.get_width();
 		col = col.get_next_sibling();
 	}
