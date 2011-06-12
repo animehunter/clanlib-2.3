@@ -235,6 +235,20 @@ void CL_ListView::set_display_mode(CL_ListViewDisplayMode mode)
 	impl->layout->invalidate();
 
 	impl->renderer->set_display_mode(mode);
+	impl->layout->set_show_detail_icon(impl->show_detail_icon);
+	impl->layout->set_show_detail_opener(impl->show_detail_opener);
+}
+
+void CL_ListView::show_detail_icon(bool enable)
+{
+	impl->show_detail_icon = enable;
+	impl->layout->set_show_detail_icon(impl->show_detail_icon);
+}
+
+void CL_ListView::show_detail_opener(bool enable)
+{
+	impl->show_detail_opener = enable;
+	impl->layout->set_show_detail_opener(impl->show_detail_opener);
 }
 
 void CL_ListView::clear()

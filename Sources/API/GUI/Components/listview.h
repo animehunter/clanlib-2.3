@@ -162,6 +162,12 @@ public:
 	/// \param mode = List View Display Mode
 	void set_display_mode(CL_ListViewDisplayMode mode);
 
+	/// \brief Set if icons are shown in the detail display mode
+	void show_detail_icon(bool enable = true);
+
+	/// \brief Set if node opener is shown in the detail display mode
+	void show_detail_opener(bool enable = true);
+
 	/// \brief Remove all items.
 	void clear();
 

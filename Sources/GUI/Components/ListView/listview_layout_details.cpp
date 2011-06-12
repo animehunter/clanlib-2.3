@@ -58,7 +58,7 @@
 
 CL_ListViewLayoutDetails::CL_ListViewLayoutDetails(CL_ListView *listview)
 : CL_ListViewLayout(listview), icon_offset_y(0), opener_gap(0), icon_gap(0),
-  indent_width(0), max_rows_visible(0), row_draw_y_pos(0), columns_valid(false)
+  indent_width(0), max_rows_visible(0), row_draw_y_pos(0), columns_valid(false), show_detail_icon(true), show_detail_opener(true)
 {
 	prop_opener_gap = CL_GUIThemePartProperty(CssStr::opener_gap, "6");
 	prop_opener_offset_x = CL_GUIThemePartProperty(CssStr::opener_offset_x, "0");
@@ -371,10 +371,20 @@ void CL_ListViewLayoutDetails::update_shown_items_rows(CL_Font &font, CL_ListVie
 
 		if (first_column)
 		{
-			si.rect_opener = get_opener_rect(rect_cell_content, item, offset_x);
-			si.rect_icon = get_icon_rect(rect_cell_content, item, si.rect_opener.right + opener_gap);
+			int next_x = rect_cell_content.left;
+			if (show_detail_opener)
+			{
+				si.rect_opener = get_opener_rect(rect_cell_content, item, offset_x);
+				next_x = si.rect_opener.right;
+			}
 
-			CL_Rect rect_txt(CL_Point(si.rect_icon.right + icon_gap, rect_cell_content.top), text_size);
+			if (show_detail_icon)
+			{
+				si.rect_icon = get_icon_rect(rect_cell_content, item, next_x + opener_gap);
+				next_x = si.rect_icon.right + icon_gap;
+			}
+
+			CL_Rect rect_txt(CL_Point(next_x, rect_cell_content.top), text_size);
 
 			si.rect_text.push_back(rect_txt);
 			first_column = false;
