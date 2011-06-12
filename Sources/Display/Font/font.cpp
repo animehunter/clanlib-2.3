@@ -184,7 +184,7 @@ void CL_Font::draw_text_ellipsis(CL_GraphicContext &gc, float dest_x, float dest
 						seek_center = (seek_start+seek_end)/2;
 					}
 
-					draw_text(gc, dest_x, dest_y, lines[i].substr(0, seek_center) + "..", color);
+					draw_text(gc, dest_x, dest_y, lines[i].substr(0, seek_center) + "...", color);
 				}
 
 				dest_y += line_spacing;
