@@ -47,6 +47,11 @@ class CL_XPathObject
 
 public:
 	CL_XPathObject();
+	CL_XPathObject(bool value);
+	CL_XPathObject(double value);
+	CL_XPathObject(size_t value);
+	CL_XPathObject(const CL_StringRef &value);
+	CL_XPathObject(const std::vector<CL_DomNode> &value);
 
 /// \}
 /// \name Attributes

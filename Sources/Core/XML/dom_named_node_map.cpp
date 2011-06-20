@@ -59,14 +59,14 @@ CL_DomNamedNodeMap::~CL_DomNamedNodeMap()
 /////////////////////////////////////////////////////////////////////////////
 // CL_DomNamedNodeMap attributes:
 
-int CL_DomNamedNodeMap::get_length() const
+unsigned long CL_DomNamedNodeMap::get_length() const
 {
 	if (!impl)
 		return 0;
 	CL_DomDocument_Generic *doc_impl = (CL_DomDocument_Generic *) impl->owner_document.lock().get();
 	const CL_DomTreeNode *tree_node = impl->get_tree_node();
 	const CL_DomTreeNode *cur_attribute = tree_node->get_first_attribute(doc_impl);
-	int length = 0;
+	unsigned long length = 0;
 	while (cur_attribute)
 	{
 		length++;
