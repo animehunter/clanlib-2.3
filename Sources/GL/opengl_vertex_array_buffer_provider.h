@@ -44,7 +44,7 @@ class CL_OpenGLVertexArrayBufferProvider : public CL_VertexArrayBufferProvider
 /// \{
 
 public:
-	CL_OpenGLVertexArrayBufferProvider(CL_OpenGLGraphicContextProvider *gc_provider);
+	CL_OpenGLVertexArrayBufferProvider();
 
 	~CL_OpenGLVertexArrayBufferProvider();
 

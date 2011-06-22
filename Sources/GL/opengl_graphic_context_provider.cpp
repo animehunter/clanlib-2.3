@@ -430,17 +430,17 @@ CL_OcclusionQueryProvider *CL_OpenGLGraphicContextProvider::alloc_occlusion_quer
 
 CL_ProgramObjectProvider *CL_OpenGLGraphicContextProvider::alloc_program_object()
 {
-	return new CL_OpenGLProgramObjectProvider(this);
+	return new CL_OpenGLProgramObjectProvider();
 }
 
 CL_ShaderObjectProvider *CL_OpenGLGraphicContextProvider::alloc_shader_object()
 {
-	return new CL_OpenGLShaderObjectProvider(this);
+	return new CL_OpenGLShaderObjectProvider();
 }
 
 CL_TextureProvider *CL_OpenGLGraphicContextProvider::alloc_texture(CL_TextureDimensions texture_dimensions)
 {
-	return new CL_OpenGLTextureProvider(this, texture_dimensions);
+	return new CL_OpenGLTextureProvider(texture_dimensions);
 }
 
 CL_FrameBufferProvider *CL_OpenGLGraphicContextProvider::alloc_frame_buffer()
@@ -450,39 +450,36 @@ CL_FrameBufferProvider *CL_OpenGLGraphicContextProvider::alloc_frame_buffer()
 
 CL_RenderBufferProvider *CL_OpenGLGraphicContextProvider::alloc_render_buffer()
 {
-	return new CL_OpenGLRenderBufferProvider(this);
+	return new CL_OpenGLRenderBufferProvider();
 }
 
 CL_VertexArrayBufferProvider *CL_OpenGLGraphicContextProvider::alloc_vertex_array_buffer()
 {
-	return new CL_OpenGLVertexArrayBufferProvider(this);
+	return new CL_OpenGLVertexArrayBufferProvider();
 }
 
 CL_ElementArrayBufferProvider *CL_OpenGLGraphicContextProvider::alloc_element_array_buffer()
 {
-	return new CL_OpenGLElementArrayBufferProvider(this);
+	return new CL_OpenGLElementArrayBufferProvider();
 }
 
 CL_PixelBufferProvider *CL_OpenGLGraphicContextProvider::alloc_pixel_buffer()
 {
-	return new CL_OpenGLPixelBufferProvider(this);
+	return new CL_OpenGLPixelBufferProvider();
 }
 
-CL_PixelBuffer CL_OpenGLGraphicContextProvider::get_pixeldata(const CL_Rect& rect) const 
+CL_PixelBuffer CL_OpenGLGraphicContextProvider::get_pixeldata(const CL_Rect& rect2) const 
 {
+	CL_Rect rect = rect2;
+	if (rect == CL_Rect())
+		rect = CL_Rect(0, 0, get_width(), get_height());
+
+	CL_PixelBuffer pbuf(rect.get_width(), rect.get_height(), cl_abgr8);
+
 	CL_OpenGL::set_active(this);
-	if ( !framebuffer_bound ) clReadBuffer(CL_BACK);
-
-	if( rect.left != rect.right )
-	{
-		CL_PixelBuffer pbuf(rect.get_width(), rect.get_height(), cl_abgr8);
-		clReadPixels(rect.left, rect.top, rect.get_width(), rect.get_height(), CL_RGBA, CL_UNSIGNED_BYTE, pbuf.get_data());
-		pbuf.flip_vertical();
-		return pbuf;
-	}
-
-	CL_PixelBuffer pbuf( get_width(), get_height(), cl_abgr8);
-	clReadPixels(0, 0, get_width(), get_height(), CL_RGBA, CL_UNSIGNED_BYTE, pbuf.get_data());
+	if (!framebuffer_bound)
+		clReadBuffer(CL_BACK);
+	clReadPixels(rect.left, rect.top, rect.get_width(), rect.get_height(), CL_RGBA, CL_UNSIGNED_BYTE, pbuf.get_data());
 	pbuf.flip_vertical();
 	return pbuf;
 }
@@ -530,10 +527,13 @@ void CL_OpenGLGraphicContextProvider::reset_texture(int unit_index, const CL_Tex
 
 void CL_OpenGLGraphicContextProvider::set_frame_buffer(const CL_FrameBuffer &draw_buffer, const CL_FrameBuffer &read_buffer)
 {
-	CL_OpenGL::set_active(this);
-
 	draw_buffer_provider = dynamic_cast<CL_OpenGLFrameBufferProvider *>(draw_buffer.get_provider());
 	read_buffer_provider = dynamic_cast<CL_OpenGLFrameBufferProvider *>(read_buffer.get_provider());
+
+	if (draw_buffer_provider->get_gc_provider() != this || read_buffer_provider->get_gc_provider() != this)
+		throw CL_Exception("CL_FrameBuffer objects cannot be shared between multiple CL_GraphicContext objects");
+
+	CL_OpenGL::set_active(this);
 
 	// Check for framebuffer completeness
 	// (Ideally this should be before rendering)

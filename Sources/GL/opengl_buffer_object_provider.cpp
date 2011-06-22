@@ -36,11 +36,11 @@
 /////////////////////////////////////////////////////////////////////////////
 // CL_OpenGLBufferObjectProvider Construction:
 
-CL_OpenGLBufferObjectProvider::CL_OpenGLBufferObjectProvider(CL_OpenGLGraphicContextProvider *gc_provider)
-: gc_provider(gc_provider), handle(0), data_ptr(0)
+CL_OpenGLBufferObjectProvider::CL_OpenGLBufferObjectProvider()
+: handle(0), data_ptr(0)
 {
 	CL_SharedGCData::add_disposable(this);
-	CL_OpenGL::set_active(gc_provider);
+	CL_OpenGL::set_active();
 
 	clGenBuffers(1, &handle);
 }
@@ -69,7 +69,7 @@ void CL_OpenGLBufferObjectProvider::create(const void *data, int size, CL_Buffer
 	binding = new_binding;
 	target = new_target;
 
-	CL_OpenGL::set_active(gc_provider);
+	CL_OpenGL::set_active();
 
 	CLint last_buffer = 0;
 	clGetIntegerv(binding, &last_buffer);
@@ -94,7 +94,7 @@ void *CL_OpenGLBufferObjectProvider::get_data()
 void CL_OpenGLBufferObjectProvider::lock(CL_BufferAccess access)
 {
 	throw_if_disposed();
-	CL_OpenGL::set_active(gc_provider);
+	CL_OpenGL::set_active();
 	CLint last_buffer = 0;
 	clGetIntegerv(binding, &last_buffer);
 	clBindBuffer(target, handle);
@@ -105,7 +105,7 @@ void CL_OpenGLBufferObjectProvider::lock(CL_BufferAccess access)
 void CL_OpenGLBufferObjectProvider::unlock()
 {
 	throw_if_disposed();
-	CL_OpenGL::set_active(gc_provider);
+	CL_OpenGL::set_active();
 	CLint last_buffer = 0;
 	clGetIntegerv(binding, &last_buffer);
 	clBindBuffer(target, handle);
@@ -117,7 +117,7 @@ void CL_OpenGLBufferObjectProvider::unlock()
 void CL_OpenGLBufferObjectProvider::upload_data(int offset, const void *data, int size)
 {
 	throw_if_disposed();
-	CL_OpenGL::set_active(gc_provider);
+	CL_OpenGL::set_active();
 	CLint last_buffer = 0;
 	clGetIntegerv(binding, &last_buffer);
 	clBindBuffer(target, handle);

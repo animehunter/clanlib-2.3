@@ -43,11 +43,11 @@
 /////////////////////////////////////////////////////////////////////////////
 // CL_OpenGLProgramObjectProvider Construction:
 
-CL_OpenGLProgramObjectProvider::CL_OpenGLProgramObjectProvider(CL_OpenGLGraphicContextProvider *gc_provider)
-: handle(0), gc_provider(gc_provider)
+CL_OpenGLProgramObjectProvider::CL_OpenGLProgramObjectProvider()
+: handle(0)
 {
 	CL_SharedGCData::add_disposable(this);
-	CL_OpenGL::set_active(gc_provider);
+	CL_OpenGL::set_active();
 	handle = clCreateProgram();
 }
 
@@ -84,7 +84,7 @@ unsigned int CL_OpenGLProgramObjectProvider::get_handle() const
 bool CL_OpenGLProgramObjectProvider::get_link_status() const
 {
 	throw_if_disposed();
-	CL_OpenGL::set_active(gc_provider);
+	CL_OpenGL::set_active();
 	CLint status = 0;
 	clGetProgramiv(handle, CL_LINK_STATUS, &status);
 	return (status != CL_FALSE);
@@ -93,7 +93,7 @@ bool CL_OpenGLProgramObjectProvider::get_link_status() const
 bool CL_OpenGLProgramObjectProvider::get_validate_status() const
 {
 	throw_if_disposed();
-	CL_OpenGL::set_active(gc_provider);
+	CL_OpenGL::set_active();
 	CLint status = 0;
 	clGetProgramiv(handle, CL_VALIDATE_STATUS, &status);
 	return (status != CL_FALSE);
@@ -108,7 +108,7 @@ std::vector<CL_ShaderObject> CL_OpenGLProgramObjectProvider::get_shaders() const
 CL_String CL_OpenGLProgramObjectProvider::get_info_log() const
 {
 	throw_if_disposed();
-	CL_OpenGL::set_active(gc_provider);
+	CL_OpenGL::set_active();
 	CL_String result;
 	CLsizei buffer_size = 16*1024;
 	while (buffer_size < 2*1024*1024)
@@ -147,7 +147,7 @@ std::vector<CL_ProgramUniform> CL_OpenGLProgramObjectProvider::get_uniforms() co
 int CL_OpenGLProgramObjectProvider::get_uniform_location(const CL_StringRef &name) const
 {
 	throw_if_disposed();
-	CL_OpenGL::set_active(gc_provider);
+	CL_OpenGL::set_active();
 	return clGetUniformLocation(handle, CL_StringHelp::text_to_local8(name).c_str());
 }
 
@@ -172,7 +172,7 @@ std::vector<CL_ProgramAttribute> CL_OpenGLProgramObjectProvider::get_attributes(
 int CL_OpenGLProgramObjectProvider::get_attribute_location(const CL_StringRef &name) const
 {
 	throw_if_disposed();
-	CL_OpenGL::set_active(gc_provider);
+	CL_OpenGL::set_active();
 	return clGetAttribLocation(handle, CL_StringHelp::text_to_local8(name).c_str());
 }
 	
@@ -183,7 +183,7 @@ void CL_OpenGLProgramObjectProvider::attach(const CL_ShaderObject &obj)
 {
 	throw_if_disposed();
 	shaders.push_back(obj);
-	CL_OpenGL::set_active(gc_provider);
+	CL_OpenGL::set_active();
 	clAttachShader(handle, (CLuint) obj.get_handle());
 }
 
@@ -198,21 +198,21 @@ void CL_OpenGLProgramObjectProvider::detach(const CL_ShaderObject &obj)
 			break;
 		}
 	}
-	CL_OpenGL::set_active(gc_provider);
+	CL_OpenGL::set_active();
 	clDetachShader(handle, (CLuint) obj.get_handle());
 }
 
 void CL_OpenGLProgramObjectProvider::bind_attribute_location(int index, const CL_StringRef &name)
 {
 	throw_if_disposed();
-	CL_OpenGL::set_active(gc_provider);
+	CL_OpenGL::set_active();
 	clBindAttribLocation(handle, index, CL_StringHelp::text_to_local8(name).c_str());
 }
 
 void CL_OpenGLProgramObjectProvider::link()
 {
 	throw_if_disposed();
-	CL_OpenGL::set_active(gc_provider);
+	CL_OpenGL::set_active();
 	clLinkProgram(handle);
 
 	cached_attribs.clear();
@@ -222,14 +222,14 @@ void CL_OpenGLProgramObjectProvider::link()
 void CL_OpenGLProgramObjectProvider::validate()
 {
 	throw_if_disposed();
-	CL_OpenGL::set_active(gc_provider);
+	CL_OpenGL::set_active();
 	clValidateProgram(handle);
 }
 
 void CL_OpenGLProgramObjectProvider::set_uniform1i(const CL_StringRef &name, int p1)
 {
 	throw_if_disposed();
-	CL_ProgramObjectStateTracker state_tracker(handle, 0);
+	CL_ProgramObjectStateTracker state_tracker(handle);
 	int loc = get_uniform_location(name);
 	if (loc == -1)
 		return;
@@ -239,7 +239,7 @@ void CL_OpenGLProgramObjectProvider::set_uniform1i(const CL_StringRef &name, int
 void CL_OpenGLProgramObjectProvider::set_uniform2i(const CL_StringRef &name, int p1, int p2)
 {
 	throw_if_disposed();
-	CL_ProgramObjectStateTracker state_tracker(handle, 0);
+	CL_ProgramObjectStateTracker state_tracker(handle);
 	int loc = get_uniform_location(name);
 	if (loc == -1)
 		return;
@@ -250,7 +250,7 @@ void CL_OpenGLProgramObjectProvider::set_uniform2i(const CL_StringRef &name, int
 void CL_OpenGLProgramObjectProvider::set_uniform3i(const CL_StringRef &name, int p1, int p2, int p3)
 {
 	throw_if_disposed();
-	CL_ProgramObjectStateTracker state_tracker(handle, 0);
+	CL_ProgramObjectStateTracker state_tracker(handle);
 	int loc = get_uniform_location(name);
 	if (loc == -1)
 		return;
@@ -261,7 +261,7 @@ void CL_OpenGLProgramObjectProvider::set_uniform3i(const CL_StringRef &name, int
 void CL_OpenGLProgramObjectProvider::set_uniform4i(const CL_StringRef &name, int p1, int p2, int p3, int p4)
 {
 	throw_if_disposed();
-	CL_ProgramObjectStateTracker state_tracker(handle, 0);
+	CL_ProgramObjectStateTracker state_tracker(handle);
 	int loc = get_uniform_location(name);
 	if (loc == -1)
 		return;
@@ -273,7 +273,7 @@ void CL_OpenGLProgramObjectProvider::set_uniformiv(const CL_StringRef &name, int
 {
 	throw_if_disposed();
 
-	CL_ProgramObjectStateTracker state_tracker(handle, 0);
+	CL_ProgramObjectStateTracker state_tracker(handle);
 	int loc = get_uniform_location(name);
 	if (loc == -1)
 		return;
@@ -289,7 +289,7 @@ void CL_OpenGLProgramObjectProvider::set_uniform1f(const CL_StringRef &name, flo
 {
 	throw_if_disposed();
 
-	CL_ProgramObjectStateTracker state_tracker(handle, 0);
+	CL_ProgramObjectStateTracker state_tracker(handle);
 	int loc = get_uniform_location(name);
 	if (loc == -1)
 		return;
@@ -301,7 +301,7 @@ void CL_OpenGLProgramObjectProvider::set_uniform2f(const CL_StringRef &name, flo
 {
 	throw_if_disposed();
 
-	CL_ProgramObjectStateTracker state_tracker(handle, 0);
+	CL_ProgramObjectStateTracker state_tracker(handle);
 	int loc = get_uniform_location(name);
 	if (loc == -1)
 		return;
@@ -313,7 +313,7 @@ void CL_OpenGLProgramObjectProvider::set_uniform3f(const CL_StringRef &name, flo
 {
 	throw_if_disposed();
 
-		CL_ProgramObjectStateTracker state_tracker(handle, 0);
+		CL_ProgramObjectStateTracker state_tracker(handle);
 	int loc = get_uniform_location(name);
 	if (loc == -1)
 		return;
@@ -325,7 +325,7 @@ void CL_OpenGLProgramObjectProvider::set_uniform4f(const CL_StringRef &name, flo
 {
 	throw_if_disposed();
 
-	CL_ProgramObjectStateTracker state_tracker(handle, 0);
+	CL_ProgramObjectStateTracker state_tracker(handle);
 	int loc = get_uniform_location(name);
 	if (loc == -1)
 		return;
@@ -337,7 +337,7 @@ void CL_OpenGLProgramObjectProvider::set_uniformfv(const CL_StringRef &name, int
 {
 	throw_if_disposed();
 
-	CL_ProgramObjectStateTracker state_tracker(handle, 0);
+	CL_ProgramObjectStateTracker state_tracker(handle);
 	int loc = get_uniform_location(name);
 	if (loc == -1)
 		return;
@@ -353,7 +353,7 @@ void CL_OpenGLProgramObjectProvider::set_uniform_matrix(const CL_StringRef &name
 {
 	throw_if_disposed();
 
-	CL_ProgramObjectStateTracker state_tracker(handle, 0);
+	CL_ProgramObjectStateTracker state_tracker(handle);
 	int loc = get_uniform_location(name);
 	if (loc == -1)
 		return;
@@ -367,17 +367,9 @@ void CL_OpenGLProgramObjectProvider::set_uniform_matrix(const CL_StringRef &name
 /////////////////////////////////////////////////////////////////////////////
 // CL_OpenGLProgramObjectProvider Implementation:
 
-CL_ProgramObjectStateTracker::CL_ProgramObjectStateTracker(CLuint handle, CL_OpenGLGraphicContextProvider *gc_provider)
+CL_ProgramObjectStateTracker::CL_ProgramObjectStateTracker(CLuint handle)
 {
-	// If the gc_provider is unknown, we need to use the first active provider
-	if (!gc_provider)
-	{
-		CL_OpenGL::set_active();
-	}
-	else
-	{
-		CL_OpenGL::set_active(gc_provider);
-	}
+	CL_OpenGL::set_active();
 
 	clGetIntegerv(CL_CURRENT_PROGRAM, (CLint *) &last_program_object);
 	clUseProgram(handle);
@@ -393,7 +385,7 @@ void CL_OpenGLProgramObjectProvider::fetch_attributes() const
 	if (!cached_attribs.empty())
 		return;
 
-	CL_OpenGL::set_active(gc_provider);
+	CL_OpenGL::set_active();
 
 	CLint count = 0;
 	clGetProgramiv(handle, CL_ACTIVE_ATTRIBUTES, &count);
@@ -422,7 +414,7 @@ void CL_OpenGLProgramObjectProvider::fetch_uniforms() const
 	if (!cached_uniforms.empty())
 		return;
 
-	CL_OpenGL::set_active(gc_provider);
+	CL_OpenGL::set_active();
 
 	CLint count = 0;
 	clGetProgramiv(handle, CL_ACTIVE_UNIFORMS, &count);

@@ -36,8 +36,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CL_OpenGLElementArrayBufferProvider Construction:
 
-CL_OpenGLElementArrayBufferProvider::CL_OpenGLElementArrayBufferProvider(CL_OpenGLGraphicContextProvider *gc_provider)
-: buffer(gc_provider)
+CL_OpenGLElementArrayBufferProvider::CL_OpenGLElementArrayBufferProvider()
 {
 }
 

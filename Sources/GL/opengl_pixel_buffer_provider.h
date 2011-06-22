@@ -43,7 +43,7 @@ class CL_OpenGLPixelBufferProvider : public CL_PixelBufferProvider
 /// \{
 
 public:
-	CL_OpenGLPixelBufferProvider(CL_OpenGLGraphicContextProvider *gc_provider);
+	CL_OpenGLPixelBufferProvider();
 
 	~CL_OpenGLPixelBufferProvider();
 

@@ -42,7 +42,7 @@ class CL_OpenGLBufferObjectProvider : public CL_DisposableObject
 /// \{
 
 public:
-	CL_OpenGLBufferObjectProvider(CL_OpenGLGraphicContextProvider *gc_provider);
+	CL_OpenGLBufferObjectProvider();
 
 	~CL_OpenGLBufferObjectProvider();
 
@@ -82,8 +82,6 @@ private:
 	CLenum to_enum(CL_BufferUsage usage) const;
 
 	CLenum to_enum(CL_BufferAccess access) const;
-
-	CL_OpenGLGraphicContextProvider *gc_provider;
 
 	CLuint handle;
 	CLenum binding;

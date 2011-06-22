@@ -36,8 +36,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CL_OpenGLPixelBufferProvider Construction:
 
-CL_OpenGLPixelBufferProvider::CL_OpenGLPixelBufferProvider(CL_OpenGLGraphicContextProvider *gc_provider)
-: buffer(gc_provider)
+CL_OpenGLPixelBufferProvider::CL_OpenGLPixelBufferProvider()
 {
 }
 

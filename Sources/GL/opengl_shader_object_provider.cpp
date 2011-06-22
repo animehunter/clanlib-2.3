@@ -38,8 +38,8 @@
 /////////////////////////////////////////////////////////////////////////////
 // CL_OpenGLShaderObjectProvider Construction:
 
-CL_OpenGLShaderObjectProvider::CL_OpenGLShaderObjectProvider(CL_OpenGLGraphicContextProvider *gc_provider)
-: gc_provider(gc_provider), handle(0)
+CL_OpenGLShaderObjectProvider::CL_OpenGLShaderObjectProvider()
+: handle(0)
 {
 	CL_SharedGCData::add_disposable(this);
 }
@@ -48,7 +48,7 @@ void CL_OpenGLShaderObjectProvider::create(
 	CL_ShaderType shader_type,
 	const CL_StringRef &source)
 {
-	CL_OpenGL::set_active(gc_provider);
+	CL_OpenGL::set_active();
 	if (handle)
 		clDeleteShader(handle);
 
@@ -67,7 +67,7 @@ void CL_OpenGLShaderObjectProvider::create(
 	CL_ShaderType shader_type,
 	const std::vector<CL_StringRef> &sources)
 {
-	CL_OpenGL::set_active(gc_provider);
+	CL_OpenGL::set_active();
 	if (handle)
 		clDeleteShader(handle);
 
@@ -127,7 +127,7 @@ unsigned int CL_OpenGLShaderObjectProvider::get_handle() const
 
 bool CL_OpenGLShaderObjectProvider::get_compile_status() const
 {
-	CL_OpenGL::set_active(gc_provider);
+	CL_OpenGL::set_active();
 	CLint status = 0;
 	clGetShaderiv(handle, CL_COMPILE_STATUS, &status);
 	return (status != CL_FALSE);
@@ -140,7 +140,7 @@ CL_ShaderType CL_OpenGLShaderObjectProvider::get_shader_type() const
 
 CL_String CL_OpenGLShaderObjectProvider::get_info_log() const
 {
-	CL_OpenGL::set_active(gc_provider);
+	CL_OpenGL::set_active();
 	CL_String result;
 	CLsizei buffer_size = 16*1024;
 	while (buffer_size < 2*1024*1024)
@@ -160,7 +160,7 @@ CL_String CL_OpenGLShaderObjectProvider::get_info_log() const
 
 CL_String CL_OpenGLShaderObjectProvider::get_shader_source() const
 {
-	CL_OpenGL::set_active(gc_provider);
+	CL_OpenGL::set_active();
 	CL_String result;
 	CLsizei buffer_size = 16*1024;
 	while (buffer_size < 2*1024*1024)
@@ -183,7 +183,7 @@ CL_String CL_OpenGLShaderObjectProvider::get_shader_source() const
 
 void CL_OpenGLShaderObjectProvider::compile()
 {
-	CL_OpenGL::set_active(gc_provider);
+	CL_OpenGL::set_active();
 	clCompileShader(handle);
 }
 

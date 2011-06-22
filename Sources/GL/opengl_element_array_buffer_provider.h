@@ -43,7 +43,7 @@ class CL_OpenGLElementArrayBufferProvider : public CL_ElementArrayBufferProvider
 /// \{
 
 public:
-	CL_OpenGLElementArrayBufferProvider(CL_OpenGLGraphicContextProvider *gc_provider);
+	CL_OpenGLElementArrayBufferProvider();
 
 	~CL_OpenGLElementArrayBufferProvider();
 

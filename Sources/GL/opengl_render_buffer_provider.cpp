@@ -35,8 +35,8 @@
 #include "API/Display/Render/shared_gc_data.h"
 
 
-CL_OpenGLRenderBufferProvider::CL_OpenGLRenderBufferProvider(CL_OpenGLGraphicContextProvider *gc_provider)
-: gc_provider(gc_provider), handle(0)
+CL_OpenGLRenderBufferProvider::CL_OpenGLRenderBufferProvider()
+: handle(0)
 {
 	CL_SharedGCData::add_disposable(this);
 
@@ -71,7 +71,7 @@ CLuint CL_OpenGLRenderBufferProvider::get_handle()
 
 void CL_OpenGLRenderBufferProvider::create(int width, int height, CL_TextureFormat internal_format, int multisample_samples)
 {
-	CL_OpenGL::set_active(gc_provider);
+	CL_OpenGL::set_active();
 	CLuint last_render_buffer = 0;
 	clGetIntegerv(CL_RENDERBUFFER_BINDING, (CLint *) &last_render_buffer);
 

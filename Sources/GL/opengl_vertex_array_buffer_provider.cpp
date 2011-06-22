@@ -36,8 +36,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CL_OpenGLVertexArrayBufferProvider Construction:
 
-CL_OpenGLVertexArrayBufferProvider::CL_OpenGLVertexArrayBufferProvider(CL_OpenGLGraphicContextProvider *gc_provider)
-: buffer(gc_provider)
+CL_OpenGLVertexArrayBufferProvider::CL_OpenGLVertexArrayBufferProvider()
 {
 }
 

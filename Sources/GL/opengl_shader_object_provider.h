@@ -43,7 +43,7 @@ class CL_OpenGLShaderObjectProvider : public CL_ShaderObjectProvider, CL_Disposa
 /// \{
 
 public:
-	CL_OpenGLShaderObjectProvider(CL_OpenGLGraphicContextProvider *provider);
+	CL_OpenGLShaderObjectProvider();
 
 	virtual ~CL_OpenGLShaderObjectProvider();
 
@@ -93,8 +93,6 @@ public:
 private:
 	void on_dispose();
 	CLenum shadertype_to_opengl(CL_ShaderType type);
-
-	CL_OpenGLGraphicContextProvider *gc_provider;
 
 	CLuint handle;
 

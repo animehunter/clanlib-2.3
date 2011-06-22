@@ -43,7 +43,7 @@ class CL_OpenGLProgramObjectProvider : public CL_ProgramObjectProvider, CL_Dispo
 /// \{
 
 public:
-	CL_OpenGLProgramObjectProvider(CL_OpenGLGraphicContextProvider *gc_provider);
+	CL_OpenGLProgramObjectProvider();
 	virtual ~CL_OpenGLProgramObjectProvider();
 
 	virtual void destroy();
@@ -146,14 +146,13 @@ private:
 
 	mutable std::vector<CL_ProgramUniform> cached_uniforms;
 
-	CL_OpenGLGraphicContextProvider *gc_provider;
 /// \}
 };
 
 class CL_ProgramObjectStateTracker
 {
 public:
-	CL_ProgramObjectStateTracker(CLuint handle, CL_OpenGLGraphicContextProvider *gc_provider);
+	CL_ProgramObjectStateTracker(CLuint handle);
 	~CL_ProgramObjectStateTracker();
 
 private:

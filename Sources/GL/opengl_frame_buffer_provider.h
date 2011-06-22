@@ -58,6 +58,8 @@ public:
 
 	CL_FrameBufferBindTarget get_bind_target() const;
 
+	CL_OpenGLGraphicContextProvider *get_gc_provider() { return gc_provider; }
+
 /// \}
 /// \name Operations
 /// \{
