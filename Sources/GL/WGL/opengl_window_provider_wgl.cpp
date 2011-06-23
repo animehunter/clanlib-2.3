@@ -488,7 +488,7 @@ void CL_OpenGLWindowProvider_WGL::update(const CL_Rect &_rect)
 				rect.right, height - rect.top,
 				rect.left, height - rect.bottom,
 				rect.right, height - rect.top,
-				CL_COLOR_BUFFER_BIT, CL_LINEAR);
+				CL_COLOR_BUFFER_BIT, CL_NEAREST);
 
 			clDrawBuffer(CL_BACK);
 			clReadBuffer(CL_FRONT);
