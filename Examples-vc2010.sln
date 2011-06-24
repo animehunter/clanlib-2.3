@@ -130,6 +130,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GUI_System", "Examples\GUI\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GUI_Texture", "Examples\GUI\GUI_Texture\GUI_Texture-vc2010.vcxproj", "{BC3ED51C-8A02-4EE7-98DA-9E3106DDA590}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Water", "Examples\3D\Water\Water-vc2010.vcxproj", "{4E27E943-27C7-4F00-A431-B6AEEE3FE769}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -508,6 +510,12 @@ Global
 		{BC3ED51C-8A02-4EE7-98DA-9E3106DDA590}.Release|Win32.Build.0 = Release|Win32
 		{BC3ED51C-8A02-4EE7-98DA-9E3106DDA590}.Release|x64.ActiveCfg = Release|x64
 		{BC3ED51C-8A02-4EE7-98DA-9E3106DDA590}.Release|x64.Build.0 = Release|x64
+		{4E27E943-27C7-4F00-A431-B6AEEE3FE769}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4E27E943-27C7-4F00-A431-B6AEEE3FE769}.Debug|Win32.Build.0 = Debug|Win32
+		{4E27E943-27C7-4F00-A431-B6AEEE3FE769}.Debug|x64.ActiveCfg = Debug|Win32
+		{4E27E943-27C7-4F00-A431-B6AEEE3FE769}.Release|Win32.ActiveCfg = Release|Win32
+		{4E27E943-27C7-4F00-A431-B6AEEE3FE769}.Release|Win32.Build.0 = Release|Win32
+		{4E27E943-27C7-4F00-A431-B6AEEE3FE769}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
