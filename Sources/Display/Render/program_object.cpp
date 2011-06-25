@@ -454,6 +454,11 @@ void CL_ProgramObject::bind_attribute_location(int index, const CL_StringRef &na
 	impl->provider->bind_attribute_location(index, name);
 }
 
+void CL_ProgramObject::bind_frag_data_location(int color_number, const CL_StringRef &name)
+{
+	impl->provider->bind_frag_data_location(color_number, name);
+}
+
 bool CL_ProgramObject::link()
 {
 	impl->provider->link();

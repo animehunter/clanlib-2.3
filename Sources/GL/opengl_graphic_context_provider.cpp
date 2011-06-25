@@ -468,7 +468,7 @@ CL_PixelBufferProvider *CL_OpenGLGraphicContextProvider::alloc_pixel_buffer()
 	return new CL_OpenGLPixelBufferProvider();
 }
 
-CL_PixelBuffer CL_OpenGLGraphicContextProvider::get_pixeldata(const CL_Rect& rect2, CL_TextureFormat pixel_format) const 
+CL_PixelBuffer CL_OpenGLGraphicContextProvider::get_pixeldata(const CL_Rect& rect2, CL_TextureFormat pixel_format, bool clamp) const 
 {
 	CL_Rect rect = rect2;
 	if (rect == CL_Rect())
@@ -484,6 +484,7 @@ CL_PixelBuffer CL_OpenGLGraphicContextProvider::get_pixeldata(const CL_Rect& rec
 	CL_OpenGL::set_active(this);
 	if (!framebuffer_bound)
 		clReadBuffer(CL_BACK);
+	clClampColor(CL_CLAMP_READ_COLOR, clamp ? CL_TRUE : CL_FALSE);
 	clReadPixels(rect.left, rect.top, rect.get_width(), rect.get_height(), format, type, pbuf.get_data());
 	pbuf.flip_vertical();
 	return pbuf;

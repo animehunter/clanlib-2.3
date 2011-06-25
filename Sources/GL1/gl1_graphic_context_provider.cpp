@@ -342,7 +342,7 @@ CL_PixelBufferProvider *CL_GL1GraphicContextProvider::alloc_pixel_buffer()
 	return NULL;
 }
 
-CL_PixelBuffer CL_GL1GraphicContextProvider::get_pixeldata(const CL_Rect& rect, CL_TextureFormat pixel_format) const
+CL_PixelBuffer CL_GL1GraphicContextProvider::get_pixeldata(const CL_Rect& rect, CL_TextureFormat pixel_format, bool clamp) const
 {
 	set_active();
 	if (!framebuffer_bound) cl1ReadBuffer(CL_BACK);

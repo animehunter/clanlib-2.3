@@ -158,6 +158,10 @@ void CL_SWRenderProgramObjectProvider::bind_attribute_location(int index, const 
 		bind_locations[attribute_index] = index;
 }
 
+void CL_SWRenderProgramObjectProvider::bind_frag_data_location(int color_number, const CL_StringRef &name)
+{
+}
+
 void CL_SWRenderProgramObjectProvider::link()
 {
 }

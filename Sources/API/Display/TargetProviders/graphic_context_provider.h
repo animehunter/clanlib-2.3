@@ -129,7 +129,7 @@ public:
 	virtual void destroy() = 0;
 	
 	/// \brief Return the content of the draw buffer into a pixel buffer.
-	virtual CL_PixelBuffer get_pixeldata(const CL_Rect& rect, CL_TextureFormat pixel_format) const = 0;
+	virtual CL_PixelBuffer get_pixeldata(const CL_Rect& rect, CL_TextureFormat pixel_format, bool clamp) const = 0;
 
 	/// \brief Allocate texture provider for this gc.
 	virtual CL_TextureProvider *alloc_texture(CL_TextureDimensions texture_dimensions) = 0;

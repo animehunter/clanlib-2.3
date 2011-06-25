@@ -75,6 +75,7 @@ public:
 	void attach(const CL_ShaderObject &obj);
 	void detach(const CL_ShaderObject &obj);
 	void bind_attribute_location(int index, const CL_StringRef &name);
+	void bind_frag_data_location(int color_number, const CL_StringRef &name);
 	void link();
 	void validate();
 

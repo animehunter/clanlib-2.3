@@ -171,14 +171,14 @@ const CL_GraphicContextProvider * const CL_GraphicContext::get_provider() const
 /////////////////////////////////////////////////////////////////////////////
 // CL_GraphicContext Operations:
 
-CL_PixelBuffer CL_GraphicContext::get_pixeldata(const CL_Rect &rect, CL_TextureFormat pixel_format) const
+CL_PixelBuffer CL_GraphicContext::get_pixeldata(const CL_Rect &rect, CL_TextureFormat pixel_format, bool clamp) const
 {
-	return impl->provider->get_pixeldata(rect, pixel_format);
+	return impl->provider->get_pixeldata(rect, pixel_format, clamp);
 }
 
-CL_PixelBuffer CL_GraphicContext::get_pixeldata(CL_TextureFormat pixel_format) const
+CL_PixelBuffer CL_GraphicContext::get_pixeldata(CL_TextureFormat pixel_format, bool clamp) const
 {
-	return impl->provider->get_pixeldata(CL_Rect(0,0,0,0), pixel_format);
+	return impl->provider->get_pixeldata(CL_Rect(0,0,0,0), pixel_format, clamp);
 }
 
 void CL_GraphicContext::set_texture(int unit_index, const CL_Texture &texture)

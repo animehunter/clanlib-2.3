@@ -329,6 +329,10 @@ public:
 	/** <p>This function must be called before linking.</p>*/
 	void bind_attribute_location(int index, const CL_StringRef &name);
 
+	/// \brief Bind shader out variable a specific color buffer location.
+	/** <p>This function must be called before linking.</p>*/
+	void bind_frag_data_location(int color_number, const CL_StringRef &name);
+
 	/// \brief Link program.
 	/** <p>If the linking fails, get_info_log() will return the link log.</p>*/
 	bool link();

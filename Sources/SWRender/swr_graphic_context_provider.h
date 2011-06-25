@@ -68,7 +68,7 @@ public:
 /// \{
 public:
 	void destroy();
-	CL_PixelBuffer get_pixeldata(const CL_Rect& rect, CL_TextureFormat pixel_format) const;
+	CL_PixelBuffer get_pixeldata(const CL_Rect& rect, CL_TextureFormat pixel_format, bool clamp) const;
 	CL_TextureProvider *alloc_texture(CL_TextureDimensions texture_dimensions);
 	CL_OcclusionQueryProvider *alloc_occlusion_query();
 	CL_ProgramObjectProvider *alloc_program_object();

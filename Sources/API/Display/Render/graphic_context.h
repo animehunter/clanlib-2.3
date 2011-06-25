@@ -216,10 +216,10 @@ public:
 /// \{
 public:
 	/// \brief Return the content of the read buffer into a pixel buffer.
-	CL_PixelBuffer get_pixeldata(const CL_Rect& rect, CL_TextureFormat pixel_format = cl_abgr8) const;
+	CL_PixelBuffer get_pixeldata(const CL_Rect& rect, CL_TextureFormat pixel_format = cl_abgr8, bool clamp = true) const;
 
 	/// \brief Return the content of the read buffer into a pixel buffer.
-	CL_PixelBuffer get_pixeldata(CL_TextureFormat pixel_format = cl_abgr8) const;
+	CL_PixelBuffer get_pixeldata(CL_TextureFormat pixel_format = cl_abgr8, bool clamp = true) const;
 
 	/// \brief Sets the current frame buffer.
 	void set_frame_buffer(const CL_FrameBuffer &write_buffer);

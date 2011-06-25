@@ -209,6 +209,13 @@ void CL_OpenGLProgramObjectProvider::bind_attribute_location(int index, const CL
 	clBindAttribLocation(handle, index, CL_StringHelp::text_to_local8(name).c_str());
 }
 
+void CL_OpenGLProgramObjectProvider::bind_frag_data_location(int color_number, const CL_StringRef &name)
+{
+	throw_if_disposed();
+	CL_OpenGL::set_active();
+	clBindFragDataLocation(handle, color_number, CL_StringHelp::text_to_local8(name).c_str());
+}
+
 void CL_OpenGLProgramObjectProvider::link()
 {
 	throw_if_disposed();

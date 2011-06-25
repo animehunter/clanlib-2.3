@@ -103,7 +103,7 @@ void CL_SWRenderGraphicContextProvider::destroy()
 	delete this;
 }
 
-CL_PixelBuffer CL_SWRenderGraphicContextProvider::get_pixeldata(const CL_Rect& rect, CL_TextureFormat pixel_format) const
+CL_PixelBuffer CL_SWRenderGraphicContextProvider::get_pixeldata(const CL_Rect& rect, CL_TextureFormat pixel_format, bool clamp) const
 {
 	return canvas->to_pixelbuffer().copy(rect).to_format(pixel_format);
 }
