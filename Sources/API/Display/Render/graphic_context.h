@@ -35,12 +35,13 @@
 
 #include "../api_display.h"
 #include "../2D/color.h"
+#include "../Image/texture_format.h"
 #include "../../Core/System/sharedptr.h"
-#include "primitives_array.h"
 #include "../../Core/Math/mat4.h"
 #include "../../Core/IOData/virtual_directory.h"
 #include "../../Core/Math/rect.h"
 #include "../../Core/Signals/signal_v0.h"
+#include "primitives_array.h"
 #include "frame_buffer.h"
 
 class CL_Size;
@@ -214,8 +215,11 @@ public:
 /// \name Operations
 /// \{
 public:
-	/// \brief Return the content of the draw buffer into a pixel buffer.
-	CL_PixelBuffer get_pixeldata(const CL_Rect& rect = CL_Rect(0,0,0,0)) const;
+	/// \brief Return the content of the read buffer into a pixel buffer.
+	CL_PixelBuffer get_pixeldata(const CL_Rect& rect, CL_TextureFormat pixel_format = cl_abgr8) const;
+
+	/// \brief Return the content of the read buffer into a pixel buffer.
+	CL_PixelBuffer get_pixeldata(CL_TextureFormat pixel_format = cl_abgr8) const;
 
 	/// \brief Sets the current frame buffer.
 	void set_frame_buffer(const CL_FrameBuffer &write_buffer);

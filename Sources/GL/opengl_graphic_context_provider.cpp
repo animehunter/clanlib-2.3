@@ -468,18 +468,23 @@ CL_PixelBufferProvider *CL_OpenGLGraphicContextProvider::alloc_pixel_buffer()
 	return new CL_OpenGLPixelBufferProvider();
 }
 
-CL_PixelBuffer CL_OpenGLGraphicContextProvider::get_pixeldata(const CL_Rect& rect2) const 
+CL_PixelBuffer CL_OpenGLGraphicContextProvider::get_pixeldata(const CL_Rect& rect2, CL_TextureFormat pixel_format) const 
 {
 	CL_Rect rect = rect2;
 	if (rect == CL_Rect())
 		rect = CL_Rect(0, 0, get_width(), get_height());
 
-	CL_PixelBuffer pbuf(rect.get_width(), rect.get_height(), cl_abgr8);
+	CLenum format;
+	CLenum type;
+	bool found = CL_OpenGL::to_opengl_pixelformat(pixel_format, format, type);
+	if (!found)
+		throw CL_Exception("Unsupported pixel format passed to CL_GraphicContext::get_pixeldata");
 
+	CL_PixelBuffer pbuf(rect.get_width(), rect.get_height(), pixel_format);
 	CL_OpenGL::set_active(this);
 	if (!framebuffer_bound)
 		clReadBuffer(CL_BACK);
-	clReadPixels(rect.left, rect.top, rect.get_width(), rect.get_height(), CL_RGBA, CL_UNSIGNED_BYTE, pbuf.get_data());
+	clReadPixels(rect.left, rect.top, rect.get_width(), rect.get_height(), format, type, pbuf.get_data());
 	pbuf.flip_vertical();
 	return pbuf;
 }

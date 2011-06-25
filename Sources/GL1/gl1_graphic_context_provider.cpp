@@ -342,7 +342,7 @@ CL_PixelBufferProvider *CL_GL1GraphicContextProvider::alloc_pixel_buffer()
 	return NULL;
 }
 
-CL_PixelBuffer CL_GL1GraphicContextProvider::get_pixeldata(const CL_Rect& rect) const
+CL_PixelBuffer CL_GL1GraphicContextProvider::get_pixeldata(const CL_Rect& rect, CL_TextureFormat pixel_format) const
 {
 	set_active();
 	if (!framebuffer_bound) cl1ReadBuffer(CL_BACK);
@@ -358,7 +358,7 @@ CL_PixelBuffer CL_GL1GraphicContextProvider::get_pixeldata(const CL_Rect& rect) 
 	CL_PixelBuffer pbuf( get_width(), get_height(), cl_abgr8);
 	cl1ReadPixels(0, 0, get_width(), get_height(), CL_RGBA, CL_UNSIGNED_BYTE, pbuf.get_data());
 	pbuf.flip_vertical();
-	return pbuf;
+	return pbuf.to_format(pixel_format);
 }
 
 void CL_GL1GraphicContextProvider::set_texture_unit(int unit_index, const CL_TextureUnit_GL1 &unit)

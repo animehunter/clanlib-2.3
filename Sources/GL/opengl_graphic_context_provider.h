@@ -92,7 +92,7 @@ public:
 	CL_PixelBufferProvider *alloc_pixel_buffer();
 	CL_VertexArrayBufferProvider *alloc_vertex_array_buffer();
 	CL_ElementArrayBufferProvider *alloc_element_array_buffer();
-	CL_PixelBuffer get_pixeldata(const CL_Rect& rect) const;
+	CL_PixelBuffer get_pixeldata(const CL_Rect& rect, CL_TextureFormat pixel_format = cl_abgr8) const;
 	void set_texture(int unit_index, const CL_Texture &texture);
 	void reset_texture(int unit_index, const CL_Texture &texture);
 	void set_frame_buffer(const CL_FrameBuffer &write_buffer, const CL_FrameBuffer &read_buffer);

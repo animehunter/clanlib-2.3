@@ -103,9 +103,9 @@ void CL_SWRenderGraphicContextProvider::destroy()
 	delete this;
 }
 
-CL_PixelBuffer CL_SWRenderGraphicContextProvider::get_pixeldata(const CL_Rect& rect) const
+CL_PixelBuffer CL_SWRenderGraphicContextProvider::get_pixeldata(const CL_Rect& rect, CL_TextureFormat pixel_format) const
 {
-	return canvas->to_pixelbuffer().copy(rect);
+	return canvas->to_pixelbuffer().copy(rect).to_format(pixel_format);
 }
 
 CL_TextureProvider *CL_SWRenderGraphicContextProvider::alloc_texture(CL_TextureDimensions texture_dimensions)
