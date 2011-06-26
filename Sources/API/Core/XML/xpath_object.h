@@ -24,6 +24,7 @@
 **  File Author(s):
 **
 **    Magnus Norddahl
+**    Thomas Gottschalk Larsen
 */
 
 /// \addtogroup clanCore_XML clanCore XML

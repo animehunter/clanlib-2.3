@@ -24,10 +24,12 @@
 **  File Author(s):
 **
 **    Magnus Norddahl
+**    Thomas Gottschalk Larsen
 */
 
 #include "Core/precomp.h"
 #include "API/Core/XML/xpath_evaluator.h"
+#include "API/Core/XML/xpath_exception.h"
 #include "API/Core/XML/dom_node.h"
 #include "xpath_evaluator_impl.h"
 #include "xpath_token.h"
@@ -49,6 +51,6 @@ CL_XPathObject CL_XPathEvaluator::evaluate(const CL_StringRef &expression, const
 	std::vector<CL_DomNode> nodelist(1, context_node);
 	CL_XPathEvaluateResult result = impl->evaluate(expression, nodelist, 0, prev_token);
 	if (result.next_token.type != CL_XPathToken::type_none)
-		throw CL_Exception(impl->error_message("Expected end of expression", expression, result.next_token));
+		throw CL_XPathException("Expected end of expression", expression, result.next_token);
 	return result.result;
 }

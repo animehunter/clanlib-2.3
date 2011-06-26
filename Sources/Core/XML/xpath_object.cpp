@@ -24,6 +24,7 @@
 **  File Author(s):
 **
 **    Magnus Norddahl
+**    Thomas Gottschalk Larsen
 */
 
 #include "Core/precomp.h"

@@ -52,8 +52,6 @@ public:
 		CL_XPathNodeSet::size_type context_node_index,
 		CL_XPathToken prev_token) const;
 
-	CL_String error_message(const CL_StringRef &message, const CL_StringRef &expression = "", const CL_XPathToken &cur_token = CL_XPathToken()) const;
-
 private:
 	typedef CL_XPathToken::Operator Operator;
 	typedef CL_XPathObject Operand;

@@ -33,12 +33,14 @@
 #include "API/Core/XML/dom_node.h"
 #include "API/Core/XML/dom_named_node_map.h"
 #include "API/Core/XML/dom_element.h"
+#include "API/Core/XML/xpath_exception.h"
 #include "API/Core/Text/string_help.h"
 #include "API/Core/Text/string_format.h"
 #include "xpath_evaluator_impl.h"
 #include "xpath_token.h"
 #include "xpath_location_step.h"
 #include <cmath>
+#include <limits>
 
 /////////////////////////////////////////////////////////////////////////////
 // CL_XPathEvaluator_Impl Operations:
@@ -106,7 +108,7 @@ CL_XPathEvaluateResult CL_XPathEvaluator_Impl::evaluate(
 			if (cur_token.type != CL_XPathToken::type_operator ||
 				cur_token.value.oper != CL_XPathToken::operator_parenthesis_begin)
 			{
-				throw CL_Exception(error_message("Expected '(' after function name", expression, cur_token));
+				throw CL_XPathException("Expected '(' after function name", expression, cur_token);
 			}
 
 			std::vector<CL_XPathObject> parameters;
@@ -121,7 +123,7 @@ CL_XPathEvaluateResult CL_XPathEvaluator_Impl::evaluate(
 					cur_token.value.oper == CL_XPathToken::operator_parenthesis_end)
 					break;
 				if (cur_token.type != CL_XPathToken::type_comma)
-					throw CL_Exception(error_message("Expected ',' or ')' in function call", expression, cur_token));
+					throw CL_XPathException("Expected ',' or ')' in function call", expression, cur_token);
 			}
 
 			CL_XPathObject obj = call_function(context, context_node_index, function_name, parameters);
@@ -130,19 +132,19 @@ CL_XPathEvaluateResult CL_XPathEvaluator_Impl::evaluate(
 		else if (cur_token.type == CL_XPathToken::type_bracket_begin)
 		{
 			if (operand_stack.empty())
-				throw CL_Exception(error_message("Missing operand before predicate", expression, cur_token));
+				throw CL_XPathException("Missing operand before predicate", expression, cur_token);
 
 			Operand cur_operand = operand_stack.back();
 			operand_stack.pop_back();
 			if (cur_operand.get_type() != CL_XPathObject::type_node_set)
-				throw CL_Exception(error_message("Expected node-set operand before '['", expression, cur_token));
+				throw CL_XPathException("Expected node-set operand before '['", expression, cur_token);
 
 			CL_XPathToken end_token = cur_token;
 			while (end_token.type != CL_XPathToken::type_bracket_end && end_token.type != CL_XPathToken::type_none)
 				end_token = read_token(expression, end_token);
 
 			if (end_token.type == CL_XPathToken::type_none)
-				throw CL_Exception(error_message("Missing matching ']' in expression", expression, cur_token));
+				throw CL_XPathException("Missing matching ']' in expression", expression, cur_token);
 
 			CL_XPathLocationStep::Predicate predicate;
 			predicate.pos = cur_token.pos + cur_token.length;
@@ -181,7 +183,7 @@ CL_XPathEvaluateResult CL_XPathEvaluator_Impl::evaluate(
 		}
 		else
 		{
-			throw CL_Exception(error_message("Unexpected token", expression, cur_token));
+			throw CL_XPathException("Unexpected token", expression, cur_token);
 		}
 
 		prev_token = cur_token;
@@ -196,7 +198,7 @@ CL_XPathEvaluateResult CL_XPathEvaluator_Impl::evaluate(
 			cur_token.type == CL_XPathToken::type_operator &&
 			cur_token.value.oper == CL_XPathToken::operator_parenthesis_end))
 	{
-		throw CL_Exception(error_message("Expected operand", expression, cur_token));
+		throw CL_XPathException("Expected operand", expression, cur_token);
 	}
 
 	CL_XPathEvaluateResult result;
@@ -263,7 +265,7 @@ CL_XPathObject CL_XPathEvaluator_Impl::call_function(const CL_XPathNodeSet& cont
 	else if (name == "round")
 		return function_round(context, context_node_index, parameters);
 
-	return CL_XPathObject();
+	throw CL_Exception(cl_format("Unknown function '%1'", name));
 }
 
 CL_XPathObject CL_XPathEvaluator_Impl::get_variable(const CL_StringRef &name) const
@@ -645,7 +647,7 @@ bool CL_XPathEvaluator_Impl::compare_operands(const Operand &a, const Operand &b
 	}
 	else
 	{
-		throw CL_Exception(error_message("Unknown operand in compare operation"));
+		throw CL_XPathException("Unknown operand type in compare operation");
 	}
 }
 
@@ -709,7 +711,7 @@ bool CL_XPathEvaluator_Impl::compare_node_set(const Operand &a, const Operand &b
 	}
 	else
 	{
-		throw CL_Exception(error_message("Unknown operand type in compare operation"));
+		throw CL_XPathException("Unknown operand type in compare operation");
 	}
 }
 
@@ -758,7 +760,7 @@ bool CL_XPathEvaluator_Impl::compare_boolean(const Operand &a, const Operand &b,
 	}
 	else
 	{
-		throw CL_Exception(error_message("Unknown operand type in compare operation"));
+		throw CL_XPathException("Unknown operand type in compare operation");
 	}
 }
 
@@ -815,7 +817,7 @@ bool CL_XPathEvaluator_Impl::compare_number(const Operand &a, const Operand &b, 
 	}
 	else
 	{
-		throw CL_Exception(error_message("Unknown operand type in compare operation"));
+		throw CL_XPathException("Unknown operand type in compare operation");
 	}
 }
 
@@ -863,7 +865,7 @@ bool CL_XPathEvaluator_Impl::compare_string(const Operand &a, const Operand &b, 
 	}
 	else
 	{
-		throw CL_Exception(error_message("Unknown operand type in compare operation"));
+		throw CL_XPathException("Unknown operand type in compare operation");
 	}
 }
 
@@ -1025,7 +1027,7 @@ CL_XPathToken CL_XPathEvaluator_Impl::read_location_step(
 			step.axis = cur_token.value.str;
 			cur_token = read_token(expression, cur_token);
 			if (cur_token.type != CL_XPathToken::type_double_colon)
-				throw CL_Exception(error_message("Expected '::' after axis name", expression, cur_token));
+				throw CL_XPathException("Expected '::' after axis name", expression, cur_token);
 			cur_token = read_token(expression, cur_token);
 		}
 		else if (cur_token.type == CL_XPathToken::type_at_sign) // Abbreviated axis specifier
@@ -1050,7 +1052,7 @@ CL_XPathToken CL_XPathEvaluator_Impl::read_location_step(
 			step.node_type = cur_token.value.node_type;
 			cur_token = read_token(expression, cur_token);
 			if (cur_token.type != CL_XPathToken::type_operator || cur_token.value.oper != CL_XPathToken::operator_parenthesis_begin)
-				throw CL_Exception(error_message("Expected '(' after node-type test", expression, cur_token));
+				throw CL_XPathException("Expected '(' after node-type test", expression, cur_token);
 			cur_token = read_token(expression, cur_token);
 			if (cur_token.type == CL_XPathToken::type_literal && step.node_type == CL_XPathToken::node_type_processing_instruction)
 			{
@@ -1058,11 +1060,11 @@ CL_XPathToken CL_XPathEvaluator_Impl::read_location_step(
 				cur_token = read_token(expression, cur_token);
 			}
 			if (cur_token.type != CL_XPathToken::type_operator || cur_token.value.oper != CL_XPathToken::operator_parenthesis_end)
-				throw CL_Exception(error_message("Expected ')' after node-type test", expression, cur_token));
+				throw CL_XPathException("Expected ')' after node-type test", expression, cur_token);
 		}
 		else
 		{
-			throw CL_Exception(error_message("Unknown node test type", expression, cur_token));
+			throw CL_XPathException("Unknown node test type", expression, cur_token);
 		}
 
 		CL_XPathToken next_token = read_token(expression, cur_token);
@@ -1135,7 +1137,7 @@ void CL_XPathEvaluator_Impl::evaluate_location_step(const CL_XPathNodeSet &conte
 		else if (steps[step_index].axis == "self")
 			select_nodes_self(context, context_node_index, steps, step_index, expression, nodes);
 		else
-			throw CL_Exception(error_message(cl_format("Unknown location step axis '%1", steps[step_index].axis), expression));
+			throw CL_XPathException(cl_format("Unknown location step axis", steps[step_index].axis), expression);
 	}
 	else
 	{
@@ -1626,7 +1628,7 @@ CL_XPathToken CL_XPathEvaluator_Impl::read_token(
 		token.type = CL_XPathToken::type_literal;
 		pos = expression.find_first_of('"', token.pos + 1);
 		if (pos == CL_StringRef::npos)
-			throw CL_Exception(error_message("Missing ending quotation sign", expression, token));
+			throw CL_XPathException("Expected ending quotation sign", expression, token);
 		token.length = pos - token.pos + 1;
 		token.value.str = expression.substr(token.pos + 1, token.length - 2);
 		return token;
@@ -1634,7 +1636,7 @@ CL_XPathToken CL_XPathEvaluator_Impl::read_token(
 		token.type = CL_XPathToken::type_literal;
 		pos = expression.find_first_of('\'', token.pos + 1);
 		if (pos == CL_StringRef::npos)
-			throw CL_Exception(error_message("Missing ending quotation sign", expression, token));
+			throw CL_XPathException("Expected ending quotation sign", expression, token);
 		token.length = pos - token.pos + 1;
 		token.value.str = expression.substr(token.pos + 1, token.length - 2);
 		return token;
@@ -1688,7 +1690,7 @@ CL_XPathToken CL_XPathEvaluator_Impl::read_token(
 	token.value.str = expression.substr(token.pos, token.length);
 
 	if (token.length == 0)
-		throw CL_Exception(error_message("Invalid token", expression, token));
+		throw CL_XPathException("Invalid token", expression, token);
 
 	// Find the next two token chars:
 
@@ -1802,7 +1804,7 @@ CL_XPathToken CL_XPathEvaluator_Impl::read_token(
 		token.length = pos - token.pos;
 		token.value.str = expression.substr(token.pos, token.length);
 		if (token.length == 0)
-			throw CL_Exception(error_message("Invalid token", expression, token));
+			throw CL_XPathException("Invalid token", expression, token);
 	}
 
 	token.type = CL_XPathToken::type_name_test;
@@ -1822,7 +1824,7 @@ CL_XPathObject CL_XPathEvaluator_Impl::function_position(const CL_XPathNodeSet& 
 CL_XPathObject CL_XPathEvaluator_Impl::function_count(const CL_XPathNodeSet& context, CL_XPathNodeSet::size_type context_node_index, const std::vector<CL_XPathObject> &parameters) const
 {
 	if (parameters.size() != 1 || parameters.front().get_type() != CL_XPathObject::type_node_set)
-		throw CL_Exception(error_message("Function count(node-set) expects a node-set parameter"));
+		throw CL_XPathException("Function count(node-set) expects a node-set parameter");
 
 	CL_XPathObject obj = parameters.front();
 	return CL_XPathObject(obj.get_node_set().size());
@@ -1831,7 +1833,7 @@ CL_XPathObject CL_XPathEvaluator_Impl::function_count(const CL_XPathNodeSet& con
 CL_XPathObject CL_XPathEvaluator_Impl::function_id(const CL_XPathNodeSet& context, CL_XPathNodeSet::size_type context_node_index, const std::vector<CL_XPathObject> &parameters) const
 {
 	if (parameters.empty())
-		throw CL_Exception(error_message("Function id(object) expects an object parameter"));
+		throw CL_XPathException("Function id(object) expects an object parameter");
 
 	CL_XPathObject obj = parameters[0];
 	std::vector<CL_String> strings;
@@ -1907,7 +1909,7 @@ CL_XPathObject CL_XPathEvaluator_Impl::function_local_name(const CL_XPathNodeSet
 	{
 		CL_XPathObject obj = parameters.front();
 		if (obj.get_type() != CL_XPathObject::type_node_set)
-			throw CL_Exception(error_message("Function local-name(node-set) expects a node-set parameter"));
+			throw CL_XPathException("Function local-name(node-set) expects a node-set parameter");
 		CL_XPathNodeSet nodeset2 = obj.get_node_set();
 		nodeset.insert(nodeset.end(), nodeset2.begin(), nodeset2.end());
 	}
@@ -1929,7 +1931,7 @@ CL_XPathObject CL_XPathEvaluator_Impl::function_namespace_uri(const CL_XPathNode
 	{
 		CL_XPathObject obj = parameters.front();
 		if (obj.get_type() != CL_XPathObject::type_node_set)
-			throw CL_Exception(error_message("Function namespace-uri(node-set) expects a node-set parameter"));
+			throw CL_XPathException("Function namespace-uri(node-set) expects a node-set parameter");
 		CL_XPathNodeSet nodeset2 = obj.get_node_set();
 		nodeset.insert(nodeset.end(), nodeset2.begin(), nodeset2.end());
 	}
@@ -1951,7 +1953,7 @@ CL_XPathObject CL_XPathEvaluator_Impl::function_name(const CL_XPathNodeSet& cont
 	{
 		CL_XPathObject obj = parameters[0];
 		if (obj.get_type() != CL_XPathObject::type_node_set)
-			throw CL_Exception(error_message("Function name(node-set) expects a node-set parameter"));
+			throw CL_XPathException("Function name(node-set) expects a node-set parameter");
 		CL_XPathNodeSet nodeset2 = obj.get_node_set();
 		nodeset.insert(nodeset.end(), nodeset2.begin(), nodeset2.end());
 	}
@@ -1985,7 +1987,7 @@ CL_XPathObject CL_XPathEvaluator_Impl::function_string(const CL_XPathNodeSet& co
 CL_XPathObject CL_XPathEvaluator_Impl::function_concat(const CL_XPathNodeSet& context, CL_XPathNodeSet::size_type context_node_index, const std::vector<CL_XPathObject> &parameters) const
 {
 	if (parameters.size() < 2)
-		throw CL_Exception(error_message("Function concat(string, string, string*) expects 2 or more string parameters"));
+		throw CL_XPathException("Function concat(string, string, string*) expects 2 or more string parameters");
 
 	CL_String result;
 	for (std::vector<CL_XPathObject>::const_iterator it = parameters.begin(), itEnd = parameters.end(); it != itEnd; ++it)
@@ -2001,7 +2003,7 @@ CL_XPathObject CL_XPathEvaluator_Impl::function_concat(const CL_XPathNodeSet& co
 CL_XPathObject CL_XPathEvaluator_Impl::function_starts_with(const CL_XPathNodeSet& context, CL_XPathNodeSet::size_type context_node_index, const std::vector<CL_XPathObject> &parameters) const
 {
 	if (parameters.size() != 2)
-		throw CL_Exception(error_message("Function starts-with(string, string) expects 2 string parameters"));
+		throw CL_XPathException("Function starts-with(string, string) expects 2 string parameters");
 
 	CL_XPathObject p1 = string(parameters[0]);
 	CL_XPathObject p2 = string(parameters[1]);
@@ -2011,7 +2013,7 @@ CL_XPathObject CL_XPathEvaluator_Impl::function_starts_with(const CL_XPathNodeSe
 CL_XPathObject CL_XPathEvaluator_Impl::function_contains(const CL_XPathNodeSet& context, CL_XPathNodeSet::size_type context_node_index, const std::vector<CL_XPathObject> &parameters) const
 {
 	if (parameters.size() != 2)
-		throw CL_Exception(error_message("Function contains(string, string) expects 2 string parameters"));
+		throw CL_XPathException("Function contains(string, string) expects 2 string parameters");
 
 	CL_XPathObject p1 = string(parameters[0]);
 	CL_XPathObject p2 = string(parameters[1]);
@@ -2021,7 +2023,7 @@ CL_XPathObject CL_XPathEvaluator_Impl::function_contains(const CL_XPathNodeSet& 
 CL_XPathObject CL_XPathEvaluator_Impl::function_substring_before(const CL_XPathNodeSet& context, CL_XPathNodeSet::size_type context_node_index, const std::vector<CL_XPathObject> &parameters) const
 {
 	if (parameters.size() != 2)
-		throw CL_Exception(error_message("Function substring-before(string, string) expects 2 string parameters"));
+		throw CL_XPathException("Function substring-before(string, string) expects 2 string parameters");
 
 	CL_XPathObject p1 = string(parameters[0]);
 	CL_XPathObject p2 = string(parameters[1]);
@@ -2036,7 +2038,7 @@ CL_XPathObject CL_XPathEvaluator_Impl::function_substring_before(const CL_XPathN
 CL_XPathObject CL_XPathEvaluator_Impl::function_substring_after(const CL_XPathNodeSet& context, CL_XPathNodeSet::size_type context_node_index, const std::vector<CL_XPathObject> &parameters) const
 {
 	if (parameters.size() != 2)
-		throw CL_Exception(error_message("Function substring_after(string, string) expects 2 string parameters"));
+		throw CL_XPathException("Function substring_after(string, string) expects 2 string parameters");
 
 	CL_String p1 = string(parameters[0]).get_string();
 	CL_String p2 = string(parameters[1]).get_string();
@@ -2051,7 +2053,7 @@ CL_XPathObject CL_XPathEvaluator_Impl::function_substring_after(const CL_XPathNo
 CL_XPathObject CL_XPathEvaluator_Impl::function_substring(const CL_XPathNodeSet& context, CL_XPathNodeSet::size_type context_node_index, const std::vector<CL_XPathObject> &parameters) const
 {
 	if (parameters.size() < 2)
-		throw CL_Exception(error_message("Function substring(string, number, number?) expects 2 or 3 parameters"));
+		throw CL_XPathException("Function substring(string, number, number?) expects 2 or 3 parameters");
 
 	CL_String str = string(parameters[0]).get_string();
 	CL_String::size_type pos = max(0, static_cast<CL_String::size_type>(number(parameters[1]).get_number()+0.5)-1);
@@ -2099,7 +2101,7 @@ CL_XPathObject CL_XPathEvaluator_Impl::function_normalize_space(const CL_XPathNo
 CL_XPathObject CL_XPathEvaluator_Impl::function_translate(const CL_XPathNodeSet& context, CL_XPathNodeSet::size_type context_node_index, const std::vector<CL_XPathObject> &parameters) const
 {
 	if (parameters.size() != 3)
-		throw CL_Exception(error_message("Function translate(string, string, string) expects 3 string parameters"));
+		throw CL_XPathException("Function translate(string, string, string) expects 3 string parameters");
 
 	CL_String str = string(parameters[0]).get_string();
 	CL_String search = string(parameters[1]).get_string();
@@ -2132,7 +2134,7 @@ CL_XPathObject CL_XPathEvaluator_Impl::function_translate(const CL_XPathNodeSet&
 CL_XPathObject CL_XPathEvaluator_Impl::function_boolean(const CL_XPathNodeSet& context, CL_XPathNodeSet::size_type context_node_index, const std::vector<CL_XPathObject> &parameters) const
 {
 	if (parameters.empty())
-		throw CL_Exception(error_message("Function boolean(object) expects an object parameter"));
+		throw CL_XPathException("Function boolean(object) expects an object parameter");
 
 	return boolean(parameters[0]);
 }
@@ -2140,7 +2142,7 @@ CL_XPathObject CL_XPathEvaluator_Impl::function_boolean(const CL_XPathNodeSet& c
 CL_XPathObject CL_XPathEvaluator_Impl::function_not(const CL_XPathNodeSet& context, CL_XPathNodeSet::size_type context_node_index, const std::vector<CL_XPathObject> &parameters) const
 {
 	if (parameters.empty())
-		throw CL_Exception(error_message("Function not(boolean) expects a boolean parameter"));
+		throw CL_XPathException("Function not(boolean) expects a boolean parameter");
 
 	return CL_XPathObject(!boolean(parameters[0]).get_boolean());
 }
@@ -2157,13 +2159,34 @@ CL_XPathObject CL_XPathEvaluator_Impl::function_false(const CL_XPathNodeSet& con
 
 CL_XPathObject CL_XPathEvaluator_Impl::function_lang(const CL_XPathNodeSet& context, CL_XPathNodeSet::size_type context_node_index, const std::vector<CL_XPathObject> &parameters) const
 {
-	throw CL_Exception(error_message("Function lang(string) not implemented"));
+	if (parameters.empty())
+		throw CL_XPathException("Function lang(string) expects a string parameter");
+
+	bool found = false;
+	CL_String search = string(parameters[0]).get_string();
+	CL_DomNode cur_node = context[context_node_index];
+	while (!found && !cur_node.is_null())
+	{
+		if (cur_node.has_attributes())
+		{
+			CL_DomNode lang_attribute = cur_node.get_attributes().get_named_item("xml:lang");
+			if (!lang_attribute.is_null())
+			{
+				CL_String lang = lang_attribute.get_node_value();
+				if (CL_StringHelp::compare(search, lang, true) == 0 || CL_StringHelp::compare(search, lang.substr(0, lang.find_first_of('-')), true) == 0)
+					found = true;
+			}
+		}
+		cur_node = cur_node.get_parent_node();
+	}
+
+	return found;
 }
 
 CL_XPathObject CL_XPathEvaluator_Impl::function_number(const CL_XPathNodeSet& context, CL_XPathNodeSet::size_type context_node_index, const std::vector<CL_XPathObject> &parameters) const
 {
 	if (parameters.empty())
-		throw CL_Exception(error_message("Function number(object) expects 1 object parameter"));
+		throw CL_XPathException("Function number(object) expects 1 object parameter");
 
 	return number(parameters[0]);
 }
@@ -2171,7 +2194,7 @@ CL_XPathObject CL_XPathEvaluator_Impl::function_number(const CL_XPathNodeSet& co
 CL_XPathObject CL_XPathEvaluator_Impl::function_sum(const CL_XPathNodeSet& context, CL_XPathNodeSet::size_type context_node_index, const std::vector<CL_XPathObject> &parameters) const
 {
 	if (parameters.empty() || parameters[0].get_type() != CL_XPathObject::type_node_set)
-		throw CL_Exception(error_message("Function sum(node-set) expects a node-set parameter"));
+		throw CL_XPathException("Function sum(node-set) expects a node-set parameter");
 
 	double result = 0.0;
 	CL_XPathNodeSet nodeset = parameters[0].get_node_set();
@@ -2184,7 +2207,7 @@ CL_XPathObject CL_XPathEvaluator_Impl::function_sum(const CL_XPathNodeSet& conte
 CL_XPathObject CL_XPathEvaluator_Impl::function_floor(const CL_XPathNodeSet& context, CL_XPathNodeSet::size_type context_node_index, const std::vector<CL_XPathObject> &parameters) const
 {
 	if (parameters.empty())
-		throw CL_Exception(error_message("Function floor(number) expects a number parameter"));
+		throw CL_XPathException("Function floor(number) expects a number parameter");
 
 	return CL_XPathObject(floor(number(parameters[0]).get_number()));
 }
@@ -2192,7 +2215,7 @@ CL_XPathObject CL_XPathEvaluator_Impl::function_floor(const CL_XPathNodeSet& con
 CL_XPathObject CL_XPathEvaluator_Impl::function_ceiling(const CL_XPathNodeSet& context, CL_XPathNodeSet::size_type context_node_index, const std::vector<CL_XPathObject> &parameters) const
 {
 	if (parameters.empty())
-		throw CL_Exception("Syntax error in XPath expression. Function ceiling(number) expects a number parameter.");
+		throw CL_XPathException("Function ceiling(number) expects a number parameter.");
 
 	return CL_XPathObject(ceil(number(parameters[0]).get_number()));
 }
@@ -2200,7 +2223,7 @@ CL_XPathObject CL_XPathEvaluator_Impl::function_ceiling(const CL_XPathNodeSet& c
 CL_XPathObject CL_XPathEvaluator_Impl::function_round(const CL_XPathNodeSet& context, CL_XPathNodeSet::size_type context_node_index, const std::vector<CL_XPathObject> &parameters) const
 {
 	if (parameters.empty())
-		throw CL_Exception("Syntax error in XPath expression. Function round(number) expects a number parameter.");
+		throw CL_XPathException("Function round(number) expects a number parameter.");
 
 	return CL_XPathObject(floor(number(parameters[0]).get_number()+0.5));
 }
@@ -2604,7 +2627,12 @@ inline CL_XPathObject CL_XPathEvaluator_Impl::boolean(const CL_XPathObject &obje
 	case CL_XPathObject::type_boolean:
 		return object;
 	case CL_XPathObject::type_number:
-		return CL_XPathObject(object.get_number() != 0.0);
+		{
+			double number = object.get_number();
+			bool NaN = (std::numeric_limits<double>::has_quiet_NaN && number == std::numeric_limits<double>::quiet_NaN()) ||
+				(std::numeric_limits<double>::has_signaling_NaN && number == std::numeric_limits<double>::signaling_NaN());
+			return CL_XPathObject(!NaN && number != 0.0);
+		}
 	case CL_XPathObject::type_string:
 		return CL_XPathObject(object.get_string().length() != 0);
 	}
@@ -2619,19 +2647,23 @@ bool CL_XPathEvaluator_Impl::boolean(const CL_DomNode &node)
 
 inline CL_XPathObject CL_XPathEvaluator_Impl::number(CL_XPathObject object)
 {
+	double result = std::numeric_limits<double>::has_quiet_NaN ? std::numeric_limits<double>::quiet_NaN() : 0.0;
 	switch(object.get_type())
 	{
 	case CL_XPathObject::type_null:
-		return CL_XPathObject(0.0);
+		return CL_XPathObject(result);
+
 	case CL_XPathObject::type_boolean:
 		return CL_XPathObject(object.get_boolean() ? 1.0 : 0.0);
+
 	case CL_XPathObject::type_number:
 		return object;
+
 	case CL_XPathObject::type_node_set:
 		object = string(object);
+
 	case CL_XPathObject::type_string:
 		{
-			double result = 0;
 			try
 			{
 				result = CL_StringHelp::text_to_double(object.get_string());
@@ -2639,15 +2671,14 @@ inline CL_XPathObject CL_XPathEvaluator_Impl::number(CL_XPathObject object)
 			catch (CL_Exception&)
 			{
 			}
-			return result;
 		}
 	}
-	return CL_XPathObject(0.0);
+	return CL_XPathObject(result);
 }
 
 double CL_XPathEvaluator_Impl::number(const CL_DomNode &node)
 {
-	double result = 0.0;
+	double result = std::numeric_limits<double>::has_quiet_NaN ? std::numeric_limits<double>::quiet_NaN() : 0.0;
 	try
 	{
 		result = CL_StringHelp::text_to_double(string(node));
@@ -2662,8 +2693,6 @@ inline CL_XPathObject CL_XPathEvaluator_Impl::string(const CL_XPathObject &objec
 {
 	switch(object.get_type())
 	{
-	case CL_XPathObject::type_null:
-		return CL_XPathObject("");
 	case CL_XPathObject::type_node_set:
 		{
 			CL_String result;
@@ -2673,14 +2702,37 @@ inline CL_XPathObject CL_XPathEvaluator_Impl::string(const CL_XPathObject &objec
 
 			return CL_XPathObject(result);
 		}
+
 	case CL_XPathObject::type_boolean:
-		return object.get_boolean() ? "true" : "false";
+		return CL_XPathObject(object.get_boolean() ? "true" : "false");
+
 	case CL_XPathObject::type_number:
-		return CL_XPathObject(CL_StringHelp::double_to_text(object.get_number()));
+		{
+			CL_String value;
+			double number = object.get_number();
+
+			if (std::numeric_limits<double>::has_infinity && std::abs(object.get_number()) == std::numeric_limits<double>::infinity())
+				value = "Infinity";
+			else if (std::numeric_limits<double>::has_quiet_NaN && object.get_number() == std::numeric_limits<double>::quiet_NaN())
+				value = "NaN";
+			else if (std::numeric_limits<double>::has_signaling_NaN && object.get_number() == std::numeric_limits<double>::signaling_NaN())
+				value = "NaN";
+			else
+				value = CL_StringHelp::double_to_text(std::abs(object.get_number()));
+
+			if (number < 0.0)
+				value = "-" + value;
+
+			return CL_XPathObject(value);
+		}
+
 	case CL_XPathObject::type_string:
 		return object;
+
+	case CL_XPathObject::type_null:
+	default:
+		return CL_XPathObject("");
 	}
-	return CL_XPathObject(false);
 }
 
 CL_String CL_XPathEvaluator_Impl::string(const CL_DomNode &node)
@@ -2689,30 +2741,4 @@ CL_String CL_XPathEvaluator_Impl::string(const CL_DomNode &node)
 	if (node.is_element())
 		s = node.to_element().get_text();
 	return s;
-}
-
-CL_String CL_XPathEvaluator_Impl::error_message(const CL_StringRef &message, const CL_StringRef &expression, const CL_XPathToken &cur_token) const
-{
-	CL_String result = "Syntax error in XPath expression";
-	if (cur_token.pos != CL_String::npos)
-		result += cl_format(" at position %1.", cur_token.pos);
-	else
-		result += ".";
-
-	if (!message.empty())
-		result += " " + message + ".";
-
-	if (!expression.empty() && cur_token.pos != CL_String::npos)
-	{
-		CL_String exp = "Expression: ";
-		CL_String::size_type start_pos = exp.length();
-		exp += expression;
-
-		CL_String failure_location(start_pos + cur_token.pos, '-');
-		failure_location += "^";
-
-		result += cl_format("\n%1\n%2", exp, failure_location);
-	}
-
-	return result;
 }
