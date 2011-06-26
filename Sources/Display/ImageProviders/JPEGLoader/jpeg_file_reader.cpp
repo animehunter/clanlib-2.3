@@ -55,6 +55,65 @@ void CL_JPEGFileReader::skip_unknown()
 		throw CL_Exception("Invalid JPEG file");
 }
 
+bool CL_JPEGFileReader::try_read_app0_jfif()
+{
+	cl_uint16 size = iodevice.read_uint16();
+	if (size < 7)
+	{
+		if (!iodevice.seek(size-2, CL_IODevice::seek_cur))
+			throw CL_Exception("Invalid JPEG file");
+		return false;
+	}
+
+	char magic[5];
+	iodevice.read(magic, 5);
+	bool is_jfif = (memcmp(magic, "JFIF", 5) == 0);
+
+	if (!iodevice.seek(size-7, CL_IODevice::seek_cur))
+		throw CL_Exception("Invalid JPEG file");
+
+	return is_jfif;
+}
+
+bool CL_JPEGFileReader::try_read_app14_adobe(int &out_transform)
+{
+	/*
+		Adobe TN 5116:
+
+		Length of APP14 block   2 bytes
+		Block ID                5 bytes - ASCII "Adobe"
+		Version Number          2 bytes - currently 100
+		Flags0                  2 bytes - currently 0
+		Flags1                  2 bytes - currently 0
+		Color transform         1 byte
+	*/
+
+	out_transform = 1;
+	cl_uint16 size = iodevice.read_uint16();
+	if (size != 2 + 5 + 2 + 2 + 2 + 1)
+	{
+		if (!iodevice.seek(size-2, CL_IODevice::seek_cur))
+			throw CL_Exception("Invalid JPEG file");
+		return false;
+	}
+
+	char magic[5];
+	iodevice.read(magic, 5);
+	bool is_app14_adobe = (memcmp(magic, "Adobe", 5) == 0);
+	if (!is_app14_adobe)
+	{
+		if (!iodevice.seek(size-7, CL_IODevice::seek_cur))
+			throw CL_Exception("Invalid JPEG file");
+		return false;
+	}
+
+	iodevice.read_uint16();
+	iodevice.read_uint16();
+	iodevice.read_uint16();
+	out_transform = iodevice.read_uint8();
+	return true;
+}
+
 CL_JPEGStartOfFrame CL_JPEGFileReader::read_sof()
 {
 	CL_JPEGStartOfFrame header;

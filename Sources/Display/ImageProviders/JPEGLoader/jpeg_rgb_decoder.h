@@ -48,6 +48,7 @@ private:
 	void convert_monochrome();
 	void convert_ycrcb_sse();
 	void convert_ycrcb_float();
+	void convert_rgb();
 
 	CL_JPEGLoader *loader;
 	int mcu_x, mcu_y;

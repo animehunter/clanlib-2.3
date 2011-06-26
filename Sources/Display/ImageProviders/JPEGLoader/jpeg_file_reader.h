@@ -46,6 +46,8 @@ public:
 
 	CL_JPEGMarker read_marker();
 	void skip_unknown();
+	bool try_read_app0_jfif();
+	bool try_read_app14_adobe(int &out_transform);
 	CL_JPEGStartOfFrame read_sof();
 	CL_JPEGDefineQuantizationTable read_dqt();
 	CL_JPEGDefineHuffmanTable read_dht();

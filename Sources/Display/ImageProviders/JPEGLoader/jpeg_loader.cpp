@@ -71,7 +71,7 @@ CL_PixelBuffer CL_JPEGLoader::load(CL_IODevice iodevice)
 }
 
 CL_JPEGLoader::CL_JPEGLoader(CL_IODevice iodevice)
-: progressive(false), scan_count(0), mcu_x(0), mcu_y(0), mcu_width(0), mcu_height(0), restart_interval(0), eobrun(0)
+: progressive(false), scan_count(0), mcu_x(0), mcu_y(0), mcu_width(0), mcu_height(0), restart_interval(0), eobrun(0), is_jfif_jpeg(false), is_adobe_jpeg(false), adobe_app14_transform(1)
 {
 	CL_JPEGFileReader reader(iodevice);
 
@@ -82,7 +82,15 @@ CL_JPEGLoader::CL_JPEGLoader(CL_IODevice iodevice)
 	marker = reader.read_marker();
 	while (marker != marker_eoi)
 	{
-		if ((marker >= marker_sof0 && marker <= marker_sof3) || (marker >= marker_sof5 && marker <= marker_sof15))
+		if (marker == marker_app0)
+		{
+			process_app0(reader);
+		}
+		else if (marker == marker_app14)
+		{
+			process_app14(reader);
+		}
+		else if ((marker >= marker_sof0 && marker <= marker_sof3) || (marker >= marker_sof5 && marker <= marker_sof15))
 		{
 			process_sof(marker, reader);
 		}
@@ -124,6 +132,42 @@ CL_JPEGLoader::CL_JPEGLoader(CL_IODevice iodevice)
 
 	if (scan_count == 0 || start_of_frame.height == 0)
 		throw CL_Exception("Invalid JPEG Image");
+}
+
+void CL_JPEGLoader::process_app0(CL_JPEGFileReader &reader)
+{
+	if (reader.try_read_app0_jfif())
+		is_jfif_jpeg = true;
+}
+
+void CL_JPEGLoader::process_app14(CL_JPEGFileReader &reader)
+{
+	int transform = 0;
+	if (reader.try_read_app14_adobe(transform))
+	{
+		is_adobe_jpeg = true;
+		adobe_app14_transform = transform;
+	}
+}
+
+CL_JPEGLoader::ColorSpace CL_JPEGLoader::get_colorspace() const
+{
+	if (start_of_frame.components.size() == 1)
+		return colorspace_grayscale;
+	else if (is_jfif_jpeg)
+		return colorspace_ycrcb;
+	else if (is_adobe_jpeg && adobe_app14_transform == 1)
+		return colorspace_ycrcb;
+	else if (is_adobe_jpeg && adobe_app14_transform == 2)
+		return colorspace_ycck;
+	else if (is_adobe_jpeg && adobe_app14_transform == 0 && start_of_frame.components.size() == 3)
+		return colorspace_rgb;
+	else if (is_adobe_jpeg && adobe_app14_transform == 0 && start_of_frame.components.size() == 4)
+		return colorspace_cmyk;
+	else if (start_of_frame.components.size() == 3)
+		return colorspace_ycrcb;
+	else
+		throw CL_Exception("Unknown color space in JPEG file");
 }
 
 void CL_JPEGLoader::process_sof(CL_JPEGMarker marker, CL_JPEGFileReader &reader)

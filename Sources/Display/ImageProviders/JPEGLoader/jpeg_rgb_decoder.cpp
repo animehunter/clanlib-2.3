@@ -66,18 +66,22 @@ void CL_JPEGRGBDecoder::decode(CL_JPEGMCUDecoder *mcu_decoder)
 {
 	upsample(mcu_decoder);
 
-	if (channels.size() == 1)
+	switch (loader->get_colorspace())
 	{
+	case CL_JPEGLoader::colorspace_grayscale:
 		convert_monochrome();
-	}
-	else if (channels.size() == 3)
-	{
+		break;
+	case CL_JPEGLoader::colorspace_ycrcb:
 		convert_ycrcb_float();
 //		convert_ycrcb_sse();
-	}
-	else
-	{
-		throw CL_Exception("Unexpected amount of color components");
+		break;
+	case CL_JPEGLoader::colorspace_rgb:
+		convert_rgb();
+		break;
+	case CL_JPEGLoader::colorspace_cmyk:
+	case CL_JPEGLoader::colorspace_ycck:
+	default:
+		throw CL_Exception("Unsupported color space");
 	}
 }
 
@@ -269,6 +273,22 @@ void CL_JPEGRGBDecoder::convert_ycrcb_float()
 			G += 0.5f;
 			B += 0.5f;
 
+			pixels[x+y*width] = 0xff000000 + ((unsigned int)B) + (((unsigned int)G)<<8) + (((unsigned int)R)<<16);
+		}
+	}
+}
+
+void CL_JPEGRGBDecoder::convert_rgb()
+{
+	int height = mcu_y*8;
+	int width = mcu_x*8;
+	for (int y = 0; y < height; y++)
+	{
+		for (int x = 0; x < width; x++)
+		{
+			int R = channels[0][x+y*width];
+			int G = channels[1][x+y*width];
+			int B = channels[2][x+y*width];
 			pixels[x+y*width] = 0xff000000 + ((unsigned int)B) + (((unsigned int)G)<<8) + (((unsigned int)R)<<16);
 		}
 	}

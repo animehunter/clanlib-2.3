@@ -46,8 +46,19 @@ public:
 	static CL_PixelBuffer load(CL_IODevice iodevice);
 
 private:
+	enum ColorSpace
+	{
+		colorspace_ycrcb,
+		colorspace_rgb,
+		colorspace_ycck,
+		colorspace_cmyk,
+		colorspace_grayscale
+	};
+
 	CL_JPEGLoader(CL_IODevice iodevice);
 
+	void process_app0(CL_JPEGFileReader &reader);
+	void process_app14(CL_JPEGFileReader &reader);
 	void process_dnl(CL_JPEGFileReader &reader);
 	void process_sos(CL_JPEGFileReader &reader);
 	void process_sos_sequential(CL_JPEGStartOfScan &start_of_scan, std::vector<int> component_to_sof, CL_JPEGFileReader &reader);
@@ -57,6 +68,7 @@ private:
 	void process_sof(CL_JPEGMarker marker, CL_JPEGFileReader &reader);
 	void verify_dc_table_selector(const CL_JPEGStartOfScan &start_of_scan);
 	void verify_ac_table_selector(const CL_JPEGStartOfScan &start_of_scan);
+	ColorSpace get_colorspace() const;
 
 	CL_JPEGStartOfFrame start_of_frame;
 	CL_JPEGHuffmanTable huffman_dc_tables[4];
@@ -72,6 +84,10 @@ private:
 	int restart_interval;
 	int eobrun;
 	std::vector<short> last_dc_values;
+
+	bool is_jfif_jpeg;
+	bool is_adobe_jpeg;
+	int adobe_app14_transform;
 
 	static int zigzag_map[64];
 
