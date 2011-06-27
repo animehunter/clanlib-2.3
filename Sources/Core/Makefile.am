@@ -144,6 +144,7 @@ XML/dom_text.cpp \
 XML/xml_tokenizer.cpp \
 XML/xml_writer.cpp \
 XML/xpath_evaluator.cpp \
+XML/xpath_exception.cpp \
 XML/xpath_evaluator_impl.cpp \
 XML/xpath_object.cpp
 

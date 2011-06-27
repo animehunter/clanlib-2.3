@@ -319,6 +319,7 @@ clanCore_includes = \
 	Core/XML/xml_tokenizer.h \
 	Core/XML/xml_writer.h \
 	Core/XML/xpath_evaluator.h \
+	Core/XML/xpath_exception.h \
 	Core/XML/xpath_object.h
 
 clanDisplay_includes = \
