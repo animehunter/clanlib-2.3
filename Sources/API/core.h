@@ -68,6 +68,7 @@
 #include "Core/System/datetime.h"
 #include "Core/System/disposable_object.h"
 #include "Core/System/event.h"
+#include "Core/System/comptr.h"
 #include "Core/System/event_provider.h"
 #include "Core/System/exception.h"
 #include "Core/System/mutex.h"
