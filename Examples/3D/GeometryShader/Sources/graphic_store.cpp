@@ -31,15 +31,19 @@
 
 GraphicStore::GraphicStore(CL_GraphicContext &gc) : shader_color_geometry(gc)
 {
+	// Create a depth buffer
+	framebuffer_depth = CL_FrameBuffer(gc);
+	texture_depth = CL_Texture(gc, gc.get_size(), cl_depth_component);
+	texture_depth.set_wrap_mode(cl_wrap_clamp_to_edge, cl_wrap_clamp_to_edge, cl_wrap_clamp_to_edge);
+	framebuffer_depth.attach_depth_buffer(texture_depth);
+
+	// Load graphics
+	texture_alpha_ball = CL_Texture(gc, "Resources/alpha_ball.png");
+	texture_alpha_ball.set_wrap_mode(cl_wrap_clamp_to_edge, cl_wrap_clamp_to_edge, cl_wrap_clamp_to_edge);
+
 }
 
 GraphicStore::~GraphicStore()
 {
 }
 
-void GraphicStore::LoadImages( CL_GraphicContext &gc)
-{
-	texture_alpha_ball = CL_Texture(gc, "Resources/alpha_ball.png");
-	texture_alpha_ball.set_wrap_mode(cl_wrap_clamp_to_edge, cl_wrap_clamp_to_edge, cl_wrap_clamp_to_edge);
-
-}

@@ -36,12 +36,12 @@ public:
 	GraphicStore(CL_GraphicContext &gc);
 	~GraphicStore();
 
-	void LoadImages( CL_GraphicContext &gc);
-
 public:
 	ShaderColorGeometry shader_color_geometry;
 
 	CL_Texture texture_alpha_ball;
+	CL_Texture texture_depth;
+	CL_FrameBuffer framebuffer_depth;
 
 	CL_Mat4f camera_projection;
 	CL_Mat4f camera_modelview;

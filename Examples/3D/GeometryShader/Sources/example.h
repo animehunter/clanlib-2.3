@@ -49,6 +49,7 @@ private:
 
 private:
 	void render(CL_GraphicContext &gc);
+	void render_depth_buffer(CL_GraphicContext &gc);
 	void create_scene(CL_GraphicContext &gc);
 	void calculate_matricies(CL_GraphicContext &gc);
 	void control_camera();

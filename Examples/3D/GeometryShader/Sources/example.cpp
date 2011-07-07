@@ -41,8 +41,8 @@ int App::start(const std::vector<CL_String> &args)
 	CL_OpenGLWindowDescription desc;
 	desc.set_title("ClanLib Geometry Shader Example");
 	desc.set_size(CL_Size(900, 700), true);
-	desc.set_multisampling(4);
-	desc.set_allow_resize(true);
+	desc.set_multisampling(0);
+	desc.set_allow_resize(false);
 	desc.set_depth_size(16);
 
 	CL_DisplayWindow window(desc);
@@ -91,7 +91,9 @@ int App::start(const std::vector<CL_String> &args)
 		calculate_matricies(gc);
 
 		gc.set_polygon_rasterizer(polygon_rasterizer);
-		render(gc);
+
+		render_depth_buffer(gc);	// Render to depth buffer first, to indirectly sort the particles
+		render(gc);	// Render scene
 
 		gc.set_modelview(CL_Mat4f::identity());
 		gc.set_map_mode(cl_map_2d_upper_left);
@@ -128,6 +130,28 @@ void App::on_window_close()
 	quit = true;
 }
 
+void App::render_depth_buffer(CL_GraphicContext &gc)
+{
+	gc.set_map_mode(cl_user_projection);
+	gc.set_viewport(scene.gs->texture_depth.get_size());
+
+	gc.set_projection(scene.gs->camera_projection);
+
+	CL_BufferControl buffer_control;
+	buffer_control.set_depth_compare_function(cl_comparefunc_lequal);
+	buffer_control.enable_depth_write(true);
+	buffer_control.enable_depth_test(true);
+	buffer_control.enable_stencil_test(false);
+	buffer_control.enable_color_write(false);
+	gc.set_buffer_control(buffer_control);
+
+	gc.clear_depth(1.0f);
+
+	CL_Mat4f modelview_matrix = scene.gs->camera_modelview;
+	scene.Draw(modelview_matrix, gc);
+	gc.reset_program_object();
+}
+
 void App::render(CL_GraphicContext &gc)
 {
 	gc.set_map_mode(cl_user_projection);
@@ -144,8 +168,8 @@ void App::render(CL_GraphicContext &gc)
 	buffer_control.enable_color_write(true);
 	gc.set_buffer_control(buffer_control);
 
+	//gc.clear_depth(1.0f);
 	gc.clear(CL_Colorf(0.0f, 0.0f, 0.0f, 1.0f));
-	gc.clear_depth(1.0f);
 
 	CL_Mat4f modelview_matrix = scene.gs->camera_modelview;
 	scene.Draw(modelview_matrix, gc);
@@ -164,9 +188,6 @@ void App::create_scene(CL_GraphicContext &gc)
 	object_particles->rotation_x = CL_Angle(0.0f, cl_degrees);
 	object_particles->rotation_z = CL_Angle(0.0f, cl_degrees);
 	object_particles->scale = CL_Vec3f(1.0f, 1.0f, 1.0f);
-
-	scene.gs->LoadImages(gc);
-
 }
 
 void App::calculate_matricies(CL_GraphicContext &gc)

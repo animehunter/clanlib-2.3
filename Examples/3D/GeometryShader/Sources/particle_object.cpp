@@ -40,15 +40,15 @@ ParticleObject::ParticleObject(CL_GraphicContext &gc, Scene &scene_owner, SceneO
 	object_positions.resize(num_points);
 	object_colours.resize(num_points);
 
-	const float scale_x = 0.1f;
-	const float scale_y = 0.1f;
-	const float scale_z = 0.1f;
+	const float scale_x = 0.0015f;
+	const float scale_y = 0.0015f;
+	const float scale_z = 0.0015f;
 	for (int cnt=0; cnt < num_points; cnt++)
 	{
 		object_positions[cnt] = CL_Vec3f(
-			((rand() & 0x1FF) - 0xFF) * scale_x,
-			((rand() & 0x1FF) - 0xFF) * scale_y,
-			((rand() & 0x1FF) - 0xFF) * scale_z );
+			((rand() & 0xFFFF) - (0xFFFF/4.0)) * scale_x,
+			((rand() & 0xFFFF) - (0xFFFF/4.0)) * scale_y,
+			((rand() & 0xFFFF) - (0xFFFF/4.0)) * scale_z );
 
 		object_colours[cnt] = CL_Vec4f(
 			(rand() & 0xFF) / 256.0f,
