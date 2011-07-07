@@ -197,6 +197,7 @@
 #include "Core/Math/line.h"
 #include "Core/Math/line_ray.h"
 #include "Core/Math/line_segment.h"
+#include "Core/Math/hash_functions.h"
 #include "Core/core_iostream.h"
 
 #ifdef __cplusplus_cli
