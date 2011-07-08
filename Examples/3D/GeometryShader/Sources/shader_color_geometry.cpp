@@ -32,7 +32,7 @@
 
 char ShaderColorGeometry::vertex[] =
 	"\n"
-	"#version 120\n"
+	"#version 130\n"
 	"\n"
 	"attribute vec3 InPosition;\n"
 	"attribute vec4 InColor;\n"
@@ -48,7 +48,7 @@ char ShaderColorGeometry::vertex[] =
 
 char ShaderColorGeometry::geometry[] =
 	"\n"
-	"#version 120\n"
+	"#version 130\n"
 	"#extension GL_ARB_geometry_shader4 : enable\n"
 	"\n"
 	"uniform mat4 cl_ModelViewMatrix;"
@@ -87,7 +87,7 @@ char ShaderColorGeometry::geometry[] =
 
 char ShaderColorGeometry::fragment[] =
 	"\n"
-	"#version 120\n"
+	"#version 130\n"
 	"\n"
 	"varying vec2 TexCoord0;\n"
 	"uniform sampler2D Texture0;\n"
