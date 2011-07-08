@@ -50,11 +50,11 @@ ParticleObject::ParticleObject(CL_GraphicContext &gc, Scene &scene_owner, SceneO
 			((rand() & 0xFFFFF) - (0xFFFFF/128.0f)) * scale_y,
 			((rand() & 0xFFFFF) - (0xFFFFF/128.0f)) * scale_z );
 
+		CL_Vec3f pos = object_positions[cnt];
+		pos = pos * pos;
+		pos.normalize();
 		object_colours[cnt] = CL_Vec4f(
-			(rand() & 0xFF) / 256.0f,
-			(rand() & 0xFF) / 256.0f,
-			(rand() & 0xFF) / 256.0f,
-			1.0f);
+			pos.x, pos.y, pos.z, 1.0f);
 	}
 
 	object_positions_vbo = CL_VertexArrayBuffer(gc, &object_positions[0], sizeof(CL_Vec3f) * object_positions.size());

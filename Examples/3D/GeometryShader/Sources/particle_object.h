@@ -44,7 +44,7 @@ private:
 	void Draw(CL_GraphicContext &gc, GraphicStore *gs, const CL_Mat4f &modelview_matrix);
 
 public:
-	static const int num_points = 80000;
+	static const int num_points = 40000;
 
 private:
 

@@ -54,7 +54,7 @@ char ShaderColorGeometry::geometry[] =
 	"uniform mat4 cl_ModelViewMatrix;"
 	"uniform mat4 cl_ModelViewProjectionMatrix;"
 	"varying out vec2 TexCoord0;\n"
-	"in vec4 PointColor[3];\n"
+	"in vec4 PointColor[1];\n"
 	"out vec4 TextureColor;\n"
 	"\n"
 	"void main()\n"
@@ -62,7 +62,7 @@ char ShaderColorGeometry::geometry[] =
    	"	int i;\n"
   	"	vec4 vertex = cl_ModelViewProjectionMatrix * gl_PositionIn[0];\n"
 	"	vec4 scale = cl_ModelViewProjectionMatrix * vec4(1.0, 0.0, 0.0, 0.0);\n"
-	"	float size = 2.0 * length(scale.xyz);"
+	"	float size = 1.5 * length(scale.xyz);"
 	"	const float texture_scale = 1.5;"
 	"	TexCoord0 = vec2(-0.5, texture_scale);"
 
@@ -71,12 +71,12 @@ char ShaderColorGeometry::geometry[] =
 	"	EmitVertex();\n"
 
 	"	TexCoord0 = vec2(texture_scale+ 0.5, texture_scale);"
-	"	TextureColor = PointColor[1];"
+	"	TextureColor = PointColor[0];"
 	"	gl_Position = vertex + vec4(-size, size, 0.0, 0.0);\n"
 	"	EmitVertex();\n"
 
 	"	TexCoord0 = vec2(0.5, -0.5);"
-	"	TextureColor = PointColor[2];"
+	"	TextureColor = PointColor[0];"
 	"	gl_Position = vertex + vec4(0.0, -size, 0.0, 0.0);\n"
 	"	EmitVertex();\n"
 
