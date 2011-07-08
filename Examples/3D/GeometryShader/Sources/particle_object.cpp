@@ -46,9 +46,9 @@ ParticleObject::ParticleObject(CL_GraphicContext &gc, Scene &scene_owner, SceneO
 	for (int cnt=0; cnt < num_points; cnt++)
 	{
 		object_positions[cnt] = CL_Vec3f(
-			((rand() & 0xFFFF) - (0xFFFF/4.0)) * scale_x,
-			((rand() & 0xFFFF) - (0xFFFF/4.0)) * scale_y,
-			((rand() & 0xFFFF) - (0xFFFF/4.0)) * scale_z );
+			((rand() & 0xFFFFF) - (0xFFFFF/128.0f)) * scale_x,
+			((rand() & 0xFFFFF) - (0xFFFFF/128.0f)) * scale_y,
+			((rand() & 0xFFFFF) - (0xFFFFF/128.0f)) * scale_z );
 
 		object_colours[cnt] = CL_Vec4f(
 			(rand() & 0xFF) / 256.0f,

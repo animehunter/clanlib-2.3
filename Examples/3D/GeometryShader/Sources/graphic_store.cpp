@@ -38,7 +38,8 @@ GraphicStore::GraphicStore(CL_GraphicContext &gc) : shader_color_geometry(gc)
 	framebuffer_depth.attach_depth_buffer(texture_depth);
 
 	// Load graphics
-	texture_alpha_ball = CL_Texture(gc, "Resources/alpha_ball.png");
+	texture_alpha_ball = CL_Texture(gc, "Resources/alpha_ball2.png");
+	//texture_alpha_ball = CL_Texture(gc, "Resources/alpha_ball.png");
 	texture_alpha_ball.set_wrap_mode(cl_wrap_clamp_to_edge, cl_wrap_clamp_to_edge, cl_wrap_clamp_to_edge);
 
 }

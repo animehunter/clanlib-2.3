@@ -92,7 +92,9 @@ int App::start(const std::vector<CL_String> &args)
 
 		gc.set_polygon_rasterizer(polygon_rasterizer);
 
-		render_depth_buffer(gc);	// Render to depth buffer first, to indirectly sort the particles
+		gc.clear_depth(1.0f);
+		// ** If enabling below, change the graphic from alpha_ball2.png to alpha_ball.png in graphic_store.cpp
+		//render_depth_buffer(gc);	// Render to depth buffer first, to fake sorting the particles
 		render(gc);	// Render scene
 
 		gc.set_modelview(CL_Mat4f::identity());
@@ -145,8 +147,6 @@ void App::render_depth_buffer(CL_GraphicContext &gc)
 	buffer_control.enable_color_write(false);
 	gc.set_buffer_control(buffer_control);
 
-	gc.clear_depth(1.0f);
-
 	CL_Mat4f modelview_matrix = scene.gs->camera_modelview;
 	scene.Draw(modelview_matrix, gc);
 	gc.reset_program_object();
@@ -168,7 +168,6 @@ void App::render(CL_GraphicContext &gc)
 	buffer_control.enable_color_write(true);
 	gc.set_buffer_control(buffer_control);
 
-	//gc.clear_depth(1.0f);
 	gc.clear(CL_Colorf(0.0f, 0.0f, 0.0f, 1.0f));
 
 	CL_Mat4f modelview_matrix = scene.gs->camera_modelview;
@@ -183,7 +182,7 @@ void App::create_scene(CL_GraphicContext &gc)
 	camera->rotation_y = CL_Angle(0.0f, cl_degrees);
 
 	object_particles = new ParticleObject(gc, scene, scene.base);
-	object_particles->position = CL_Vec3f(-110.0f, 64.0f, -5.0f);
+	object_particles->position = CL_Vec3f(-110.0f, 54.0f, -5.0f);
 	object_particles->rotation_y = CL_Angle(0.0f, cl_degrees);
 	object_particles->rotation_x = CL_Angle(0.0f, cl_degrees);
 	object_particles->rotation_z = CL_Angle(0.0f, cl_degrees);
