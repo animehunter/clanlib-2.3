@@ -225,7 +225,6 @@ clanCore_includes = \
 	Core/Resources/resource_data_session.h \
 	Core/Resources/resource.h \
 	Core/Resources/resource_manager.h \
-	Core/System/autoptr.h \
 	Core/System/databuffer.h \
 	Core/System/block_allocator.h \
 	Core/System/command_line.h \
@@ -243,6 +242,7 @@ clanCore_includes = \
 	Core/System/thread.h \
 	Core/System/keep_alive.h \
 	Core/System/thread_local_storage.h \
+	Core/System/uniqueptr.h \
 	Core/System/weakptr.h \
 	Core/System/console_window.h \
 	Core/System/registry_key.h \

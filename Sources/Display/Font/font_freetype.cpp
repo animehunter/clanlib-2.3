@@ -79,6 +79,11 @@ CL_Font_Freetype::CL_Font_Freetype(const CL_FontDescription &desc, const CL_Virt
 	get_provider()->load_font(desc, directory);
 }
 
+CL_Font_Freetype::CL_Font_Freetype(const CL_StringRef &resource_id, CL_ResourceManager *resources) : CL_Font(new CL_FontProvider_Freetype())
+{
+	get_provider()->load_font(resource_id, resources);
+}
+
 CL_Font_Freetype::~CL_Font_Freetype()
 {
 }

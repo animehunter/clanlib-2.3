@@ -51,6 +51,7 @@
 
 #ifdef WIN32
 #include <windows.h>  // this is a temporary workaround. Fix mutex and others :)
+#include "Core/System/comptr.h"
 #endif
 
 #include "Core/Text/string_types.h"
@@ -68,7 +69,6 @@
 #include "Core/System/datetime.h"
 #include "Core/System/disposable_object.h"
 #include "Core/System/event.h"
-#include "Core/System/comptr.h"
 #include "Core/System/event_provider.h"
 #include "Core/System/exception.h"
 #include "Core/System/mutex.h"
@@ -77,6 +77,7 @@
 #include "Core/System/setup_core.h"
 #include "Core/System/thread.h"
 #include "Core/System/thread_local_storage.h"
+#include "Core/System/uniqueptr.h"
 #include "Core/System/weakptr.h"
 #include "Core/System/sharedptr.h"
 #include "Core/System/system.h"

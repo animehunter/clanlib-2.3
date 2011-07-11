@@ -34,9 +34,6 @@
 #include "../api_display.h"
 #include "font.h"
 
-#include "../2D/subtexture.h"
-#include "../Render/texture.h"
-
 class CL_FontProvider_Freetype;
 class CL_TextureGroup;
 
@@ -87,6 +84,12 @@ public:
 	/// \param desc = Font Description
 	/// \param directory = Virtual Directory
 	CL_Font_Freetype(const CL_FontDescription &desc, const CL_VirtualDirectory &directory);
+
+	/// \brief Constructs a Font Freetype
+	///
+	/// \param resource_id = String Ref
+	/// \param resources = Resource Manager
+	CL_Font_Freetype(const CL_StringRef &resource_id, CL_ResourceManager *resources);
 
 	~CL_Font_Freetype();
 

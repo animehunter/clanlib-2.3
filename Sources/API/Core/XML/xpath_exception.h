@@ -39,7 +39,7 @@ public:
 	CL_XPathException(const CL_String &message) : CL_Exception(message) {};
 	CL_XPathException(const CL_String &message, const CL_StringRef &expression);
 	CL_XPathException(const CL_String &message, const CL_StringRef &expression, const CL_XPathToken &cur_token);
-	virtual ~CL_XPathException() {};
+	~CL_XPathException() throw() {}
 
 	CL_String get_message() const;
 

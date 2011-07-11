@@ -48,13 +48,11 @@ public:
 
 	~CL_Thread_Unix();
 
-
 /// \}
 /// \name Attributes
 /// \{
 
 public:
-
 
 /// \}
 /// \name Operations
@@ -65,6 +63,7 @@ public:
 
 	void join();
 
+	void kill();
 
 /// \}
 /// \name Implementation
@@ -78,5 +77,4 @@ private:
 	bool handle_valid;
 /// \}
 };
-
 

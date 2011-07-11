@@ -39,13 +39,11 @@ class CL_Thread_Impl
 public:
 	virtual ~CL_Thread_Impl() { return; }
 
-
 /// \}
 /// \name Attributes
 /// \{
 
 public:
-
 
 /// \}
 /// \name Operations
@@ -56,6 +54,7 @@ public:
 
 	virtual void join() = 0;
 
+	virtual void kill() = 0;
 
 /// \}
 /// \name Implementation
@@ -64,5 +63,3 @@ public:
 private:
 /// \}
 };
-
-

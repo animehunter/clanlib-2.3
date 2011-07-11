@@ -29,7 +29,6 @@
 /// \addtogroup clanCore_System clanCore System
 /// \{
 
-
 #pragma once
 
 
@@ -54,13 +53,11 @@ public:
 
 	~CL_Thread();
 
-
 /// \}
 /// \name Attributes
 /// \{
 
 public:
-
 
 /// \}
 /// \name Operations
@@ -163,10 +160,17 @@ public:
 	/// \brief Blocks until thread has completed its execution.
 	void join();
 
+	/// \brief Terminates the thread.
+	///
+	/// Warning: This is a dangerous function that should only be used in the most extreme cases.
+	/// If the target thread owns a critical section, the critical section will not be released.
+	/// If the target thread is allocating memory from the heap, the heap lock will not be released.
+	/// Windows XP/2000:  The target thread's initial stack is not freed, causing a resource leak.
+	void kill();
+
 	/// \brief Sets the name (displayed in debuggers) of the calling thread.
 	/** <p>Currently this only works with the Visual Studio compiler and debugger.</p>*/
 	static void set_thread_name(const char *name);
-
 
 /// \}
 /// \name Implementation
@@ -176,6 +180,5 @@ private:
 	CL_SharedPtr<CL_Thread_Impl> impl;
 /// \}
 };
-
 
 /// \}

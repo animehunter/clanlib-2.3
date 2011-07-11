@@ -36,6 +36,7 @@
 #include "API/Core/XML/xpath_exception.h"
 #include "API/Core/Text/string_help.h"
 #include "API/Core/Text/string_format.h"
+#include "API/Core/Math/cl_math.h"
 #include "xpath_evaluator_impl.h"
 #include "xpath_token.h"
 #include "xpath_location_step.h"
@@ -2056,10 +2057,10 @@ CL_XPathObject CL_XPathEvaluator_Impl::function_substring(const CL_XPathNodeSet&
 		throw CL_XPathException("Function substring(string, number, number?) expects 2 or 3 parameters");
 
 	CL_String str = string(parameters[0]).get_string();
-	CL_String::size_type pos = max(0, static_cast<CL_String::size_type>(number(parameters[1]).get_number()+0.5)-1);
+	CL_String::size_type pos = cl_max(0, static_cast<CL_String::size_type>(number(parameters[1]).get_number()+0.5)-1);
 	CL_String::size_type num = CL_String::npos;
 	if (parameters.size() == 3)
-		num = max(0, static_cast<CL_String::size_type>(number(parameters[2]).get_number() + 0.5));
+		num = cl_max(0, static_cast<CL_String::size_type>(number(parameters[2]).get_number() + 0.5));
 
 	return CL_XPathObject(str.substr(pos, num));
 }
