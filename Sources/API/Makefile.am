@@ -368,6 +368,7 @@ clanDisplay_includes = \
 	Display/Image/texture_format.h \
 	Display/Image/pixel_buffer.h \
 	Display/Image/pixel_buffer_help.h \
+	Display/Image/perlin_noise.h \
 	Display/Font/font_system.h \
 	Display/Font/font_sprite.h \
 	Display/Font/font_freetype.h \
