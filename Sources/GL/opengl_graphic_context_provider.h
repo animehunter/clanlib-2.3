@@ -192,5 +192,6 @@ private:
 	bool normal_matrix_valid;	// Calculated by set_current_program_object_matricies()
 	CL_Mat3f normal_matrix;
 
+	bool use_glsl_1_5;	// Available with OpenGL 3.2 and above
 /// \}
 };

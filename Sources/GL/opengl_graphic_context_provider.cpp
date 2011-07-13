@@ -66,18 +66,20 @@
 #include "GLX/opengl_window_provider_glx.h"
 #endif
 
-#if defined(__APPLE__)
-const CL_String::char_type *cl_glsl_vertex_color_only = 
+const CL_String::char_type *cl_glsl15_vertex_color_only = 
+	"#version 150\n"
 	"attribute vec4 Position, Color0; "
 	"uniform mat4 cl_ModelViewProjectionMatrix;"
 	"varying vec4 Color; "
 	"void main(void) { gl_Position = cl_ModelViewProjectionMatrix*Position; Color = Color0; }";
 
-const CL_String::char_type *cl_glsl_fragment_color_only =
+const CL_String::char_type *cl_glsl15_fragment_color_only =
+	"#version 150\n"
 	"varying highp vec4 Color; "
 	"void main(void) { gl_FragColor = Color; }";
 
-const CL_String::char_type *cl_glsl_vertex_single_texture =
+const CL_String::char_type *cl_glsl15_vertex_single_texture =
+	"#version 150\n"
 	"attribute vec4 Position, Color0; "
 	"attribute vec2 TexCoord0; "
 	"uniform mat4 cl_ModelViewProjectionMatrix;"
@@ -85,13 +87,15 @@ const CL_String::char_type *cl_glsl_vertex_single_texture =
 	"varying vec2 TexCoord; "
 	"void main(void) { gl_Position = cl_ModelViewProjectionMatrix*Position; Color = Color0; TexCoord = TexCoord0; }";
 
-const CL_String::char_type *cl_glsl_fragment_single_texture =
+const CL_String::char_type *cl_glsl15_fragment_single_texture =
+	"#version 150\n"
 	"uniform sampler2D Texture0; "
 	"varying highp vec4 Color; "
 	"varying highp vec2 TexCoord; "
 	"void main(void) { gl_FragColor = Color*texture2D(Texture0, TexCoord); }";
 
-const CL_String::char_type *cl_glsl_vertex_sprite =
+const CL_String::char_type *cl_glsl15_vertex_sprite =
+	"#version 150\n"
 	"attribute vec4 Position, Color0; "
 	"attribute vec2 TexCoord0; "
 	"attribute float TexIndex0; "
@@ -101,7 +105,8 @@ const CL_String::char_type *cl_glsl_vertex_sprite =
 	"varying float TexIndex; "
 	"void main(void) { gl_Position = cl_ModelViewProjectionMatrix*Position; Color = Color0; TexCoord = TexCoord0; TexIndex = TexIndex0; }";
 
-const CL_String::char_type *cl_glsl_fragment_sprite =
+const CL_String::char_type *cl_glsl15_fragment_sprite =
+	"#version 150\n"
 	"uniform sampler2D Texture0; "
 	"uniform sampler2D Texture1; "
 	"uniform sampler2D Texture2; "
@@ -111,7 +116,7 @@ const CL_String::char_type *cl_glsl_fragment_sprite =
 	"varying highp float TexIndex; "
 	"highp vec4 sampleTexture(int index, highp vec2 pos) { if (index == 0) return texture2D(Texture0, TexCoord); else if (index == 1) return texture2D(Texture1, TexCoord); else if (index == 2) return texture2D(Texture2, TexCoord); else if (index == 3) return texture2D(Texture3, TexCoord); else return vec4(1.0,1.0,1.0,1.0); }"
 	"void main(void) { gl_FragColor = Color*sampleTexture(int(TexIndex), TexCoord); } ";
-#else
+
 const CL_String::char_type *cl_glsl_vertex_color_only = 
 	"attribute vec4 Position, Color0; "
 	"uniform mat4 cl_ModelViewProjectionMatrix;"
@@ -156,7 +161,7 @@ const CL_String::char_type *cl_glsl_fragment_sprite =
 	"varying float TexIndex; "
 	"vec4 sampleTexture(int index, vec2 pos) { if (index == 0) return texture2D(Texture0, TexCoord); else if (index == 1) return texture2D(Texture1, TexCoord); else if (index == 2) return texture2D(Texture2, TexCoord); else if (index == 3) return texture2D(Texture3, TexCoord); else return vec4(1.0,1.0,1.0,1.0); }"
 	"void main(void) { gl_FragColor = Color*sampleTexture(int(TexIndex), TexCoord); } ";
-#endif
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CL_OpenGLGraphicContextProvider Construction:
@@ -168,27 +173,41 @@ CL_OpenGLGraphicContextProvider::CL_OpenGLGraphicContextProvider(const CL_Render
 {
 	check_opengl_version();
 
-	CL_ShaderObject vertex_color_only_shader(this, cl_shadertype_vertex, cl_glsl_vertex_color_only);
+	use_glsl_1_5 = false;
+	int version_major = 0;
+	int version_minor = 0;
+	int version_release = 0;
+	get_opengl_shading_language_version(version_major, version_minor, version_release);
+	if (version_major >= 1)
+	{
+		if (version_minor >= 5)
+			use_glsl_1_5 = true;
+	}
+#if defined(__APPLE__)
+	// Force glsl 1_5 for apple
+	use_glsl_1_5 = true;
+#endif
+	CL_ShaderObject vertex_color_only_shader(this, cl_shadertype_vertex, use_glsl_1_5 ? cl_glsl15_vertex_color_only : cl_glsl_vertex_color_only);
 	if(!vertex_color_only_shader.compile())
 		throw CL_Exception("Unable to compile the standard shader program: 'vertex color only' Error:" + vertex_color_only_shader.get_info_log());
 
-	CL_ShaderObject fragment_color_only_shader(this, cl_shadertype_fragment, cl_glsl_fragment_color_only);
+	CL_ShaderObject fragment_color_only_shader(this, cl_shadertype_fragment, use_glsl_1_5 ? cl_glsl15_fragment_color_only : cl_glsl_fragment_color_only);
 	if(!fragment_color_only_shader.compile())
 		throw CL_Exception("Unable to compile the standard shader program: 'fragment color only' Error:" + fragment_color_only_shader.get_info_log());
 
-	CL_ShaderObject vertex_single_texture_shader(this, cl_shadertype_vertex, cl_glsl_vertex_single_texture);
+	CL_ShaderObject vertex_single_texture_shader(this, cl_shadertype_vertex, use_glsl_1_5 ? cl_glsl15_vertex_single_texture : cl_glsl_vertex_single_texture);
 	if(!vertex_single_texture_shader.compile())
 		throw CL_Exception("Unable to compile the standard shader program: 'vertex single texture' Error:" + vertex_single_texture_shader.get_info_log());
 
-	CL_ShaderObject fragment_single_texture_shader(this, cl_shadertype_fragment, cl_glsl_fragment_single_texture);
+	CL_ShaderObject fragment_single_texture_shader(this, cl_shadertype_fragment, use_glsl_1_5 ? cl_glsl15_fragment_single_texture : cl_glsl_fragment_single_texture);
 	if(!fragment_single_texture_shader.compile())
 		throw CL_Exception("Unable to compile the standard shader program: 'fragment single texture' Error:" + fragment_single_texture_shader.get_info_log());
 
-	CL_ShaderObject vertex_sprite_shader(this, cl_shadertype_vertex, cl_glsl_vertex_sprite);
+	CL_ShaderObject vertex_sprite_shader(this, cl_shadertype_vertex, use_glsl_1_5 ? cl_glsl15_vertex_sprite : cl_glsl_vertex_sprite);
 	if(!vertex_sprite_shader.compile())
 		throw CL_Exception("Unable to compile the standard shader program: 'vertex sprite' Error:" + vertex_sprite_shader.get_info_log());
 
-	CL_ShaderObject fragment_sprite_shader(this, cl_shadertype_fragment, cl_glsl_fragment_sprite);
+	CL_ShaderObject fragment_sprite_shader(this, cl_shadertype_fragment, use_glsl_1_5 ? cl_glsl15_fragment_sprite : cl_glsl_fragment_sprite);
 	if(!fragment_sprite_shader.compile())
 		throw CL_Exception("Unable to compile the standard shader program: 'fragment sprite' Error:" + fragment_sprite_shader.get_info_log());
 
