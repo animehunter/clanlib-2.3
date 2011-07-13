@@ -538,7 +538,7 @@ static int cl_ctxErrorHandler( Display *dpy, XErrorEvent *ev )
     return 0;
 }
 
-GLXContext CL_OpenGLWindowProvider_GLX::create_context(CL_OpenGLWindowDescription &gl_desc)
+GLXContext CL_OpenGLWindowProvider_GLX::create_context(const CL_OpenGLWindowDescription &gl_desc)
 {
 	GLXContext shared_context = NULL;
 
@@ -569,7 +569,7 @@ GLXContext CL_OpenGLWindowProvider_GLX::create_context(CL_OpenGLWindowDescriptio
 	return context;
 }
 
-GLXContext CL_OpenGLWindowProvider_GLX::create_context_glx_1_3(CL_OpenGLWindowDescription &gl_desc, GLXContext shared_context)
+GLXContext CL_OpenGLWindowProvider_GLX::create_context_glx_1_3(const CL_OpenGLWindowDescription &gl_desc, GLXContext shared_context)
 {
 	GLXContext context;
 
@@ -695,7 +695,7 @@ GLXContext CL_OpenGLWindowProvider_GLX::create_context_glx_1_3(CL_OpenGLWindowDe
 	return context;
 }
 
-GLXContext CL_OpenGLWindowProvider_GLX::create_context_glx_1_2(CL_OpenGLWindowDescription &gl_desc, GLXContext shared_context)
+GLXContext CL_OpenGLWindowProvider_GLX::create_context_glx_1_2(const CL_OpenGLWindowDescription &gl_desc, GLXContext shared_context)
 {
 	if (gl_desc.get_allow_lower_versions() == false)
 		throw CL_Exception("GLX 1.2 does not support opengl version selection.");
