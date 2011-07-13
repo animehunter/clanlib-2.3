@@ -48,8 +48,9 @@ char ShaderColorGeometry::vertex[] =
 
 char ShaderColorGeometry::geometry[] =
 	"\n"
-	"#version 130\n"
-	"#extension GL_ARB_geometry_shader4 : enable\n"
+	"#version 150\n"
+	"layout(points) in;\n"
+	"layout(triangle_strip, max_vertices=3) out;\n"
 	"\n"
 	"uniform mat4 cl_ModelViewMatrix;"
 	"uniform mat4 cl_ModelViewProjectionMatrix;"
@@ -132,10 +133,6 @@ ShaderColorGeometry::ShaderColorGeometry(CL_GraphicContext &gc)
 	program_object.attach(fragment_shader);
 	program_object.bind_attribute_location(0, "InPosition");
 	program_object.bind_attribute_location(1, "InColor");
-
-	clProgramParameteri(program_object.get_handle(),CL_GEOMETRY_VERTICES_OUT_ARB,3);
-	clProgramParameteri(program_object.get_handle(),CL_GEOMETRY_INPUT_TYPE_ARB,CL_POINTS);
-	clProgramParameteri(program_object.get_handle(),CL_GEOMETRY_OUTPUT_TYPE_ARB,CL_TRIANGLES);
 
 	if (!program_object.link())
 	{
