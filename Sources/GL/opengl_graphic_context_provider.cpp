@@ -76,7 +76,8 @@ const CL_String::char_type *cl_glsl15_vertex_color_only =
 const CL_String::char_type *cl_glsl15_fragment_color_only =
 	"#version 150\n"
 	"varying highp vec4 Color; "
-	"void main(void) { gl_FragColor = Color; }";
+	"out vec4 cl_FragColor;"
+	"void main(void) { cl_FragColor = Color; }";
 
 const CL_String::char_type *cl_glsl15_vertex_single_texture =
 	"#version 150\n"
@@ -92,7 +93,8 @@ const CL_String::char_type *cl_glsl15_fragment_single_texture =
 	"uniform sampler2D Texture0; "
 	"varying highp vec4 Color; "
 	"varying highp vec2 TexCoord; "
-	"void main(void) { gl_FragColor = Color*texture2D(Texture0, TexCoord); }";
+	"out vec4 cl_FragColor;"
+	"void main(void) { cl_FragColor = Color*texture2D(Texture0, TexCoord); }";
 
 const CL_String::char_type *cl_glsl15_vertex_sprite =
 	"#version 150\n"
@@ -114,8 +116,9 @@ const CL_String::char_type *cl_glsl15_fragment_sprite =
 	"varying highp vec4 Color; "
 	"varying highp vec2 TexCoord; "
 	"varying highp float TexIndex; "
+	"out vec4 cl_FragColor;"
 	"highp vec4 sampleTexture(int index, highp vec2 pos) { if (index == 0) return texture2D(Texture0, TexCoord); else if (index == 1) return texture2D(Texture1, TexCoord); else if (index == 2) return texture2D(Texture2, TexCoord); else if (index == 3) return texture2D(Texture3, TexCoord); else return vec4(1.0,1.0,1.0,1.0); }"
-	"void main(void) { gl_FragColor = Color*sampleTexture(int(TexIndex), TexCoord); } ";
+	"void main(void) { cl_FragColor = Color*sampleTexture(int(TexIndex), TexCoord); } ";
 
 const CL_String::char_type *cl_glsl_vertex_color_only = 
 	"attribute vec4 Position, Color0; "
@@ -216,6 +219,9 @@ CL_OpenGLGraphicContextProvider::CL_OpenGLGraphicContextProvider(const CL_Render
 	color_only_program.attach(fragment_color_only_shader);
 	color_only_program.bind_attribute_location(0, "Position");
 	color_only_program.bind_attribute_location(1, "Color0");
+	if (use_glsl_1_5)
+		color_only_program.bind_frag_data_location(0, "cl_FragColor");
+
 	if (!color_only_program.link())
 		throw CL_Exception("Unable to link the standard shader program: 'color only' Error:" + color_only_program.get_info_log());
 
@@ -225,6 +231,8 @@ CL_OpenGLGraphicContextProvider::CL_OpenGLGraphicContextProvider(const CL_Render
 	single_texture_program.bind_attribute_location(0, "Position");
 	single_texture_program.bind_attribute_location(1, "Color0");
 	single_texture_program.bind_attribute_location(2, "TexCoord0");
+	if (use_glsl_1_5)
+		single_texture_program.bind_frag_data_location(0, "cl_FragColor");
 	if (!single_texture_program.link())
 		throw CL_Exception("Unable to link the standard shader program: 'single texture' Error:" + single_texture_program.get_info_log());
 	single_texture_program.set_uniform1i("Texture0", 0);
@@ -236,6 +244,8 @@ CL_OpenGLGraphicContextProvider::CL_OpenGLGraphicContextProvider(const CL_Render
 	sprite_program.bind_attribute_location(1, "Color0");
 	sprite_program.bind_attribute_location(2, "TexCoord0");
 	sprite_program.bind_attribute_location(3, "TexIndex0");
+	if (use_glsl_1_5)
+		sprite_program.bind_frag_data_location(0, "cl_FragColor");
 	if (!sprite_program.link())
 		throw CL_Exception("Unable to link the standard shader program: 'sprite' Error:" + sprite_program.get_info_log());
 
