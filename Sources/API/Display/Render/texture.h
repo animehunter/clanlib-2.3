@@ -386,9 +386,6 @@ public:
 	/// \brief Set the magnification filter.
 	void set_mag_filter(CL_TextureFilter filter);
 
-	/// \brief Set the maximum degree of anisotropy.
-	void set_max_anisotropy(float max_anisotropy);
-
 	/// \brief Sets the texture compare mode and compare function texture parameters.
 	void set_texture_compare(CL_TextureCompareMode mode, CL_CompareFunction func);
 

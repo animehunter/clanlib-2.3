@@ -71,7 +71,6 @@ public:
 	typedef void (CL_GLFUNC *ptr_glClearColor)(CLclampf red, CLclampf green, CLclampf blue, CLclampf alpha);
 	typedef void (CL_GLFUNC *ptr_glClearStencil)(CLint s);
 	typedef void (CL_GLFUNC *ptr_glClearDepth)(CLclampd depth);
-	typedef void (CL_GLFUNC *ptr_glClearDepthf)(CLclampf depth); // OpenGL ES
 	typedef void (CL_GLFUNC *ptr_glStencilMask)(CLuint mask);
 	typedef void (CL_GLFUNC *ptr_glColorMask)(CLboolean red, CLboolean green, CLboolean blue, CLboolean alpha);
 	typedef void (CL_GLFUNC *ptr_glDepthMask)(CLboolean flag);
@@ -132,7 +131,7 @@ public:
 	typedef void (CL_GLFUNC *ptr_glCompressedTexSubImage1D)(CLenum target, CLint level, CLint xoffset, CLsizei width, CLenum format, CLsizei imageSize, const CLvoid *data);
 	typedef void (CL_GLFUNC *ptr_glGetCompressedTexImage)(CLenum target, CLint level, CLvoid *img);
 	typedef void (CL_GLFUNC *ptr_glBlendFuncSeparate)(CLenum sfactorRGB, CLenum dfactorRGB, CLenum sfactorAlpha, CLenum dfactorAlpha);
-	typedef void (CL_GLFUNC *ptr_glMultiDrawArrays)(CLenum mode, CLint *first, CLsizei *count, CLsizei primcount);
+	typedef void (CL_GLFUNC *ptr_glMultiDrawArrays)(CLenum mode, const CLint *first, const CLsizei *count, CLsizei primcount);
 	typedef void (CL_GLFUNC *ptr_glMultiDrawElements)(CLenum mode, const CLsizei *count, CLenum type, const CLvoid* *indices, CLsizei primcount);
 	typedef void (CL_GLFUNC *ptr_glPointParameterf)(CLenum pname, CLfloat param);
 	typedef void (CL_GLFUNC *ptr_glPointParameterfv)(CLenum pname, const CLfloat *params);
@@ -160,7 +159,7 @@ public:
 	typedef void (CL_GLFUNC *ptr_glBlendEquationSeparate)(CLenum modeRGB, CLenum modeAlpha);
 	typedef void (CL_GLFUNC *ptr_glDrawBuffers)(CLsizei n, const CLenum *bufs);
 	typedef void (CL_GLFUNC *ptr_glStencilOpSeparate)(CLenum face, CLenum sfail, CLenum dpfail, CLenum dppass);
-	typedef void (CL_GLFUNC *ptr_glStencilFuncSeparate)(CLenum frontfunc, CLenum backfunc, CLint ref, CLuint mask);
+	typedef void (CL_GLFUNC *ptr_glStencilFuncSeparate)(CLenum face, CLenum func, CLint ref, CLuint mask);
 	typedef void (CL_GLFUNC *ptr_glStencilMaskSeparate)(CLenum face, CLuint mask);
 	typedef void (CL_GLFUNC *ptr_glAttachShader)(CLuint program, CLuint shader);
 	typedef void (CL_GLFUNC *ptr_glBindAttribLocation)(CLuint program, CLuint index, const CLchar *name);
@@ -320,8 +319,13 @@ public:
 	typedef void (CL_GLFUNC *ptr_glPrimitiveRestartIndex)(CLuint index);
 	typedef void (CL_GLFUNC *ptr_glGetInteger64i_v)(CLenum target, CLuint index, CLint64 *data);
 	typedef void (CL_GLFUNC *ptr_glGetBufferParameteri64v)(CLenum target, CLenum pname, CLint64 *params);
-	typedef void (CL_GLFUNC *ptr_glProgramParameteri)(CLuint program, CLenum pname, CLint value);
 	typedef void (CL_GLFUNC *ptr_glFramebufferTexture)(CLenum target, CLenum attachment, CLuint texture, CLint level);
+	typedef void (CL_GLFUNC *ptr_glVertexAttribDivisor)(CLuint index, CLuint divisor);
+	typedef void (CL_GLFUNC *ptr_glMinSampleShading)(CLclampf value);
+	typedef void (CL_GLFUNC *ptr_glBlendEquationi)(CLuint buf, CLenum mode);
+	typedef void (CL_GLFUNC *ptr_glBlendEquationSeparatei)(CLuint buf, CLenum modeRGB, CLenum modeAlpha);
+	typedef void (CL_GLFUNC *ptr_glBlendFunci)(CLuint buf, CLenum src, CLenum dst);
+	typedef void (CL_GLFUNC *ptr_glBlendFuncSeparatei)(CLuint buf, CLenum srcRGB, CLenum dstRGB, CLenum srcAlpha, CLenum dstAlpha);
 	typedef CLboolean (CL_GLFUNC *ptr_glIsRenderbuffer)(CLuint renderbuffer);
 	typedef void (CL_GLFUNC *ptr_glBindRenderbuffer)(CLenum target, CLuint renderbuffer);
 	typedef void (CL_GLFUNC *ptr_glDeleteRenderbuffers)(CLsizei n, const CLuint *renderbuffers);
@@ -372,17 +376,23 @@ public:
 	typedef void (CL_GLFUNC *ptr_glTexImage3DMultisample)(CLenum target, CLsizei samples, CLint internalformat, CLsizei width, CLsizei height, CLsizei depth, CLboolean fixedsamplelocations);
 	typedef void (CL_GLFUNC *ptr_glGetMultisamplefv)(CLenum pname, CLuint index, CLfloat *val);
 	typedef void (CL_GLFUNC *ptr_glSampleMaski)(CLuint index, CLbitfield mask);
-	typedef void (CL_GLFUNC *ptr_glBlendEquationi)(CLuint buf, CLenum mode);
-	typedef void (CL_GLFUNC *ptr_glBlendEquationSeparatei)(CLuint buf, CLenum modeRGB, CLenum modeAlpha);
-	typedef void (CL_GLFUNC *ptr_glBlendFunci)(CLuint buf, CLenum src, CLenum dst);
-	typedef void (CL_GLFUNC *ptr_glBlendFuncSeparatei)(CLuint buf, CLenum srcRGB, CLenum dstRGB, CLenum srcAlpha, CLenum dstAlpha);
-	typedef void (CL_GLFUNC *ptr_glMinSampleShading)(CLclampf value);
+	typedef void (CL_GLFUNC *ptr_glBlendEquationiARB)(CLuint buf, CLenum mode);
+	typedef void (CL_GLFUNC *ptr_glBlendEquationSeparateiARB)(CLuint buf, CLenum modeRGB, CLenum modeAlpha);
+	typedef void (CL_GLFUNC *ptr_glBlendFunciARB)(CLuint buf, CLenum src, CLenum dst);
+	typedef void (CL_GLFUNC *ptr_glBlendFuncSeparateiARB)(CLuint buf, CLenum srcRGB, CLenum dstRGB, CLenum srcAlpha, CLenum dstAlpha);
+	typedef void (CL_GLFUNC *ptr_glMinSampleShadingARB)(CLclampf value);
+	typedef void (CL_GLFUNC *ptr_glNamedStringARB)(CLenum type, CLint namelen, const CLchar *name, CLint stringlen, const CLchar *string);
+	typedef void (CL_GLFUNC *ptr_glDeleteNamedStringARB)(CLint namelen, const CLchar *name);
+	typedef void (CL_GLFUNC *ptr_glCompileShaderIncludeARB)(CLuint shader, CLsizei count, const CLchar* *path, const CLint *length);
+	typedef CLboolean (CL_GLFUNC *ptr_glIsNamedStringARB)(CLint namelen, const CLchar *name);
+	typedef void (CL_GLFUNC *ptr_glGetNamedStringARB)(CLint namelen, const CLchar *name, CLsizei bufSize, CLint *stringlen, CLchar *string);
+	typedef void (CL_GLFUNC *ptr_glGetNamedStringivARB)(CLint namelen, const CLchar *name, CLenum pname, CLint *params);
 	typedef void (CL_GLFUNC *ptr_glBindFragDataLocationIndexed)(CLuint program, CLuint colorNumber, CLuint index, const CLchar *name);
 	typedef CLint (CL_GLFUNC *ptr_glGetFragDataIndex)(CLuint program, const CLchar *name);
 	typedef void (CL_GLFUNC *ptr_glGenSamplers)(CLsizei count, CLuint *samplers);
 	typedef void (CL_GLFUNC *ptr_glDeleteSamplers)(CLsizei count, const CLuint *samplers);
 	typedef CLboolean (CL_GLFUNC *ptr_glIsSampler)(CLuint sampler);
-	typedef void (CL_GLFUNC *ptr_glBindSampler)(CLenum unit, CLuint sampler);
+	typedef void (CL_GLFUNC *ptr_glBindSampler)(CLuint unit, CLuint sampler);
 	typedef void (CL_GLFUNC *ptr_glSamplerParameteri)(CLuint sampler, CLenum pname, CLint param);
 	typedef void (CL_GLFUNC *ptr_glSamplerParameteriv)(CLuint sampler, CLenum pname, const CLint *param);
 	typedef void (CL_GLFUNC *ptr_glSamplerParameterf)(CLuint sampler, CLenum pname, CLfloat param);
@@ -392,7 +402,7 @@ public:
 	typedef void (CL_GLFUNC *ptr_glGetSamplerParameteriv)(CLuint sampler, CLenum pname, CLint *params);
 	typedef void (CL_GLFUNC *ptr_glGetSamplerParameterIiv)(CLuint sampler, CLenum pname, CLint *params);
 	typedef void (CL_GLFUNC *ptr_glGetSamplerParameterfv)(CLuint sampler, CLenum pname, CLfloat *params);
-	typedef void (CL_GLFUNC *ptr_glGetSamplerParameterIfv)(CLuint sampler, CLenum pname, CLfloat *params);
+	typedef void (CL_GLFUNC *ptr_glGetSamplerParameterIuiv)(CLuint sampler, CLenum pname, CLuint *params);
 	typedef void (CL_GLFUNC *ptr_glQueryCounter)(CLuint id, CLenum target);
 	typedef void (CL_GLFUNC *ptr_glGetQueryObjecti64v)(CLuint id, CLenum pname, CLint64 *params);
 	typedef void (CL_GLFUNC *ptr_glGetQueryObjectui64v)(CLuint id, CLenum pname, CLuint64 *params);
@@ -454,23 +464,6 @@ public:
 	typedef void (CL_GLFUNC *ptr_glUniformMatrix4x2dv)(CLint location, CLsizei count, CLboolean transpose, const CLdouble *value);
 	typedef void (CL_GLFUNC *ptr_glUniformMatrix4x3dv)(CLint location, CLsizei count, CLboolean transpose, const CLdouble *value);
 	typedef void (CL_GLFUNC *ptr_glGetUniformdv)(CLuint program, CLint location, CLdouble *params);
-	typedef void (CL_GLFUNC *ptr_glProgramUniform1dEXT)(CLuint program, CLint location, CLdouble x);
-	typedef void (CL_GLFUNC *ptr_glProgramUniform2dEXT)(CLuint program, CLint location, CLdouble x, CLdouble y);
-	typedef void (CL_GLFUNC *ptr_glProgramUniform3dEXT)(CLuint program, CLint location, CLdouble x, CLdouble y, CLdouble z);
-	typedef void (CL_GLFUNC *ptr_glProgramUniform4dEXT)(CLuint program, CLint location, CLdouble x, CLdouble y, CLdouble z, CLdouble w);
-	typedef void (CL_GLFUNC *ptr_glProgramUniform1dvEXT)(CLuint program, CLint location, CLsizei count, const CLdouble *value);
-	typedef void (CL_GLFUNC *ptr_glProgramUniform2dvEXT)(CLuint program, CLint location, CLsizei count, const CLdouble *value);
-	typedef void (CL_GLFUNC *ptr_glProgramUniform3dvEXT)(CLuint program, CLint location, CLsizei count, const CLdouble *value);
-	typedef void (CL_GLFUNC *ptr_glProgramUniform4dvEXT)(CLuint program, CLint location, CLsizei count, const CLdouble *value);
-	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix2dvEXT)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLdouble *value);
-	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix3dvEXT)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLdouble *value);
-	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix4dvEXT)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLdouble *value);
-	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix2x3dvEXT)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLdouble *value);
-	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix2x4dvEXT)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLdouble *value);
-	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix3x2dvEXT)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLdouble *value);
-	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix3x4dvEXT)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLdouble *value);
-	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix4x2dvEXT)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLdouble *value);
-	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix4x3dvEXT)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLdouble *value);
 	typedef CLint (CL_GLFUNC *ptr_glGetSubroutineUniformLocation)(CLuint program, CLenum shadertype, const CLchar *name);
 	typedef CLuint (CL_GLFUNC *ptr_glGetSubroutineIndex)(CLuint program, CLenum shadertype, const CLchar *name);
 	typedef void (CL_GLFUNC *ptr_glGetActiveSubroutineUniformiv)(CLuint program, CLenum shadertype, CLuint index, CLenum pname, CLint *values);
@@ -492,6 +485,119 @@ public:
 	typedef void (CL_GLFUNC *ptr_glBeginQueryIndexed)(CLenum target, CLuint index, CLuint id);
 	typedef void (CL_GLFUNC *ptr_glEndQueryIndexed)(CLenum target, CLuint index);
 	typedef void (CL_GLFUNC *ptr_glGetQueryIndexediv)(CLenum target, CLuint index, CLenum pname, CLint *params);
+	typedef void (CL_GLFUNC *ptr_glReleaseShaderCompiler)(void);
+	typedef void (CL_GLFUNC *ptr_glShaderBinary)(CLsizei count, const CLuint *shaders, CLenum binaryformat, const CLvoid *binary, CLsizei length);
+	typedef void (CL_GLFUNC *ptr_glGetShaderPrecisionFormat)(CLenum shadertype, CLenum precisiontype, CLint *range, CLint *precision);
+	typedef void (CL_GLFUNC *ptr_glDepthRangef)(CLclampf n, CLclampf f);
+	typedef void (CL_GLFUNC *ptr_glClearDepthf)(CLclampf d);
+	typedef void (CL_GLFUNC *ptr_glGetProgramBinary)(CLuint program, CLsizei bufSize, CLsizei *length, CLenum *binaryFormat, CLvoid *binary);
+	typedef void (CL_GLFUNC *ptr_glProgramBinary)(CLuint program, CLenum binaryFormat, const CLvoid *binary, CLsizei length);
+	typedef void (CL_GLFUNC *ptr_glProgramParameteri)(CLuint program, CLenum pname, CLint value);
+	typedef void (CL_GLFUNC *ptr_glUseProgramStages)(CLuint pipeline, CLbitfield stages, CLuint program);
+	typedef void (CL_GLFUNC *ptr_glActiveShaderProgram)(CLuint pipeline, CLuint program);
+	typedef CLuint (CL_GLFUNC *ptr_glCreateShaderProgramv)(CLenum type, CLsizei count, const CLchar* *strings);
+	typedef void (CL_GLFUNC *ptr_glBindProgramPipeline)(CLuint pipeline);
+	typedef void (CL_GLFUNC *ptr_glDeleteProgramPipelines)(CLsizei n, const CLuint *pipelines);
+	typedef void (CL_GLFUNC *ptr_glGenProgramPipelines)(CLsizei n, CLuint *pipelines);
+	typedef CLboolean (CL_GLFUNC *ptr_glIsProgramPipeline)(CLuint pipeline);
+	typedef void (CL_GLFUNC *ptr_glGetProgramPipelineiv)(CLuint pipeline, CLenum pname, CLint *params);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform1i)(CLuint program, CLint location, CLint v0);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform1iv)(CLuint program, CLint location, CLsizei count, const CLint *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform1f)(CLuint program, CLint location, CLfloat v0);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform1fv)(CLuint program, CLint location, CLsizei count, const CLfloat *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform1d)(CLuint program, CLint location, CLdouble v0);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform1dv)(CLuint program, CLint location, CLsizei count, const CLdouble *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform1ui)(CLuint program, CLint location, CLuint v0);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform1uiv)(CLuint program, CLint location, CLsizei count, const CLuint *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform2i)(CLuint program, CLint location, CLint v0, CLint v1);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform2iv)(CLuint program, CLint location, CLsizei count, const CLint *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform2f)(CLuint program, CLint location, CLfloat v0, CLfloat v1);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform2fv)(CLuint program, CLint location, CLsizei count, const CLfloat *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform2d)(CLuint program, CLint location, CLdouble v0, CLdouble v1);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform2dv)(CLuint program, CLint location, CLsizei count, const CLdouble *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform2ui)(CLuint program, CLint location, CLuint v0, CLuint v1);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform2uiv)(CLuint program, CLint location, CLsizei count, const CLuint *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform3i)(CLuint program, CLint location, CLint v0, CLint v1, CLint v2);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform3iv)(CLuint program, CLint location, CLsizei count, const CLint *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform3f)(CLuint program, CLint location, CLfloat v0, CLfloat v1, CLfloat v2);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform3fv)(CLuint program, CLint location, CLsizei count, const CLfloat *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform3d)(CLuint program, CLint location, CLdouble v0, CLdouble v1, CLdouble v2);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform3dv)(CLuint program, CLint location, CLsizei count, const CLdouble *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform3ui)(CLuint program, CLint location, CLuint v0, CLuint v1, CLuint v2);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform3uiv)(CLuint program, CLint location, CLsizei count, const CLuint *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform4i)(CLuint program, CLint location, CLint v0, CLint v1, CLint v2, CLint v3);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform4iv)(CLuint program, CLint location, CLsizei count, const CLint *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform4f)(CLuint program, CLint location, CLfloat v0, CLfloat v1, CLfloat v2, CLfloat v3);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform4fv)(CLuint program, CLint location, CLsizei count, const CLfloat *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform4d)(CLuint program, CLint location, CLdouble v0, CLdouble v1, CLdouble v2, CLdouble v3);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform4dv)(CLuint program, CLint location, CLsizei count, const CLdouble *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform4ui)(CLuint program, CLint location, CLuint v0, CLuint v1, CLuint v2, CLuint v3);
+	typedef void (CL_GLFUNC *ptr_glProgramUniform4uiv)(CLuint program, CLint location, CLsizei count, const CLuint *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix2fv)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLfloat *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix3fv)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLfloat *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix4fv)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLfloat *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix2dv)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLdouble *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix3dv)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLdouble *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix4dv)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLdouble *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix2x3fv)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLfloat *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix3x2fv)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLfloat *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix2x4fv)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLfloat *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix4x2fv)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLfloat *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix3x4fv)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLfloat *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix4x3fv)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLfloat *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix2x3dv)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLdouble *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix3x2dv)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLdouble *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix2x4dv)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLdouble *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix4x2dv)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLdouble *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix3x4dv)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLdouble *value);
+	typedef void (CL_GLFUNC *ptr_glProgramUniformMatrix4x3dv)(CLuint program, CLint location, CLsizei count, CLboolean transpose, const CLdouble *value);
+	typedef void (CL_GLFUNC *ptr_glValidateProgramPipeline)(CLuint pipeline);
+	typedef void (CL_GLFUNC *ptr_glGetProgramPipelineInfoLog)(CLuint pipeline, CLsizei bufSize, CLsizei *length, CLchar *infoLog);
+	typedef void (CL_GLFUNC *ptr_glVertexAttribL1d)(CLuint index, CLdouble x);
+	typedef void (CL_GLFUNC *ptr_glVertexAttribL2d)(CLuint index, CLdouble x, CLdouble y);
+	typedef void (CL_GLFUNC *ptr_glVertexAttribL3d)(CLuint index, CLdouble x, CLdouble y, CLdouble z);
+	typedef void (CL_GLFUNC *ptr_glVertexAttribL4d)(CLuint index, CLdouble x, CLdouble y, CLdouble z, CLdouble w);
+	typedef void (CL_GLFUNC *ptr_glVertexAttribL1dv)(CLuint index, const CLdouble *v);
+	typedef void (CL_GLFUNC *ptr_glVertexAttribL2dv)(CLuint index, const CLdouble *v);
+	typedef void (CL_GLFUNC *ptr_glVertexAttribL3dv)(CLuint index, const CLdouble *v);
+	typedef void (CL_GLFUNC *ptr_glVertexAttribL4dv)(CLuint index, const CLdouble *v);
+	typedef void (CL_GLFUNC *ptr_glVertexAttribLPointer)(CLuint index, CLint size, CLenum type, CLsizei stride, const CLvoid *pointer);
+	typedef void (CL_GLFUNC *ptr_glGetVertexAttribLdv)(CLuint index, CLenum pname, CLdouble *params);
+	typedef void (CL_GLFUNC *ptr_glViewportArrayv)(CLuint first, CLsizei count, const CLfloat *v);
+	typedef void (CL_GLFUNC *ptr_glViewportIndexedf)(CLuint index, CLfloat x, CLfloat y, CLfloat w, CLfloat h);
+	typedef void (CL_GLFUNC *ptr_glViewportIndexedfv)(CLuint index, const CLfloat *v);
+	typedef void (CL_GLFUNC *ptr_glScissorArrayv)(CLuint first, CLsizei count, const CLint *v);
+	typedef void (CL_GLFUNC *ptr_glScissorIndexed)(CLuint index, CLint left, CLint bottom, CLsizei width, CLsizei height);
+	typedef void (CL_GLFUNC *ptr_glScissorIndexedv)(CLuint index, const CLint *v);
+	typedef void (CL_GLFUNC *ptr_glDepthRangeArrayv)(CLuint first, CLsizei count, const CLclampd *v);
+	typedef void (CL_GLFUNC *ptr_glDepthRangeIndexed)(CLuint index, CLclampd n, CLclampd f);
+	typedef void (CL_GLFUNC *ptr_glGetFloati_v)(CLenum target, CLuint index, CLfloat *data);
+	typedef void (CL_GLFUNC *ptr_glGetDoublei_v)(CLenum target, CLuint index, CLdouble *data);
+	typedef CLsync (CL_GLFUNC *ptr_glCreateSyncFromCLeventARB)(struct _cl_context * context, struct _cl_event * event, CLbitfield flags);
+	typedef void (CL_GLFUNC *ptr_glDebugMessageControlARB)(CLenum source, CLenum type, CLenum severity, CLsizei count, const CLuint *ids, CLboolean enabled);
+	typedef void (CL_GLFUNC *ptr_glDebugMessageInsertARB)(CLenum source, CLenum type, CLuint id, CLenum severity, CLsizei length, const CLchar *buf);
+	typedef void (CL_GLFUNC *ptr_glDebugMessageCallbackARB)(CLDEBUGPROCARB callback, const CLvoid *userParam);
+	typedef CLuint (CL_GLFUNC *ptr_glGetDebugMessageLogARB)(CLuint count, CLsizei bufsize, CLenum *sources, CLenum *types, CLuint *ids, CLenum *severities, CLsizei *lengths, CLchar *messageLog);
+	typedef CLenum (CL_GLFUNC *ptr_glGetGraphicsResetStatusARB)(void);
+	typedef void (CL_GLFUNC *ptr_glGetnMapdvARB)(CLenum target, CLenum query, CLsizei bufSize, CLdouble *v);
+	typedef void (CL_GLFUNC *ptr_glGetnMapfvARB)(CLenum target, CLenum query, CLsizei bufSize, CLfloat *v);
+	typedef void (CL_GLFUNC *ptr_glGetnMapivARB)(CLenum target, CLenum query, CLsizei bufSize, CLint *v);
+	typedef void (CL_GLFUNC *ptr_glGetnPixelMapfvARB)(CLenum map, CLsizei bufSize, CLfloat *values);
+	typedef void (CL_GLFUNC *ptr_glGetnPixelMapuivARB)(CLenum map, CLsizei bufSize, CLuint *values);
+	typedef void (CL_GLFUNC *ptr_glGetnPixelMapusvARB)(CLenum map, CLsizei bufSize, CLushort *values);
+	typedef void (CL_GLFUNC *ptr_glGetnPolygonStippleARB)(CLsizei bufSize, CLubyte *pattern);
+	typedef void (CL_GLFUNC *ptr_glGetnColorTableARB)(CLenum target, CLenum format, CLenum type, CLsizei bufSize, CLvoid *table);
+	typedef void (CL_GLFUNC *ptr_glGetnConvolutionFilterARB)(CLenum target, CLenum format, CLenum type, CLsizei bufSize, CLvoid *image);
+	typedef void (CL_GLFUNC *ptr_glGetnSeparableFilterARB)(CLenum target, CLenum format, CLenum type, CLsizei rowBufSize, CLvoid *row, CLsizei columnBufSize, CLvoid *column, CLvoid *span);
+	typedef void (CL_GLFUNC *ptr_glGetnHistogramARB)(CLenum target, CLboolean reset, CLenum format, CLenum type, CLsizei bufSize, CLvoid *values);
+	typedef void (CL_GLFUNC *ptr_glGetnMinmaxARB)(CLenum target, CLboolean reset, CLenum format, CLenum type, CLsizei bufSize, CLvoid *values);
+	typedef void (CL_GLFUNC *ptr_glGetnTexImageARB)(CLenum target, CLint level, CLenum format, CLenum type, CLsizei bufSize, CLvoid *img);
+	typedef void (CL_GLFUNC *ptr_glReadnPixelsARB)(CLint x, CLint y, CLsizei width, CLsizei height, CLenum format, CLenum type, CLsizei bufSize, CLvoid *data);
+	typedef void (CL_GLFUNC *ptr_glGetnCompressedTexImageARB)(CLenum target, CLint lod, CLsizei bufSize, CLvoid *img);
+	typedef void (CL_GLFUNC *ptr_glGetnUniformfvARB)(CLuint program, CLint location, CLsizei bufSize, CLfloat *params);
+	typedef void (CL_GLFUNC *ptr_glGetnUniformivARB)(CLuint program, CLint location, CLsizei bufSize, CLint *params);
+	typedef void (CL_GLFUNC *ptr_glGetnUniformuivARB)(CLuint program, CLint location, CLsizei bufSize, CLuint *params);
+	typedef void (CL_GLFUNC *ptr_glGetnUniformdvARB)(CLuint program, CLint location, CLsizei bufSize, CLdouble *params);
 
 /// \}
 
@@ -517,7 +623,6 @@ public:
 	ptr_glClearColor clearColor;
 	ptr_glClearStencil clearStencil;
 	ptr_glClearDepth clearDepth;
-	ptr_glClearDepthf clearDepthf;
 	ptr_glStencilMask stencilMask;
 	ptr_glColorMask colorMask;
 	ptr_glDepthMask depthMask;
@@ -766,8 +871,13 @@ public:
 	ptr_glPrimitiveRestartIndex primitiveRestartIndex;
 	ptr_glGetInteger64i_v getInteger64i_v;
 	ptr_glGetBufferParameteri64v getBufferParameteri64v;
-	ptr_glProgramParameteri programParameteri;
 	ptr_glFramebufferTexture framebufferTexture;
+	ptr_glVertexAttribDivisor vertexAttribDivisor;
+	ptr_glMinSampleShading minSampleShading;
+	ptr_glBlendEquationi blendEquationi;
+	ptr_glBlendEquationSeparatei blendEquationSeparatei;
+	ptr_glBlendFunci blendFunci;
+	ptr_glBlendFuncSeparatei blendFuncSeparatei;
 	ptr_glIsRenderbuffer isRenderbuffer;
 	ptr_glBindRenderbuffer bindRenderbuffer;
 	ptr_glDeleteRenderbuffers deleteRenderbuffers;
@@ -818,11 +928,17 @@ public:
 	ptr_glTexImage3DMultisample texImage3DMultisample;
 	ptr_glGetMultisamplefv getMultisamplefv;
 	ptr_glSampleMaski sampleMaski;
-	ptr_glBlendEquationi blendEquationi;
-	ptr_glBlendEquationSeparatei blendEquationSeparatei;
-	ptr_glBlendFunci blendFunci;
-	ptr_glBlendFuncSeparatei blendFuncSeparatei;
-	ptr_glMinSampleShading minSampleShading;
+	ptr_glBlendEquationiARB blendEquationiARB;
+	ptr_glBlendEquationSeparateiARB blendEquationSeparateiARB;
+	ptr_glBlendFunciARB blendFunciARB;
+	ptr_glBlendFuncSeparateiARB blendFuncSeparateiARB;
+	ptr_glMinSampleShadingARB minSampleShadingARB;
+	ptr_glNamedStringARB namedStringARB;
+	ptr_glDeleteNamedStringARB deleteNamedStringARB;
+	ptr_glCompileShaderIncludeARB compileShaderIncludeARB;
+	ptr_glIsNamedStringARB isNamedStringARB;
+	ptr_glGetNamedStringARB getNamedStringARB;
+	ptr_glGetNamedStringivARB getNamedStringivARB;
 	ptr_glBindFragDataLocationIndexed bindFragDataLocationIndexed;
 	ptr_glGetFragDataIndex getFragDataIndex;
 	ptr_glGenSamplers genSamplers;
@@ -838,7 +954,7 @@ public:
 	ptr_glGetSamplerParameteriv getSamplerParameteriv;
 	ptr_glGetSamplerParameterIiv getSamplerParameterIiv;
 	ptr_glGetSamplerParameterfv getSamplerParameterfv;
-	ptr_glGetSamplerParameterIfv getSamplerParameterIfv;
+	ptr_glGetSamplerParameterIuiv getSamplerParameterIuiv;
 	ptr_glQueryCounter queryCounter;
 	ptr_glGetQueryObjecti64v getQueryObjecti64v;
 	ptr_glGetQueryObjectui64v getQueryObjectui64v;
@@ -900,23 +1016,6 @@ public:
 	ptr_glUniformMatrix4x2dv uniformMatrix4x2dv;
 	ptr_glUniformMatrix4x3dv uniformMatrix4x3dv;
 	ptr_glGetUniformdv getUniformdv;
-	ptr_glProgramUniform1dEXT programUniform1dEXT;
-	ptr_glProgramUniform2dEXT programUniform2dEXT;
-	ptr_glProgramUniform3dEXT programUniform3dEXT;
-	ptr_glProgramUniform4dEXT programUniform4dEXT;
-	ptr_glProgramUniform1dvEXT programUniform1dvEXT;
-	ptr_glProgramUniform2dvEXT programUniform2dvEXT;
-	ptr_glProgramUniform3dvEXT programUniform3dvEXT;
-	ptr_glProgramUniform4dvEXT programUniform4dvEXT;
-	ptr_glProgramUniformMatrix2dvEXT programUniformMatrix2dvEXT;
-	ptr_glProgramUniformMatrix3dvEXT programUniformMatrix3dvEXT;
-	ptr_glProgramUniformMatrix4dvEXT programUniformMatrix4dvEXT;
-	ptr_glProgramUniformMatrix2x3dvEXT programUniformMatrix2x3dvEXT;
-	ptr_glProgramUniformMatrix2x4dvEXT programUniformMatrix2x4dvEXT;
-	ptr_glProgramUniformMatrix3x2dvEXT programUniformMatrix3x2dvEXT;
-	ptr_glProgramUniformMatrix3x4dvEXT programUniformMatrix3x4dvEXT;
-	ptr_glProgramUniformMatrix4x2dvEXT programUniformMatrix4x2dvEXT;
-	ptr_glProgramUniformMatrix4x3dvEXT programUniformMatrix4x3dvEXT;
 	ptr_glGetSubroutineUniformLocation getSubroutineUniformLocation;
 	ptr_glGetSubroutineIndex getSubroutineIndex;
 	ptr_glGetActiveSubroutineUniformiv getActiveSubroutineUniformiv;
@@ -938,13 +1037,126 @@ public:
 	ptr_glBeginQueryIndexed beginQueryIndexed;
 	ptr_glEndQueryIndexed endQueryIndexed;
 	ptr_glGetQueryIndexediv getQueryIndexediv;
+	ptr_glReleaseShaderCompiler releaseShaderCompiler;
+	ptr_glShaderBinary shaderBinary;
+	ptr_glGetShaderPrecisionFormat getShaderPrecisionFormat;
+	ptr_glDepthRangef depthRangef;
+	ptr_glClearDepthf clearDepthf;
+	ptr_glGetProgramBinary getProgramBinary;
+	ptr_glProgramBinary programBinary;
+	ptr_glProgramParameteri programParameteri;
+	ptr_glUseProgramStages useProgramStages;
+	ptr_glActiveShaderProgram activeShaderProgram;
+	ptr_glCreateShaderProgramv createShaderProgramv;
+	ptr_glBindProgramPipeline bindProgramPipeline;
+	ptr_glDeleteProgramPipelines deleteProgramPipelines;
+	ptr_glGenProgramPipelines genProgramPipelines;
+	ptr_glIsProgramPipeline isProgramPipeline;
+	ptr_glGetProgramPipelineiv getProgramPipelineiv;
+	ptr_glProgramUniform1i programUniform1i;
+	ptr_glProgramUniform1iv programUniform1iv;
+	ptr_glProgramUniform1f programUniform1f;
+	ptr_glProgramUniform1fv programUniform1fv;
+	ptr_glProgramUniform1d programUniform1d;
+	ptr_glProgramUniform1dv programUniform1dv;
+	ptr_glProgramUniform1ui programUniform1ui;
+	ptr_glProgramUniform1uiv programUniform1uiv;
+	ptr_glProgramUniform2i programUniform2i;
+	ptr_glProgramUniform2iv programUniform2iv;
+	ptr_glProgramUniform2f programUniform2f;
+	ptr_glProgramUniform2fv programUniform2fv;
+	ptr_glProgramUniform2d programUniform2d;
+	ptr_glProgramUniform2dv programUniform2dv;
+	ptr_glProgramUniform2ui programUniform2ui;
+	ptr_glProgramUniform2uiv programUniform2uiv;
+	ptr_glProgramUniform3i programUniform3i;
+	ptr_glProgramUniform3iv programUniform3iv;
+	ptr_glProgramUniform3f programUniform3f;
+	ptr_glProgramUniform3fv programUniform3fv;
+	ptr_glProgramUniform3d programUniform3d;
+	ptr_glProgramUniform3dv programUniform3dv;
+	ptr_glProgramUniform3ui programUniform3ui;
+	ptr_glProgramUniform3uiv programUniform3uiv;
+	ptr_glProgramUniform4i programUniform4i;
+	ptr_glProgramUniform4iv programUniform4iv;
+	ptr_glProgramUniform4f programUniform4f;
+	ptr_glProgramUniform4fv programUniform4fv;
+	ptr_glProgramUniform4d programUniform4d;
+	ptr_glProgramUniform4dv programUniform4dv;
+	ptr_glProgramUniform4ui programUniform4ui;
+	ptr_glProgramUniform4uiv programUniform4uiv;
+	ptr_glProgramUniformMatrix2fv programUniformMatrix2fv;
+	ptr_glProgramUniformMatrix3fv programUniformMatrix3fv;
+	ptr_glProgramUniformMatrix4fv programUniformMatrix4fv;
+	ptr_glProgramUniformMatrix2dv programUniformMatrix2dv;
+	ptr_glProgramUniformMatrix3dv programUniformMatrix3dv;
+	ptr_glProgramUniformMatrix4dv programUniformMatrix4dv;
+	ptr_glProgramUniformMatrix2x3fv programUniformMatrix2x3fv;
+	ptr_glProgramUniformMatrix3x2fv programUniformMatrix3x2fv;
+	ptr_glProgramUniformMatrix2x4fv programUniformMatrix2x4fv;
+	ptr_glProgramUniformMatrix4x2fv programUniformMatrix4x2fv;
+	ptr_glProgramUniformMatrix3x4fv programUniformMatrix3x4fv;
+	ptr_glProgramUniformMatrix4x3fv programUniformMatrix4x3fv;
+	ptr_glProgramUniformMatrix2x3dv programUniformMatrix2x3dv;
+	ptr_glProgramUniformMatrix3x2dv programUniformMatrix3x2dv;
+	ptr_glProgramUniformMatrix2x4dv programUniformMatrix2x4dv;
+	ptr_glProgramUniformMatrix4x2dv programUniformMatrix4x2dv;
+	ptr_glProgramUniformMatrix3x4dv programUniformMatrix3x4dv;
+	ptr_glProgramUniformMatrix4x3dv programUniformMatrix4x3dv;
+	ptr_glValidateProgramPipeline validateProgramPipeline;
+	ptr_glGetProgramPipelineInfoLog getProgramPipelineInfoLog;
+	ptr_glVertexAttribL1d vertexAttribL1d;
+	ptr_glVertexAttribL2d vertexAttribL2d;
+	ptr_glVertexAttribL3d vertexAttribL3d;
+	ptr_glVertexAttribL4d vertexAttribL4d;
+	ptr_glVertexAttribL1dv vertexAttribL1dv;
+	ptr_glVertexAttribL2dv vertexAttribL2dv;
+	ptr_glVertexAttribL3dv vertexAttribL3dv;
+	ptr_glVertexAttribL4dv vertexAttribL4dv;
+	ptr_glVertexAttribLPointer vertexAttribLPointer;
+	ptr_glGetVertexAttribLdv getVertexAttribLdv;
+	ptr_glViewportArrayv viewportArrayv;
+	ptr_glViewportIndexedf viewportIndexedf;
+	ptr_glViewportIndexedfv viewportIndexedfv;
+	ptr_glScissorArrayv scissorArrayv;
+	ptr_glScissorIndexed scissorIndexed;
+	ptr_glScissorIndexedv scissorIndexedv;
+	ptr_glDepthRangeArrayv depthRangeArrayv;
+	ptr_glDepthRangeIndexed depthRangeIndexed;
+	ptr_glGetFloati_v getFloati_v;
+	ptr_glGetDoublei_v getDoublei_v;
+	ptr_glCreateSyncFromCLeventARB createSyncFromCLeventARB;
+	ptr_glDebugMessageControlARB debugMessageControlARB;
+	ptr_glDebugMessageInsertARB debugMessageInsertARB;
+	ptr_glDebugMessageCallbackARB debugMessageCallbackARB;
+	ptr_glGetDebugMessageLogARB getDebugMessageLogARB;
+	ptr_glGetGraphicsResetStatusARB getGraphicsResetStatusARB;
+	ptr_glGetnMapdvARB getnMapdvARB;
+	ptr_glGetnMapfvARB getnMapfvARB;
+	ptr_glGetnMapivARB getnMapivARB;
+	ptr_glGetnPixelMapfvARB getnPixelMapfvARB;
+	ptr_glGetnPixelMapuivARB getnPixelMapuivARB;
+	ptr_glGetnPixelMapusvARB getnPixelMapusvARB;
+	ptr_glGetnPolygonStippleARB getnPolygonStippleARB;
+	ptr_glGetnColorTableARB getnColorTableARB;
+	ptr_glGetnConvolutionFilterARB getnConvolutionFilterARB;
+	ptr_glGetnSeparableFilterARB getnSeparableFilterARB;
+	ptr_glGetnHistogramARB getnHistogramARB;
+	ptr_glGetnMinmaxARB getnMinmaxARB;
+	ptr_glGetnTexImageARB getnTexImageARB;
+	ptr_glReadnPixelsARB readnPixelsARB;
+	ptr_glGetnCompressedTexImageARB getnCompressedTexImageARB;
+	ptr_glGetnUniformfvARB getnUniformfvARB;
+	ptr_glGetnUniformivARB getnUniformivARB;
+	ptr_glGetnUniformuivARB getnUniformuivARB;
+	ptr_glGetnUniformdvARB getnUniformdvARB;
 
 /// \}
 };
 
 #define clCullFace CL_OpenGL::functions->cullFace
 #define clFrontFace CL_OpenGL::functions->frontFace
-#define clHint CL_OpenGL::functions->int
+#define clHint CL_OpenGL::functions->hint
 #define clLineWidth CL_OpenGL::functions->lineWidth
 #define clPointSize CL_OpenGL::functions->pointSize
 #define clPolygonMode CL_OpenGL::functions->polygonMode
@@ -960,7 +1172,6 @@ public:
 #define clClearColor CL_OpenGL::functions->clearColor
 #define clClearStencil CL_OpenGL::functions->clearStencil
 #define clClearDepth CL_OpenGL::functions->clearDepth
-#define clClearDepthf CL_OpenGL::functions->clearDepthf
 #define clStencilMask CL_OpenGL::functions->stencilMask
 #define clColorMask CL_OpenGL::functions->colorMask
 #define clDepthMask CL_OpenGL::functions->depthMask
@@ -1209,8 +1420,13 @@ public:
 #define clPrimitiveRestartIndex CL_OpenGL::functions->primitiveRestartIndex
 #define clGetInteger64i_v CL_OpenGL::functions->getInteger64i_v
 #define clGetBufferParameteri64v CL_OpenGL::functions->getBufferParameteri64v
-#define clProgramParameteri CL_OpenGL::functions->programParameteri
 #define clFramebufferTexture CL_OpenGL::functions->framebufferTexture
+#define clVertexAttribDivisor CL_OpenGL::functions->vertexAttribDivisor
+#define clMinSampleShading CL_OpenGL::functions->minSampleShading
+#define clBlendEquationi CL_OpenGL::functions->blendEquationi
+#define clBlendEquationSeparatei CL_OpenGL::functions->blendEquationSeparatei
+#define clBlendFunci CL_OpenGL::functions->blendFunci
+#define clBlendFuncSeparatei CL_OpenGL::functions->blendFuncSeparatei
 #define clIsRenderbuffer CL_OpenGL::functions->isRenderbuffer
 #define clBindRenderbuffer CL_OpenGL::functions->bindRenderbuffer
 #define clDeleteRenderbuffers CL_OpenGL::functions->deleteRenderbuffers
@@ -1261,11 +1477,17 @@ public:
 #define clTexImage3DMultisample CL_OpenGL::functions->texImage3DMultisample
 #define clGetMultisamplefv CL_OpenGL::functions->getMultisamplefv
 #define clSampleMaski CL_OpenGL::functions->sampleMaski
-#define clBlendEquationi CL_OpenGL::functions->blendEquationi
-#define clBlendEquationSeparatei CL_OpenGL::functions->blendEquationSeparatei
-#define clBlendFunci CL_OpenGL::functions->blendFunci
-#define clBlendFuncSeparatei CL_OpenGL::functions->blendFuncSeparatei
-#define clMinSampleShading CL_OpenGL::functions->minSampleShading
+#define clBlendEquationiARB CL_OpenGL::functions->blendEquationiARB
+#define clBlendEquationSeparateiARB CL_OpenGL::functions->blendEquationSeparateiARB
+#define clBlendFunciARB CL_OpenGL::functions->blendFunciARB
+#define clBlendFuncSeparateiARB CL_OpenGL::functions->blendFuncSeparateiARB
+#define clMinSampleShadingARB CL_OpenGL::functions->minSampleShadingARB
+#define clNamedStringARB CL_OpenGL::functions->namedStringARB
+#define clDeleteNamedStringARB CL_OpenGL::functions->deleteNamedStringARB
+#define clCompileShaderIncludeARB CL_OpenGL::functions->compileShaderIncludeARB
+#define clIsNamedStringARB CL_OpenGL::functions->isNamedStringARB
+#define clGetNamedStringARB CL_OpenGL::functions->getNamedStringARB
+#define clGetNamedStringivARB CL_OpenGL::functions->getNamedStringivARB
 #define clBindFragDataLocationIndexed CL_OpenGL::functions->bindFragDataLocationIndexed
 #define clGetFragDataIndex CL_OpenGL::functions->getFragDataIndex
 #define clGenSamplers CL_OpenGL::functions->genSamplers
@@ -1281,7 +1503,7 @@ public:
 #define clGetSamplerParameteriv CL_OpenGL::functions->getSamplerParameteriv
 #define clGetSamplerParameterIiv CL_OpenGL::functions->getSamplerParameterIiv
 #define clGetSamplerParameterfv CL_OpenGL::functions->getSamplerParameterfv
-#define clGetSamplerParameterIfv CL_OpenGL::functions->getSamplerParameterIfv
+#define clGetSamplerParameterIuiv CL_OpenGL::functions->getSamplerParameterIuiv
 #define clQueryCounter CL_OpenGL::functions->queryCounter
 #define clGetQueryObjecti64v CL_OpenGL::functions->getQueryObjecti64v
 #define clGetQueryObjectui64v CL_OpenGL::functions->getQueryObjectui64v
@@ -1343,23 +1565,6 @@ public:
 #define clUniformMatrix4x2dv CL_OpenGL::functions->uniformMatrix4x2dv
 #define clUniformMatrix4x3dv CL_OpenGL::functions->uniformMatrix4x3dv
 #define clGetUniformdv CL_OpenGL::functions->getUniformdv
-#define clProgramUniform1dEXT CL_OpenGL::functions->programUniform1dEXT
-#define clProgramUniform2dEXT CL_OpenGL::functions->programUniform2dEXT
-#define clProgramUniform3dEXT CL_OpenGL::functions->programUniform3dEXT
-#define clProgramUniform4dEXT CL_OpenGL::functions->programUniform4dEXT
-#define clProgramUniform1dvEXT CL_OpenGL::functions->programUniform1dvEXT
-#define clProgramUniform2dvEXT CL_OpenGL::functions->programUniform2dvEXT
-#define clProgramUniform3dvEXT CL_OpenGL::functions->programUniform3dvEXT
-#define clProgramUniform4dvEXT CL_OpenGL::functions->programUniform4dvEXT
-#define clProgramUniformMatrix2dvEXT CL_OpenGL::functions->programUniformMatrix2dvEXT
-#define clProgramUniformMatrix3dvEXT CL_OpenGL::functions->programUniformMatrix3dvEXT
-#define clProgramUniformMatrix4dvEXT CL_OpenGL::functions->programUniformMatrix4dvEXT
-#define clProgramUniformMatrix2x3dvEXT CL_OpenGL::functions->programUniformMatrix2x3dvEXT
-#define clProgramUniformMatrix2x4dvEXT CL_OpenGL::functions->programUniformMatrix2x4dvEXT
-#define clProgramUniformMatrix3x2dvEXT CL_OpenGL::functions->programUniformMatrix3x2dvEXT
-#define clProgramUniformMatrix3x4dvEXT CL_OpenGL::functions->programUniformMatrix3x4dvEXT
-#define clProgramUniformMatrix4x2dvEXT CL_OpenGL::functions->programUniformMatrix4x2dvEXT
-#define clProgramUniformMatrix4x3dvEXT CL_OpenGL::functions->programUniformMatrix4x3dvEXT
 #define clGetSubroutineUniformLocation CL_OpenGL::functions->getSubroutineUniformLocation
 #define clGetSubroutineIndex CL_OpenGL::functions->getSubroutineIndex
 #define clGetActiveSubroutineUniformiv CL_OpenGL::functions->getActiveSubroutineUniformiv
@@ -1381,9 +1586,121 @@ public:
 #define clBeginQueryIndexed CL_OpenGL::functions->beginQueryIndexed
 #define clEndQueryIndexed CL_OpenGL::functions->endQueryIndexed
 #define clGetQueryIndexediv CL_OpenGL::functions->getQueryIndexediv
+#define clReleaseShaderCompiler CL_OpenGL::functions->releaseShaderCompiler
+#define clShaderBinary CL_OpenGL::functions->shaderBinary
+#define clGetShaderPrecisionFormat CL_OpenGL::functions->getShaderPrecisionFormat
+#define clDepthRangef CL_OpenGL::functions->depthRangef
+#define clClearDepthf CL_OpenGL::functions->clearDepthf
+#define clGetProgramBinary CL_OpenGL::functions->getProgramBinary
+#define clProgramBinary CL_OpenGL::functions->programBinary
+#define clProgramParameteri CL_OpenGL::functions->programParameteri
+#define clUseProgramStages CL_OpenGL::functions->useProgramStages
+#define clActiveShaderProgram CL_OpenGL::functions->activeShaderProgram
+#define clCreateShaderProgramv CL_OpenGL::functions->createShaderProgramv
+#define clBindProgramPipeline CL_OpenGL::functions->bindProgramPipeline
+#define clDeleteProgramPipelines CL_OpenGL::functions->deleteProgramPipelines
+#define clGenProgramPipelines CL_OpenGL::functions->genProgramPipelines
+#define clIsProgramPipeline CL_OpenGL::functions->isProgramPipeline
+#define clGetProgramPipelineiv CL_OpenGL::functions->getProgramPipelineiv
+#define clProgramUniform1i CL_OpenGL::functions->programUniform1i
+#define clProgramUniform1iv CL_OpenGL::functions->programUniform1iv
+#define clProgramUniform1f CL_OpenGL::functions->programUniform1f
+#define clProgramUniform1fv CL_OpenGL::functions->programUniform1fv
+#define clProgramUniform1d CL_OpenGL::functions->programUniform1d
+#define clProgramUniform1dv CL_OpenGL::functions->programUniform1dv
+#define clProgramUniform1ui CL_OpenGL::functions->programUniform1ui
+#define clProgramUniform1uiv CL_OpenGL::functions->programUniform1uiv
+#define clProgramUniform2i CL_OpenGL::functions->programUniform2i
+#define clProgramUniform2iv CL_OpenGL::functions->programUniform2iv
+#define clProgramUniform2f CL_OpenGL::functions->programUniform2f
+#define clProgramUniform2fv CL_OpenGL::functions->programUniform2fv
+#define clProgramUniform2d CL_OpenGL::functions->programUniform2d
+#define clProgramUniform2dv CL_OpenGL::functions->programUniform2dv
+#define clProgramUniform2ui CL_OpenGL::functions->programUniform2ui
+#define clProgramUniform2uiv CL_OpenGL::functions->programUniform2uiv
+#define clProgramUniform3i CL_OpenGL::functions->programUniform3i
+#define clProgramUniform3iv CL_OpenGL::functions->programUniform3iv
+#define clProgramUniform3f CL_OpenGL::functions->programUniform3f
+#define clProgramUniform3fv CL_OpenGL::functions->programUniform3fv
+#define clProgramUniform3d CL_OpenGL::functions->programUniform3d
+#define clProgramUniform3dv CL_OpenGL::functions->programUniform3dv
+#define clProgramUniform3ui CL_OpenGL::functions->programUniform3ui
+#define clProgramUniform3uiv CL_OpenGL::functions->programUniform3uiv
+#define clProgramUniform4i CL_OpenGL::functions->programUniform4i
+#define clProgramUniform4iv CL_OpenGL::functions->programUniform4iv
+#define clProgramUniform4f CL_OpenGL::functions->programUniform4f
+#define clProgramUniform4fv CL_OpenGL::functions->programUniform4fv
+#define clProgramUniform4d CL_OpenGL::functions->programUniform4d
+#define clProgramUniform4dv CL_OpenGL::functions->programUniform4dv
+#define clProgramUniform4ui CL_OpenGL::functions->programUniform4ui
+#define clProgramUniform4uiv CL_OpenGL::functions->programUniform4uiv
+#define clProgramUniformMatrix2fv CL_OpenGL::functions->programUniformMatrix2fv
+#define clProgramUniformMatrix3fv CL_OpenGL::functions->programUniformMatrix3fv
+#define clProgramUniformMatrix4fv CL_OpenGL::functions->programUniformMatrix4fv
+#define clProgramUniformMatrix2dv CL_OpenGL::functions->programUniformMatrix2dv
+#define clProgramUniformMatrix3dv CL_OpenGL::functions->programUniformMatrix3dv
+#define clProgramUniformMatrix4dv CL_OpenGL::functions->programUniformMatrix4dv
+#define clProgramUniformMatrix2x3fv CL_OpenGL::functions->programUniformMatrix2x3fv
+#define clProgramUniformMatrix3x2fv CL_OpenGL::functions->programUniformMatrix3x2fv
+#define clProgramUniformMatrix2x4fv CL_OpenGL::functions->programUniformMatrix2x4fv
+#define clProgramUniformMatrix4x2fv CL_OpenGL::functions->programUniformMatrix4x2fv
+#define clProgramUniformMatrix3x4fv CL_OpenGL::functions->programUniformMatrix3x4fv
+#define clProgramUniformMatrix4x3fv CL_OpenGL::functions->programUniformMatrix4x3fv
+#define clProgramUniformMatrix2x3dv CL_OpenGL::functions->programUniformMatrix2x3dv
+#define clProgramUniformMatrix3x2dv CL_OpenGL::functions->programUniformMatrix3x2dv
+#define clProgramUniformMatrix2x4dv CL_OpenGL::functions->programUniformMatrix2x4dv
+#define clProgramUniformMatrix4x2dv CL_OpenGL::functions->programUniformMatrix4x2dv
+#define clProgramUniformMatrix3x4dv CL_OpenGL::functions->programUniformMatrix3x4dv
+#define clProgramUniformMatrix4x3dv CL_OpenGL::functions->programUniformMatrix4x3dv
+#define clValidateProgramPipeline CL_OpenGL::functions->validateProgramPipeline
+#define clGetProgramPipelineInfoLog CL_OpenGL::functions->getProgramPipelineInfoLog
+#define clVertexAttribL1d CL_OpenGL::functions->vertexAttribL1d
+#define clVertexAttribL2d CL_OpenGL::functions->vertexAttribL2d
+#define clVertexAttribL3d CL_OpenGL::functions->vertexAttribL3d
+#define clVertexAttribL4d CL_OpenGL::functions->vertexAttribL4d
+#define clVertexAttribL1dv CL_OpenGL::functions->vertexAttribL1dv
+#define clVertexAttribL2dv CL_OpenGL::functions->vertexAttribL2dv
+#define clVertexAttribL3dv CL_OpenGL::functions->vertexAttribL3dv
+#define clVertexAttribL4dv CL_OpenGL::functions->vertexAttribL4dv
+#define clVertexAttribLPointer CL_OpenGL::functions->vertexAttribLPointer
+#define clGetVertexAttribLdv CL_OpenGL::functions->getVertexAttribLdv
+#define clViewportArrayv CL_OpenGL::functions->viewportArrayv
+#define clViewportIndexedf CL_OpenGL::functions->viewportIndexedf
+#define clViewportIndexedfv CL_OpenGL::functions->viewportIndexedfv
+#define clScissorArrayv CL_OpenGL::functions->scissorArrayv
+#define clScissorIndexed CL_OpenGL::functions->scissorIndexed
+#define clScissorIndexedv CL_OpenGL::functions->scissorIndexedv
+#define clDepthRangeArrayv CL_OpenGL::functions->depthRangeArrayv
+#define clDepthRangeIndexed CL_OpenGL::functions->depthRangeIndexed
+#define clGetFloati_v CL_OpenGL::functions->getFloati_v
+#define clGetDoublei_v CL_OpenGL::functions->getDoublei_v
+#define clCreateSyncFromCLeventARB CL_OpenGL::functions->createSyncFromCLeventARB
+#define clDebugMessageControlARB CL_OpenGL::functions->debugMessageControlARB
+#define clDebugMessageInsertARB CL_OpenGL::functions->debugMessageInsertARB
+#define clDebugMessageCallbackARB CL_OpenGL::functions->debugMessageCallbackARB
+#define clGetDebugMessageLogARB CL_OpenGL::functions->getDebugMessageLogARB
+#define clGetGraphicsResetStatusARB CL_OpenGL::functions->getGraphicsResetStatusARB
+#define clGetnMapdvARB CL_OpenGL::functions->getnMapdvARB
+#define clGetnMapfvARB CL_OpenGL::functions->getnMapfvARB
+#define clGetnMapivARB CL_OpenGL::functions->getnMapivARB
+#define clGetnPixelMapfvARB CL_OpenGL::functions->getnPixelMapfvARB
+#define clGetnPixelMapuivARB CL_OpenGL::functions->getnPixelMapuivARB
+#define clGetnPixelMapusvARB CL_OpenGL::functions->getnPixelMapusvARB
+#define clGetnPolygonStippleARB CL_OpenGL::functions->getnPolygonStippleARB
+#define clGetnColorTableARB CL_OpenGL::functions->getnColorTableARB
+#define clGetnConvolutionFilterARB CL_OpenGL::functions->getnConvolutionFilterARB
+#define clGetnSeparableFilterARB CL_OpenGL::functions->getnSeparableFilterARB
+#define clGetnHistogramARB CL_OpenGL::functions->getnHistogramARB
+#define clGetnMinmaxARB CL_OpenGL::functions->getnMinmaxARB
+#define clGetnTexImageARB CL_OpenGL::functions->getnTexImageARB
+#define clReadnPixelsARB CL_OpenGL::functions->readnPixelsARB
+#define clGetnCompressedTexImageARB CL_OpenGL::functions->getnCompressedTexImageARB
+#define clGetnUniformfvARB CL_OpenGL::functions->getnUniformfvARB
+#define clGetnUniformivARB CL_OpenGL::functions->getnUniformivARB
+#define clGetnUniformuivARB CL_OpenGL::functions->getnUniformuivARB
+#define clGetnUniformdvARB CL_OpenGL::functions->getnUniformdvARB
 
 /// \}
 
 /// \}
-
 

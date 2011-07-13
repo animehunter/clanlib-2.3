@@ -589,10 +589,6 @@ void CL_GL1TextureProvider::set_mag_filter(CL_TextureFilter filter)
 	cl1TexParameteri(texture_type, CL_TEXTURE_MAG_FILTER, to_enum(filter));
 }
 
-void CL_GL1TextureProvider::set_max_anisotropy(float v)
-{
-}
-
 void CL_GL1TextureProvider::set_texture_compare(CL_TextureCompareMode mode, CL_CompareFunction func)
 {
 	throw_if_disposed();
