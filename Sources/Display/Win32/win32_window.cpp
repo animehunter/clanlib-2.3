@@ -57,6 +57,8 @@
 
 // #define fun_and_games_with_vista
 
+#include <emmintrin.h>
+
 #ifdef fun_and_games_with_vista
 #include <dwmapi.h>
 #pragma comment(lib, "dwmapi.lib")
