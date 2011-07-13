@@ -46,6 +46,9 @@ public:
 		blue_size = 4;
 		alpha_size = 4;
 		multisampling = 0;
+		version_major = 3;
+		version_minor = 0;
+		allow_lower_versions = true;
 	}
 
 
@@ -62,6 +65,11 @@ public:
 	int blue_size;
 	int alpha_size;
 	int multisampling;
+
+	int version_major;
+	int version_minor;
+	bool allow_lower_versions;
+
 /// \}
 };
 

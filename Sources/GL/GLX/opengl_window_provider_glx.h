@@ -278,7 +278,7 @@ public:
 
 	void process_messages();
 
-	GLXContext create_context();
+	GLXContext create_context(CL_OpenGLWindowDescription &gl_desc);
 
 	/// \brief Check for window messages
 	/** \return true when there is a message*/
@@ -299,8 +299,8 @@ public:
 
 private:
 
-	GLXContext create_context_glx_1_3(GLXContext shared_context);
-	GLXContext create_context_glx_1_2(GLXContext shared_context);
+	GLXContext create_context_glx_1_3(CL_OpenGLWindowDescription &gl_desc, GLXContext shared_context);
+	GLXContext create_context_glx_1_2(CL_OpenGLWindowDescription &gl_desc, GLXContext shared_context);
 	void create_glx_1_3(CL_DisplayWindowSite *new_site, const CL_DisplayWindowDescription &desc, Display *disp);
 	void create_glx_1_2(CL_DisplayWindowSite *new_site, const CL_DisplayWindowDescription &desc, Display *disp);
 

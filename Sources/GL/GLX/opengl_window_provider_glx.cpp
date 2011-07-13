@@ -414,7 +414,7 @@ void CL_OpenGLWindowProvider_GLX::create_glx_1_3(CL_DisplayWindowSite *new_site,
 	}
 
 	// create a GLX context
-	opengl_context = create_context();
+	opengl_context = create_context(gl_desc);
 }
 
 
@@ -469,7 +469,7 @@ void CL_OpenGLWindowProvider_GLX::create_glx_1_2(CL_DisplayWindowSite *new_site,
 	}
 
 	// create a GLX context
-	opengl_context = create_context();
+	opengl_context = create_context(gl_desc);
 
 }
 
@@ -538,7 +538,7 @@ static int cl_ctxErrorHandler( Display *dpy, XErrorEvent *ev )
     return 0;
 }
 
-GLXContext CL_OpenGLWindowProvider_GLX::create_context()
+GLXContext CL_OpenGLWindowProvider_GLX::create_context(CL_OpenGLWindowDescription &gl_desc)
 {
 	GLXContext shared_context = NULL;
 
@@ -559,17 +559,17 @@ GLXContext CL_OpenGLWindowProvider_GLX::create_context()
 
 	if (glx_1_3)
 	{
-		context = create_context_glx_1_3(shared_context);
+		context = create_context_glx_1_3(CL_OpenGLWindowDescription &gl_desc, shared_context);
 	}
 	else
 	{
-		context = create_context_glx_1_2(shared_context);
+		context = create_context_glx_1_2(CL_OpenGLWindowDescription &gl_desc, shared_context);
 	}
 
 	return context;
 }
 
-GLXContext CL_OpenGLWindowProvider_GLX::create_context_glx_1_3(GLXContext shared_context)
+GLXContext CL_OpenGLWindowProvider_GLX::create_context_glx_1_3(CL_OpenGLWindowDescription &gl_desc, GLXContext shared_context)
 {
 	GLXContext context;
 
@@ -577,14 +577,6 @@ GLXContext CL_OpenGLWindowProvider_GLX::create_context_glx_1_3(GLXContext shared
 	if(context == NULL)
 		throw CL_Exception("glXCreateContext failed");
 	
-	int attribs[] = {
-		0x2091, //GLX_CONTEXT_MAJOR_VERSION_ARB,
-		3,
-		0x2092, //GLX_CONTEXT_MINOR_VERSION_ARB,
-		0,
-		None
-	};
-
 	ptr_glXCreateContextAttribs glXCreateContextAttribs = NULL;
 
 	if (is_glx_extension_supported("GLX_ARB_create_context"))
@@ -603,23 +595,96 @@ GLXContext CL_OpenGLWindowProvider_GLX::create_context_glx_1_3(GLXContext shared
 		// Note this error handler is global.  All display connections in all threads
 		// of a process use the same error handler, so be sure to guard against other
 		// threads issuing X commands while this code is running.
-		cl_ctxErrorOccurred = false;
 		int (*oldHandler)(Display*, XErrorEvent*) = XSetErrorHandler(&cl_ctxErrorHandler);
 	  
-		GLXContext context_gl3;
-		context_gl3 = glXCreateContextAttribs(x11_window.get_display(), fbconfig, shared_context, True, attribs);
+		int attribs[] = {
+			0x2091, //GLX_CONTEXT_MAJOR_VERSION_ARB,
+			-1,	// Written later
+			0x2092, //GLX_CONTEXT_MINOR_VERSION_ARB,
+			-1,	// Writen later
+			None
+		};
+
+		GLXContext context_gl3 = 0;
+
+		int gl_major = gl_desc.get_version_major();
+		int gl_minor = gl_desc.get_version_minor();
+		if (gl_desc.get_allow_lower_versions() == false)
+		{
+				attibs[1] = gl_major;
+				attrib[3] = gl_minor;
+
+				cl_ctxErrorOccurred = false;
+
+				context_gl3 = glXCreateContextAttribs(x11_window.get_display(), fbconfig, shared_context, True, attribs);
+
+				if (cl_ctxErrorOccurred)
+				{
+					if (context_gl3)
+					{
+						glx.glXDestroyContext(x11_window.get_display(), context_gl3);
+						context_gl3 = 0;
+					}
+				}
+
+			if (!context_gl3)
+				throw CL_Exception(cl_format("This application requires OpenGL %1.%2 or above. Try updating your drivers, or upgrade to a newer graphics card.",  gl_major, gl_minor));
+		}
+		else
+		{
+			static const char opengl_version_list[] = 
+			{
+				// Clanlib supported version pairs
+				4,1,
+				4,0,
+				3,3,
+				3,2,
+				3,1,
+				3,0,
+				0,0,	// End of list
+			};
+
+			const char *opengl_version_list_ptr = opengl_version_list;
+			do
+			{
+				int major = *(opengl_version_list_ptr++);
+				if (major == 0)
+					break;
+					
+				int minor = *(opengl_version_list_ptr++);
+
+				// Find the appropriate version in the list
+				if (major > gl_major)
+					continue;
+
+				if (major == gl_major)
+				{
+					if (minor > gl_minor)
+						continue;	
+				}
+
+
+				attibs[1] = major;
+				attrib[3] = minor;
+
+				cl_ctxErrorOccurred = false;
+
+				context_gl3 = glXCreateContextAttribs(x11_window.get_display(), fbconfig, shared_context, True, attribs);
+
+				if (cl_ctxErrorOccurred)
+				{
+					if (context_gl3)
+					{
+						glx.glXDestroyContext(x11_window.get_display(), context_gl3);
+						context_gl3 = 0;
+					}
+				}
+			}
+
+		}while(!context_gl3);
 		
 		// Restore the original error handler
 		XSetErrorHandler( oldHandler );		
-		
-		if (cl_ctxErrorOccurred)
-		{
-			if (context_gl3)
-			{
-				glx.glXDestroyContext(x11_window.get_display(), context_gl3);
-				context_gl3 = 0;
-			}
-		}
 		
 		if (context_gl3)
 		{
@@ -630,8 +695,11 @@ GLXContext CL_OpenGLWindowProvider_GLX::create_context_glx_1_3(GLXContext shared
 	return context;
 }
 
-GLXContext CL_OpenGLWindowProvider_GLX::create_context_glx_1_2(GLXContext shared_context)
+GLXContext CL_OpenGLWindowProvider_GLX::create_context_glx_1_2(CL_OpenGLWindowDescription &gl_desc, GLXContext shared_context)
 {
+	if (gl_desc.get_allow_lower_versions() == false)
+		throw CL_Exception("GLX 1.2 does not support opengl version selection.");
+
 	GLXContext context;
 	context = glx.glXCreateContext(x11_window.get_display(), opengl_visual_info, shared_context, GL_TRUE);
 	if(context == NULL)

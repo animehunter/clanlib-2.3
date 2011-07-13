@@ -273,9 +273,54 @@ void CL_OpenGLWindowProvider_WGL::create(CL_DisplayWindowSite *new_site, const C
 
 		CL_OpenGLCreationHelper helper(hwnd, device_context);
 		helper.set_multisampling_pixel_format(gldesc);
-		opengl_context = helper.create_opengl3_context(share_context, 3, 0);
-		if (!opengl_context)
-			opengl_context = helper.create_opengl2_context(share_context);
+
+		int gl_major = gldesc.get_version_major();
+		int gl_minor = gldesc.get_version_minor();
+		if (gldesc.get_allow_lower_versions() == false)
+		{
+			opengl_context = helper.create_opengl3_context(share_context, gl_major, gl_minor);
+			if (!opengl_context)
+				throw CL_Exception(cl_format("This application requires OpenGL %1.%2 or above. Try updating your drivers, or upgrade to a newer graphics card.",  gl_major, gl_minor));
+		}
+		else
+		{
+			static const char opengl_version_list[] = 
+			{
+				// Clanlib supported version pairs
+				4,1,
+				4,0,
+				3,3,
+				3,2,
+				3,1,
+				3,0,
+				0,0,	// End of list
+			};
+
+			const char *opengl_version_list_ptr = opengl_version_list;
+			do
+			{
+				int major = *(opengl_version_list_ptr++);
+				if (major == 0)
+					break;
+					
+				int minor = *(opengl_version_list_ptr++);
+
+				// Find the appropriate version in the list
+				if (major > gl_major)
+					continue;
+
+				if (major == gl_major)
+				{
+					if (minor > gl_minor)
+						continue;	
+				}
+
+				opengl_context = helper.create_opengl3_context(share_context, major, minor);
+			}while(!opengl_context);
+
+			if (!opengl_context)
+				opengl_context = helper.create_opengl2_context(share_context);
+		}
 
 		gc = CL_GraphicContext(new CL_OpenGLGraphicContextProvider(new RenderWindowProvider_WGL(*this, opengl_context, false)));
 		CL_SharedGCData::get_gc_providers().push_back(gc.get_provider());

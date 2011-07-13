@@ -113,6 +113,21 @@ int CL_OpenGLWindowDescription::get_multisampling() const
 	return impl_gl->multisampling;
 }
 
+int CL_OpenGLWindowDescription::get_version_major() const
+{
+	return impl_gl->version_major;
+}
+
+int CL_OpenGLWindowDescription::get_version_minor() const
+{
+	return impl_gl->version_minor;
+}
+
+bool CL_OpenGLWindowDescription::get_allow_lower_versions() const
+{
+	return impl_gl->allow_lower_versions;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // CL_OpenGLWindowDescription operations:
 
@@ -154,6 +169,14 @@ void CL_OpenGLWindowDescription::set_alpha_size(int value)
 void CL_OpenGLWindowDescription::set_multisampling(int value)
 {
 	impl_gl->multisampling = value;
+}
+
+void CL_OpenGLWindowDescription::set_version(int major, int minor, bool allow_lower_versions)
+{
+	impl_gl->version_major = major;
+	impl_gl->version_minor = minor;
+	impl_gl->allow_lower_versions = allow_lower_versions;
+	
 }
 
 /////////////////////////////////////////////////////////////////////////////

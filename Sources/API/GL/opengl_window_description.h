@@ -97,6 +97,15 @@ public:
 	/// \brief Returns the number of samples per pixel.
 	int get_multisampling() const;
 
+	/// \brief Returns selected major version number
+	int get_version_major() const;
+
+	/// \brief Returns selected minor version number
+	int get_version_minor() const;
+
+	/// \brief Returns true if allowed lower versions than the selected version
+	bool get_allow_lower_versions() const;
+
 /// \}
 /// \name Operations
 /// \{
@@ -136,6 +145,15 @@ public:
 
 	/// \brief Sets the number of samples per pixel.
 	void set_multisampling(int value);
+
+	/// \brief Select the OpenGL version number
+	///
+	/// Defaults to OpenGL 3.0, with allow lower versions
+	///
+	/// \param major = OpenGL major number (e.g. 4)
+	/// \param minor = OpenGL minor number (e.g. 1)
+	/// \param allow_lower_versions = Allow lower versions of the specified opengl
+	void set_version(int major, int minor, bool allow_lower_versions);
 
 /// \}
 /// \name Implementation
