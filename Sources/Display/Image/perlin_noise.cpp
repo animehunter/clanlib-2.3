@@ -640,7 +640,7 @@ void CL_PerlinNoise_Impl::set_permutations(const unsigned char *table, unsigned 
 	}
 	
 	unsigned char *dest = permutation_table;
-	unsigned int dest_size = permutation_table_size * 2;
+	unsigned int dest_size = permutation_table_size;
 
 	while(dest_size > 0)
 	{
@@ -651,6 +651,9 @@ void CL_PerlinNoise_Impl::set_permutations(const unsigned char *table, unsigned 
 		memcpy(dest, table, size_to_copy);
 		dest += size_to_copy;
 	}
+
+	// Mirror the table
+	memcpy(&permutation_table[permutation_table_size], &permutation_table[0], permutation_table_size);
 
 	permutation_table_set = true;
 

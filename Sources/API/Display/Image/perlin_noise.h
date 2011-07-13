@@ -122,7 +122,7 @@ public:
 	/// If this function is not used, this class uses rand() to create a permutation table instead
 	///
 	/// \param table = The permutation table
-	/// \param size = The permutation table size. Usually 256 (the maximum) unless a lower periodic table is required
+	/// \param size = The permutation table size (2,4,8,16,32,64,128,256). Usually 256 (the maximum) unless a lower periodic table is required
 	void set_permutations(const unsigned char *table, unsigned int size = 256);
 
 	/// \brief Set the size of the output pixelbuffer
