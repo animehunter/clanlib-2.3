@@ -559,11 +559,11 @@ GLXContext CL_OpenGLWindowProvider_GLX::create_context(const CL_OpenGLWindowDesc
 
 	if (glx_1_3)
 	{
-		context = create_context_glx_1_3(CL_OpenGLWindowDescription &gl_desc, shared_context);
+		context = create_context_glx_1_3(gl_desc, shared_context);
 	}
 	else
 	{
-		context = create_context_glx_1_2(CL_OpenGLWindowDescription &gl_desc, shared_context);
+		context = create_context_glx_1_2(gl_desc, shared_context);
 	}
 
 	return context;
@@ -611,8 +611,8 @@ GLXContext CL_OpenGLWindowProvider_GLX::create_context_glx_1_3(const CL_OpenGLWi
 		int gl_minor = gl_desc.get_version_minor();
 		if (gl_desc.get_allow_lower_versions() == false)
 		{
-				attibs[1] = gl_major;
-				attrib[3] = gl_minor;
+				attribs[1] = gl_major;
+				attribs[3] = gl_minor;
 
 				cl_ctxErrorOccurred = false;
 
@@ -664,8 +664,8 @@ GLXContext CL_OpenGLWindowProvider_GLX::create_context_glx_1_3(const CL_OpenGLWi
 				}
 
 
-				attibs[1] = major;
-				attrib[3] = minor;
+				attribs[1] = major;
+				attribs[3] = minor;
 
 				cl_ctxErrorOccurred = false;
 
@@ -679,9 +679,8 @@ GLXContext CL_OpenGLWindowProvider_GLX::create_context_glx_1_3(const CL_OpenGLWi
 						context_gl3 = 0;
 					}
 				}
-			}
-
-		}while(!context_gl3);
+			}while(!context_gl3);
+		}
 		
 		// Restore the original error handler
 		XSetErrorHandler( oldHandler );		
