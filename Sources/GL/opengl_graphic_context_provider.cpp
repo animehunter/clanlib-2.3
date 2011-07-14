@@ -1160,8 +1160,7 @@ void CL_OpenGLGraphicContextProvider::set_polygon_rasterizer(const CL_PolygonRas
 
     if (clPolygonMode)
     {
-        clPolygonMode(CL_FRONT, to_enum(raster.get_face_fill_mode_front()));
-        clPolygonMode(CL_BACK, to_enum(raster.get_face_fill_mode_back()));
+        clPolygonMode(CL_FRONT_AND_BACK, to_enum(raster.get_face_fill_mode()));
     }
 
 	switch (raster.get_front_face())

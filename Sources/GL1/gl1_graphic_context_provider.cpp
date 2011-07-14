@@ -1478,8 +1478,8 @@ void CL_GL1GraphicContextProvider::set_polygon_rasterizer(const CL_PolygonRaster
 	else
 		cl1Disable(CL_POLYGON_OFFSET_FILL);
 
-	cl1PolygonMode(CL_FRONT, to_enum(raster.get_face_fill_mode_front()));
-	cl1PolygonMode(CL_BACK, to_enum(raster.get_face_fill_mode_back()));
+	cl1PolygonMode(CL_FRONT, to_enum(raster.get_face_fill_mode()));
+	cl1PolygonMode(CL_BACK, to_enum(raster.get_face_fill_mode()));
 
 	switch (raster.get_front_face())
 	{
