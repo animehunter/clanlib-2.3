@@ -812,10 +812,13 @@ CL_TextureStateTracker::CL_TextureStateTracker(CLuint texture_type, CLuint handl
         clBindTexture(CL_TEXTURE_2D, handle);
 #else
 
-	last_is_enabled_texture1d = clIsEnabled(CL_TEXTURE_1D);
-	last_is_enabled_texture2d = clIsEnabled(CL_TEXTURE_2D);
-	last_is_enabled_texture3d = clIsEnabled(CL_TEXTURE_3D);
-	last_is_enabled_texture_cube_map = clIsEnabled(CL_TEXTURE_CUBE_MAP);
+	if (CL_OpenGL::get_opengl_version_major() < 3)
+	{
+		last_is_enabled_texture1d = clIsEnabled(CL_TEXTURE_1D);
+		last_is_enabled_texture2d = clIsEnabled(CL_TEXTURE_2D);
+		last_is_enabled_texture3d = clIsEnabled(CL_TEXTURE_3D);
+		last_is_enabled_texture_cube_map = clIsEnabled(CL_TEXTURE_CUBE_MAP);
+	}
 	clGetIntegerv(CL_TEXTURE_BINDING_1D, (CLint *) &last_bound_texture1d);
 	clGetIntegerv(CL_TEXTURE_BINDING_2D, (CLint *) &last_bound_texture2d);
 	clGetIntegerv(CL_TEXTURE_BINDING_3D, (CLint *) &last_bound_texture3d);
@@ -823,37 +826,49 @@ CL_TextureStateTracker::CL_TextureStateTracker(CLuint texture_type, CLuint handl
 
 	if (texture_type == CL_TEXTURE_1D)
 	{
-		clDisable(CL_TEXTURE_2D);
-		clDisable(CL_TEXTURE_3D);
-		clDisable(CL_TEXTURE_CUBE_MAP);
-		clEnable(CL_TEXTURE_1D);
+		if (CL_OpenGL::get_opengl_version_major() < 3)
+		{
+			clDisable(CL_TEXTURE_2D);
+			clDisable(CL_TEXTURE_3D);
+			clDisable(CL_TEXTURE_CUBE_MAP);
+			clEnable(CL_TEXTURE_1D);
+		}
 		clBindTexture(CL_TEXTURE_1D, handle);
 	}
 
 	if (texture_type == CL_TEXTURE_2D)
 	{
-		clDisable(CL_TEXTURE_1D);
-		clDisable(CL_TEXTURE_3D);
-		clDisable(CL_TEXTURE_CUBE_MAP);
-		clEnable(CL_TEXTURE_2D);
+		if (CL_OpenGL::get_opengl_version_major() < 3)
+		{
+			clDisable(CL_TEXTURE_1D);
+			clDisable(CL_TEXTURE_3D);
+			clDisable(CL_TEXTURE_CUBE_MAP);
+			clEnable(CL_TEXTURE_2D);
+		}
 		clBindTexture(CL_TEXTURE_2D, handle);
 	}
 
 	if (texture_type == CL_TEXTURE_3D)
 	{
-		clDisable(CL_TEXTURE_1D);
-		clDisable(CL_TEXTURE_2D);
-		clDisable(CL_TEXTURE_CUBE_MAP);
-		clEnable(CL_TEXTURE_3D);
+		if (CL_OpenGL::get_opengl_version_major() < 3)
+		{
+			clDisable(CL_TEXTURE_1D);
+			clDisable(CL_TEXTURE_2D);
+			clDisable(CL_TEXTURE_CUBE_MAP);
+			clEnable(CL_TEXTURE_3D);
+		}
 		clBindTexture(CL_TEXTURE_3D, handle);
 	}
 
 	if (texture_type == CL_TEXTURE_CUBE_MAP)
 	{
-		clDisable(CL_TEXTURE_1D);
-		clDisable(CL_TEXTURE_2D);
-		clDisable(CL_TEXTURE_3D);
-		clEnable(CL_TEXTURE_CUBE_MAP);
+		if (CL_OpenGL::get_opengl_version_major() < 3)
+		{
+			clDisable(CL_TEXTURE_1D);
+			clDisable(CL_TEXTURE_2D);
+			clDisable(CL_TEXTURE_3D);
+			clEnable(CL_TEXTURE_CUBE_MAP);
+		}
 		clBindTexture(CL_TEXTURE_CUBE_MAP, handle);
 	}
 #endif
@@ -864,10 +879,14 @@ CL_TextureStateTracker::~CL_TextureStateTracker()
 #ifdef __APPLE__
 	clBindTexture(CL_TEXTURE_2D, last_bound_texture2d);
 #else
-	if (last_is_enabled_texture1d) clEnable(CL_TEXTURE_1D); else clDisable(CL_TEXTURE_1D);
-	if (last_is_enabled_texture2d) clEnable(CL_TEXTURE_2D); else clDisable(CL_TEXTURE_2D);
-	if (last_is_enabled_texture3d) clEnable(CL_TEXTURE_3D); else clDisable(CL_TEXTURE_3D);
-	if (last_is_enabled_texture_cube_map) clEnable(CL_TEXTURE_CUBE_MAP); else clDisable(CL_TEXTURE_CUBE_MAP);
+
+	if (CL_OpenGL::get_opengl_version_major() < 3)
+	{
+		if (last_is_enabled_texture1d) clEnable(CL_TEXTURE_1D); else clDisable(CL_TEXTURE_1D);
+		if (last_is_enabled_texture2d) clEnable(CL_TEXTURE_2D); else clDisable(CL_TEXTURE_2D);
+		if (last_is_enabled_texture3d) clEnable(CL_TEXTURE_3D); else clDisable(CL_TEXTURE_3D);
+		if(last_is_enabled_texture_cube_map) clEnable(CL_TEXTURE_CUBE_MAP); else clDisable(CL_TEXTURE_CUBE_MAP);
+	}
 
 	if (last_is_enabled_texture1d) clBindTexture(CL_TEXTURE_1D, last_bound_texture1d);
 	if (last_is_enabled_texture2d) clBindTexture(CL_TEXTURE_2D, last_bound_texture2d);
