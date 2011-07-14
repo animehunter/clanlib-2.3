@@ -569,6 +569,52 @@ GLXContext CL_OpenGLWindowProvider_GLX::create_context(const CL_OpenGLWindowDesc
 	return context;
 }
 
+GLXContext CL_OpenGLWindowProvider_GLX::create_context_glx_1_3_helper(GLXContext shared_context, int major_version, int minor_version, const CL_OpenGLWindowDescription &gldesc)
+{
+	std::vector<int> int_attributes;
+
+	int_attributes.push_back(0x2091);	// GLX_CONTEXT_MAJOR_VERSION_ARB
+	int_attributes.push_back(major_version);
+	int_attributes.push_back(0x2092);	// GLX_CONTEXT_MINOR_VERSION_ARB
+	int_attributes.push_back(minor_version);
+
+	// Layer plane does not exist on GLX - http://www.opengl.org/registry/specs/ARB/glx_create_context.txt
+	//int_attributes.push_back(0x2093);	// GLX_CONTEXT_LAYER_PLANE_ARB
+	//int_attributes.push_back(gldesc.get_layer_plane());
+
+	int_attributes.push_back(0x2094);	// GLX_CONTEXT_FLAGS_ARB
+	int flags = 0;
+	if (gldesc.get_debug())
+		flags |= 0x1;	// GLX_CONTEXT_DEBUG_BIT_ARB
+	if (gldesc.get_forward_compatible())	// GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB
+		flags |= 0x2;	
+	int_attributes.push_back(flags);
+
+	int_attributes.push_back(0x9126);	// GLX_CONTEXT_PROFILE_MASK_ARB
+	flags = 0;
+	if (gldesc.get_core_profile())
+		flags |= 0x1;	// GLX_CONTEXT_CORE_PROFILE_BIT_ARB
+	if (gldesc.get_compatibility_profile())	// GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB
+		flags |= 0x2;	
+	int_attributes.push_back(flags);
+
+	int_attributes.push_back(None);
+	
+	cl_ctxErrorOccurred = false;
+
+	GLXContext context_gl3 = glXCreateContextAttribs(x11_window.get_display(), fbconfig, shared_context, True, &int_attributes[0]);
+
+	if (cl_ctxErrorOccurred)
+	{
+		if (context_gl3)
+		{
+			glx.glXDestroyContext(x11_window.get_display(), context_gl3);
+			context_gl3 = 0;
+		}
+	}
+	return context_gl3;
+}
+
 GLXContext CL_OpenGLWindowProvider_GLX::create_context_glx_1_3(const CL_OpenGLWindowDescription &gl_desc, GLXContext shared_context)
 {
 	GLXContext context;
@@ -597,36 +643,14 @@ GLXContext CL_OpenGLWindowProvider_GLX::create_context_glx_1_3(const CL_OpenGLWi
 		// threads issuing X commands while this code is running.
 		int (*oldHandler)(Display*, XErrorEvent*) = XSetErrorHandler(&cl_ctxErrorHandler);
 	  
-		int attribs[] = {
-			0x2091, //GLX_CONTEXT_MAJOR_VERSION_ARB,
-			-1,	// Written later
-			0x2092, //GLX_CONTEXT_MINOR_VERSION_ARB,
-			-1,	// Writen later
-			None
-		};
-
 		GLXContext context_gl3 = 0;
 
 		int gl_major = gl_desc.get_version_major();
 		int gl_minor = gl_desc.get_version_minor();
 		if (gl_desc.get_allow_lower_versions() == false)
 		{
-				attribs[1] = gl_major;
-				attribs[3] = gl_minor;
-
-				cl_ctxErrorOccurred = false;
-
-				context_gl3 = glXCreateContextAttribs(x11_window.get_display(), fbconfig, shared_context, True, attribs);
-
-				if (cl_ctxErrorOccurred)
-				{
-					if (context_gl3)
-					{
-						glx.glXDestroyContext(x11_window.get_display(), context_gl3);
-						context_gl3 = 0;
-					}
-				}
-
+			context_gl3 = create_context_glx_1_3_helper(shared_context, gl_major, gl_minor, gl_desc);
+	
 			if (!context_gl3)
 				throw CL_Exception(cl_format("This application requires OpenGL %1.%2 or above. Try updating your drivers, or upgrade to a newer graphics card.",  gl_major, gl_minor));
 		}
@@ -663,22 +687,8 @@ GLXContext CL_OpenGLWindowProvider_GLX::create_context_glx_1_3(const CL_OpenGLWi
 						continue;	
 				}
 
+				context_gl3 = create_context_glx_1_3_helper(shared_context, gl_major, gl_minor, gl_desc);
 
-				attribs[1] = major;
-				attribs[3] = minor;
-
-				cl_ctxErrorOccurred = false;
-
-				context_gl3 = glXCreateContextAttribs(x11_window.get_display(), fbconfig, shared_context, True, attribs);
-
-				if (cl_ctxErrorOccurred)
-				{
-					if (context_gl3)
-					{
-						glx.glXDestroyContext(x11_window.get_display(), context_gl3);
-						context_gl3 = 0;
-					}
-				}
 			}while(!context_gl3);
 		}
 		

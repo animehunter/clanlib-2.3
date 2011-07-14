@@ -49,8 +49,13 @@ public:
 		version_major = 3;
 		version_minor = 0;
 		allow_lower_versions = true;
-	}
+		debug_flag = false;
+		forward_compatible_flag = false;
+		core_profile_flag = true;
+		compatibility_profile_flag = false;
+		layer_plane = 0;
 
+	}
 
 /// \}
 /// \name Attributes
@@ -69,6 +74,12 @@ public:
 	int version_major;
 	int version_minor;
 	bool allow_lower_versions;
+
+	bool debug_flag;
+	bool forward_compatible_flag;
+	bool core_profile_flag;
+	bool compatibility_profile_flag;
+	int layer_plane;
 
 /// \}
 };

@@ -278,7 +278,7 @@ void CL_OpenGLWindowProvider_WGL::create(CL_DisplayWindowSite *new_site, const C
 		int gl_minor = gldesc.get_version_minor();
 		if (gldesc.get_allow_lower_versions() == false)
 		{
-			opengl_context = helper.create_opengl3_context(share_context, gl_major, gl_minor);
+			opengl_context = helper.create_opengl3_context(share_context, gl_major, gl_minor, gldesc);
 			if (!opengl_context)
 				throw CL_Exception(cl_format("This application requires OpenGL %1.%2 or above. Try updating your drivers, or upgrade to a newer graphics card.",  gl_major, gl_minor));
 		}
@@ -315,7 +315,7 @@ void CL_OpenGLWindowProvider_WGL::create(CL_DisplayWindowSite *new_site, const C
 						continue;	
 				}
 
-				opengl_context = helper.create_opengl3_context(share_context, major, minor);
+				opengl_context = helper.create_opengl3_context(share_context, major, minor, gldesc);
 			}while(!opengl_context);
 
 			if (!opengl_context)

@@ -128,6 +128,29 @@ bool CL_OpenGLWindowDescription::get_allow_lower_versions() const
 	return impl_gl->allow_lower_versions;
 }
 
+bool CL_OpenGLWindowDescription::get_debug() const
+{
+	return impl_gl->debug_flag;
+}
+bool CL_OpenGLWindowDescription::get_forward_compatible() const
+{
+	return impl_gl->forward_compatible_flag;
+}
+bool CL_OpenGLWindowDescription::get_core_profile() const
+{
+	return impl_gl->core_profile_flag;
+}
+bool CL_OpenGLWindowDescription::get_compatibility_profile() const
+{
+	return impl_gl->compatibility_profile_flag;
+}
+
+int CL_OpenGLWindowDescription::get_layer_plane() const
+{
+	return impl_gl->layer_plane;
+}
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CL_OpenGLWindowDescription operations:
 
@@ -177,6 +200,28 @@ void CL_OpenGLWindowDescription::set_version(int major, int minor, bool allow_lo
 	impl_gl->version_minor = minor;
 	impl_gl->allow_lower_versions = allow_lower_versions;
 	
+}
+
+void CL_OpenGLWindowDescription::set_debug(bool enable)
+{
+	impl_gl->debug_flag = enable;
+}
+void CL_OpenGLWindowDescription::set_forward_compatible(bool enable)
+{
+	impl_gl->forward_compatible_flag = enable;
+}
+void CL_OpenGLWindowDescription::set_core_profile(bool enable)
+{
+	impl_gl->core_profile_flag = enable;
+}
+void CL_OpenGLWindowDescription::set_compatibility_profile(bool enable)
+{
+	impl_gl->compatibility_profile_flag = enable;
+}
+
+void CL_OpenGLWindowDescription::set_layer_plane(int value)
+{
+	impl_gl->layer_plane = value;
 }
 
 /////////////////////////////////////////////////////////////////////////////
