@@ -172,18 +172,19 @@ const CL_String::char_type *cl_glsl_fragment_sprite =
 CL_OpenGLGraphicContextProvider::CL_OpenGLGraphicContextProvider(const CL_RenderWindowProvider * const render_window)
 : render_window(render_window), map_mode(cl_map_2d_upper_left), projection(CL_Mat4f::identity()), modelview(CL_Mat4f::identity()),
   framebuffer_bound(false), prim_arrays_set(false), num_set_program_attribute_arrays(0), cur_prim_array(0),
-  modelview_projection_matrix_valid(false), normal_matrix_valid(false)
+  modelview_projection_matrix_valid(false), normal_matrix_valid(false),
+  opengl_version_major(0), shader_version_major(0)
 {
 	check_opengl_version();
 
 	use_glsl_1_5 = false;
-	int version_major = 0;
-	int version_minor = 0;
-	int version_release = 0;
-	get_opengl_shading_language_version(version_major, version_minor, version_release);
-	if (version_major >= 1)
+	int glsl_version_major;
+	int glsl_version_minor;
+	int glsl_version_release;
+	get_opengl_shading_language_version(glsl_version_major, glsl_version_minor, glsl_version_release);
+	if ( glsl_version_major >= 1)
 	{
-		if (version_minor >= 5)
+		if ( glsl_version_minor >= 5)
 			use_glsl_1_5 = true;
 	}
 #if defined(__APPLE__)
@@ -287,60 +288,103 @@ void CL_OpenGLGraphicContextProvider::check_opengl_version()
 
 void CL_OpenGLGraphicContextProvider::get_opengl_version(int &version_major, int &version_minor, int &version_release)
 {
-/*	The GL_VERSION string begins with a version number. The version number uses one of these forms: 
-	major_number.minor_number 
-	major_number.minor_number.release_number 
-	Vendor-specific information may follow the version number. Its format depends on the implementation, but a space always separates the version number and the vendor-specific information. 
-	All strings are null-terminated. 
-	If an error is generated, glGetString returns zero.
-*/
-	CL_OpenGL::set_active(this);
+	if (!opengl_version_major)	// Is not cached
+	{
 
-	CL_String version = (char*)clGetString(CL_VERSION);
+	/*	The GL_VERSION string begins with a version number. The version number uses one of these forms: 
+		major_number.minor_number 
+		major_number.minor_number.release_number 
+		Vendor-specific information may follow the version number. Its format depends on the implementation, but a space always separates the version number and the vendor-specific information. 
+		All strings are null-terminated. 
+		If an error is generated, glGetString returns zero.
+	*/
+		CL_OpenGL::set_active(this);
 
-	version_major = 0;
-	version_minor = 0;
-	version_release = 0;
+		#if defined(__APPLE__)
+			opengl_version_major = 0;
+			opengl_version_minor = 0;
+			opengl_version_release = 0;
+			glGetIntegerv(GL_MAJOR_VERSION, &opengl_version_major)
+			glGetIntegerv(GL_MINOR_VERSION, &opengl_version_minor)
+		#else
+
+			CL_String version = (char*)clGetString(CL_VERSION);
+
+			opengl_version_major = 0;
+			opengl_version_minor = 0;
+			opengl_version_release = 0;
     
-    // OK so Apple's OpenGL ES 2 implementation incorrectly returns a GL_VERSION with stuff at the front:
-    // "OpenGL ES 2.0 APPLE"
-    if (version == "OpenGL ES 2.0 APPLE")
-    {
-        version_major = 2;
-        version_minor = 0;
-        version_release = 0;
-    }
-    else
-    {
-        std::vector<CL_String> split_version = CL_StringHelp::split_text(version, ".");
-        if(split_version.size() > 0)
-            version_major = CL_StringHelp::text_to_int(split_version[0]);
-        if(split_version.size() > 1)
-            version_minor = CL_StringHelp::text_to_int(split_version[1]);
-        if(split_version.size() > 2)
-            version_release = CL_StringHelp::text_to_int(split_version[2]);
-    }
+			std::vector<CL_String> split_version = CL_StringHelp::split_text(version, ".");
+			if(split_version.size() > 0)
+				opengl_version_major = CL_StringHelp::text_to_int(split_version[0]);
+			if(split_version.size() > 1)
+				opengl_version_minor = CL_StringHelp::text_to_int(split_version[1]);
+			if(split_version.size() > 2)
+				opengl_version_release = CL_StringHelp::text_to_int(split_version[2]);
+		#endif
+	}
+
+	version_major = opengl_version_major;
+	version_minor = opengl_version_minor;
+	version_release = opengl_version_release;
 }
 
 void CL_OpenGLGraphicContextProvider::get_opengl_shading_language_version(int &version_major, int &version_minor, int &version_release)
 {
-	CL_OpenGL::set_active(this);
+	if (!shader_version_major)	// Is not cached
+	{
+		// See http://www.opengl.org/wiki/Detecting_the_Shader_Model
+		shader_version_major = 0;
+		shader_version_minor = 0;
+		shader_version_release = 0;
 
-	CL_String version = (char*)clGetString(CL_SHADING_LANGUAGE_VERSION);
+		if ( (opengl_version_major < 2) || ( (opengl_version_major == 2) && (opengl_version_minor < 1) ) )
+		{
+			CL_OpenGL::set_active(this);
+			
+			CL_String version = (char*)clGetString(CL_SHADING_LANGUAGE_VERSION);
 
-	version_major = 0;
-	version_minor = 0;
-	version_release = 0;
-
-	std::vector<CL_String> split_version = CL_StringHelp::split_text(version, ".");
-	if(split_version.size() > 0)
-		version_major = CL_StringHelp::text_to_int(split_version[0]);
-	if(split_version.size() > 1)
-		version_minor = CL_StringHelp::text_to_int(split_version[1]);
-	if(split_version.size() > 2)
-		version_release = CL_StringHelp::text_to_int(split_version[2]);
+			std::vector<CL_String> split_version = CL_StringHelp::split_text(version, ".");
+			if(split_version.size() > 0)
+				shader_version_major = CL_StringHelp::text_to_int(split_version[0]);
+			if(split_version.size() > 1)
+				shader_version_minor = CL_StringHelp::text_to_int(split_version[1]);
+			if(split_version.size() > 2)
+				shader_version_release = CL_StringHelp::text_to_int(split_version[2]);
+		}
+		else
+		{
+			if (opengl_version_major == 2)
+			{
+				shader_version_major = 1;
+				shader_version_minor = 20;
+			}
+			else if ( (opengl_version_major == 3) && (opengl_version_minor == 0) )
+			{
+				shader_version_major = 1;
+				shader_version_minor = 30;
+			}
+			else if ( (opengl_version_major == 3) && (opengl_version_minor == 1) )
+			{
+				shader_version_major = 1;
+				shader_version_minor = 40;
+			}
+			else if ( (opengl_version_major == 3) && (opengl_version_minor == 2) )
+			{
+				shader_version_major = 1;
+				shader_version_minor = 50;
+			}
+			else
+			{
+				shader_version_major = opengl_version_major;
+				shader_version_minor = opengl_version_minor * 10;
+			}
+		}
+	}
+	version_major = shader_version_major;
+	version_minor = shader_version_minor;
+	version_release = shader_version_release;
 }
-
 
 CL_String CL_OpenGLGraphicContextProvider::get_renderer_string()
 {
