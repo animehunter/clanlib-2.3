@@ -805,7 +805,7 @@ CLenum CL_OpenGLTextureProvider::to_enum(CL_CompareFunction func)
 CL_TextureStateTracker::CL_TextureStateTracker(CLuint texture_type, CLuint handle)
 {    
 	CL_OpenGL::set_active();
-     
+
 #ifdef __APPLE__
 	clGetIntegerv(CL_TEXTURE_BINDING_2D, (CLint *) &last_bound_texture2d);
     if (handle)

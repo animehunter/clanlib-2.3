@@ -187,6 +187,13 @@ CL_OpenGLGraphicContextProvider::CL_OpenGLGraphicContextProvider(const CL_Render
 		if ( glsl_version_minor >= 5)
 			use_glsl_1_5 = true;
 	}
+
+	// Must write here, although CL_OpenGL::SetActive() updates it, because the version number is not available on the initial CL_OpenGL::SetActive() call
+	CL_OpenGL::opengl_version_major = opengl_version_major;
+	CL_OpenGL::opengl_version_minor = opengl_version_minor;
+	CL_OpenGL::glsl_version_major = shader_version_major;
+	CL_OpenGL::glsl_version_minor = shader_version_minor;
+
 #if defined(__APPLE__)
 	// Force glsl 1_5 for apple
 	use_glsl_1_5 = true;
