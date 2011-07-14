@@ -151,6 +151,7 @@ public:
 /// \{
 private:
 	void set_current_program_object_matricies();
+	void draw_primitives_legacy(CL_PrimitivesType type, int num_vertices, const CL_PrimitivesArrayData * const prim_array);
 	void check_opengl_version();
 
 	CLenum to_enum(enum CL_DrawBuffer buf);

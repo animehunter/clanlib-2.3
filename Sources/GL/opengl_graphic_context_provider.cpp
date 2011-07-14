@@ -692,7 +692,35 @@ void CL_OpenGLGraphicContextProvider::reset_program_object()
 
 void CL_OpenGLGraphicContextProvider::draw_primitives(CL_PrimitivesType type, int num_vertices, const CL_PrimitivesArrayData * const prim_array)
 {
+
+	// Client vertex arrays must have a vertex buffer object for opengl 3.0 and above (without compatibility option)
+	if (CL_OpenGL::get_glsl_version_major() >= 3)
+	{
+		for (int i = 0; i < prim_array->num_attributes; i++)
+		{
+			if ( (!prim_array->attributes[i].single_value) || (prim_array->attributes[i].array_provider == NULL) )
+			{
+				draw_primitives_legacy(type, num_vertices,  prim_array);
+				return;
+			}
+		}
+		
+	}
+
 	set_primitives_array(prim_array);
+	draw_primitives_array(type, 0, num_vertices);
+	reset_primitives_array();
+}
+
+void CL_OpenGLGraphicContextProvider::draw_primitives_legacy(CL_PrimitivesType type, int num_vertices, const CL_PrimitivesArrayData * const prim_array)
+{
+	// This function converts vertex arrays without a vertex buffer object into a correct format
+
+	CL_PrimitivesArrayData new_prim_array = *prim_array;
+
+	//TODO: Fix this function to process new_prim_array
+
+	set_primitives_array(&new_prim_array);
 	draw_primitives_array(type, 0, num_vertices);
 	reset_primitives_array();
 }
@@ -797,12 +825,18 @@ void CL_OpenGLGraphicContextProvider::set_primitives_array(const CL_PrimitivesAr
 			// vertex array object is bound will generate an INVALID OPERATION error,
 			// as will calling any array drawing command when no vertex array object is
 			// bound.
-			// clEnableVertexAttribArray(prim_array->attribute_indexes[i]);
-			// clVertexAttribPointer(
-			//	prim_array->attribute_indexes[i], attribute.size, to_enum(attribute.type),
-			//	prim_array->normalize_attributes[i], attribute.stride, attribute.data);
 
-			throw CL_Exception("Since OpenGL 3.0, vertex array attributes must contain a buffer object. Use CL_VertexArrayBuffer");
+			if (CL_OpenGL::get_glsl_version_major() < 3)
+			{
+				clEnableVertexAttribArray(prim_array->attribute_indexes[i]);
+				clVertexAttribPointer(
+					prim_array->attribute_indexes[i], attribute.size, to_enum(attribute.type),
+					prim_array->normalize_attributes[i], attribute.stride, attribute.data);
+			}
+			else
+			{
+				throw CL_Exception("Since OpenGL 3.0, vertex array attributes must contain a buffer object. Use CL_VertexArrayBuffer");
+			}
 		}
 	}
 }
