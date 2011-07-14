@@ -72,8 +72,8 @@ public:
 	const CL_RenderWindowProvider & get_render_window() const { return *render_window; }
 	int get_width() const;
 	int get_height() const;
-	void get_opengl_version(int &version_major, int &version_minor, int &version_release);
-	void get_opengl_shading_language_version(int &version_major, int &version_minor, int &version_release);
+	void get_opengl_version(int &version_major, int &version_minor);
+	void get_opengl_shading_language_version(int &version_major, int &version_minor);
 	CL_String get_renderer_string();
 	CL_String get_vendor_string();
 	std::vector<CL_String> get_extensions();
@@ -194,11 +194,9 @@ private:
 
 	int opengl_version_major;
 	int opengl_version_minor;
-	int opengl_version_release;
 
 	int shader_version_major;
 	int shader_version_minor;
-	int shader_version_release;
 
 	bool use_glsl_1_5;	// Available with OpenGL 3.2 and above
 /// \}

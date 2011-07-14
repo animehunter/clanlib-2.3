@@ -181,7 +181,7 @@ CL_OpenGLGraphicContextProvider::CL_OpenGLGraphicContextProvider(const CL_Render
 	int glsl_version_major;
 	int glsl_version_minor;
 	int glsl_version_release;
-	get_opengl_shading_language_version(glsl_version_major, glsl_version_minor, glsl_version_release);
+	get_opengl_shading_language_version(glsl_version_major, glsl_version_minor);
 	if ( glsl_version_major >= 1)
 	{
 		if ( glsl_version_minor >= 5)
@@ -279,14 +279,13 @@ void CL_OpenGLGraphicContextProvider::check_opengl_version()
 {
 	int version_major = 0;
 	int version_minor = 0;
-	int version_release = 0;
 
-	get_opengl_version(version_major, version_minor, version_release);
+	get_opengl_version(version_major, version_minor);
 	if(version_major < 2)
-		throw CL_Exception(cl_format("This application requires OpenGL 2.0 or above. Your hardware only supports OpenGL %1.%2.%3. Try updating your drivers, or upgrade to a newer graphics card.", version_major, version_minor, version_release));
+		throw CL_Exception(cl_format("This application requires OpenGL 2.0 or above. Your hardware only supports OpenGL %1.%2. Try updating your drivers, or upgrade to a newer graphics card.", version_major, version_minor));
 }
 
-void CL_OpenGLGraphicContextProvider::get_opengl_version(int &version_major, int &version_minor, int &version_release)
+void CL_OpenGLGraphicContextProvider::get_opengl_version(int &version_major, int &version_minor)
 {
 	if (!opengl_version_major)	// Is not cached
 	{
@@ -303,7 +302,6 @@ void CL_OpenGLGraphicContextProvider::get_opengl_version(int &version_major, int
 		#if defined(__APPLE__)
 			opengl_version_major = 0;
 			opengl_version_minor = 0;
-			opengl_version_release = 0;
 			glGetIntegerv(GL_MAJOR_VERSION, &opengl_version_major)
 			glGetIntegerv(GL_MINOR_VERSION, &opengl_version_minor)
 		#else
@@ -312,31 +310,26 @@ void CL_OpenGLGraphicContextProvider::get_opengl_version(int &version_major, int
 
 			opengl_version_major = 0;
 			opengl_version_minor = 0;
-			opengl_version_release = 0;
     
 			std::vector<CL_String> split_version = CL_StringHelp::split_text(version, ".");
 			if(split_version.size() > 0)
 				opengl_version_major = CL_StringHelp::text_to_int(split_version[0]);
 			if(split_version.size() > 1)
 				opengl_version_minor = CL_StringHelp::text_to_int(split_version[1]);
-			if(split_version.size() > 2)
-				opengl_version_release = CL_StringHelp::text_to_int(split_version[2]);
 		#endif
 	}
 
 	version_major = opengl_version_major;
 	version_minor = opengl_version_minor;
-	version_release = opengl_version_release;
 }
 
-void CL_OpenGLGraphicContextProvider::get_opengl_shading_language_version(int &version_major, int &version_minor, int &version_release)
+void CL_OpenGLGraphicContextProvider::get_opengl_shading_language_version(int &version_major, int &version_minor)
 {
 	if (!shader_version_major)	// Is not cached
 	{
 		// See http://www.opengl.org/wiki/Detecting_the_Shader_Model
 		shader_version_major = 0;
 		shader_version_minor = 0;
-		shader_version_release = 0;
 
 		if ( (opengl_version_major < 2) || ( (opengl_version_major == 2) && (opengl_version_minor < 1) ) )
 		{
@@ -349,8 +342,6 @@ void CL_OpenGLGraphicContextProvider::get_opengl_shading_language_version(int &v
 				shader_version_major = CL_StringHelp::text_to_int(split_version[0]);
 			if(split_version.size() > 1)
 				shader_version_minor = CL_StringHelp::text_to_int(split_version[1]);
-			if(split_version.size() > 2)
-				shader_version_release = CL_StringHelp::text_to_int(split_version[2]);
 		}
 		else
 		{
@@ -383,7 +374,6 @@ void CL_OpenGLGraphicContextProvider::get_opengl_shading_language_version(int &v
 	}
 	version_major = shader_version_major;
 	version_minor = shader_version_minor;
-	version_release = shader_version_release;
 }
 
 CL_String CL_OpenGLGraphicContextProvider::get_renderer_string()
