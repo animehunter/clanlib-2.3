@@ -57,6 +57,11 @@
 
 CL_GLFunctions *CL_OpenGL::functions = 0;
 
+int CL_OpenGL::opengl_version_major = 0;
+int CL_OpenGL::opengl_version_minor = 0;
+int CL_OpenGL::glsl_version_major = 0;
+int CL_OpenGL::glsl_version_minor = 0;
+
 void CL_OpenGL::check_error()
 {
 	CLenum last_error = clGetError();
@@ -689,12 +694,17 @@ bool CL_OpenGL::set_active()
 void CL_OpenGL::set_active(const CL_OpenGLGraphicContextProvider * const gc_provider)
 {
 	// Don't do anything if the supplied graphic context is already active.
-#ifndef __APPLE__ // temp hack to see if iOS changes the current context behind our back
+//#ifndef __APPLE__ // temp hack to see if iOS changes the current context behind our back
 	if (gc_provider != cl_active_opengl_gc)
-#endif
+//#endif
 	{
 		if (gc_provider)
 		{
+			opengl_version_major = gc_provider->get_opengl_version_major();
+			opengl_version_minor = gc_provider->get_opengl_version_minor();
+			glsl_version_major = gc_provider->get_glsl_version_major();
+			glsl_version_minor = gc_provider->get_glsl_version_minor();
+
 			// Make render context associated with graphic context current.
 			gc_provider->get_render_window().make_current();
 

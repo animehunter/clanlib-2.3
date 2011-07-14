@@ -95,6 +95,18 @@ public:
 	/// Remember to call clGetError() to clear any previous errors
 	static void check_error();
 
+	/// \brief Get the opengl version major number
+	static int get_opengl_version_major() {return opengl_version_major;}
+
+	/// \brief Get the opengl version minor number
+	static int get_opengl_version_minor() {return opengl_version_minor;}
+
+	/// \brief Get the glsl version major number
+	static int get_glsl_version_major() {return glsl_version_major;}
+
+	/// \brief Get the glsl version minor number
+	static int get_glsl_version_minor() {return glsl_version_minor;}
+
 /// \}
 
 private:
@@ -102,6 +114,11 @@ private:
 	/// 
 	/// This should only be called by the CL_OpenGLGraphicContextProvider destructor
 	static void remove_active(const CL_OpenGLGraphicContextProvider * const gc_provider);
+
+	static int opengl_version_major;
+	static int opengl_version_minor;
+	static int glsl_version_major;
+	static int glsl_version_minor;
 
 	friend class CL_OpenGLGraphicContextProvider;
 

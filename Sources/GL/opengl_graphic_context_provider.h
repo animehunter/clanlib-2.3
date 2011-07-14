@@ -68,6 +68,19 @@ public:
 public:
 	int get_max_attributes();
 	CL_Size get_max_texture_size() const;
+
+	/// \brief Get the opengl version major number
+	int get_opengl_version_major() const {return opengl_version_major;}
+
+	/// \brief Get the opengl version minor number
+	int get_opengl_version_minor() const {return opengl_version_minor;}
+
+	/// \brief Get the glsl version major number
+	int get_glsl_version_major() const {return shader_version_major;}
+
+	/// \brief Get the glsl version minor number
+	int get_glsl_version_minor() const {return shader_version_minor;}
+
 	const CL_Mat4f &get_modelview() const { return modelview; }
 	const CL_RenderWindowProvider & get_render_window() const { return *render_window; }
 	int get_width() const;
