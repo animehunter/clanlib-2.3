@@ -802,15 +802,7 @@ void CL_OpenGLGraphicContextProvider::set_primitives_array(const CL_PrimitivesAr
 			//	prim_array->attribute_indexes[i], attribute.size, to_enum(attribute.type),
 			//	prim_array->normalize_attributes[i], attribute.stride, attribute.data);
 
-			CL_OpenGLVertexArrayBufferProvider vbo;
-			vbo.create(attribute.data, attribute.size, cl_usage_static_copy);
-			clBindBuffer(CL_ARRAY_BUFFER, vbo.get_handle());
-			clEnableVertexAttribArray(prim_array->attribute_indexes[i]);
-			clVertexAttribPointer(
-				prim_array->attribute_indexes[i], attribute.size, to_enum(attribute.type),
-				prim_array->normalize_attributes[i], attribute.stride, attribute.data);
-			clBindBuffer(CL_ARRAY_BUFFER, 0);
-
+			throw CL_Exception("Since OpenGL 3.0, vertex array attributes must contain a buffer object. Use CL_VertexArrayBuffer");
 		}
 	}
 }
