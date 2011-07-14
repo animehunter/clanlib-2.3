@@ -68,7 +68,7 @@
 
 const CL_String::char_type *cl_glsl15_vertex_color_only = 
 	"#version 150\n"
-	"attribute vec4 Position, Color0; "
+	"in vec4 Position, Color0; "
 	"uniform mat4 cl_ModelViewProjectionMatrix;"
 	"varying vec4 Color; "
 	"void main(void) { gl_Position = cl_ModelViewProjectionMatrix*Position; Color = Color0; }";
@@ -81,8 +81,8 @@ const CL_String::char_type *cl_glsl15_fragment_color_only =
 
 const CL_String::char_type *cl_glsl15_vertex_single_texture =
 	"#version 150\n"
-	"attribute vec4 Position, Color0; "
-	"attribute vec2 TexCoord0; "
+	"in vec4 Position, Color0; "
+	"in vec2 TexCoord0; "
 	"uniform mat4 cl_ModelViewProjectionMatrix;"
 	"varying vec4 Color; "
 	"varying vec2 TexCoord; "
@@ -98,9 +98,9 @@ const CL_String::char_type *cl_glsl15_fragment_single_texture =
 
 const CL_String::char_type *cl_glsl15_vertex_sprite =
 	"#version 150\n"
-	"attribute vec4 Position, Color0; "
-	"attribute vec2 TexCoord0; "
-	"attribute float TexIndex0; "
+	"in vec4 Position, Color0; "
+	"in vec2 TexCoord0; "
+	"in float TexIndex0; "
 	"uniform mat4 cl_ModelViewProjectionMatrix;"
 	"varying vec4 Color; "
 	"varying vec2 TexCoord; "
