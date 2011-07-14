@@ -685,14 +685,6 @@ void CL_OpenGLGraphicContextProvider::reset_program_object()
 
 void CL_OpenGLGraphicContextProvider::draw_primitives(CL_PrimitivesType type, int num_vertices, const CL_PrimitivesArrayData * const prim_array)
 {
-/*	if (cur_prim_array != prim_array) 
-	{
-		cur_prim_array = prim_array;
-		if (prim_arrays_set)
-			reset_primitives_array();
-		set_primitives_array(prim_array);
-	}*/
-
 	set_primitives_array(prim_array);
 	draw_primitives_array(type, 0, num_vertices);
 	reset_primitives_array();
@@ -802,17 +794,7 @@ void CL_OpenGLGraphicContextProvider::set_primitives_array(const CL_PrimitivesAr
 void CL_OpenGLGraphicContextProvider::draw_primitives_array(CL_PrimitivesType type, int offset, int num_vertices)
 {
 	CL_OpenGL::set_active(this);
-/*	if (num_vertices < 64) // For small arrays it is faster to use ArrayElement instead of DrawArrays
-	{
-		clBegin(to_enum(type));
-		for (int i = 0; i < num_vertices; i++)
-			clArrayElement(offset + i);
-		clEnd();
-	}
-	else
-	{*/
-		clDrawArrays(to_enum(type), offset, num_vertices);
-//	}
+	clDrawArrays(to_enum(type), offset, num_vertices);
 }
 
 void CL_OpenGLGraphicContextProvider::draw_primitives_array_instanced(CL_PrimitivesType type, int offset, int num_vertices, int instance_count)
