@@ -783,10 +783,21 @@ void CL_OpenGLGraphicContextProvider::set_primitives_array(const CL_PrimitivesAr
 		}
 		else if (attribute.data)
 		{
+			// DEPRECATED FEATURES OF OPENGL 3.0
+			// Client vertex arrays - all vertex array attribute pointers must refer to buffer
+			// objects (section 2.9.1). The default vertex array object (the name zero) is Bug 3236
+			// also deprecated. Calling VertexAttribPointer when no buffer object or no
+			// vertex array object is bound will generate an INVALID OPERATION error,
+			// as will calling any array drawing command when no vertex array object is
+			// bound.
+			throw CL_Exception("Since OpenGL 3.0, vertex array attributes must contain a buffer object. Use CL_VertexArrayBuffer");
+
+			/*
 			clEnableVertexAttribArray(prim_array->attribute_indexes[i]);
 			clVertexAttribPointer(
 				prim_array->attribute_indexes[i], attribute.size, to_enum(attribute.type),
 				prim_array->normalize_attributes[i], attribute.stride, attribute.data);
+			*/
 		}
 	}
 }
