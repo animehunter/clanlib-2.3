@@ -58,7 +58,7 @@
 #include "API/GL/opengl.h"
 #include "API/GL/opengl_wrap.h"
 #include "API/Display/2D/image.h"
-
+#include "API/Core/System/uniqueptr.h"
 #ifdef __APPLE__
 #include <CoreFoundation/CoreFoundation.h>
 #include "AGL/opengl_window_provider_agl.h"
@@ -714,11 +714,98 @@ void CL_OpenGLGraphicContextProvider::draw_primitives(CL_PrimitivesType type, in
 
 void CL_OpenGLGraphicContextProvider::draw_primitives_legacy(CL_PrimitivesType type, int num_vertices, const CL_PrimitivesArrayData * const prim_array)
 {
+	if (num_vertices <= 0)
+		return;
+
 	// This function converts vertex arrays without a vertex buffer object into a correct format
 
 	CL_PrimitivesArrayData new_prim_array = *prim_array;
 
-	//TODO: Fix this function to process new_prim_array
+	std::vector< CL_UniquePtr<CL_VertexArrayBufferProvider> > vbo_store;
+	std::vector< CL_PrimitivesArrayData::VertexData > vertex_data_store;
+	vertex_data_store.resize(prim_array->num_attributes);
+	new_prim_array.attributes = &(vertex_data_store[0]);
+
+	bool first_array_found = false;
+	bool use_stride_vbo = false;
+	unsigned char *lowest_array_start_ptr;
+	unsigned char *highest_array_end_ptr;
+
+	for (int i = 0; i < prim_array->num_attributes; i++)
+	{
+		new_prim_array.attributes[i] = prim_array->attributes[i];
+
+		if ( prim_array->attributes[i].single_value) 
+			continue;
+
+		if (prim_array->attributes[i].array_provider)
+			throw CL_Exception("Mixed vertex arrays, with and without vertex buffer object's, are not implemented. Use vertex buffer objects");
+
+		if (prim_array->attributes[i].data == NULL)
+			throw CL_Exception("Vertex array specified without data. Use vertex buffer objects");
+
+		// Check for single vbo required per vertex
+		if (prim_array->attributes[i].stride == 0)
+		{
+			if (!first_array_found)
+			{
+				first_array_found = true;
+				use_stride_vbo = false;
+			}
+			else
+			{
+				if (use_stride_vbo)
+					throw CL_Exception("Vertex arrays using stride and non-stride, are not implemented. Use vertex buffer objects");
+			}
+			throw CL_Exception("FIXME");
+		}
+		else
+		{
+			// Multiple vbo required per vertex
+			if (!first_array_found)
+			{
+				first_array_found = true;
+				use_stride_vbo = true;
+				lowest_array_start_ptr = (unsigned char *) prim_array->attributes[i].data;
+				highest_array_end_ptr = lowest_array_start_ptr + prim_array->attributes[i].stride * num_vertices;
+			}
+			else
+			{
+				if (!use_stride_vbo)
+					throw CL_Exception("Vertex arrays using stride and non-stride, are not implemented. Use vertex buffer objects");
+
+				unsigned char *current_array_start_ptr = (unsigned char *) prim_array->attributes[i].data;
+				unsigned char *current_array_end_ptr = current_array_start_ptr + prim_array->attributes[i].stride * num_vertices;
+
+				// Validate belongs to the same array. (This does assume the stride values are identical)
+				if ( (current_array_end_ptr <= (lowest_array_start_ptr - prim_array->attributes[i].stride)) || (current_array_start_ptr >= (highest_array_end_ptr + prim_array->attributes[i].stride)) )
+					throw CL_Exception("Vertex arrays using stride for different locations, are not implemented. Use vertex buffer objects");
+
+				if (current_array_start_ptr < lowest_array_start_ptr)
+					lowest_array_start_ptr = current_array_start_ptr;
+
+				if (current_array_end_ptr > highest_array_end_ptr)
+					highest_array_end_ptr = current_array_end_ptr;
+
+			}
+		}
+	}
+
+	// Create single vbo
+	if (use_stride_vbo && first_array_found)
+	{
+		CL_VertexArrayBufferProvider *vbo_ptr = alloc_vertex_array_buffer();
+		vbo_store.push_back(CL_UniquePtr<CL_VertexArrayBufferProvider>(vbo_ptr));
+		vbo_ptr->create(lowest_array_start_ptr, highest_array_end_ptr - lowest_array_start_ptr, cl_usage_static_draw);
+
+		for (int i = 0; i < prim_array->num_attributes; i++)
+		{
+			if ( prim_array->attributes[i].single_value) 
+				continue;
+			new_prim_array.attributes[i].array_provider = vbo_ptr;
+			new_prim_array.attributes[i].data = (void *) (((unsigned char *) new_prim_array.attributes[i].data) - lowest_array_start_ptr);
+		}
+	}
 
 	set_primitives_array(&new_prim_array);
 	draw_primitives_array(type, 0, num_vertices);
