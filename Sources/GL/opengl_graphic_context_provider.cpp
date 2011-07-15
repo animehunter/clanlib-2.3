@@ -757,7 +757,27 @@ void CL_OpenGLGraphicContextProvider::draw_primitives_legacy(CL_PrimitivesType t
 				if (use_stride_vbo)
 					throw CL_Exception("Vertex arrays using stride and non-stride, are not implemented. Use vertex buffer objects");
 			}
-			throw CL_Exception("FIXME");
+
+			CL_VertexArrayBufferProvider *vbo_ptr = alloc_vertex_array_buffer();
+			vbo_store.push_back(CL_UniquePtr<CL_VertexArrayBufferProvider>(vbo_ptr));
+
+			int data_length = 0;
+			switch (type)
+			{
+				case cl_type_unsigned_byte:   data_length = sizeof(CLubyte); break;
+				case cl_type_unsigned_short:  data_length = sizeof(CLushort); break;
+				case cl_type_unsigned_int:    data_length = sizeof(CLuint); break;
+				case cl_type_byte:            data_length = sizeof(CLbyte); break;
+				case cl_type_short:           data_length = sizeof(CLshort); break;
+				case cl_type_int:             data_length = sizeof(CLint); break;
+				case cl_type_float:           data_length = sizeof(CLfloat); break;
+				default:                      break;
+			}
+
+			vbo_ptr->create(prim_array->attributes[i].data, prim_array->attributes[i].size * data_length * num_vertices, cl_usage_static_draw);
+			new_prim_array.attributes[i].array_provider = vbo_ptr;
+			new_prim_array.attributes[i].data = (void *) 0;
+
 		}
 		else
 		{
