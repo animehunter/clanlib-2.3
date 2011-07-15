@@ -765,7 +765,7 @@ void CL_OpenGLGraphicContextProvider::draw_primitives_legacy(CL_PrimitivesType t
 			vbo_store.push_back(CL_UniquePtr<CL_VertexArrayBufferProvider>(vbo_ptr));
 
 			int data_length = 0;
-			switch (type)
+			switch (prim_array->attributes[i].type)
 			{
 				case cl_type_unsigned_byte:   data_length = sizeof(CLubyte); break;
 				case cl_type_unsigned_short:  data_length = sizeof(CLushort); break;
