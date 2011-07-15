@@ -70,12 +70,12 @@ const CL_String::char_type *cl_glsl15_vertex_color_only =
 	"#version 150\n"
 	"in vec4 Position, Color0; "
 	"uniform mat4 cl_ModelViewProjectionMatrix;"
-	"varying vec4 Color; "
+	"out vec4 Color; "
 	"void main(void) { gl_Position = cl_ModelViewProjectionMatrix*Position; Color = Color0; }";
 
 const CL_String::char_type *cl_glsl15_fragment_color_only =
 	"#version 150\n"
-	"varying highp vec4 Color; "
+	"in vec4 Color; "
 	"out vec4 cl_FragColor;"
 	"void main(void) { cl_FragColor = Color; }";
 
@@ -84,15 +84,15 @@ const CL_String::char_type *cl_glsl15_vertex_single_texture =
 	"in vec4 Position, Color0; "
 	"in vec2 TexCoord0; "
 	"uniform mat4 cl_ModelViewProjectionMatrix;"
-	"varying vec4 Color; "
-	"varying vec2 TexCoord; "
+	"out vec4 Color; "
+	"out vec2 TexCoord; "
 	"void main(void) { gl_Position = cl_ModelViewProjectionMatrix*Position; Color = Color0; TexCoord = TexCoord0; }";
 
 const CL_String::char_type *cl_glsl15_fragment_single_texture =
 	"#version 150\n"
 	"uniform sampler2D Texture0; "
-	"varying highp vec4 Color; "
-	"varying highp vec2 TexCoord; "
+	"in vec4 Color; "
+	"in vec2 TexCoord; "
 	"out vec4 cl_FragColor;"
 	"void main(void) { cl_FragColor = Color*texture2D(Texture0, TexCoord); }";
 
@@ -102,9 +102,9 @@ const CL_String::char_type *cl_glsl15_vertex_sprite =
 	"in vec2 TexCoord0; "
 	"in float TexIndex0; "
 	"uniform mat4 cl_ModelViewProjectionMatrix;"
-	"varying vec4 Color; "
-	"varying vec2 TexCoord; "
-	"varying float TexIndex; "
+	"out vec4 Color; "
+	"out vec2 TexCoord; "
+	"out float TexIndex; "
 	"void main(void) { gl_Position = cl_ModelViewProjectionMatrix*Position; Color = Color0; TexCoord = TexCoord0; TexIndex = TexIndex0; }";
 
 const CL_String::char_type *cl_glsl15_fragment_sprite =
@@ -113,9 +113,9 @@ const CL_String::char_type *cl_glsl15_fragment_sprite =
 	"uniform sampler2D Texture1; "
 	"uniform sampler2D Texture2; "
 	"uniform sampler2D Texture3; "
-	"varying highp vec4 Color; "
-	"varying highp vec2 TexCoord; "
-	"varying highp float TexIndex; "
+	"in vec4 Color; "
+	"in vec2 TexCoord; "
+	"in float TexIndex; "
 	"out vec4 cl_FragColor;"
 	"highp vec4 sampleTexture(int index, highp vec2 pos) { if (index == 0) return texture2D(Texture0, TexCoord); else if (index == 1) return texture2D(Texture1, TexCoord); else if (index == 2) return texture2D(Texture2, TexCoord); else if (index == 3) return texture2D(Texture3, TexCoord); else return vec4(1.0,1.0,1.0,1.0); }"
 	"void main(void) { cl_FragColor = Color*sampleTexture(int(TexIndex), TexCoord); } ";
