@@ -580,7 +580,10 @@ void CL_OpenGLGraphicContextProvider::set_texture(int unit_index, const CL_Textu
 	else
 	{
 		CL_OpenGLTextureProvider *provider = static_cast<CL_OpenGLTextureProvider *>(texture.get_provider());
-		clEnable(provider->get_texture_type());
+		if (CL_OpenGL::get_opengl_version_major() < 3)
+		{
+			clEnable(provider->get_texture_type());
+		}
 		clBindTexture(provider->get_texture_type(), provider->get_handle());
 	}
 }
@@ -694,7 +697,7 @@ void CL_OpenGLGraphicContextProvider::draw_primitives(CL_PrimitivesType type, in
 {
 
 	// Client vertex arrays must have a vertex buffer object for opengl 3.0 and above (without compatibility option)
-	if (CL_OpenGL::get_glsl_version_major() >= 3)
+	if (CL_OpenGL::get_opengl_version_major() >= 3)
 	{
 		for (int i = 0; i < prim_array->num_attributes; i++)
 		{
@@ -933,7 +936,7 @@ void CL_OpenGLGraphicContextProvider::set_primitives_array(const CL_PrimitivesAr
 			// as will calling any array drawing command when no vertex array object is
 			// bound.
 
-			if (CL_OpenGL::get_glsl_version_major() < 3)
+			if (CL_OpenGL::get_opengl_version_major() < 3)
 			{
 				clEnableVertexAttribArray(prim_array->attribute_indexes[i]);
 				clVertexAttribPointer(
