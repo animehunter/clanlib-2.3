@@ -701,7 +701,7 @@ void CL_OpenGLGraphicContextProvider::draw_primitives(CL_PrimitivesType type, in
 	{
 		for (int i = 0; i < prim_array->num_attributes; i++)
 		{
-			if ( (!prim_array->attributes[i].single_value) || (prim_array->attributes[i].array_provider == NULL) )
+			if ( (!prim_array->attributes[i].single_value) && (prim_array->attributes[i].array_provider == NULL) )
 			{
 				draw_primitives_legacy(type, num_vertices,  prim_array);
 				return;
