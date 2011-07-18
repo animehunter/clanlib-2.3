@@ -34,8 +34,8 @@ char ShaderColorGeometry::vertex[] =
 	"\n"
 	"#version 130\n"
 	"\n"
-	"attribute vec3 InPosition;\n"
-	"attribute vec4 InColor;\n"
+	"in vec3 InPosition;\n"
+	"in vec4 InColor;\n"
 	"out vec4 PointColor;\n"
 	"\n"
 	"void main()\n"
@@ -54,14 +54,14 @@ char ShaderColorGeometry::geometry[] =
 	"\n"
 	"uniform mat4 cl_ModelViewMatrix;"
 	"uniform mat4 cl_ModelViewProjectionMatrix;"
-	"varying out vec2 TexCoord0;\n"
+	"out vec2 TexCoord0;\n"
 	"in vec4 PointColor[1];\n"
 	"out vec4 TextureColor;\n"
 	"\n"
 	"void main()\n"
 	"{\n"
    	"	int i;\n"
-  	"	vec4 vertex = cl_ModelViewProjectionMatrix * gl_PositionIn[0];\n"
+	"	vec4 vertex = cl_ModelViewProjectionMatrix * gl_in[0].gl_Position;\n"
 	"	vec4 scale = cl_ModelViewProjectionMatrix * vec4(1.0, 0.0, 0.0, 0.0);\n"
 	"	float size = 1.5 * length(scale.xyz);"
 	"	const float texture_scale = 1.5;"
@@ -90,9 +90,10 @@ char ShaderColorGeometry::fragment[] =
 	"\n"
 	"#version 130\n"
 	"\n"
-	"varying vec2 TexCoord0;\n"
+	"in vec2 TexCoord0;\n"
 	"uniform sampler2D Texture0;\n"
 	"in vec4 TextureColor;\n"
+	"out vec4 cl_FragColor;"
 	"\n"
 	"void main()\n"
 	"{\n"
@@ -100,7 +101,7 @@ char ShaderColorGeometry::fragment[] =
 	"	fragment = TextureColor * fragment;"
 	"\n"
 	"   if (fragment.a < 0.2) discard;\n"
-	"	gl_FragColor = fragment;\n"
+	"	cl_FragColor = fragment;\n"
 	"}\n"
 	;
 
@@ -133,6 +134,7 @@ ShaderColorGeometry::ShaderColorGeometry(CL_GraphicContext &gc)
 	program_object.attach(fragment_shader);
 	program_object.bind_attribute_location(0, "InPosition");
 	program_object.bind_attribute_location(1, "InColor");
+	program_object.bind_frag_data_location(0, "cl_FragColor");
 
 	if (!program_object.link())
 	{
