@@ -52,11 +52,11 @@ private:
 	HDC query_dc;
 	HGLRC query_context;
 
-	typedef HGLRC (GL_GLFUNC *ptr_wglCreateContextAttribsARB)(HDC, HGLRC, const int *);
+	typedef HGLRC (CL_GLFUNC *ptr_wglCreateContextAttribsARB)(HDC, HGLRC, const int *);
 
-	typedef BOOL (GL_GLFUNC *ptr_wglGetPixelFormatAttribivEXT)(HDC, int, int, UINT, int *, int *);
-	typedef BOOL (GL_GLFUNC *ptr_wglGetPixelFormatAttribfvEXT)(HDC, int, int, UINT, int *, FLOAT *);
-	typedef BOOL (GL_GLFUNC *ptr_wglChoosePixelFormatEXT)(HDC, const int *, const FLOAT *, UINT, int *, UINT *);
+	typedef BOOL (CL_GLFUNC *ptr_wglGetPixelFormatAttribivEXT)(HDC, int, int, UINT, int *, int *);
+	typedef BOOL (CL_GLFUNC *ptr_wglGetPixelFormatAttribfvEXT)(HDC, int, int, UINT, int *, FLOAT *);
+	typedef BOOL (CL_GLFUNC *ptr_wglChoosePixelFormatEXT)(HDC, const int *, const FLOAT *, UINT, int *, UINT *);
 };
 
 #define WGL_CONTEXT_MAJOR_VERSION_ARB           0x2091
