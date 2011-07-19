@@ -52,7 +52,7 @@ protected:
 private:
 	struct ColorType
 	{
-		CL_String::char_type *name;
+		const CL_String::char_type *name;
 		int color;
 	};
 	static ColorType colors[];
