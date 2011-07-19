@@ -50,7 +50,12 @@
 #endif
 
 #ifdef WIN32
-#include <windows.h>  // this is a temporary workaround. Fix mutex and others :)
+#include <windows.h> 
+#endif
+
+#include "Core/System/cl_platform.h"
+
+#ifdef WIN32
 #include "Core/System/comptr.h"
 #endif
 
@@ -152,7 +157,6 @@
 #include "Core/IOData/pipe_connection.h"
 #include "Core/IOData/pipe_listen.h"
 #include "Core/IOData/security_descriptor.h"
-#include "Core/IOData/datatypes.h"
 #include "Core/IOData/directory.h"
 #include "Core/IOData/security_identifier.h"
 #include "Core/IOData/cl_endian.h"

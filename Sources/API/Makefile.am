@@ -168,7 +168,6 @@ clanCore_includes = \
 	Core/CSS/css_token.h \
 	Core/IOData/access_control_list.h \
 	Core/IOData/cl_endian.h \
-	Core/IOData/datatypes.h \
 	Core/IOData/directory.h \
 	Core/IOData/directory_scanner.h \
 	Core/IOData/file.h \
@@ -226,6 +225,7 @@ clanCore_includes = \
 	Core/Resources/resource_data_session.h \
 	Core/Resources/resource.h \
 	Core/Resources/resource_manager.h \
+	Core/System/cl_platform.h \
 	Core/System/databuffer.h \
 	Core/System/block_allocator.h \
 	Core/System/command_line.h \

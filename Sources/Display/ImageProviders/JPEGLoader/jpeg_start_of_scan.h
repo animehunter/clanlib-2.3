@@ -36,10 +36,10 @@ public:
 	CL_JPEGStartOfScan() : start_dct_coefficient(0), end_dct_coefficient(0), preceding_point_transform(0), point_transform(0){ }
 
 	std::vector<CL_JPEGStartOfScanComponent> components;
-	cl_uint8 start_dct_coefficient;     // Ss
-	cl_uint8 end_dct_coefficient;       // Se
-	cl_uint8 preceding_point_transform; // Ah
-	cl_uint8 point_transform;           // Al
+	cl_uchar start_dct_coefficient;     // Ss
+	cl_uchar end_dct_coefficient;       // Se
+	cl_uchar preceding_point_transform; // Ah
+	cl_uchar point_transform;           // Al
 };
 
 class CL_JPEGStartOfScanComponent
@@ -47,7 +47,7 @@ class CL_JPEGStartOfScanComponent
 public:
 	CL_JPEGStartOfScanComponent() : component_selector(0), dc_table_selector(0), ac_table_selector(0) { }
 
-	cl_uint8 component_selector;        // Cs
-	cl_uint8 dc_table_selector;         // Td
-	cl_uint8 ac_table_selector;         // Ta
+	cl_uchar component_selector;        // Cs
+	cl_uchar dc_table_selector;         // Td
+	cl_uchar ac_table_selector;         // Ta
 };

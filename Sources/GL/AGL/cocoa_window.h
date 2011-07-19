@@ -39,7 +39,7 @@
 #include "API/Core/System/sharedptr.h"
 #include "API/Core/Math/point.h"
 #include "API/Core/Math/rect.h"
-#include "API/Core/IOData/datatypes.h"
+#include "API/Core/System/cl_platform.h"
 #include "API/Core/Signals/callback_v0.h"
 #include "cocoa_controller.h"
 #include <QuartzCore/CAEAGLLayer.h>

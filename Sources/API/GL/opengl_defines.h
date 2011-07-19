@@ -33,7 +33,7 @@
 #pragma once
 #include "api_gl.h"
 
-#include "../Core/IOData/datatypes.h"
+#include "../Core/System/cl_platform.h"
 
 #ifndef CL_DISPLAYDEFINES_DEFINES
 #define CL_DISPLAYDEFINES_DEFINES
@@ -50,8 +50,8 @@ typedef int CLsizei;
 typedef unsigned char CLubyte;
 typedef unsigned short CLushort;
 typedef unsigned int CLuint;
-typedef cl_int64 CLint64;
-typedef cl_uint64 CLuint64;
+typedef cl_long CLint64;
+typedef cl_ulong CLuint64;
 typedef float CLfloat;
 typedef float CLclampf;
 typedef double CLdouble;
