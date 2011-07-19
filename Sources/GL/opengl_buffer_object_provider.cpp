@@ -42,7 +42,7 @@ CL_OpenGLBufferObjectProvider::CL_OpenGLBufferObjectProvider()
 	CL_SharedGCData::add_disposable(this);
 	CL_OpenGL::set_active();
 
-	clGenBuffers(1, &handle);
+	glGenBuffers(1, &handle);
 }
 
 CL_OpenGLBufferObjectProvider::~CL_OpenGLBufferObjectProvider()
@@ -57,7 +57,7 @@ void CL_OpenGLBufferObjectProvider::on_dispose()
 	{
 		if (CL_OpenGL::set_active())
 		{
-			clDeleteBuffers(1, &handle);
+			glDeleteBuffers(1, &handle);
 		}
 	}
 }
@@ -72,10 +72,10 @@ void CL_OpenGLBufferObjectProvider::create(const void *data, int size, CL_Buffer
 	CL_OpenGL::set_active();
 
 	GLint last_buffer = 0;
-	clGetIntegerv(binding, &last_buffer);
-	clBindBuffer(target, handle);
-	clBufferData(target, size, data, to_enum(usage));
-	clBindBuffer(target, last_buffer);
+	glGetIntegerv(binding, &last_buffer);
+	glBindBuffer(target, handle);
+	glBufferData(target, size, data, to_enum(usage));
+	glBindBuffer(target, last_buffer);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -96,10 +96,10 @@ void CL_OpenGLBufferObjectProvider::lock(CL_BufferAccess access)
 	throw_if_disposed();
 	CL_OpenGL::set_active();
 	GLint last_buffer = 0;
-	clGetIntegerv(binding, &last_buffer);
-	clBindBuffer(target, handle);
-	data_ptr = (void *) clMapBuffer(target, to_enum(access));
-	clBindBuffer(target, last_buffer);
+	glGetIntegerv(binding, &last_buffer);
+	glBindBuffer(target, handle);
+	data_ptr = (void *) glMapBuffer(target, to_enum(access));
+	glBindBuffer(target, last_buffer);
 }
 
 void CL_OpenGLBufferObjectProvider::unlock()
@@ -107,10 +107,10 @@ void CL_OpenGLBufferObjectProvider::unlock()
 	throw_if_disposed();
 	CL_OpenGL::set_active();
 	GLint last_buffer = 0;
-	clGetIntegerv(binding, &last_buffer);
-	clBindBuffer(target, handle);
-	clUnmapBuffer(target);
-	clBindBuffer(target, last_buffer);
+	glGetIntegerv(binding, &last_buffer);
+	glBindBuffer(target, handle);
+	glUnmapBuffer(target);
+	glBindBuffer(target, last_buffer);
 	data_ptr = 0;
 }
 
@@ -119,10 +119,10 @@ void CL_OpenGLBufferObjectProvider::upload_data(int offset, const void *data, in
 	throw_if_disposed();
 	CL_OpenGL::set_active();
 	GLint last_buffer = 0;
-	clGetIntegerv(binding, &last_buffer);
-	clBindBuffer(target, handle);
-	clBufferSubData(target, offset, size, data);
-	clBindBuffer(target, last_buffer);
+	glGetIntegerv(binding, &last_buffer);
+	glBindBuffer(target, handle);
+	glBufferSubData(target, offset, size, data);
+	glBindBuffer(target, last_buffer);
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -721,7 +721,7 @@ void CL_OpenGLWindowProvider_GLX::flip(int interval)
 {
 	CL_GraphicContext gc = get_gc();
 	CL_OpenGL::set_active(gc);
-	clFlush();
+	glFlush();
 
 	if (interval != -1 && interval != swap_interval)
 	{
@@ -757,41 +757,41 @@ void CL_OpenGLWindowProvider_GLX::update(const CL_Rect &_rect)
 		return;
 
 	CL_OpenGL::set_active(gc);
-	clFlush();
+	glFlush();
 
 	GLboolean isDoubleBuffered = GL_TRUE;
-	clGetBooleanv(GL_DOUBLEBUFFER, &isDoubleBuffered);
+	glGetBooleanv(GL_DOUBLEBUFFER, &isDoubleBuffered);
 	if (isDoubleBuffered)
 	{
 		GLint read_last_bound;
 		GLint draw_last_bound;
 
-		clGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &read_last_bound);
-		clGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &draw_last_bound);
+		glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &read_last_bound);
+		glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &draw_last_bound);
 
-		clBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	    clBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+	    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
-		clReadBuffer(GL_BACK);
-		clDrawBuffer(GL_FRONT);
+		glReadBuffer(GL_BACK);
+		glDrawBuffer(GL_FRONT);
 
-		clBlitFramebuffer( 
+		glBlitFramebuffer( 
 			rect.left, height - rect.bottom,
 			rect.right, height - rect.top,
 			rect.left, height - rect.bottom,
 			rect.right, height - rect.top,
 			GL_COLOR_BUFFER_BIT, GL_LINEAR);
 
-		clDrawBuffer(GL_BACK);
-		clReadBuffer(GL_FRONT);
+		glDrawBuffer(GL_BACK);
+		glReadBuffer(GL_FRONT);
 
 		if (read_last_bound)
-			clBindFramebuffer(GL_READ_FRAMEBUFFER, read_last_bound);
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, read_last_bound);
 
 		if (draw_last_bound)
-			clBindFramebuffer(GL_DRAW_FRAMEBUFFER, draw_last_bound);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, draw_last_bound);
 
-		clFlush();
+		glFlush();
 
 
 	}

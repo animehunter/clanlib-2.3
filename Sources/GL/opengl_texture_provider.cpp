@@ -68,15 +68,15 @@ CL_OpenGLTextureProvider::CL_OpenGLTextureProvider(CL_TextureDimensions texture_
 	}
 
 	CL_TextureStateTracker state_tracker(texture_type, 0);
-	clGenTextures(1, &handle);
-	clBindTexture(texture_type, handle);
-	clTexParameteri(texture_type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	clTexParameteri(texture_type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	clTexParameteri(texture_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glGenTextures(1, &handle);
+	glBindTexture(texture_type, handle);
+	glTexParameteri(texture_type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(texture_type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(texture_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	if (texture_type != GL_TEXTURE_1D)
-		clTexParameteri(texture_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(texture_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	if (texture_type == GL_TEXTURE_3D)
-		clTexParameteri(texture_type, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+		glTexParameteri(texture_type, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 }
 
 CL_OpenGLTextureProvider::~CL_OpenGLTextureProvider()
@@ -91,7 +91,7 @@ void CL_OpenGLTextureProvider::on_dispose()
 	{
 		if (CL_OpenGL::set_active())
 		{
-			clDeleteTextures(1, &handle);
+			glDeleteTextures(1, &handle);
 		}
 	}
 }
@@ -106,7 +106,7 @@ void CL_OpenGLTextureProvider::generate_mipmap()
 {
 	throw_if_disposed();
 	CL_TextureStateTracker state_tracker(texture_type, handle);
-	clGenerateMipmap(texture_type);
+	glGenerateMipmap(texture_type);
 }
 
 int CL_OpenGLTextureProvider::get_next_power_of_two(int value)
@@ -133,7 +133,7 @@ void CL_OpenGLTextureProvider::create(int new_width, int new_height, CL_TextureF
 	CL_TextureStateTracker state_tracker(texture_type, handle);
 	if (texture_type == GL_TEXTURE_1D)
 	{
-		clTexImage1D(
+		glTexImage1D(
 			GL_TEXTURE_1D,            // target
 			0,                        // level
 			gl_internal_format,       // internalformat
@@ -145,7 +145,7 @@ void CL_OpenGLTextureProvider::create(int new_width, int new_height, CL_TextureF
 	}
 	else if (depth == 1)
 	{
-		clTexImage2D(
+		glTexImage2D(
 			GL_TEXTURE_2D,            // target
 			0,                        // level
 			gl_internal_format,       // internalformat
@@ -158,7 +158,7 @@ void CL_OpenGLTextureProvider::create(int new_width, int new_height, CL_TextureF
 	}
 	else
 	{
-		clTexImage3D(
+		glTexImage3D(
 			GL_TEXTURE_3D,            // target
 			0,                        // level
 			gl_internal_format,       // internalformat
@@ -188,7 +188,7 @@ CL_PixelBuffer CL_OpenGLTextureProvider::get_pixeldata(CL_TextureFormat sized_fo
 	CL_PixelBuffer buffer(
 		width, height, cl_abgr8);
 
-	clGetTexImage(texture_type, level, GL_RGBA, GL_UNSIGNED_BYTE, buffer.get_data());
+	glGetTexImage(texture_type, level, GL_RGBA, GL_UNSIGNED_BYTE, buffer.get_data());
 
 	return buffer.to_format(sized_format);
 }
@@ -241,7 +241,7 @@ void CL_OpenGLTextureProvider::set_compressed_image(
 	GLenum gl_pixel_format;
 	CL_OpenGL::to_opengl_textureformat(internal_format, gl_internal_format, gl_pixel_format);
 
-	clCompressedTexImage2D(texture_type, level, gl_internal_format, width, height, 0, image.get_size(), image.get_data());
+	glCompressedTexImage2D(texture_type, level, gl_internal_format, width, height, 0, image.get_size(), image.get_data());
 }
 
 void CL_OpenGLTextureProvider::set_subimage(
@@ -280,11 +280,11 @@ void CL_OpenGLTextureProvider::set_subimage(
 		// Upload to OpenGL:
 
 		// change alignment
-		clPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		const int bytesPerPixel = image.get_bytes_per_pixel();
-		clPixelStorei(GL_UNPACK_ROW_LENGTH, image.get_pitch() / bytesPerPixel);
-		clPixelStorei(GL_UNPACK_SKIP_PIXELS, src_rect.left);
-		clPixelStorei(GL_UNPACK_SKIP_ROWS, src_rect.top);
+		glPixelStorei(GL_UNPACK_ROW_LENGTH, image.get_pitch() / bytesPerPixel);
+		glPixelStorei(GL_UNPACK_SKIP_PIXELS, src_rect.left);
+		glPixelStorei(GL_UNPACK_SKIP_ROWS, src_rect.top);
 
 		CL_OpenGLPixelBufferProvider *buffer_provider = NULL;
 		if (image.get_provider())
@@ -295,11 +295,11 @@ void CL_OpenGLTextureProvider::set_subimage(
 			if (buffer_provider->get_target() != GL_PIXEL_UNPACK_BUFFER)
 				throw CL_Exception("PixelBuffer direction is set to cl_data_from_gpu");
 			GLint last_buffer = 0;
-			clGetIntegerv(buffer_provider->get_binding(), &last_buffer);
-			clBindBuffer(buffer_provider->get_target(), buffer_provider->get_handle());
+			glGetIntegerv(buffer_provider->get_binding(), &last_buffer);
+			glBindBuffer(buffer_provider->get_target(), buffer_provider->get_handle());
 
 			// upload
-			clTexSubImage2D(
+			glTexSubImage2D(
 			GL_TEXTURE_2D,            // target
 			level,                    // level
 			x, y,                     // xoffset, yoffset
@@ -309,14 +309,14 @@ void CL_OpenGLTextureProvider::set_subimage(
 			type,					  // type
 			NULL);                    // texels
 
-			clBindBuffer(buffer_provider->get_target(), last_buffer);
+			glBindBuffer(buffer_provider->get_target(), last_buffer);
 
 		}
 		else					// CPU Texture
 		{
 			char *data = (char *) image.get_data();
 			// upload
-			clTexSubImage2D(
+			glTexSubImage2D(
 			GL_TEXTURE_2D,            // target
 			level,                    // level
 			x, y,                     // xoffset, yoffset
@@ -327,8 +327,8 @@ void CL_OpenGLTextureProvider::set_subimage(
 			data);                    // texels
 		}
 		// Restore these unpack values to the default
-		clPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-		clPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+		glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+		glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
 
 	}
 	// conversion needed
@@ -351,16 +351,16 @@ void CL_OpenGLTextureProvider::set_subimage(
 		format = needs_alpha ? GL_RGBA : GL_RGB;
 
 		// Upload to OpenGL:
-		clBindTexture(GL_TEXTURE_2D, handle);
+		glBindTexture(GL_TEXTURE_2D, handle);
 
 		// change alignment
-		clPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		const int bytesPerPixel = buffer.get_bytes_per_pixel();
-		clPixelStorei(GL_UNPACK_ROW_LENGTH, buffer.get_pitch() / bytesPerPixel);
-		clPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-		clPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+		glPixelStorei(GL_UNPACK_ROW_LENGTH, buffer.get_pitch() / bytesPerPixel);
+		glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+		glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
 		// upload
-		clTexSubImage2D(
+		glTexSubImage2D(
 			GL_TEXTURE_2D,            // target
 			level,                    // level
 			x, y,                     // xoffset, yoffset
@@ -390,7 +390,7 @@ void CL_OpenGLTextureProvider::copy_image_from(
 	CL_OpenGL::to_opengl_textureformat(internal_format, gl_internal_format, gl_pixel_format);
 
 
-	clCopyTexImage2D(
+	glCopyTexImage2D(
 		GL_TEXTURE_2D,
 		level,
 		gl_internal_format,
@@ -413,7 +413,7 @@ void CL_OpenGLTextureProvider::copy_subimage_from(
 	CL_OpenGL::set_active(static_cast<CL_OpenGLGraphicContextProvider*>(gc));
 	CL_TextureStateTracker state_tracker(texture_type, handle);
 
-	clCopyTexSubImage2D( 
+	glCopyTexSubImage2D( 
 		GL_TEXTURE_2D,
 		level, 
 		offset_x, 
@@ -426,35 +426,35 @@ void CL_OpenGLTextureProvider::set_min_lod(double min_lod)
 {
 	throw_if_disposed();
 	CL_TextureStateTracker state_tracker(texture_type, handle);
-	clTexParameterf(texture_type, GL_TEXTURE_MIN_LOD, (GLfloat)min_lod);
+	glTexParameterf(texture_type, GL_TEXTURE_MIN_LOD, (GLfloat)min_lod);
 }
 
 void CL_OpenGLTextureProvider::set_max_lod(double max_lod)
 {
 	throw_if_disposed();
 	CL_TextureStateTracker state_tracker(texture_type, handle);
-	clTexParameterf(texture_type, GL_TEXTURE_MAX_LOD, (GLfloat)max_lod);
+	glTexParameterf(texture_type, GL_TEXTURE_MAX_LOD, (GLfloat)max_lod);
 }
 
 void CL_OpenGLTextureProvider::set_lod_bias(double lod_bias)
 {
 	throw_if_disposed();
 	CL_TextureStateTracker state_tracker(texture_type, handle);
-	clTexParameterf(texture_type, GL_TEXTURE_LOD_BIAS, (GLfloat)lod_bias);
+	glTexParameterf(texture_type, GL_TEXTURE_LOD_BIAS, (GLfloat)lod_bias);
 }
 
 void CL_OpenGLTextureProvider::set_base_level(int base_level)
 {
 	throw_if_disposed();
 	CL_TextureStateTracker state_tracker(texture_type, handle);
-	clTexParameteri(texture_type, GL_TEXTURE_BASE_LEVEL, base_level);
+	glTexParameteri(texture_type, GL_TEXTURE_BASE_LEVEL, base_level);
 }
 
 void CL_OpenGLTextureProvider::set_max_level(int max_level)
 {
 	throw_if_disposed();
 	CL_TextureStateTracker state_tracker(texture_type, handle);
-	clTexParameteri(texture_type, GL_TEXTURE_MAX_LEVEL, max_level);
+	glTexParameteri(texture_type, GL_TEXTURE_MAX_LEVEL, max_level);
 }
 
 void CL_OpenGLTextureProvider::set_wrap_mode(
@@ -464,11 +464,11 @@ void CL_OpenGLTextureProvider::set_wrap_mode(
 {
 	throw_if_disposed();
 	CL_TextureStateTracker state_tracker(texture_type, handle);
-	clTexParameteri(texture_type, GL_TEXTURE_WRAP_S, to_enum(wrap_s));
+	glTexParameteri(texture_type, GL_TEXTURE_WRAP_S, to_enum(wrap_s));
     if (texture_type != GL_TEXTURE_1D)
-        clTexParameteri(texture_type, GL_TEXTURE_WRAP_T, to_enum(wrap_t));
+        glTexParameteri(texture_type, GL_TEXTURE_WRAP_T, to_enum(wrap_t));
     if (texture_type != GL_TEXTURE_1D && texture_type != GL_TEXTURE_2D)
-        clTexParameteri(texture_type, GL_TEXTURE_WRAP_R, to_enum(wrap_r));
+        glTexParameteri(texture_type, GL_TEXTURE_WRAP_R, to_enum(wrap_r));
 }
 
 void CL_OpenGLTextureProvider::set_wrap_mode(
@@ -477,8 +477,8 @@ void CL_OpenGLTextureProvider::set_wrap_mode(
 {
 	throw_if_disposed();
 	CL_TextureStateTracker state_tracker(texture_type, handle);
-	clTexParameteri(texture_type, GL_TEXTURE_WRAP_S, to_enum(wrap_s));
-	clTexParameteri(texture_type, GL_TEXTURE_WRAP_T, to_enum(wrap_t));
+	glTexParameteri(texture_type, GL_TEXTURE_WRAP_S, to_enum(wrap_s));
+	glTexParameteri(texture_type, GL_TEXTURE_WRAP_T, to_enum(wrap_t));
 }
 
 void CL_OpenGLTextureProvider::set_wrap_mode(
@@ -486,14 +486,14 @@ void CL_OpenGLTextureProvider::set_wrap_mode(
 {
 	throw_if_disposed();
 	CL_TextureStateTracker state_tracker(texture_type, handle);
-	clTexParameteri(texture_type, GL_TEXTURE_WRAP_S, to_enum(wrap_s));
+	glTexParameteri(texture_type, GL_TEXTURE_WRAP_S, to_enum(wrap_s));
 }
 
 void CL_OpenGLTextureProvider::set_min_filter(CL_TextureFilter filter)
 {
 	throw_if_disposed();
 	CL_TextureStateTracker state_tracker(texture_type, handle);
-	clTexParameteri(texture_type, GL_TEXTURE_MIN_FILTER, to_enum(filter));
+	glTexParameteri(texture_type, GL_TEXTURE_MIN_FILTER, to_enum(filter));
 }
 
 void CL_OpenGLTextureProvider::set_mag_filter(CL_TextureFilter filter)
@@ -505,15 +505,15 @@ void CL_OpenGLTextureProvider::set_mag_filter(CL_TextureFilter filter)
 	if ( ! ((filter == cl_filter_nearest) || (filter == cl_filter_linear)) )
 		throw CL_Exception("cl_filter_nearest, cl_filter_linear are only valid options for the mag filter");
 
-	clTexParameteri(texture_type, GL_TEXTURE_MAG_FILTER, to_enum(filter));
+	glTexParameteri(texture_type, GL_TEXTURE_MAG_FILTER, to_enum(filter));
 }
 
 void CL_OpenGLTextureProvider::set_texture_compare(CL_TextureCompareMode mode, CL_CompareFunction func)
 {
 	throw_if_disposed();
 	CL_TextureStateTracker state_tracker(texture_type, handle);
-	clTexParameteri(texture_type, GL_TEXTURE_COMPARE_MODE, to_enum(mode));	
-	clTexParameteri(texture_type, GL_TEXTURE_COMPARE_FUNC, to_enum(func));	
+	glTexParameteri(texture_type, GL_TEXTURE_COMPARE_MODE, to_enum(mode));	
+	glTexParameteri(texture_type, GL_TEXTURE_COMPARE_FUNC, to_enum(func));	
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -567,11 +567,11 @@ void CL_OpenGLTextureProvider::set_texture_image2d(
 		CL_OpenGL::to_opengl_textureformat(image.get_format(), gl_internal_format, gl_pixel_format);
 
 		// change alignment
-		clPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		const int bytesPerPixel = image.get_bytes_per_pixel();
-		clPixelStorei(GL_UNPACK_ROW_LENGTH, image.get_pitch() / bytesPerPixel);
-		clPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-		clPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+		glPixelStorei(GL_UNPACK_ROW_LENGTH, image.get_pitch() / bytesPerPixel);
+		glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+		glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
 
 		char *data = (char *) image.get_data();
 		int image_width = image.get_width();
@@ -582,7 +582,7 @@ void CL_OpenGLTextureProvider::set_texture_image2d(
 		while (image_width < image.get_width()) image_width *= 2;
 		while (image_height < image.get_height()) image_height *= 2;
 */
-		clTexImage2D(
+		glTexImage2D(
 			target,                   // target
 			level,                    // level
 			gl_internal_format,           // internalformat
@@ -619,14 +619,14 @@ void CL_OpenGLTextureProvider::set_texture_image2d(
 		CL_OpenGL::to_opengl_textureformat(cl_rgba8ui, gl_internal_format, gl_pixel_format);
 
 		// change alignment
-		clPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		const int bytesPerPixel = buffer.get_bytes_per_pixel();
-		clPixelStorei(GL_UNPACK_ROW_LENGTH, buffer.get_pitch() / bytesPerPixel);
-		clPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-		clPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+		glPixelStorei(GL_UNPACK_ROW_LENGTH, buffer.get_pitch() / bytesPerPixel);
+		glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+		glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
 
 		// upload
-		clTexImage2D(
+		glTexImage2D(
 			target,                   // target
 			level,                    // level
 			gl_internal_format,           // internalformat
@@ -638,10 +638,10 @@ void CL_OpenGLTextureProvider::set_texture_image2d(
 			buffer.get_data());       // texels
 /*
 
-		clTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		clTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		clTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		clTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 */
 	}
 }
@@ -681,17 +681,17 @@ void CL_OpenGLTextureProvider::set_texture_image3d(
 		// Upload to OpenGL:
 
 		// change alignment
-		clPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		const int bytesPerPixel = image.get_bytes_per_pixel();
-		clPixelStorei(GL_UNPACK_ROW_LENGTH, image.get_pitch() / bytesPerPixel);
-		clPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-		clPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+		glPixelStorei(GL_UNPACK_ROW_LENGTH, image.get_pitch() / bytesPerPixel);
+		glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+		glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
 
 		char *data = (char *) image.get_data();
 		int image_width = image.get_width();
 		int image_height = image.get_height() / image_depth;
 
-		clTexImage3D(
+		glTexImage3D(
 			target,                   // target
 			level,                    // level
 			gl_internal_format,           // internalformat
@@ -725,17 +725,17 @@ void CL_OpenGLTextureProvider::set_texture_image3d(
 		// Upload to OpenGL:
 
 		// change alignment
-		clPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		const int bytesPerPixel = buffer.get_bytes_per_pixel();
-		clPixelStorei(GL_UNPACK_ROW_LENGTH, buffer.get_pitch() / bytesPerPixel);
-		clPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-		clPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+		glPixelStorei(GL_UNPACK_ROW_LENGTH, buffer.get_pitch() / bytesPerPixel);
+		glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+		glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
 
 		int image_width = image.get_width();
 		int image_height = image.get_height() / image_depth;
 
 		// upload
-		clTexImage3D(
+		glTexImage3D(
 			target,                   // target
 			level,                    // level
 			gl_internal_format,           // internalformat
@@ -807,69 +807,69 @@ CL_TextureStateTracker::CL_TextureStateTracker(GLuint texture_type, GLuint handl
 	CL_OpenGL::set_active();
 
 #ifdef __APPLE__
-	clGetIntegerv(GL_TEXTURE_BINDING_2D, (GLint *) &last_bound_texture2d);
+	glGetIntegerv(GL_TEXTURE_BINDING_2D, (GLint *) &last_bound_texture2d);
     if (handle)
-        clBindTexture(GL_TEXTURE_2D, handle);
+        glBindTexture(GL_TEXTURE_2D, handle);
 #else
 
 	if (CL_OpenGL::get_opengl_version_major() < 3)
 	{
-		last_is_enabled_texture1d = clIsEnabled(GL_TEXTURE_1D);
-		last_is_enabled_texture2d = clIsEnabled(GL_TEXTURE_2D);
-		last_is_enabled_texture3d = clIsEnabled(GL_TEXTURE_3D);
-		last_is_enabled_texture_cube_map = clIsEnabled(GL_TEXTURE_CUBE_MAP);
+		last_is_enabled_texture1d = glIsEnabled(GL_TEXTURE_1D);
+		last_is_enabled_texture2d = glIsEnabled(GL_TEXTURE_2D);
+		last_is_enabled_texture3d = glIsEnabled(GL_TEXTURE_3D);
+		last_is_enabled_texture_cube_map = glIsEnabled(GL_TEXTURE_CUBE_MAP);
 	}
-	clGetIntegerv(GL_TEXTURE_BINDING_1D, (GLint *) &last_bound_texture1d);
-	clGetIntegerv(GL_TEXTURE_BINDING_2D, (GLint *) &last_bound_texture2d);
-	clGetIntegerv(GL_TEXTURE_BINDING_3D, (GLint *) &last_bound_texture3d);
-	clGetIntegerv(GL_TEXTURE_BINDING_CUBE_MAP, (GLint *) &last_bound_texture_cube_map);
+	glGetIntegerv(GL_TEXTURE_BINDING_1D, (GLint *) &last_bound_texture1d);
+	glGetIntegerv(GL_TEXTURE_BINDING_2D, (GLint *) &last_bound_texture2d);
+	glGetIntegerv(GL_TEXTURE_BINDING_3D, (GLint *) &last_bound_texture3d);
+	glGetIntegerv(GL_TEXTURE_BINDING_CUBE_MAP, (GLint *) &last_bound_texture_cube_map);
 
 	if (texture_type == GL_TEXTURE_1D)
 	{
 		if (CL_OpenGL::get_opengl_version_major() < 3)
 		{
-			clDisable(GL_TEXTURE_2D);
-			clDisable(GL_TEXTURE_3D);
-			clDisable(GL_TEXTURE_CUBE_MAP);
-			clEnable(GL_TEXTURE_1D);
+			glDisable(GL_TEXTURE_2D);
+			glDisable(GL_TEXTURE_3D);
+			glDisable(GL_TEXTURE_CUBE_MAP);
+			glEnable(GL_TEXTURE_1D);
 		}
-		clBindTexture(GL_TEXTURE_1D, handle);
+		glBindTexture(GL_TEXTURE_1D, handle);
 	}
 
 	if (texture_type == GL_TEXTURE_2D)
 	{
 		if (CL_OpenGL::get_opengl_version_major() < 3)
 		{
-			clDisable(GL_TEXTURE_1D);
-			clDisable(GL_TEXTURE_3D);
-			clDisable(GL_TEXTURE_CUBE_MAP);
-			clEnable(GL_TEXTURE_2D);
+			glDisable(GL_TEXTURE_1D);
+			glDisable(GL_TEXTURE_3D);
+			glDisable(GL_TEXTURE_CUBE_MAP);
+			glEnable(GL_TEXTURE_2D);
 		}
-		clBindTexture(GL_TEXTURE_2D, handle);
+		glBindTexture(GL_TEXTURE_2D, handle);
 	}
 
 	if (texture_type == GL_TEXTURE_3D)
 	{
 		if (CL_OpenGL::get_opengl_version_major() < 3)
 		{
-			clDisable(GL_TEXTURE_1D);
-			clDisable(GL_TEXTURE_2D);
-			clDisable(GL_TEXTURE_CUBE_MAP);
-			clEnable(GL_TEXTURE_3D);
+			glDisable(GL_TEXTURE_1D);
+			glDisable(GL_TEXTURE_2D);
+			glDisable(GL_TEXTURE_CUBE_MAP);
+			glEnable(GL_TEXTURE_3D);
 		}
-		clBindTexture(GL_TEXTURE_3D, handle);
+		glBindTexture(GL_TEXTURE_3D, handle);
 	}
 
 	if (texture_type == GL_TEXTURE_CUBE_MAP)
 	{
 		if (CL_OpenGL::get_opengl_version_major() < 3)
 		{
-			clDisable(GL_TEXTURE_1D);
-			clDisable(GL_TEXTURE_2D);
-			clDisable(GL_TEXTURE_3D);
-			clEnable(GL_TEXTURE_CUBE_MAP);
+			glDisable(GL_TEXTURE_1D);
+			glDisable(GL_TEXTURE_2D);
+			glDisable(GL_TEXTURE_3D);
+			glEnable(GL_TEXTURE_CUBE_MAP);
 		}
-		clBindTexture(GL_TEXTURE_CUBE_MAP, handle);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, handle);
 	}
 #endif
 }
@@ -877,20 +877,20 @@ CL_TextureStateTracker::CL_TextureStateTracker(GLuint texture_type, GLuint handl
 CL_TextureStateTracker::~CL_TextureStateTracker()
 {
 #ifdef __APPLE__
-	clBindTexture(GL_TEXTURE_2D, last_bound_texture2d);
+	glBindTexture(GL_TEXTURE_2D, last_bound_texture2d);
 #else
 
 	if (CL_OpenGL::get_opengl_version_major() < 3)
 	{
-		if (last_is_enabled_texture1d) clEnable(GL_TEXTURE_1D); else clDisable(GL_TEXTURE_1D);
-		if (last_is_enabled_texture2d) clEnable(GL_TEXTURE_2D); else clDisable(GL_TEXTURE_2D);
-		if (last_is_enabled_texture3d) clEnable(GL_TEXTURE_3D); else clDisable(GL_TEXTURE_3D);
-		if(last_is_enabled_texture_cube_map) clEnable(GL_TEXTURE_CUBE_MAP); else clDisable(GL_TEXTURE_CUBE_MAP);
+		if (last_is_enabled_texture1d) glEnable(GL_TEXTURE_1D); else glDisable(GL_TEXTURE_1D);
+		if (last_is_enabled_texture2d) glEnable(GL_TEXTURE_2D); else glDisable(GL_TEXTURE_2D);
+		if (last_is_enabled_texture3d) glEnable(GL_TEXTURE_3D); else glDisable(GL_TEXTURE_3D);
+		if(last_is_enabled_texture_cube_map) glEnable(GL_TEXTURE_CUBE_MAP); else glDisable(GL_TEXTURE_CUBE_MAP);
 	}
 
-	if (last_is_enabled_texture1d) clBindTexture(GL_TEXTURE_1D, last_bound_texture1d);
-	if (last_is_enabled_texture2d) clBindTexture(GL_TEXTURE_2D, last_bound_texture2d);
-	if (last_is_enabled_texture3d) clBindTexture(GL_TEXTURE_3D, last_bound_texture3d);
-	if (last_is_enabled_texture_cube_map) clBindTexture(GL_TEXTURE_CUBE_MAP, last_bound_texture_cube_map);
+	if (last_is_enabled_texture1d) glBindTexture(GL_TEXTURE_1D, last_bound_texture1d);
+	if (last_is_enabled_texture2d) glBindTexture(GL_TEXTURE_2D, last_bound_texture2d);
+	if (last_is_enabled_texture3d) glBindTexture(GL_TEXTURE_3D, last_bound_texture3d);
+	if (last_is_enabled_texture_cube_map) glBindTexture(GL_TEXTURE_CUBE_MAP, last_bound_texture_cube_map);
 #endif
 }

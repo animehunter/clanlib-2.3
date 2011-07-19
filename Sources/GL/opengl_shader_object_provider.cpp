@@ -50,17 +50,17 @@ void CL_OpenGLShaderObjectProvider::create(
 {
 	CL_OpenGL::set_active();
 	if (handle)
-		clDeleteShader(handle);
+		glDeleteShader(handle);
 
 	type = shader_type;
-	handle = clCreateShader(shadertype_to_opengl(type));
+	handle = glCreateShader(shadertype_to_opengl(type));
 
 	CL_String8 source8 = CL_StringHelp::text_to_local8(source);
 	const GLchar *sources[1];
 	GLint source_lengths[1];
 	source_lengths[0] = source.length();
 	sources[0] = source8.c_str();
-	clShaderSource(handle, 1, sources, source_lengths);
+	glShaderSource(handle, 1, sources, source_lengths);
 }
 
 void CL_OpenGLShaderObjectProvider::create(
@@ -69,10 +69,10 @@ void CL_OpenGLShaderObjectProvider::create(
 {
 	CL_OpenGL::set_active();
 	if (handle)
-		clDeleteShader(handle);
+		glDeleteShader(handle);
 
 	type = shader_type;
-	handle = clCreateShader(shadertype_to_opengl(type));
+	handle = glCreateShader(shadertype_to_opengl(type));
 
 	GLchar ** array_sources = 0;
 	GLint *array_source_lengths = 0;
@@ -86,7 +86,7 @@ void CL_OpenGLShaderObjectProvider::create(
 			array_source_lengths[i] = sources[i].length();
 			array_sources[i] = (GLchar*) sources[i].c_str();
 		}
-		clShaderSource(handle, sources.size(), (const GLchar**) array_sources, array_source_lengths);
+		glShaderSource(handle, sources.size(), (const GLchar**) array_sources, array_source_lengths);
 	}
 	catch (...)
 	{
@@ -108,7 +108,7 @@ void CL_OpenGLShaderObjectProvider::on_dispose()
 	{
 		if (CL_OpenGL::set_active())
 		{
-			clDeleteShader(handle);
+			glDeleteShader(handle);
 		}
 	}
 }
@@ -129,7 +129,7 @@ bool CL_OpenGLShaderObjectProvider::get_compile_status() const
 {
 	CL_OpenGL::set_active();
 	GLint status = 0;
-	clGetShaderiv(handle, GL_COMPILE_STATUS, &status);
+	glGetShaderiv(handle, GL_COMPILE_STATUS, &status);
 	return (status != GL_FALSE);
 }
 
@@ -147,7 +147,7 @@ CL_String CL_OpenGLShaderObjectProvider::get_info_log() const
 	{
 		GLchar *info_log = new GLchar[buffer_size];
 		GLsizei length = 0;
-		clGetShaderInfoLog(handle, buffer_size, &length, info_log);
+		glGetShaderInfoLog(handle, buffer_size, &length, info_log);
 		if (length < buffer_size-1)
 			result = CL_StringHelp::local8_to_text(CL_StringRef8(info_log, length, false));
 		delete[] info_log;
@@ -167,7 +167,7 @@ CL_String CL_OpenGLShaderObjectProvider::get_shader_source() const
 	{
 		GLchar *shader_source = new GLchar[buffer_size];
 		GLsizei length = 0;
-		clGetShaderSource(handle, buffer_size, &length, shader_source);
+		glGetShaderSource(handle, buffer_size, &length, shader_source);
 		if (length < buffer_size-1)
 			result = CL_StringHelp::local8_to_text(CL_StringRef8(shader_source, length, false));
 		delete[] shader_source;
@@ -184,7 +184,7 @@ CL_String CL_OpenGLShaderObjectProvider::get_shader_source() const
 void CL_OpenGLShaderObjectProvider::compile()
 {
 	CL_OpenGL::set_active();
-	clCompileShader(handle);
+	glCompileShader(handle);
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -51,15 +51,15 @@ CL_OpenGLFrameBufferProvider::CL_OpenGLFrameBufferProvider(CL_OpenGLGraphicConte
 
 	CL_OpenGL::set_active(gc_provider);
 
-	if(clGenFramebuffers == 0)
+	if(glGenFramebuffers == 0)
 		throw CL_Exception("Framebuffer not supported on your graphics card.");
 
-	clGenFramebuffers(1, &handle);
+	glGenFramebuffers(1, &handle);
 
 	CL_FrameBufferStateTracker tracker(bind_target, handle, gc_provider);
 	// Default to no draw buffers  (the user may only want a depth buffer)
-	clDrawBuffer(GL_NONE);
-	clReadBuffer(GL_NONE);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
 
 }
 
@@ -76,7 +76,7 @@ void CL_OpenGLFrameBufferProvider::on_dispose()
 		// Note: set_active must be called with gc_provider here since it belongs to the OpenGL context and not the shared list
 		// To do: Improve infrastructure in clanGL so we will know if gc_provider has already been destroyed and in that case do nothing.
 		CL_OpenGL::set_active(gc_provider);
-		clDeleteFramebuffers(1, &handle);
+		glDeleteFramebuffers(1, &handle);
 	}
 
 	// Detach all textures and renderbuffers
@@ -167,8 +167,8 @@ void CL_OpenGLFrameBufferProvider::attach_color_buffer(int attachment_index, con
 	{
 		if (!count_color_attachments)
 		{
-			clDrawBuffer(GL_COLOR_ATTACHMENT0);
-			clReadBuffer(GL_COLOR_ATTACHMENT0);
+			glDrawBuffer(GL_COLOR_ATTACHMENT0);
+			glReadBuffer(GL_COLOR_ATTACHMENT0);
 		}
 		count_color_attachments++;
 	}
@@ -182,8 +182,8 @@ void CL_OpenGLFrameBufferProvider::detach_color_buffer(int attachment_index, con
 	count_color_attachments--;
 	if (!count_color_attachments)
 	{
-		clDrawBuffer(GL_NONE);
-		clReadBuffer(GL_NONE);
+		glDrawBuffer(GL_NONE);
+		glReadBuffer(GL_NONE);
 	}
 }
 
@@ -196,8 +196,8 @@ void CL_OpenGLFrameBufferProvider::attach_color_buffer(int attachment_index, con
 	{
 		if (!count_color_attachments)
 		{
-			clDrawBuffer(GL_COLOR_ATTACHMENT0);
-			clReadBuffer(GL_COLOR_ATTACHMENT0);
+			glDrawBuffer(GL_COLOR_ATTACHMENT0);
+			glReadBuffer(GL_COLOR_ATTACHMENT0);
 		}
 		count_color_attachments++;
 	}
@@ -212,8 +212,8 @@ void CL_OpenGLFrameBufferProvider::attach_color_buffer(int attachment_index, con
 	{
 		if (!count_color_attachments)
 		{
-			clDrawBuffer(GL_COLOR_ATTACHMENT0);
-			clReadBuffer(GL_COLOR_ATTACHMENT0);
+			glDrawBuffer(GL_COLOR_ATTACHMENT0);
+			glReadBuffer(GL_COLOR_ATTACHMENT0);
 		}
 		count_color_attachments++;
 	}
@@ -227,8 +227,8 @@ void CL_OpenGLFrameBufferProvider::detach_color_buffer(int attachment_index, con
 	count_color_attachments--;
 	if (!count_color_attachments)
 	{
-		clDrawBuffer(GL_NONE);
-		clReadBuffer(GL_NONE);
+		glDrawBuffer(GL_NONE);
+		glReadBuffer(GL_NONE);
 	}
 }
 
@@ -332,7 +332,7 @@ void CL_OpenGLFrameBufferProvider::check_framebuffer_complete()
 {
 	CL_FrameBufferStateTracker tracker(bind_target, handle, gc_provider);
 
-	int error_code = clCheckFramebufferStatus(GL_FRAMEBUFFER);
+	int error_code = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (error_code != GL_FRAMEBUFFER_COMPLETE)
 		throw CL_Exception(cl_format("FrameBuffer is : %1", get_error_message(error_code)));
 
@@ -368,26 +368,26 @@ CL_FrameBufferStateTracker::CL_FrameBufferStateTracker(CL_FrameBufferBindTarget 
 	CL_OpenGL::set_active(gc_provider);
 	if (bind_target == cl_framebuffer_draw)
 	{
-		clGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &last_bound);
+		glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &last_bound);
 		if (last_bound == handle)
 		{
 			handle_and_bound_equal = true;
 		}
 		else
 		{
-			clBindFramebuffer(GL_DRAW_FRAMEBUFFER, handle);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, handle);
 		}
 	}
 	else
 	{
-		clGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &last_bound);
+		glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &last_bound);
 		if (last_bound == handle)
 		{
 			handle_and_bound_equal = true;
 		}
 		else
 		{
-			clBindFramebuffer(GL_READ_FRAMEBUFFER, handle);
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, handle);
 		}
 	}
 }
@@ -397,9 +397,9 @@ CL_FrameBufferStateTracker::~CL_FrameBufferStateTracker()
 	if (!handle_and_bound_equal)
 	{
 		if (bind_target == cl_framebuffer_draw)
-			clBindFramebuffer(GL_DRAW_FRAMEBUFFER, last_bound);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, last_bound);
 		else
-			clBindFramebuffer(GL_READ_FRAMEBUFFER, last_bound);
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, last_bound);
 	}
 }
 
@@ -464,7 +464,7 @@ bool CL_OpenGLFrameBufferProvider::attach_object(GLenum opengl_attachment, const
 
 	GLuint render_buffer_handle = gl_render_buffer->get_handle();
 
-	clFramebufferRenderbuffer(target, opengl_attachment, GL_RENDERBUFFER, render_buffer_handle);
+	glFramebufferRenderbuffer(target, opengl_attachment, GL_RENDERBUFFER, render_buffer_handle);
 	return is_replaced_object;
 }
 
@@ -505,15 +505,15 @@ bool CL_OpenGLFrameBufferProvider::attach_object(GLenum opengl_attachment, const
 
 	if (texture_type == GL_TEXTURE_1D)
 	{
-		clFramebufferTexture1D(target, opengl_attachment, texture_target, texture_handle, level);
+		glFramebufferTexture1D(target, opengl_attachment, texture_target, texture_handle, level);
 	}
 	else if (texture_type == GL_TEXTURE_2D)
 	{
-		clFramebufferTexture2D(target, opengl_attachment, texture_target, texture_handle, level);
+		glFramebufferTexture2D(target, opengl_attachment, texture_target, texture_handle, level);
 	}
 	else if (texture_type == GL_TEXTURE_3D)
 	{
-		clFramebufferTexture3D(target, opengl_attachment, texture_target, texture_handle, level, zoffset);
+		glFramebufferTexture3D(target, opengl_attachment, texture_target, texture_handle, level, zoffset);
 	}
 	return is_replaced_object;
 }
@@ -526,7 +526,7 @@ void CL_OpenGLFrameBufferProvider::detach_object(GLenum opengl_attachment, const
 	if (bind_target == cl_framebuffer_read)
 		target = GL_READ_FRAMEBUFFER;
 
-	clFramebufferRenderbuffer(target, opengl_attachment, GL_RENDERBUFFER, 0);
+	glFramebufferRenderbuffer(target, opengl_attachment, GL_RENDERBUFFER, 0);
 
 	attached_renderbuffers[internal_attachment_offset] = CL_RenderBuffer();
 }
@@ -549,15 +549,15 @@ void CL_OpenGLFrameBufferProvider::detach_object(GLenum opengl_attachment, const
 
 	if (texture_type == GL_TEXTURE_1D)
 	{
-		clFramebufferTexture1D(target, opengl_attachment, texture_type, texture_handle, 0);
+		glFramebufferTexture1D(target, opengl_attachment, texture_type, texture_handle, 0);
 	}
 	else if (texture_type == GL_TEXTURE_2D)
 	{
-		clFramebufferTexture2D(target, opengl_attachment, texture_type, texture_handle, 0);
+		glFramebufferTexture2D(target, opengl_attachment, texture_type, texture_handle, 0);
 	}
 	else if (texture_type == GL_TEXTURE_3D)
 	{
-		clFramebufferTexture3D(target, opengl_attachment, texture_type, texture_handle, 0, 0);
+		glFramebufferTexture3D(target, opengl_attachment, texture_type, texture_handle, 0, 0);
 	}
 
 	attached_textures[internal_attachment_offset] = CL_Texture();

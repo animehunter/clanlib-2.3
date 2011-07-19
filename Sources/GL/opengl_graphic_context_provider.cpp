@@ -313,7 +313,7 @@ void CL_OpenGLGraphicContextProvider::get_opengl_version(int &version_major, int
 			glGetIntegerv(GL_MINOR_VERSION, &opengl_version_minor)
 		#else
 
-			CL_String version = (char*)clGetString(GL_VERSION);
+			CL_String version = (char*)glGetString(GL_VERSION);
 
 			opengl_version_major = 0;
 			opengl_version_minor = 0;
@@ -342,7 +342,7 @@ void CL_OpenGLGraphicContextProvider::get_opengl_shading_language_version(int &v
 		{
 			CL_OpenGL::set_active(this);
 			
-			CL_String version = (char*)clGetString(GL_SHADING_LANGUAGE_VERSION);
+			CL_String version = (char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
 
 			std::vector<CL_String> split_version = CL_StringHelp::split_text(version, ".");
 			if(split_version.size() > 0)
@@ -386,21 +386,21 @@ void CL_OpenGLGraphicContextProvider::get_opengl_shading_language_version(int &v
 CL_String CL_OpenGLGraphicContextProvider::get_renderer_string()
 {
 	CL_OpenGL::set_active(this);
-	CL_String renderer = (char*)clGetString(GL_RENDERER);
+	CL_String renderer = (char*)glGetString(GL_RENDERER);
 	return renderer;
 }
 
 CL_String CL_OpenGLGraphicContextProvider::get_vendor_string()
 {
 	CL_OpenGL::set_active(this);
-	CL_String vendor = (char*)clGetString(GL_VENDOR);
+	CL_String vendor = (char*)glGetString(GL_VENDOR);
 	return vendor;
 }
 
 std::vector<CL_String> CL_OpenGLGraphicContextProvider::get_extensions()
 {
 	CL_OpenGL::set_active(this);
-	CL_StringRef extension_string = (char*)clGetString(GL_EXTENSIONS);
+	CL_StringRef extension_string = (char*)glGetString(GL_EXTENSIONS);
 	std::vector<CL_String> tmp = CL_StringHelp::split_text(extension_string, " ");
 	std::vector<CL_String> extensions;
 	for (std::vector<CL_String>::size_type i=0; i<tmp.size(); i++)
@@ -412,7 +412,7 @@ int CL_OpenGLGraphicContextProvider::get_max_attributes()
 {
 	CL_OpenGL::set_active(this);
 	GLint max_attributes = 0;
-	clGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &max_attributes);
+	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &max_attributes);
     if(max_attributes < 16)
         max_attributes = 16;
 	return max_attributes;
@@ -422,7 +422,7 @@ CL_Size CL_OpenGLGraphicContextProvider::get_max_texture_size() const
 {
 	CL_OpenGL::set_active(this);
 	GLint max_size = 0;
-	clGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_size);
+	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_size);
 	return CL_Size(max_size, max_size);
 }
 
@@ -553,9 +553,9 @@ CL_PixelBuffer CL_OpenGLGraphicContextProvider::get_pixeldata(const CL_Rect& rec
 	CL_PixelBuffer pbuf(rect.get_width(), rect.get_height(), pixel_format);
 	CL_OpenGL::set_active(this);
 	if (!framebuffer_bound)
-		clReadBuffer(GL_BACK);
-	clClampColor(GL_CLAMP_READ_COLOR, clamp ? GL_TRUE : GL_FALSE);
-	clReadPixels(rect.left, rect.top, rect.get_width(), rect.get_height(), format, type, pbuf.get_data());
+		glReadBuffer(GL_BACK);
+	glClampColor(GL_CLAMP_READ_COLOR, clamp ? GL_TRUE : GL_FALSE);
+	glReadPixels(rect.left, rect.top, rect.get_width(), rect.get_height(), format, type, pbuf.get_data());
 	pbuf.flip_vertical();
 	return pbuf;
 }
@@ -564,9 +564,9 @@ void CL_OpenGLGraphicContextProvider::set_texture(int unit_index, const CL_Textu
 {
 	CL_OpenGL::set_active(this);
 
-	if (clActiveTexture != 0)
+	if (glActiveTexture != 0)
 	{
-		clActiveTexture( GL_TEXTURE0 + unit_index );
+		glActiveTexture( GL_TEXTURE0 + unit_index );
 	}
 	else if (unit_index > 0)
 	{
@@ -575,16 +575,16 @@ void CL_OpenGLGraphicContextProvider::set_texture(int unit_index, const CL_Textu
 
 	if (texture.is_null())
 	{
-		// Perhaps call clBindTexture(texture_type, 0) ?
+		// Perhaps call glBindTexture(texture_type, 0) ?
 	}
 	else
 	{
 		CL_OpenGLTextureProvider *provider = static_cast<CL_OpenGLTextureProvider *>(texture.get_provider());
 		if (CL_OpenGL::get_opengl_version_major() < 3)
 		{
-			clEnable(provider->get_texture_type());
+			glEnable(provider->get_texture_type());
 		}
-		clBindTexture(provider->get_texture_type(), provider->get_handle());
+		glBindTexture(provider->get_texture_type(), provider->get_handle());
 	}
 }
 
@@ -592,16 +592,16 @@ void CL_OpenGLGraphicContextProvider::reset_texture(int unit_index, const CL_Tex
 {
 	CL_OpenGL::set_active(this);
 
-	if (clActiveTexture != 0)
+	if (glActiveTexture != 0)
 	{
-		clActiveTexture( GL_TEXTURE0 + unit_index );
+		glActiveTexture( GL_TEXTURE0 + unit_index );
 	}
 	else if (unit_index > 0)
 	{
 		return;
 	}
 	// Set the texture to the default state
-	clBindTexture(GL_TEXTURE_2D, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void CL_OpenGLGraphicContextProvider::set_frame_buffer(const CL_FrameBuffer &draw_buffer, const CL_FrameBuffer &read_buffer)
@@ -622,12 +622,12 @@ void CL_OpenGLGraphicContextProvider::set_frame_buffer(const CL_FrameBuffer &dra
 
 	// Bind the framebuffers
 	GLuint draw_handle = draw_buffer_provider->get_handle();
-	clBindFramebuffer(GL_FRAMEBUFFER, draw_handle);
+	glBindFramebuffer(GL_FRAMEBUFFER, draw_handle);
 
 	if (draw_buffer_provider != read_buffer_provider)
 	{
 		GLuint read_handle = read_buffer_provider->get_handle();
-		clBindFramebuffer(GL_READ_FRAMEBUFFER, read_handle);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, read_handle);
 	}
 
 	// Save the map mode before when the framebuffer was bound
@@ -649,8 +649,8 @@ void CL_OpenGLGraphicContextProvider::reset_frame_buffer()
     cl_set_default_frame_buffer((CL_RenderWindowProvider*)render_window);
         
 #else
-	clBindFramebuffer(GL_FRAMEBUFFER, 0);
-	clBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 #endif
 
 	if (framebuffer_bound)
@@ -673,14 +673,14 @@ void CL_OpenGLGraphicContextProvider::set_program_object(const CL_ProgramObject 
 	current_program_object = CL_ProgramObject();
 
 	CL_OpenGL::set_active(this);
-	if (clUseProgram == 0)
+	if (glUseProgram == 0)
 		return;
 
 	if (program.is_null())
-		clUseProgram(0);
+		glUseProgram(0);
 	else
 	{
-		clUseProgram(program.get_handle());
+		glUseProgram(program.get_handle());
 		current_program_object = program;
 		set_current_program_object_matricies();
 	}
@@ -689,7 +689,7 @@ void CL_OpenGLGraphicContextProvider::set_program_object(const CL_ProgramObject 
 void CL_OpenGLGraphicContextProvider::reset_program_object()
 {
 	CL_OpenGL::set_active(this);
-	clUseProgram(0);
+	glUseProgram(0);
 	current_program_object = CL_ProgramObject();
 }
 
@@ -866,24 +866,24 @@ void CL_OpenGLGraphicContextProvider::set_primitives_array(const CL_PrimitivesAr
 				switch (attribute.type)
 				{
 				default: break;
-				case cl_type_short: clVertexAttrib1sv(attrib_index, attribute.value_short); break;
-				case cl_type_float: clVertexAttrib1fv(attrib_index, attribute.value_float); break;
+				case cl_type_short: glVertexAttrib1sv(attrib_index, attribute.value_short); break;
+				case cl_type_float: glVertexAttrib1fv(attrib_index, attribute.value_float); break;
 				}
 				break;
 			case 2:
 				switch (attribute.type)
 				{
 				default: break;
-				case cl_type_short: clVertexAttrib2sv(attrib_index, attribute.value_short); break;
-				case cl_type_float: clVertexAttrib2fv(attrib_index, attribute.value_float); break;
+				case cl_type_short: glVertexAttrib2sv(attrib_index, attribute.value_short); break;
+				case cl_type_float: glVertexAttrib2fv(attrib_index, attribute.value_float); break;
 				}
 				break;
 			case 3:
 				switch (attribute.type)
 				{
 				default: break;
-				case cl_type_short: clVertexAttrib3sv(attrib_index, attribute.value_short); break;
-				case cl_type_float: clVertexAttrib3fv(attrib_index, attribute.value_float); break;
+				case cl_type_short: glVertexAttrib3sv(attrib_index, attribute.value_short); break;
+				case cl_type_float: glVertexAttrib3fv(attrib_index, attribute.value_float); break;
 				}
 				break;
 			case 4:
@@ -892,12 +892,12 @@ void CL_OpenGLGraphicContextProvider::set_primitives_array(const CL_PrimitivesAr
 					switch (attribute.type)
 					{
 					default: break;
-					case cl_type_unsigned_byte: clVertexAttrib4Nubv(attrib_index, attribute.value_ubyte); break;
-					case cl_type_unsigned_short: clVertexAttrib4Nusv(attrib_index, attribute.value_ushort); break;
-					case cl_type_unsigned_int: clVertexAttrib4Nuiv(attrib_index, attribute.value_uint); break;
-					case cl_type_byte: clVertexAttrib4Nbv(attrib_index, (GLbyte*) attribute.value_byte); break;
-					case cl_type_short: clVertexAttrib4Nsv(attrib_index, attribute.value_short); break;
-					case cl_type_int: clVertexAttrib4Niv(attrib_index, attribute.value_int); break;
+					case cl_type_unsigned_byte: glVertexAttrib4Nubv(attrib_index, attribute.value_ubyte); break;
+					case cl_type_unsigned_short: glVertexAttrib4Nusv(attrib_index, attribute.value_ushort); break;
+					case cl_type_unsigned_int: glVertexAttrib4Nuiv(attrib_index, attribute.value_uint); break;
+					case cl_type_byte: glVertexAttrib4Nbv(attrib_index, (GLbyte*) attribute.value_byte); break;
+					case cl_type_short: glVertexAttrib4Nsv(attrib_index, attribute.value_short); break;
+					case cl_type_int: glVertexAttrib4Niv(attrib_index, attribute.value_int); break;
 					}
 				}
 				else
@@ -905,13 +905,13 @@ void CL_OpenGLGraphicContextProvider::set_primitives_array(const CL_PrimitivesAr
 					switch (attribute.type)
 					{
 					default: break;
-					case cl_type_unsigned_byte: clVertexAttrib4ubv(attrib_index, attribute.value_ubyte); break;
-					case cl_type_unsigned_short: clVertexAttrib4usv(attrib_index, attribute.value_ushort); break;
-					case cl_type_unsigned_int: clVertexAttrib4uiv(attrib_index, attribute.value_uint); break;
-					case cl_type_byte: clVertexAttrib4bv(attrib_index, (GLbyte*) attribute.value_byte); break;
-					case cl_type_short: clVertexAttrib4sv(attrib_index, attribute.value_short); break;
-					case cl_type_int: clVertexAttrib4iv(attrib_index, attribute.value_int); break;
-					case cl_type_float: clVertexAttrib4fv(attrib_index, attribute.value_float); break;
+					case cl_type_unsigned_byte: glVertexAttrib4ubv(attrib_index, attribute.value_ubyte); break;
+					case cl_type_unsigned_short: glVertexAttrib4usv(attrib_index, attribute.value_ushort); break;
+					case cl_type_unsigned_int: glVertexAttrib4uiv(attrib_index, attribute.value_uint); break;
+					case cl_type_byte: glVertexAttrib4bv(attrib_index, (GLbyte*) attribute.value_byte); break;
+					case cl_type_short: glVertexAttrib4sv(attrib_index, attribute.value_short); break;
+					case cl_type_int: glVertexAttrib4iv(attrib_index, attribute.value_int); break;
+					case cl_type_float: glVertexAttrib4fv(attrib_index, attribute.value_float); break;
 					}
 				}
 				break;
@@ -919,12 +919,12 @@ void CL_OpenGLGraphicContextProvider::set_primitives_array(const CL_PrimitivesAr
 		}
 		else if (attribute.array_provider)
 		{
-			clBindBuffer(GL_ARRAY_BUFFER, static_cast<CL_OpenGLVertexArrayBufferProvider *>(attribute.array_provider)->get_handle());
-			clEnableVertexAttribArray(prim_array->attribute_indexes[i]);
-			clVertexAttribPointer(
+			glBindBuffer(GL_ARRAY_BUFFER, static_cast<CL_OpenGLVertexArrayBufferProvider *>(attribute.array_provider)->get_handle());
+			glEnableVertexAttribArray(prim_array->attribute_indexes[i]);
+			glVertexAttribPointer(
 				prim_array->attribute_indexes[i], attribute.size, to_enum(attribute.type),
 				prim_array->normalize_attributes[i], attribute.stride, attribute.data);
-			clBindBuffer(GL_ARRAY_BUFFER, 0);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
 		}
 		else if (attribute.data)
 		{
@@ -938,8 +938,8 @@ void CL_OpenGLGraphicContextProvider::set_primitives_array(const CL_PrimitivesAr
 
 			if (CL_OpenGL::get_opengl_version_major() < 3)
 			{
-				clEnableVertexAttribArray(prim_array->attribute_indexes[i]);
-				clVertexAttribPointer(
+				glEnableVertexAttribArray(prim_array->attribute_indexes[i]);
+				glVertexAttribPointer(
 					prim_array->attribute_indexes[i], attribute.size, to_enum(attribute.type),
 					prim_array->normalize_attributes[i], attribute.stride, attribute.data);
 			}
@@ -954,49 +954,49 @@ void CL_OpenGLGraphicContextProvider::set_primitives_array(const CL_PrimitivesAr
 void CL_OpenGLGraphicContextProvider::draw_primitives_array(CL_PrimitivesType type, int offset, int num_vertices)
 {
 	CL_OpenGL::set_active(this);
-	clDrawArrays(to_enum(type), offset, num_vertices);
+	glDrawArrays(to_enum(type), offset, num_vertices);
 }
 
 void CL_OpenGLGraphicContextProvider::draw_primitives_array_instanced(CL_PrimitivesType type, int offset, int num_vertices, int instance_count)
 {
 	CL_OpenGL::set_active(this);
-	clDrawArraysInstanced(to_enum(type), offset, num_vertices, instance_count);
+	glDrawArraysInstanced(to_enum(type), offset, num_vertices, instance_count);
 }
 
 void CL_OpenGLGraphicContextProvider::draw_primitives_elements(CL_PrimitivesType type, int count, unsigned int *indices)
 {
 	CL_OpenGL::set_active(this);
-	clDrawElements(to_enum(type), count, GL_UNSIGNED_INT, indices);
+	glDrawElements(to_enum(type), count, GL_UNSIGNED_INT, indices);
 }
 
 void CL_OpenGLGraphicContextProvider::draw_primitives_elements(CL_PrimitivesType type, int count, unsigned short *indices)
 {
 	CL_OpenGL::set_active(this);
-	clDrawElements(to_enum(type), count, GL_UNSIGNED_SHORT, indices);
+	glDrawElements(to_enum(type), count, GL_UNSIGNED_SHORT, indices);
 }
 
 void CL_OpenGLGraphicContextProvider::draw_primitives_elements(CL_PrimitivesType type, int count, unsigned char *indices)
 {
 	CL_OpenGL::set_active(this);
-	clDrawElements(to_enum(type), count, GL_UNSIGNED_BYTE, indices);
+	glDrawElements(to_enum(type), count, GL_UNSIGNED_BYTE, indices);
 }
 
 void CL_OpenGLGraphicContextProvider::draw_primitives_elements_instanced(CL_PrimitivesType type, int count, unsigned int *indices, int instance_count)
 {
 	CL_OpenGL::set_active(this);
-	clDrawElementsInstanced(to_enum(type), count, GL_UNSIGNED_INT, indices, instance_count);
+	glDrawElementsInstanced(to_enum(type), count, GL_UNSIGNED_INT, indices, instance_count);
 }
 
 void CL_OpenGLGraphicContextProvider::draw_primitives_elements_instanced(CL_PrimitivesType type, int count, unsigned short *indices, int instance_count)
 {
 	CL_OpenGL::set_active(this);
-	clDrawElementsInstanced(to_enum(type), count, GL_UNSIGNED_SHORT, indices, instance_count);
+	glDrawElementsInstanced(to_enum(type), count, GL_UNSIGNED_SHORT, indices, instance_count);
 }
 
 void CL_OpenGLGraphicContextProvider::draw_primitives_elements_instanced(CL_PrimitivesType type, int count, unsigned char *indices, int instance_count)
 {
 	CL_OpenGL::set_active(this);
-	clDrawElementsInstanced(to_enum(type), count, GL_UNSIGNED_BYTE, indices, instance_count);
+	glDrawElementsInstanced(to_enum(type), count, GL_UNSIGNED_BYTE, indices, instance_count);
 }
 
 void CL_OpenGLGraphicContextProvider::draw_primitives_elements(
@@ -1007,9 +1007,9 @@ void CL_OpenGLGraphicContextProvider::draw_primitives_elements(
 	void *offset)
 {
 	CL_OpenGL::set_active(this);
-	clBindBuffer(GL_ELEMENT_ARRAY_BUFFER, static_cast<CL_OpenGLElementArrayBufferProvider *>(array_provider)->get_handle());
-	clDrawElements(to_enum(type), count, to_enum(indices_type), offset);
-	clBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, static_cast<CL_OpenGLElementArrayBufferProvider *>(array_provider)->get_handle());
+	glDrawElements(to_enum(type), count, to_enum(indices_type), offset);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void CL_OpenGLGraphicContextProvider::draw_primitives_elements_instanced(
@@ -1021,9 +1021,9 @@ void CL_OpenGLGraphicContextProvider::draw_primitives_elements_instanced(
 	int instance_count)
 {
 	CL_OpenGL::set_active(this);
-	clBindBuffer(GL_ELEMENT_ARRAY_BUFFER, static_cast<CL_OpenGLElementArrayBufferProvider *>(array_provider)->get_handle());
-	clDrawElementsInstanced(to_enum(type), count, to_enum(indices_type), offset, instance_count);
-	clBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, static_cast<CL_OpenGLElementArrayBufferProvider *>(array_provider)->get_handle());
+	glDrawElementsInstanced(to_enum(type), count, to_enum(indices_type), offset, instance_count);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void CL_OpenGLGraphicContextProvider::reset_primitives_array()
@@ -1032,7 +1032,7 @@ void CL_OpenGLGraphicContextProvider::reset_primitives_array()
 
 	for (int i=0; i<num_set_program_attribute_arrays; ++i)
 	{
-		clDisableVertexAttribArray(i);
+		glDisableVertexAttribArray(i);
 	}
 
 	prim_arrays_set = false;
@@ -1055,16 +1055,16 @@ void CL_OpenGLGraphicContextProvider::draw_pixels(CL_GraphicContext &gc,
 void CL_OpenGLGraphicContextProvider::set_clip_rect(const CL_Rect &rect)
 {
 	CL_OpenGL::set_active(this);
-	clEnable(GL_SCISSOR_TEST);
+	glEnable(GL_SCISSOR_TEST);
 
 	if (map_mode == cl_map_2d_upper_left)
-		clScissor(
+		glScissor(
 			rect.left,
 			get_height() - rect.top - rect.get_height(),
 			rect.get_width(),
 			rect.get_height());
 	else
-		clScissor(
+		glScissor(
 			rect.left,
 			rect.top,
 			rect.get_width(),
@@ -1076,35 +1076,35 @@ void CL_OpenGLGraphicContextProvider::set_clip_rect(const CL_Rect &rect)
 void CL_OpenGLGraphicContextProvider::reset_clip_rect()
 {
 	CL_OpenGL::set_active(this);
-	clDisable(GL_SCISSOR_TEST);
+	glDisable(GL_SCISSOR_TEST);
 }
 
 void CL_OpenGLGraphicContextProvider::clear(const CL_Colorf &color)
 {
 	CL_OpenGL::set_active(this);
-	clClearColor(
+	glClearColor(
 		(GLclampf) color.r,
 		(GLclampf) color.g,
 		(GLclampf) color.b,
 		(GLclampf) color.a);
-	clClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void CL_OpenGLGraphicContextProvider::clear_stencil(int value)
 {
 	CL_OpenGL::set_active(this);
-	clClearStencil(value);
-	clClear(GL_STENCIL_BUFFER_BIT);
+	glClearStencil(value);
+	glClear(GL_STENCIL_BUFFER_BIT);
 }
 
 void CL_OpenGLGraphicContextProvider::clear_depth(float value)
 {
 	CL_OpenGL::set_active(this);
-    if (clClearDepth)
-        clClearDepth(value);
+    if (glClearDepth)
+        glClearDepth(value);
     else
-        clClearDepthf(value);
-	clClear(GL_DEPTH_BUFFER_BIT);
+        glClearDepthf(value);
+	glClear(GL_DEPTH_BUFFER_BIT);
 }
 
 void CL_OpenGLGraphicContextProvider::set_map_mode(CL_MapMode mode)
@@ -1137,8 +1137,8 @@ void CL_OpenGLGraphicContextProvider::on_window_resized()
 		set_projection(CL_Mat4f::ortho_2d(0.0f, (float)width, (float)height, 0.0f));
 		set_modelview(CL_Mat4f::identity());
 
-		if (clIsEnabled(GL_SCISSOR_TEST))
-			clScissor(
+		if (glIsEnabled(GL_SCISSOR_TEST))
+			glScissor(
 				last_clip_rect.left,
 				get_height() - last_clip_rect.top - last_clip_rect.get_height(),
 				last_clip_rect.get_width(),
@@ -1150,8 +1150,8 @@ void CL_OpenGLGraphicContextProvider::on_window_resized()
 		set_projection(CL_Mat4f::ortho_2d(0.0f, (float)width, 0.0f, (float)height));
 		set_modelview(CL_Mat4f::identity());
 
-		if (clIsEnabled(GL_SCISSOR_TEST))
-			clScissor(
+		if (glIsEnabled(GL_SCISSOR_TEST))
+			glScissor(
 				last_clip_rect.left,
 				last_clip_rect.top,
 				last_clip_rect.get_width(),
@@ -1160,8 +1160,8 @@ void CL_OpenGLGraphicContextProvider::on_window_resized()
 	case cl_user_projection:
 		CL_OpenGL::set_active(this);
 		set_viewport(CL_Rectf(0.0f, 0.0f, width, height));
-		if (clIsEnabled(GL_SCISSOR_TEST))
-			clScissor(
+		if (glIsEnabled(GL_SCISSOR_TEST))
+			glScissor(
 				last_clip_rect.left,
 				last_clip_rect.top,
 				last_clip_rect.get_width(),
@@ -1174,7 +1174,7 @@ void CL_OpenGLGraphicContextProvider::set_viewport(const CL_Rectf &viewport)
 {
 	int height = get_height();
 	CL_OpenGL::set_active(this);
-	clViewport(
+	glViewport(
 		GLsizei(viewport.left),
 		GLsizei(height - viewport.bottom),
 		GLsizei(viewport.right - viewport.left),
@@ -1209,15 +1209,15 @@ void CL_OpenGLGraphicContextProvider::set_blend_mode(const CL_BlendMode &mode)
 	CL_OpenGL::set_active(this);
 
 	if( mode.is_blend_enabled() )
-		clEnable(GL_BLEND);
+		glEnable(GL_BLEND);
 	else
-		clDisable(GL_BLEND);
+		glDisable(GL_BLEND);
 
 	const CL_Colorf &col = mode.get_blend_color();
 
-	if (clBlendColor)
+	if (glBlendColor)
 	{
-		clBlendColor(
+		glBlendColor(
 			GLclampf(col.get_red()),
 			GLclampf(col.get_green()),
 			GLclampf(col.get_blue()),
@@ -1226,13 +1226,13 @@ void CL_OpenGLGraphicContextProvider::set_blend_mode(const CL_BlendMode &mode)
 
 	if (mode.get_blend_equation() == mode.get_blend_equation_alpha())
 	{
-		if (clBlendEquation)
-			clBlendEquation(to_enum(mode.get_blend_equation()));
+		if (glBlendEquation)
+			glBlendEquation(to_enum(mode.get_blend_equation()));
 	}
 	else
 	{
-		if (clBlendEquationSeparate)
-			clBlendEquationSeparate(
+		if (glBlendEquationSeparate)
+			glBlendEquationSeparate(
 				to_enum(mode.get_blend_equation()),
 				to_enum(mode.get_blend_equation_alpha()) );
 	}
@@ -1241,13 +1241,13 @@ void CL_OpenGLGraphicContextProvider::set_blend_mode(const CL_BlendMode &mode)
 	if( mode.get_blend_function_src() == mode.get_blend_function_src_alpha() &&
 		mode.get_blend_function_dest() == mode.get_blend_function_dest_alpha() )
 	{
-		if (clBlendFunc)
-			clBlendFunc(to_enum(mode.get_blend_function_src()), to_enum(mode.get_blend_function_dest()));
+		if (glBlendFunc)
+			glBlendFunc(to_enum(mode.get_blend_function_src()), to_enum(mode.get_blend_function_dest()));
 	}
 	else
 	{
-		if (clBlendFuncSeparate)
-			clBlendFuncSeparate( 
+		if (glBlendFuncSeparate)
+			glBlendFuncSeparate( 
 				to_enum(mode.get_blend_function_src()),
 				to_enum(mode.get_blend_function_dest()),
 				to_enum(mode.get_blend_function_src_alpha()),
@@ -1259,31 +1259,31 @@ void CL_OpenGLGraphicContextProvider::set_pen(const CL_Pen &pen)
 {
 	CL_OpenGL::set_active(this);
 
-	if (clPointParameterf)
-		clPointParameterf(GL_POINT_FADE_THRESHOLD_SIZE, (GLfloat)pen.get_point_fade_treshold_size());
-    if (clPointSize)
-        clPointSize((GLfloat)pen.get_point_size());
-	clLineWidth((GLfloat)pen.get_line_width());
+	if (glPointParameterf)
+		glPointParameterf(GL_POINT_FADE_THRESHOLD_SIZE, (GLfloat)pen.get_point_fade_treshold_size());
+    if (glPointSize)
+        glPointSize((GLfloat)pen.get_point_size());
+	glLineWidth((GLfloat)pen.get_line_width());
 
 	if (pen.is_line_antialiased())
-		clEnable(GL_LINE_SMOOTH);
+		glEnable(GL_LINE_SMOOTH);
 	else
-		clDisable(GL_LINE_SMOOTH);
+		glDisable(GL_LINE_SMOOTH);
 
 	if (pen.is_using_vertex_program_point_sizes())
-		clEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+		glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 	else
-		clDisable(GL_VERTEX_PROGRAM_POINT_SIZE);
+		glDisable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
-	if(clPointParameterf)
+	if(glPointParameterf)
 	{
 		switch (pen.get_point_sprite_origin())
 		{
 		case cl_point_sprite_origin_upper_left:
-			clPointParameterf(GL_POINT_SPRITE_COORD_ORIGIN, GL_UPPER_LEFT);
+			glPointParameterf(GL_POINT_SPRITE_COORD_ORIGIN, GL_UPPER_LEFT);
 			break;
 		case cl_point_sprite_origin_lower_left:
-			clPointParameterf(GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT);
+			glPointParameterf(GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT);
 			break;
 		}
 	}
@@ -1294,59 +1294,59 @@ void CL_OpenGLGraphicContextProvider::set_polygon_rasterizer(const CL_PolygonRas
 	CL_OpenGL::set_active(this);
 
 	if (raster.is_antialiased())
-		clEnable(GL_POLYGON_SMOOTH);
+		glEnable(GL_POLYGON_SMOOTH);
 	else
-		clDisable(GL_POLYGON_SMOOTH);
+		glDisable(GL_POLYGON_SMOOTH);
 
 	if (raster.is_culled())
-		clEnable(GL_CULL_FACE);
+		glEnable(GL_CULL_FACE);
 	else
-		clDisable(GL_CULL_FACE);
+		glDisable(GL_CULL_FACE);
 
 	if (raster.is_line_offset())
-		clEnable(GL_POLYGON_OFFSET_LINE);
+		glEnable(GL_POLYGON_OFFSET_LINE);
 	else
-		clDisable(GL_POLYGON_OFFSET_LINE);
+		glDisable(GL_POLYGON_OFFSET_LINE);
 
 	if (raster.is_point_offset())
-		clEnable(GL_POLYGON_OFFSET_POINT);
+		glEnable(GL_POLYGON_OFFSET_POINT);
 	else
-		clDisable(GL_POLYGON_OFFSET_POINT);
+		glDisable(GL_POLYGON_OFFSET_POINT);
 
 	if (raster.is_polygon_offset())
-		clEnable(GL_POLYGON_OFFSET_FILL);
+		glEnable(GL_POLYGON_OFFSET_FILL);
 	else
-		clDisable(GL_POLYGON_OFFSET_FILL);
+		glDisable(GL_POLYGON_OFFSET_FILL);
 
-    if (clPolygonMode)
+    if (glPolygonMode)
     {
-        clPolygonMode(GL_FRONT_AND_BACK, to_enum(raster.get_face_fill_mode()));
+        glPolygonMode(GL_FRONT_AND_BACK, to_enum(raster.get_face_fill_mode()));
     }
 
 	switch (raster.get_front_face())
 	{
 	case cl_face_side_counter_clockwise:
-		clFrontFace(GL_CCW);
+		glFrontFace(GL_CCW);
 		break;
 	case cl_face_side_clockwise:
-		clFrontFace(GL_CW);
+		glFrontFace(GL_CW);
 		break;
 	}
 
 	switch (raster.get_face_cull_mode())
 	{
 	case cl_cull_front:
-		clCullFace(GL_FRONT);
+		glCullFace(GL_FRONT);
 		break;
 	case cl_cull_back:
-		clCullFace(GL_BACK);
+		glCullFace(GL_BACK);
 		break;
 	case cl_cull_front_and_back:
-		clCullFace(GL_FRONT_AND_BACK);
+		glCullFace(GL_FRONT_AND_BACK);
 		break;
 	}
 
-	clPolygonOffset(raster.get_offset_factor(), raster.get_offset_units());
+	glPolygonOffset(raster.get_offset_factor(), raster.get_offset_units());
 }
 
 void CL_OpenGLGraphicContextProvider::set_buffer_control(const CL_BufferControl &bc)
@@ -1355,68 +1355,68 @@ void CL_OpenGLGraphicContextProvider::set_buffer_control(const CL_BufferControl 
 
 	bool r, g, b, a;
 	bc.is_color_write_enabled(r, g, b, a);
-	clColorMask(r,g,b,a);
+	glColorMask(r,g,b,a);
 
 	if( bc.is_depth_test_enabled() )
-		clEnable(GL_DEPTH_TEST);
+		glEnable(GL_DEPTH_TEST);
 	else
-		clDisable(GL_DEPTH_TEST);
+		glDisable(GL_DEPTH_TEST);
 
-	clDepthFunc(to_enum(bc.get_depth_compare_function()));
-	clDepthMask(bc.is_depth_write_enabled() ? 1 : 0);
+	glDepthFunc(to_enum(bc.get_depth_compare_function()));
+	glDepthMask(bc.is_depth_write_enabled() ? 1 : 0);
 
 	if (bc.is_stencil_test_enabled())
 	{
-		clEnable(GL_STENCIL_TEST);
+		glEnable(GL_STENCIL_TEST);
 
-		if (clStencilFuncSeparate)
+		if (glStencilFuncSeparate)
 		{
-			clStencilFuncSeparate(GL_FRONT,
+			glStencilFuncSeparate(GL_FRONT,
 				to_enum(bc.get_stencil_compare_func_front()),
 				bc.get_stencil_compare_reference_front(),
 				bc.get_stencil_compare_mask_front());
 
-			clStencilFuncSeparate(GL_BACK,
+			glStencilFuncSeparate(GL_BACK,
 				to_enum(bc.get_stencil_compare_func_back()),
 				bc.get_stencil_compare_reference_back(),
 				bc.get_stencil_compare_mask_back());
 		}
 
-		if (clStencilOpSeparate)
+		if (glStencilOpSeparate)
 		{
-			clStencilOpSeparate(GL_FRONT,
+			glStencilOpSeparate(GL_FRONT,
 				to_enum(bc.get_stencil_fail_front()),
 				to_enum(bc.get_stencil_pass_depth_fail_front()),
 				to_enum(bc.get_stencil_pass_depth_pass_front()));
 
-			clStencilOpSeparate(GL_BACK,
+			glStencilOpSeparate(GL_BACK,
 				to_enum(bc.get_stencil_fail_back()),
 				to_enum(bc.get_stencil_pass_depth_fail_back()),
 				to_enum(bc.get_stencil_pass_depth_pass_back()));
 		}
 
-		if (clStencilMaskSeparate)
+		if (glStencilMaskSeparate)
 		{
-			clStencilMaskSeparate( GL_FRONT, bc.get_stencil_write_mask_front() );
-			clStencilMaskSeparate( GL_BACK, bc.get_stencil_write_mask_back() );
+			glStencilMaskSeparate( GL_FRONT, bc.get_stencil_write_mask_front() );
+			glStencilMaskSeparate( GL_BACK, bc.get_stencil_write_mask_back() );
 		}
 	}
 	else
 	{
-		clDisable(GL_STENCIL_TEST);
+		glDisable(GL_STENCIL_TEST);
 	}
 
-    if (clDrawBuffer)
-        clDrawBuffer( to_enum(bc.get_draw_buffer()) );
+    if (glDrawBuffer)
+        glDrawBuffer( to_enum(bc.get_draw_buffer()) );
 
 	if (bc.is_logic_op_enabled())
 	{
-		clEnable(GL_COLOR_LOGIC_OP);
-		clLogicOp(to_enum(bc.get_logic_op()));
+		glEnable(GL_COLOR_LOGIC_OP);
+		glLogicOp(to_enum(bc.get_logic_op()));
 	}
 	else
 	{
-		clDisable(GL_COLOR_LOGIC_OP);
+		glDisable(GL_COLOR_LOGIC_OP);
 	}
 }
 

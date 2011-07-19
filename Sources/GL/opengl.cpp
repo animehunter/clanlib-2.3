@@ -64,7 +64,7 @@ int CL_OpenGL::glsl_version_minor = 0;
 
 void CL_OpenGL::check_error()
 {
-	GLenum last_error = clGetError();
+	GLenum last_error = glGetError();
 	if (last_error != GL_NO_ERROR)
 	{
 		switch (last_error)
@@ -1336,6 +1336,71 @@ CL_GLFunctions *cl_setup_binds()
 
 
 #ifdef WIN32	// Only win32 static links opengl
+
+	// We require the real address of static links, so undef these...
+#undef glBindTexture
+#undef glBlendFunc
+#undef glClear
+#undef glClearColor
+#undef glClearDepth
+#undef glClearStencil
+#undef glColorMask
+#undef glCopyTexImage1D
+#undef glCopyTexImage2D
+#undef glCopyTexSubImage1D
+#undef glCopyTexSubImage2D
+#undef glCullFace
+#undef glDeleteTextures
+#undef glDepthFunc
+#undef glDepthMask
+#undef glDepthRange
+#undef glDisable
+#undef glDrawArrays
+#undef glDrawBuffer
+#undef glDrawElements
+#undef glEnable
+#undef glFinish
+#undef glFlush
+#undef glFrontFace
+#undef glGenTextures
+#undef glGetBooleanv
+#undef glGetDoublev
+#undef glGetError
+#undef glGetFloatv
+#undef glGetIntegerv
+#undef glGetPointerv
+#undef glGetString
+#undef glGetTexImage
+#undef glGetTexLevelParameterfv
+#undef glGetTexLevelParameteriv
+#undef glGetTexParameterfv
+#undef glGetTexParameteriv
+#undef glHint
+#undef glIsEnabled
+#undef glIsTexture
+#undef glLineWidth
+#undef glLogicOp
+#undef glPixelStoref
+#undef glPixelStorei
+#undef glPointSize
+#undef glPolygonMode
+#undef glPolygonOffset
+#undef glReadBuffer
+#undef glReadPixels
+#undef glScissor
+#undef glStencilFunc
+#undef glStencilMask
+#undef glStencilOp
+#undef glTexImage1D
+#undef glTexImage2D
+#undef glTexParameterf
+#undef glTexParameterfv
+#undef glTexParameteri
+#undef glTexParameteriv
+#undef glTexSubImage1D
+#undef glTexSubImage2D
+#undef glViewport
+	
 	if (!functions->bindTexture) functions->bindTexture = (CL_GLFunctions::ptr_glBindTexture) &glBindTexture;
 	if (!functions->blendFunc) functions->blendFunc = (CL_GLFunctions::ptr_glBlendFunc) &glBlendFunc;
 	if (!functions->clear) functions->clear = (CL_GLFunctions::ptr_glClear) &glClear;
@@ -1402,25 +1467,22 @@ CL_GLFunctions *cl_setup_binds()
 #endif
 
 #ifdef __APPLE__
-//	if (!functions->drawRangeElements) functions->drawRangeElements = (CL_GLFunctions::ptr_glDrawRangeElements) &glDrawRangeElements;
-//	if (!functions->texImage3D) functions->texImage3D = (CL_GLFunctions::ptr_glTexImage3D) &glTexImage3D;
-//	if (!functions->texSubImage3D) functions->texSubImage3D = (CL_GLFunctions::ptr_glTexSubImage3D) &glTexSubImage3D;
-//	if (!functions->copyTexSubImage3D) functions->copyTexSubImage3D = (CL_GLFunctions::ptr_glCopyTexSubImage3D) &glCopyTexSubImage3D;
+	// We require the real address of static links, so undef these...
+
+#undef glBlendColor
+#undef glBlendEquation
+#undef glActiveTexture
+#undef glCompressedTexImage2D
+#undef glCompressedTexSubImage2D
+#undef glSampleCoverage
+#undef glBlendFuncSeparate
+
 	if (!functions->blendColor) functions->blendColor = (CL_GLFunctions::ptr_glBlendColor) &glBlendColor;
 	if (!functions->blendEquation) functions->blendEquation = (CL_GLFunctions::ptr_glBlendEquation) &glBlendEquation;
 	if (!functions->activeTexture) functions->activeTexture = (CL_GLFunctions::ptr_glActiveTexture) &glActiveTexture;
-//	if (!functions->compressedTexImage1D) functions->compressedTexImage1D = (CL_GLFunctions::ptr_glCompressedTexImage1D) &glCompressedTexImage1D;
 	if (!functions->compressedTexImage2D) functions->compressedTexImage2D = (CL_GLFunctions::ptr_glCompressedTexImage2D) &glCompressedTexImage2D;
-//	if (!functions->compressedTexImage3D) functions->compressedTexImage3D = (CL_GLFunctions::ptr_glCompressedTexImage3DARB) &glCompressedTexImage3D;
-//	if (!functions->compressedTexSubImage1D) functions->compressedTexSubImage1D = (CL_GLFunctions::ptr_glCompressedTexSubImage1D) &glCompressedTexSubImage1D;
 	if (!functions->compressedTexSubImage2D) functions->compressedTexSubImage2D = (CL_GLFunctions::ptr_glCompressedTexSubImage2D) &glCompressedTexSubImage2D;
-//	if (!functions->compressedTexSubImage3D) functions->compressedTexSubImage3D = (CL_GLFunctions::ptr_glCompressedTexSubImage3D) &glCompressedTexSubImage3D;
-//	if (!functions->getCompressedTexImage) functions->getCompressedTexImage = (CL_GLFunctions::ptr_glGetCompressedTexImage) &glGetCompressedTexImage;
 	if (!functions->sampleCoverage) functions->sampleCoverage = (CL_GLFunctions::ptr_glSampleCoverage) &glSampleCoverage;
-//	if (!functions->multiDrawArrays) functions->multiDrawArrays = (CL_GLFunctions::ptr_glMultiDrawArrays) &glMultiDrawArrays;
-//	if (!functions->multiDrawElements) functions->multiDrawElements = (CL_GLFunctions::ptr_glMultiDrawElements) &glMultiDrawElements;
-//	if (!functions->pointParameterf) functions->pointParameterf = (CL_GLFunctions::ptr_glPointParameterf) &glPointParameterf;
-//	if (!functions->pointParameterfv) functions->pointParameterfv = (CL_GLFunctions::ptr_glPointParameterfv) &glPointParameterfv;
 	if (!functions->blendFuncSeparate) functions->blendFuncSeparate = (CL_GLFunctions::ptr_glBlendFuncSeparate) &glBlendFuncSeparate;
 
     // The following functions exist in the bundle but they are not implemented by Apple:

@@ -48,7 +48,7 @@ CL_OpenGLProgramObjectProvider::CL_OpenGLProgramObjectProvider()
 {
 	CL_SharedGCData::add_disposable(this);
 	CL_OpenGL::set_active();
-	handle = clCreateProgram();
+	handle = glCreateProgram();
 }
 
 CL_OpenGLProgramObjectProvider::~CL_OpenGLProgramObjectProvider()
@@ -63,7 +63,7 @@ void CL_OpenGLProgramObjectProvider::on_dispose()
 	{
 		if (CL_OpenGL::set_active())
 		{
-			clDeleteProgram(handle);
+			glDeleteProgram(handle);
 		}
 	}
 }
@@ -86,7 +86,7 @@ bool CL_OpenGLProgramObjectProvider::get_link_status() const
 	throw_if_disposed();
 	CL_OpenGL::set_active();
 	GLint status = 0;
-	clGetProgramiv(handle, GL_LINK_STATUS, &status);
+	glGetProgramiv(handle, GL_LINK_STATUS, &status);
 	return (status != GL_FALSE);
 }
 	
@@ -95,7 +95,7 @@ bool CL_OpenGLProgramObjectProvider::get_validate_status() const
 	throw_if_disposed();
 	CL_OpenGL::set_active();
 	GLint status = 0;
-	clGetProgramiv(handle, GL_VALIDATE_STATUS, &status);
+	glGetProgramiv(handle, GL_VALIDATE_STATUS, &status);
 	return (status != GL_FALSE);
 }
 	
@@ -115,7 +115,7 @@ CL_String CL_OpenGLProgramObjectProvider::get_info_log() const
 	{
 		GLchar *info_log = new GLchar[buffer_size];
 		GLsizei length = 0;
-		clGetProgramInfoLog(handle, buffer_size, &length, info_log);
+		glGetProgramInfoLog(handle, buffer_size, &length, info_log);
 		if (length < buffer_size-1)
 			result = CL_StringHelp::local8_to_text(CL_StringRef8(info_log, length, false));
 		delete[] info_log;
@@ -148,7 +148,7 @@ int CL_OpenGLProgramObjectProvider::get_uniform_location(const CL_StringRef &nam
 {
 	throw_if_disposed();
 	CL_OpenGL::set_active();
-	return clGetUniformLocation(handle, CL_StringHelp::text_to_local8(name).c_str());
+	return glGetUniformLocation(handle, CL_StringHelp::text_to_local8(name).c_str());
 }
 
 int CL_OpenGLProgramObjectProvider::get_attribute_count() const
@@ -173,7 +173,7 @@ int CL_OpenGLProgramObjectProvider::get_attribute_location(const CL_StringRef &n
 {
 	throw_if_disposed();
 	CL_OpenGL::set_active();
-	return clGetAttribLocation(handle, CL_StringHelp::text_to_local8(name).c_str());
+	return glGetAttribLocation(handle, CL_StringHelp::text_to_local8(name).c_str());
 }
 	
 /////////////////////////////////////////////////////////////////////////////	
@@ -184,7 +184,7 @@ void CL_OpenGLProgramObjectProvider::attach(const CL_ShaderObject &obj)
 	throw_if_disposed();
 	shaders.push_back(obj);
 	CL_OpenGL::set_active();
-	clAttachShader(handle, (GLuint) obj.get_handle());
+	glAttachShader(handle, (GLuint) obj.get_handle());
 }
 
 void CL_OpenGLProgramObjectProvider::detach(const CL_ShaderObject &obj)
@@ -199,28 +199,28 @@ void CL_OpenGLProgramObjectProvider::detach(const CL_ShaderObject &obj)
 		}
 	}
 	CL_OpenGL::set_active();
-	clDetachShader(handle, (GLuint) obj.get_handle());
+	glDetachShader(handle, (GLuint) obj.get_handle());
 }
 
 void CL_OpenGLProgramObjectProvider::bind_attribute_location(int index, const CL_StringRef &name)
 {
 	throw_if_disposed();
 	CL_OpenGL::set_active();
-	clBindAttribLocation(handle, index, CL_StringHelp::text_to_local8(name).c_str());
+	glBindAttribLocation(handle, index, CL_StringHelp::text_to_local8(name).c_str());
 }
 
 void CL_OpenGLProgramObjectProvider::bind_frag_data_location(int color_number, const CL_StringRef &name)
 {
 	throw_if_disposed();
 	CL_OpenGL::set_active();
-	clBindFragDataLocation(handle, color_number, CL_StringHelp::text_to_local8(name).c_str());
+	glBindFragDataLocation(handle, color_number, CL_StringHelp::text_to_local8(name).c_str());
 }
 
 void CL_OpenGLProgramObjectProvider::link()
 {
 	throw_if_disposed();
 	CL_OpenGL::set_active();
-	clLinkProgram(handle);
+	glLinkProgram(handle);
 
 	cached_attribs.clear();
 	cached_uniforms.clear();
@@ -230,7 +230,7 @@ void CL_OpenGLProgramObjectProvider::validate()
 {
 	throw_if_disposed();
 	CL_OpenGL::set_active();
-	clValidateProgram(handle);
+	glValidateProgram(handle);
 }
 
 void CL_OpenGLProgramObjectProvider::set_uniform1i(const CL_StringRef &name, int p1)
@@ -240,7 +240,7 @@ void CL_OpenGLProgramObjectProvider::set_uniform1i(const CL_StringRef &name, int
 	int loc = get_uniform_location(name);
 	if (loc == -1)
 		return;
-	clUniform1i(loc, p1);	
+	glUniform1i(loc, p1);	
 }
 
 void CL_OpenGLProgramObjectProvider::set_uniform2i(const CL_StringRef &name, int p1, int p2)
@@ -251,7 +251,7 @@ void CL_OpenGLProgramObjectProvider::set_uniform2i(const CL_StringRef &name, int
 	if (loc == -1)
 		return;
 
-	clUniform2i(loc, p1, p2);	
+	glUniform2i(loc, p1, p2);	
 }
 
 void CL_OpenGLProgramObjectProvider::set_uniform3i(const CL_StringRef &name, int p1, int p2, int p3)
@@ -262,7 +262,7 @@ void CL_OpenGLProgramObjectProvider::set_uniform3i(const CL_StringRef &name, int
 	if (loc == -1)
 		return;
 
-	clUniform3i(loc, p1, p2, p3);	
+	glUniform3i(loc, p1, p2, p3);	
 }
 
 void CL_OpenGLProgramObjectProvider::set_uniform4i(const CL_StringRef &name, int p1, int p2, int p3, int p4)
@@ -273,7 +273,7 @@ void CL_OpenGLProgramObjectProvider::set_uniform4i(const CL_StringRef &name, int
 	if (loc == -1)
 		return;
 
-	clUniform4i(loc, p1, p2, p3, p4);	
+	glUniform4i(loc, p1, p2, p3, p4);	
 }
 
 void CL_OpenGLProgramObjectProvider::set_uniformiv(const CL_StringRef &name, int size, int count, int *data)
@@ -285,10 +285,10 @@ void CL_OpenGLProgramObjectProvider::set_uniformiv(const CL_StringRef &name, int
 	if (loc == -1)
 		return;
 
-	if( size == 1 ) clUniform1iv(loc, count, data);	
-	else if( size == 2 ) clUniform2iv(loc, count, data);	
-	else if( size == 3 ) clUniform3iv(loc, count, data);	
-	else if( size == 4 ) clUniform4iv(loc, count, data);	
+	if( size == 1 ) glUniform1iv(loc, count, data);	
+	else if( size == 2 ) glUniform2iv(loc, count, data);	
+	else if( size == 3 ) glUniform3iv(loc, count, data);	
+	else if( size == 4 ) glUniform4iv(loc, count, data);	
 	else throw CL_Exception(cl_format("Unsupported size given to uniform '%1'.", name));
 }
 
@@ -301,7 +301,7 @@ void CL_OpenGLProgramObjectProvider::set_uniform1f(const CL_StringRef &name, flo
 	if (loc == -1)
 		return;
 
-	clUniform1f(loc, p1);	
+	glUniform1f(loc, p1);	
 }
 
 void CL_OpenGLProgramObjectProvider::set_uniform2f(const CL_StringRef &name, float p1, float p2)
@@ -313,7 +313,7 @@ void CL_OpenGLProgramObjectProvider::set_uniform2f(const CL_StringRef &name, flo
 	if (loc == -1)
 		return;
 
-	clUniform2f(loc, p1, p2);	
+	glUniform2f(loc, p1, p2);	
 }
 
 void CL_OpenGLProgramObjectProvider::set_uniform3f(const CL_StringRef &name, float p1, float p2, float p3)
@@ -325,7 +325,7 @@ void CL_OpenGLProgramObjectProvider::set_uniform3f(const CL_StringRef &name, flo
 	if (loc == -1)
 		return;
 
-	clUniform3f(loc, p1, p2, p3);	
+	glUniform3f(loc, p1, p2, p3);	
 }
 
 void CL_OpenGLProgramObjectProvider::set_uniform4f(const CL_StringRef &name, float p1, float p2, float p3, float p4)
@@ -337,7 +337,7 @@ void CL_OpenGLProgramObjectProvider::set_uniform4f(const CL_StringRef &name, flo
 	if (loc == -1)
 		return;
 
-	clUniform4f(loc, p1, p2, p3, p4);	
+	glUniform4f(loc, p1, p2, p3, p4);	
 }
 
 void CL_OpenGLProgramObjectProvider::set_uniformfv(const CL_StringRef &name, int size, int count, float *data)
@@ -349,10 +349,10 @@ void CL_OpenGLProgramObjectProvider::set_uniformfv(const CL_StringRef &name, int
 	if (loc == -1)
 		return;
 
-	if( size == 1 ) clUniform1fv(loc, count, data);	
-	else if( size == 2 ) clUniform2fv(loc, count, data);	
-	else if( size == 3 ) clUniform3fv(loc, count, data);	
-	else if( size == 4 ) clUniform4fv(loc, count, data);	
+	if( size == 1 ) glUniform1fv(loc, count, data);	
+	else if( size == 2 ) glUniform2fv(loc, count, data);	
+	else if( size == 3 ) glUniform3fv(loc, count, data);	
+	else if( size == 4 ) glUniform4fv(loc, count, data);	
 	else throw CL_Exception(cl_format("Unsupported size given to uniform '%1'.", name));
 }
 
@@ -365,9 +365,9 @@ void CL_OpenGLProgramObjectProvider::set_uniform_matrix(const CL_StringRef &name
 	if (loc == -1)
 		return;
 
-	if( size == 2 ) clUniformMatrix2fv(loc, count, transpose, data);	
-	else if( size == 3 ) clUniformMatrix3fv(loc, count, transpose, data);	
-	else if( size == 4 ) clUniformMatrix4fv(loc, count, transpose, data);
+	if( size == 2 ) glUniformMatrix2fv(loc, count, transpose, data);	
+	else if( size == 3 ) glUniformMatrix3fv(loc, count, transpose, data);	
+	else if( size == 4 ) glUniformMatrix4fv(loc, count, transpose, data);
 	else throw CL_Exception(cl_format("Unsupported size given to uniform '%1'.", name));
 }
 
@@ -378,13 +378,13 @@ CL_ProgramObjectStateTracker::CL_ProgramObjectStateTracker(GLuint handle)
 {
 	CL_OpenGL::set_active();
 
-	clGetIntegerv(GL_CURRENT_PROGRAM, (GLint *) &last_program_object);
-	clUseProgram(handle);
+	glGetIntegerv(GL_CURRENT_PROGRAM, (GLint *) &last_program_object);
+	glUseProgram(handle);
 }
 
 CL_ProgramObjectStateTracker::~CL_ProgramObjectStateTracker()
 {
-	clUseProgram(last_program_object);
+	glUseProgram(last_program_object);
 }
 
 void CL_OpenGLProgramObjectProvider::fetch_attributes() const
@@ -395,9 +395,9 @@ void CL_OpenGLProgramObjectProvider::fetch_attributes() const
 	CL_OpenGL::set_active();
 
 	GLint count = 0;
-	clGetProgramiv(handle, GL_ACTIVE_ATTRIBUTES, &count);
+	glGetProgramiv(handle, GL_ACTIVE_ATTRIBUTES, &count);
 	GLint name_size = 0;
-	clGetProgramiv(handle, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &name_size);
+	glGetProgramiv(handle, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &name_size);
 	GLchar *name = new GLchar[name_size+1];
 	name[name_size] = 0;
 	for (int i=0; i<count; i++)
@@ -406,10 +406,10 @@ void CL_OpenGLProgramObjectProvider::fetch_attributes() const
 		GLint size = 0;
 		GLenum type = 0;
 		name[0] = 0;
-		clGetActiveAttrib(handle, i, name_size, &length, &size, &type, name);
+		glGetActiveAttrib(handle, i, name_size, &length, &size, &type, name);
 		CL_String attrib_name = CL_StringHelp::local8_to_text(CL_StringRef8(name, length, false));
 
-		int loc = clGetAttribLocation(handle, CL_StringHelp::text_to_local8(name).c_str());
+		int loc = glGetAttribLocation(handle, CL_StringHelp::text_to_local8(name).c_str());
 		CL_ProgramAttribute attribute(attrib_name, size, type, loc);
 		cached_attribs.push_back(attribute);
 	}
@@ -424,9 +424,9 @@ void CL_OpenGLProgramObjectProvider::fetch_uniforms() const
 	CL_OpenGL::set_active();
 
 	GLint count = 0;
-	clGetProgramiv(handle, GL_ACTIVE_UNIFORMS, &count);
+	glGetProgramiv(handle, GL_ACTIVE_UNIFORMS, &count);
 	GLint name_size = 0;
-	clGetProgramiv(handle, GL_ACTIVE_UNIFORM_MAX_LENGTH, &name_size);
+	glGetProgramiv(handle, GL_ACTIVE_UNIFORM_MAX_LENGTH, &name_size);
 	GLchar *name = new GLchar[name_size+1];
 	name[name_size] = 0;
 	for (int i=0; i<count; i++)
@@ -435,10 +435,10 @@ void CL_OpenGLProgramObjectProvider::fetch_uniforms() const
 		GLint size = 0;
 		GLenum type = 0;
 		name[0] = 0;
-		clGetActiveUniform(handle, i, name_size, &length, &size, &type, name);
+		glGetActiveUniform(handle, i, name_size, &length, &size, &type, name);
 
 		CL_String uniform_name = CL_StringHelp::local8_to_text(CL_StringRef8(name, length, false));
-		int loc = clGetUniformLocation(handle, CL_StringHelp::text_to_local8(name).c_str());
+		int loc = glGetUniformLocation(handle, CL_StringHelp::text_to_local8(name).c_str());
 
 		CL_ProgramUniform uniform(uniform_name, size, type, loc);
 		cached_uniforms.push_back(uniform);

@@ -90,9 +90,9 @@ public:
 	/// \return true = Success. false = No OpenGL contexts could be found
 	static bool set_active();
 
-	/// \brief Throw an exception if an OpenGL error was detected ( Using clGetError() )
+	/// \brief Throw an exception if an OpenGL error was detected ( Using glGetError() )
 	///
-	/// Remember to call clGetError() to clear any previous errors
+	/// Remember to call glGetError() to clear any previous errors
 	static void check_error();
 
 	/// \brief Get the opengl version major number
