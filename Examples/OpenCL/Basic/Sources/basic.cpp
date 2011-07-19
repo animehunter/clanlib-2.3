@@ -29,10 +29,6 @@
 #include "precomp.h"
 #include "basic.h"
 
-//#include <ClanLib/GL/opengl_gl.h>
-
-#undef clFlush
-#undef clFinish
 #include <CL/opencl.h>
 //#include <CL/cl.hpp>
 

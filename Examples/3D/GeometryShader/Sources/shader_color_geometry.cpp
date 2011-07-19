@@ -119,7 +119,7 @@ ShaderColorGeometry::ShaderColorGeometry(CL_GraphicContext &gc)
 		throw CL_Exception(cl_format("Unable to compile geometry shader object: %1", geometry_shader.get_info_log()));
 	}
 
-	if (!clProgramParameteri)
+	if (!glProgramParameteri)
 		throw CL_Exception("Geomtry shader is not available");
 
 	CL_ShaderObject fragment_shader(gc, cl_shadertype_fragment, fragment);
