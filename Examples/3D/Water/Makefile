@@ -1,6 +1,5 @@
 EXAMPLE_BIN=water
-OBJF = ./Sources/shader_color.o \
-./Sources/model.o \
+OBJF = ./Sources/model.o \
 ./Sources/example.o \
 ./Sources/shader_texture.o \
 ./Sources/graphic_store.o \
