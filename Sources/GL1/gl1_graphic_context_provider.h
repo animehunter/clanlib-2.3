@@ -153,13 +153,13 @@ public:
 	void set_back_material(const CL_Material_GL1 &material);
 	void reset_front_material();
 	void reset_back_material();
-	void set_material(CLenum face, const CL_Material_GL1 &material);
+	void set_material(GLenum face, const CL_Material_GL1 &material);
 	void reset_material();
 	void set_color_material(CL_ColorMaterial_GL1 color);
 	void set_color_material_front(CL_ColorMaterial_GL1 color);
 	void set_color_material_back(CL_ColorMaterial_GL1 color);
 	void reset_color_material();
-	void set_color_material(CLenum face, CL_ColorMaterial_GL1 color);
+	void set_color_material(GLenum face, CL_ColorMaterial_GL1 color);
 	void set_light(int light_index, const CL_LightSource_GL1 &light);
 	void reset_light(int light_index);
 	void set_texture_unit(int unit_index, const CL_TextureUnit_GL1 &unit);
@@ -177,24 +177,24 @@ private:
 	void reset_primitive_texture( int texture_index);
 	void reset_primitive_texture_all();
 
-	CLenum to_enum(enum CL_DrawBuffer buf);
-	CLenum to_enum(enum CL_CompareFunction func);
-	CLenum to_enum(enum CL_StencilOp op);
-	CLenum to_enum(enum CL_CullMode mode);
-	CLenum to_enum(enum CL_FillMode mode);
-	CLenum to_enum(enum CL_BlendFunc func);
-	CLenum to_enum(enum CL_BlendEquation eq);
-	CLenum to_enum(enum CL_VertexAttributeDataType value);
-	CLenum to_enum(enum CL_PrimitivesType value);
-	CLenum to_enum(enum CL_LogicOp op);
+	GLenum to_enum(enum CL_DrawBuffer buf);
+	GLenum to_enum(enum CL_CompareFunction func);
+	GLenum to_enum(enum CL_StencilOp op);
+	GLenum to_enum(enum CL_CullMode mode);
+	GLenum to_enum(enum CL_FillMode mode);
+	GLenum to_enum(enum CL_BlendFunc func);
+	GLenum to_enum(enum CL_BlendEquation eq);
+	GLenum to_enum(enum CL_VertexAttributeDataType value);
+	GLenum to_enum(enum CL_PrimitivesType value);
+	GLenum to_enum(enum CL_LogicOp op);
 
 	// GL1 Only
-	CLenum to_enum(enum CL_TextureUnitMode value);
-	CLenum to_enum(enum CL_TextureUnitRGBMode value);
-	CLenum to_enum(enum CL_TextureUnitAlphaMode value);
-	CLenum to_enum(enum CL_TextureUnitAlphaOperand value);
-	CLenum to_enum(enum CL_TextureUnitRGBOperand value);
-	CLenum to_enum(enum CL_TextureUnitSource value);
+	GLenum to_enum(enum CL_TextureUnitMode value);
+	GLenum to_enum(enum CL_TextureUnitRGBMode value);
+	GLenum to_enum(enum CL_TextureUnitAlphaMode value);
+	GLenum to_enum(enum CL_TextureUnitAlphaOperand value);
+	GLenum to_enum(enum CL_TextureUnitRGBOperand value);
+	GLenum to_enum(enum CL_TextureUnitSource value);
 
 	/// \brief OpenGL render window.
 	const CL_RenderWindowProvider * const render_window;

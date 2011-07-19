@@ -51,6 +51,6 @@ void CL_OpenGLVertexArrayBufferProvider::create(int size, CL_BufferUsage usage)
 
 void CL_OpenGLVertexArrayBufferProvider::create(void *data, int size, CL_BufferUsage usage)
 {
-	buffer.create(data, size, usage, CL_ARRAY_BUFFER_BINDING, CL_ARRAY_BUFFER);
+	buffer.create(data, size, usage, GL_ARRAY_BUFFER_BINDING, GL_ARRAY_BUFFER);
 }
 

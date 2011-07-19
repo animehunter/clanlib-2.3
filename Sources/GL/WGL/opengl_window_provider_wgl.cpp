@@ -442,16 +442,16 @@ void CL_OpenGLWindowProvider_WGL::flip(int interval)
 		int width = get_viewport().get_width();
 		int height = get_viewport().get_height();
 
-		//clReadBuffer(CL_BACK);
-		clDrawBuffer(CL_BACK);
-		clReadBuffer(CL_FRONT);
+		//clReadBuffer(GL_BACK);
+		clDrawBuffer(GL_BACK);
+		clReadBuffer(GL_FRONT);
 
 		CL_PixelBuffer pixelbuffer(width, height, cl_rgba8);
 		clReadPixels(
 			0, 0,
 			width, height,
-			CL_RGBA,
-			CL_UNSIGNED_INT_8_8_8_8,
+			GL_RGBA,
+			GL_UNSIGNED_INT_8_8_8_8,
 			pixelbuffer.get_data());
 
 		win32_window.update_layered(pixelbuffer);
@@ -492,9 +492,9 @@ void CL_OpenGLWindowProvider_WGL::update(const CL_Rect &_rect)
 
 	if (shadow_window)
 	{
-		//clReadBuffer(CL_BACK);
-		clDrawBuffer(CL_BACK);
-		clReadBuffer(CL_FRONT);
+		//clReadBuffer(GL_BACK);
+		clDrawBuffer(GL_BACK);
+		clReadBuffer(GL_FRONT);
 
 		// ** Currently update layered windows only supports full screen rect update **
 		rect = CL_Rect(0,0, width, height);
@@ -503,46 +503,46 @@ void CL_OpenGLWindowProvider_WGL::update(const CL_Rect &_rect)
 		clReadPixels(
 			rect.left, height - rect.bottom,
 			rect.right - rect.left, rect.bottom - rect.top,
-			CL_RGBA,
-			CL_UNSIGNED_INT_8_8_8_8,
+			GL_RGBA,
+			GL_UNSIGNED_INT_8_8_8_8,
 			pixelbuffer.get_data());
 
 		win32_window.update_layered(pixelbuffer);
 	}
 	else
 	{
-		CLboolean isdoublebuffered = CL_TRUE;
-		clGetBooleanv(CL_DOUBLEBUFFER, &isdoublebuffered);
+		GLboolean isdoublebuffered = GL_TRUE;
+		clGetBooleanv(GL_DOUBLEBUFFER, &isdoublebuffered);
 		if (isdoublebuffered)
 		{
 
-			CLint read_last_bound;
-			CLint draw_last_bound;
+			GLint read_last_bound;
+			GLint draw_last_bound;
 
-			clGetIntegerv(CL_READ_FRAMEBUFFER_BINDING, &read_last_bound);
-			clGetIntegerv(CL_DRAW_FRAMEBUFFER_BINDING, &draw_last_bound);
+			clGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &read_last_bound);
+			clGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &draw_last_bound);
 
-			clBindFramebuffer(CL_READ_FRAMEBUFFER, 0);
-		    clBindFramebuffer(CL_DRAW_FRAMEBUFFER, 0);
+			clBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+		    clBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
-			clReadBuffer(CL_BACK);
-			clDrawBuffer(CL_FRONT);
+			clReadBuffer(GL_BACK);
+			clDrawBuffer(GL_FRONT);
 
 			clBlitFramebuffer( 
 				rect.left, height - rect.bottom,
 				rect.right, height - rect.top,
 				rect.left, height - rect.bottom,
 				rect.right, height - rect.top,
-				CL_COLOR_BUFFER_BIT, CL_NEAREST);
+				GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
-			clDrawBuffer(CL_BACK);
-			clReadBuffer(CL_FRONT);
+			clDrawBuffer(GL_BACK);
+			clReadBuffer(GL_FRONT);
 
 			if (read_last_bound)
-				clBindFramebuffer(CL_READ_FRAMEBUFFER, read_last_bound);
+				clBindFramebuffer(GL_READ_FRAMEBUFFER, read_last_bound);
 
 			if (draw_last_bound)
-				clBindFramebuffer(CL_DRAW_FRAMEBUFFER, draw_last_bound);
+				clBindFramebuffer(GL_DRAW_FRAMEBUFFER, draw_last_bound);
 
 			clFlush();
 

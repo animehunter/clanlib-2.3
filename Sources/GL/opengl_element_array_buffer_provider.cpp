@@ -52,6 +52,6 @@ void CL_OpenGLElementArrayBufferProvider::create(int size, CL_BufferUsage usage)
 
 void CL_OpenGLElementArrayBufferProvider::create(void *data, int size, CL_BufferUsage usage)
 {
-	buffer.create(data, size, usage, CL_ELEMENT_ARRAY_BUFFER_BINDING, CL_ELEMENT_ARRAY_BUFFER);
+	buffer.create(data, size, usage, GL_ELEMENT_ARRAY_BUFFER_BINDING, GL_ELEMENT_ARRAY_BUFFER);
 }
 

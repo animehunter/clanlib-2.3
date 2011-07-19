@@ -56,8 +56,8 @@ void CL_OpenGLShaderObjectProvider::create(
 	handle = clCreateShader(shadertype_to_opengl(type));
 
 	CL_String8 source8 = CL_StringHelp::text_to_local8(source);
-	const CLchar *sources[1];
-	CLint source_lengths[1];
+	const GLchar *sources[1];
+	GLint source_lengths[1];
 	source_lengths[0] = source.length();
 	sources[0] = source8.c_str();
 	clShaderSource(handle, 1, sources, source_lengths);
@@ -74,19 +74,19 @@ void CL_OpenGLShaderObjectProvider::create(
 	type = shader_type;
 	handle = clCreateShader(shadertype_to_opengl(type));
 
-	CLchar ** array_sources = 0;
-	CLint *array_source_lengths = 0;
+	GLchar ** array_sources = 0;
+	GLint *array_source_lengths = 0;
 	try
 	{
-		array_sources = new CLchar*[sources.size()];
-		array_source_lengths = new CLint[sources.size()];
+		array_sources = new GLchar*[sources.size()];
+		array_source_lengths = new GLint[sources.size()];
 	
 		for (std::vector<CL_StringRef>::size_type i = 0; i < sources.size(); i++)
 		{
 			array_source_lengths[i] = sources[i].length();
-			array_sources[i] = (CLchar*) sources[i].c_str();
+			array_sources[i] = (GLchar*) sources[i].c_str();
 		}
-		clShaderSource(handle, sources.size(), (const CLchar**) array_sources, array_source_lengths);
+		clShaderSource(handle, sources.size(), (const GLchar**) array_sources, array_source_lengths);
 	}
 	catch (...)
 	{
@@ -128,9 +128,9 @@ unsigned int CL_OpenGLShaderObjectProvider::get_handle() const
 bool CL_OpenGLShaderObjectProvider::get_compile_status() const
 {
 	CL_OpenGL::set_active();
-	CLint status = 0;
-	clGetShaderiv(handle, CL_COMPILE_STATUS, &status);
-	return (status != CL_FALSE);
+	GLint status = 0;
+	clGetShaderiv(handle, GL_COMPILE_STATUS, &status);
+	return (status != GL_FALSE);
 }
 
 CL_ShaderType CL_OpenGLShaderObjectProvider::get_shader_type() const
@@ -142,11 +142,11 @@ CL_String CL_OpenGLShaderObjectProvider::get_info_log() const
 {
 	CL_OpenGL::set_active();
 	CL_String result;
-	CLsizei buffer_size = 16*1024;
+	GLsizei buffer_size = 16*1024;
 	while (buffer_size < 2*1024*1024)
 	{
-		CLchar *info_log = new CLchar[buffer_size];
-		CLsizei length = 0;
+		GLchar *info_log = new GLchar[buffer_size];
+		GLsizei length = 0;
 		clGetShaderInfoLog(handle, buffer_size, &length, info_log);
 		if (length < buffer_size-1)
 			result = CL_StringHelp::local8_to_text(CL_StringRef8(info_log, length, false));
@@ -162,11 +162,11 @@ CL_String CL_OpenGLShaderObjectProvider::get_shader_source() const
 {
 	CL_OpenGL::set_active();
 	CL_String result;
-	CLsizei buffer_size = 16*1024;
+	GLsizei buffer_size = 16*1024;
 	while (buffer_size < 2*1024*1024)
 	{
-		CLchar *shader_source = new CLchar[buffer_size];
-		CLsizei length = 0;
+		GLchar *shader_source = new GLchar[buffer_size];
+		GLsizei length = 0;
 		clGetShaderSource(handle, buffer_size, &length, shader_source);
 		if (length < buffer_size-1)
 			result = CL_StringHelp::local8_to_text(CL_StringRef8(shader_source, length, false));
@@ -190,16 +190,16 @@ void CL_OpenGLShaderObjectProvider::compile()
 /////////////////////////////////////////////////////////////////////////////
 // CL_OpenGLShaderObjectProvider Implementation:
 
-CLenum CL_OpenGLShaderObjectProvider::shadertype_to_opengl(CL_ShaderType type)
+GLenum CL_OpenGLShaderObjectProvider::shadertype_to_opengl(CL_ShaderType type)
 {
 	switch (type)
 	{
 	case cl_shadertype_vertex:
-		return CL_VERTEX_SHADER;
+		return GL_VERTEX_SHADER;
 	case cl_shadertype_geometry:
-		return CL_GEOMETRY_SHADER;
+		return GL_GEOMETRY_SHADER;
 	case cl_shadertype_fragment:
-		return CL_FRAGMENT_SHADER;
+		return GL_FRAGMENT_SHADER;
 	default:
 		throw CL_Exception("CL_OpenGLShaderObjectProvider: Unknown shader type: " + type);
 	}

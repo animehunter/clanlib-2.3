@@ -53,7 +53,7 @@ class CL_GL1GraphicContextProvider;
 
 class CL_OpenGLWindowProvider_GLX;
 
-#define CL_USE_DLOPEN		// Using dlopen for linux by default
+#define GL_USE_DLOPEN		// Using dlopen for linux by default
 
 class CL_GL1_GLXFunctions
 {
@@ -340,7 +340,7 @@ private:
 
 	int swap_interval;
 
-#ifdef CL_USE_DLOPEN
+#ifdef GL_USE_DLOPEN
 	void *opengl_lib_handle;
 #endif
 

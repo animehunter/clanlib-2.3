@@ -287,7 +287,7 @@ void CL_CocoaWindow::on_touches_began(const std::vector<CL_Vec2f> &touches)
     
     CL_InputEvent e;
     e.type = CL_InputEvent::pressed;
-    e.id = CL_MOUSE_LEFT;
+    e.id = GL_MOUSE_LEFT;
     e.mouse_pos = CL_Point(touches[0]);
     e.device = mouse;
     get_mouse()->sig_provider_event->invoke(e);
@@ -313,7 +313,7 @@ void CL_CocoaWindow::on_touches_ended(const std::vector<CL_Vec2f> &touches)
     
     CL_InputEvent e;
     e.type = CL_InputEvent::released;
-    e.id = CL_MOUSE_LEFT;
+    e.id = GL_MOUSE_LEFT;
     e.mouse_pos = CL_Point(touches[0]);
     e.device = mouse;
     get_mouse()->sig_provider_event->invoke(e);
@@ -327,7 +327,7 @@ void CL_CocoaWindow::on_touches_cancelled(const std::vector<CL_Vec2f> &touches)
     
     CL_InputEvent e;
     e.type = CL_InputEvent::released;
-    e.id = CL_MOUSE_LEFT;
+    e.id = GL_MOUSE_LEFT;
     e.mouse_pos = CL_Point(touches[0]);
     e.device = mouse;
     get_mouse()->sig_provider_event->invoke(e);

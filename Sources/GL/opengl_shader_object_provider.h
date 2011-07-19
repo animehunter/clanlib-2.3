@@ -92,9 +92,9 @@ public:
 
 private:
 	void on_dispose();
-	CLenum shadertype_to_opengl(CL_ShaderType type);
+	GLenum shadertype_to_opengl(CL_ShaderType type);
 
-	CLuint handle;
+	GLuint handle;
 
 	CL_ShaderType type;
 /// \}

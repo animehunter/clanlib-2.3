@@ -142,7 +142,7 @@ private:
 
 	void fetch_uniforms() const;
 
-	CLuint handle;
+	GLuint handle;
 
 	std::vector<CL_ShaderObject> shaders;
 
@@ -156,11 +156,11 @@ private:
 class CL_ProgramObjectStateTracker
 {
 public:
-	CL_ProgramObjectStateTracker(CLuint handle);
+	CL_ProgramObjectStateTracker(GLuint handle);
 	~CL_ProgramObjectStateTracker();
 
 private:
-	CLuint last_program_object;
+	GLuint last_program_object;
 };
 
 

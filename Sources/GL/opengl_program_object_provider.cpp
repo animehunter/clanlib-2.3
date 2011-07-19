@@ -85,18 +85,18 @@ bool CL_OpenGLProgramObjectProvider::get_link_status() const
 {
 	throw_if_disposed();
 	CL_OpenGL::set_active();
-	CLint status = 0;
-	clGetProgramiv(handle, CL_LINK_STATUS, &status);
-	return (status != CL_FALSE);
+	GLint status = 0;
+	clGetProgramiv(handle, GL_LINK_STATUS, &status);
+	return (status != GL_FALSE);
 }
 	
 bool CL_OpenGLProgramObjectProvider::get_validate_status() const
 {
 	throw_if_disposed();
 	CL_OpenGL::set_active();
-	CLint status = 0;
-	clGetProgramiv(handle, CL_VALIDATE_STATUS, &status);
-	return (status != CL_FALSE);
+	GLint status = 0;
+	clGetProgramiv(handle, GL_VALIDATE_STATUS, &status);
+	return (status != GL_FALSE);
 }
 	
 std::vector<CL_ShaderObject> CL_OpenGLProgramObjectProvider::get_shaders() const
@@ -110,11 +110,11 @@ CL_String CL_OpenGLProgramObjectProvider::get_info_log() const
 	throw_if_disposed();
 	CL_OpenGL::set_active();
 	CL_String result;
-	CLsizei buffer_size = 16*1024;
+	GLsizei buffer_size = 16*1024;
 	while (buffer_size < 2*1024*1024)
 	{
-		CLchar *info_log = new CLchar[buffer_size];
-		CLsizei length = 0;
+		GLchar *info_log = new GLchar[buffer_size];
+		GLsizei length = 0;
 		clGetProgramInfoLog(handle, buffer_size, &length, info_log);
 		if (length < buffer_size-1)
 			result = CL_StringHelp::local8_to_text(CL_StringRef8(info_log, length, false));
@@ -184,7 +184,7 @@ void CL_OpenGLProgramObjectProvider::attach(const CL_ShaderObject &obj)
 	throw_if_disposed();
 	shaders.push_back(obj);
 	CL_OpenGL::set_active();
-	clAttachShader(handle, (CLuint) obj.get_handle());
+	clAttachShader(handle, (GLuint) obj.get_handle());
 }
 
 void CL_OpenGLProgramObjectProvider::detach(const CL_ShaderObject &obj)
@@ -199,7 +199,7 @@ void CL_OpenGLProgramObjectProvider::detach(const CL_ShaderObject &obj)
 		}
 	}
 	CL_OpenGL::set_active();
-	clDetachShader(handle, (CLuint) obj.get_handle());
+	clDetachShader(handle, (GLuint) obj.get_handle());
 }
 
 void CL_OpenGLProgramObjectProvider::bind_attribute_location(int index, const CL_StringRef &name)
@@ -374,11 +374,11 @@ void CL_OpenGLProgramObjectProvider::set_uniform_matrix(const CL_StringRef &name
 /////////////////////////////////////////////////////////////////////////////
 // CL_OpenGLProgramObjectProvider Implementation:
 
-CL_ProgramObjectStateTracker::CL_ProgramObjectStateTracker(CLuint handle)
+CL_ProgramObjectStateTracker::CL_ProgramObjectStateTracker(GLuint handle)
 {
 	CL_OpenGL::set_active();
 
-	clGetIntegerv(CL_CURRENT_PROGRAM, (CLint *) &last_program_object);
+	clGetIntegerv(GL_CURRENT_PROGRAM, (GLint *) &last_program_object);
 	clUseProgram(handle);
 }
 
@@ -394,17 +394,17 @@ void CL_OpenGLProgramObjectProvider::fetch_attributes() const
 
 	CL_OpenGL::set_active();
 
-	CLint count = 0;
-	clGetProgramiv(handle, CL_ACTIVE_ATTRIBUTES, &count);
-	CLint name_size = 0;
-	clGetProgramiv(handle, CL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &name_size);
-	CLchar *name = new CLchar[name_size+1];
+	GLint count = 0;
+	clGetProgramiv(handle, GL_ACTIVE_ATTRIBUTES, &count);
+	GLint name_size = 0;
+	clGetProgramiv(handle, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &name_size);
+	GLchar *name = new GLchar[name_size+1];
 	name[name_size] = 0;
 	for (int i=0; i<count; i++)
 	{
-		CLsizei length = 0;
-		CLint size = 0;
-		CLenum type = 0;
+		GLsizei length = 0;
+		GLint size = 0;
+		GLenum type = 0;
 		name[0] = 0;
 		clGetActiveAttrib(handle, i, name_size, &length, &size, &type, name);
 		CL_String attrib_name = CL_StringHelp::local8_to_text(CL_StringRef8(name, length, false));
@@ -423,17 +423,17 @@ void CL_OpenGLProgramObjectProvider::fetch_uniforms() const
 
 	CL_OpenGL::set_active();
 
-	CLint count = 0;
-	clGetProgramiv(handle, CL_ACTIVE_UNIFORMS, &count);
-	CLint name_size = 0;
-	clGetProgramiv(handle, CL_ACTIVE_UNIFORM_MAX_LENGTH, &name_size);
-	CLchar *name = new CLchar[name_size+1];
+	GLint count = 0;
+	clGetProgramiv(handle, GL_ACTIVE_UNIFORMS, &count);
+	GLint name_size = 0;
+	clGetProgramiv(handle, GL_ACTIVE_UNIFORM_MAX_LENGTH, &name_size);
+	GLchar *name = new GLchar[name_size+1];
 	name[name_size] = 0;
 	for (int i=0; i<count; i++)
 	{
-		CLsizei length = 0;
-		CLint size = 0;
-		CLenum type = 0;
+		GLsizei length = 0;
+		GLint size = 0;
+		GLenum type = 0;
 		name[0] = 0;
 		clGetActiveUniform(handle, i, name_size, &length, &size, &type, name);
 

@@ -66,15 +66,15 @@ bool CL_OpenGLOcclusionQueryProvider::is_result_ready() const
 {
 	CL_OpenGL::set_active(gc_provider);
 	int available;
-	clGetQueryObjectiv(handle, CL_QUERY_RESULT_AVAILABLE, &available);
+	clGetQueryObjectiv(handle, GL_QUERY_RESULT_AVAILABLE, &available);
 	return (available != 0);
 }
 
-CLint CL_OpenGLOcclusionQueryProvider::get_result() const
+GLint CL_OpenGLOcclusionQueryProvider::get_result() const
 {
 	CL_OpenGL::set_active(gc_provider);
-	CLint result;
-	clGetQueryObjectiv(handle, CL_QUERY_RESULT, &result);
+	GLint result;
+	clGetQueryObjectiv(handle, GL_QUERY_RESULT, &result);
 	return result;
 }
 
@@ -102,13 +102,13 @@ void CL_OpenGLOcclusionQueryProvider::destroy()
 void CL_OpenGLOcclusionQueryProvider::begin()
 {
 	CL_OpenGL::set_active(gc_provider);
-	clBeginQuery(CL_SAMPLES_PASSED, handle);
+	clBeginQuery(GL_SAMPLES_PASSED, handle);
 }
 
 void CL_OpenGLOcclusionQueryProvider::end()
 {
 	CL_OpenGL::set_active(gc_provider);
-	clEndQuery(CL_SAMPLES_PASSED);
+	clEndQuery(GL_SAMPLES_PASSED);
 }
 
 

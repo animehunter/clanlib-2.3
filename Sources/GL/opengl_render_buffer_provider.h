@@ -50,7 +50,7 @@ public:
 /// \{
 
 public:
-	CLuint get_handle();
+	GLuint get_handle();
 
 
 /// \}
@@ -72,7 +72,7 @@ public:
 private:
 	void on_dispose();
 
-	CLuint handle;
+	GLuint handle;
 /// \}
 };
 

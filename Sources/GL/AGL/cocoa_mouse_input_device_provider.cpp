@@ -14,7 +14,7 @@ CL_CocoaMouseInputDeviceProvider::~CL_CocoaMouseInputDeviceProvider()
 
 bool CL_CocoaMouseInputDeviceProvider::get_keycode(int keycode) const
 {
-    if (keycode == CL_MOUSE_LEFT)
+    if (keycode == GL_MOUSE_LEFT)
         return down;
     return false;
 }

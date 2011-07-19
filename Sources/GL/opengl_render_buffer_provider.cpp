@@ -61,7 +61,7 @@ void CL_OpenGLRenderBufferProvider::on_dispose()
 /////////////////////////////////////////////////////////////////////////////
 // CL_OpenGLRenderBufferProvider Attributes:
 
-CLuint CL_OpenGLRenderBufferProvider::get_handle()
+GLuint CL_OpenGLRenderBufferProvider::get_handle()
 {
 	return handle;
 }
@@ -72,19 +72,19 @@ CLuint CL_OpenGLRenderBufferProvider::get_handle()
 void CL_OpenGLRenderBufferProvider::create(int width, int height, CL_TextureFormat internal_format, int multisample_samples)
 {
 	CL_OpenGL::set_active();
-	CLuint last_render_buffer = 0;
-	clGetIntegerv(CL_RENDERBUFFER_BINDING, (CLint *) &last_render_buffer);
+	GLuint last_render_buffer = 0;
+	clGetIntegerv(GL_RENDERBUFFER_BINDING, (GLint *) &last_render_buffer);
 
-	CLint gl_internal_format;
-	CLenum gl_pixel_format;
+	GLint gl_internal_format;
+	GLenum gl_pixel_format;
 	CL_OpenGL::to_opengl_textureformat(internal_format, gl_internal_format, gl_pixel_format);
 
 
 	clGenRenderbuffers(1, &handle);
-	clBindRenderbuffer(CL_RENDERBUFFER, handle);
-	clRenderbufferStorageMultisample(CL_RENDERBUFFER, multisample_samples, gl_pixel_format, width, height);
+	clBindRenderbuffer(GL_RENDERBUFFER, handle);
+	clRenderbufferStorageMultisample(GL_RENDERBUFFER, multisample_samples, gl_pixel_format, width, height);
 
-	clBindRenderbuffer(CL_RENDERBUFFER, last_render_buffer);
+	clBindRenderbuffer(GL_RENDERBUFFER, last_render_buffer);
 }
 
 void CL_OpenGLRenderBufferProvider::destroy()

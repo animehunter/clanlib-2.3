@@ -154,16 +154,16 @@ private:
 	void draw_primitives_legacy(CL_PrimitivesType type, int num_vertices, const CL_PrimitivesArrayData * const prim_array);
 	void check_opengl_version();
 
-	CLenum to_enum(enum CL_DrawBuffer buf);
-	CLenum to_enum(enum CL_CompareFunction func);
-	CLenum to_enum(enum CL_StencilOp op);
-	CLenum to_enum(enum CL_CullMode mode);
-	CLenum to_enum(enum CL_FillMode mode);
-	CLenum to_enum(enum CL_BlendFunc func);
-	CLenum to_enum(enum CL_BlendEquation eq);
-	CLenum to_enum(enum CL_VertexAttributeDataType value);
-	CLenum to_enum(enum CL_PrimitivesType value);
-	CLenum to_enum(enum CL_LogicOp op);
+	GLenum to_enum(enum CL_DrawBuffer buf);
+	GLenum to_enum(enum CL_CompareFunction func);
+	GLenum to_enum(enum CL_StencilOp op);
+	GLenum to_enum(enum CL_CullMode mode);
+	GLenum to_enum(enum CL_FillMode mode);
+	GLenum to_enum(enum CL_BlendFunc func);
+	GLenum to_enum(enum CL_BlendEquation eq);
+	GLenum to_enum(enum CL_VertexAttributeDataType value);
+	GLenum to_enum(enum CL_PrimitivesType value);
+	GLenum to_enum(enum CL_LogicOp op);
 
 	/// \brief OpenGL render window.
 	const CL_RenderWindowProvider * const render_window;
