@@ -304,7 +304,7 @@ private:
 	GLXContext create_context_glx_1_2(const CL_OpenGLWindowDescription &gl_desc, GLXContext shared_context);
 	void create_glx_1_3(CL_DisplayWindowSite *new_site, const CL_DisplayWindowDescription &desc, Display *disp);
 	void create_glx_1_2(CL_DisplayWindowSite *new_site, const CL_DisplayWindowDescription &desc, Display *disp);
-	GLXContext create_context_glx_1_3_helper(GLXContext shared_context, int major_version, int minor_version, const CL_OpenGLWindowDescription &gldesc);
+	GLXContext create_context_glx_1_3_helper(GLXContext shared_context, int major_version, int minor_version, const CL_OpenGLWindowDescription &gldesc, ptr_glXCreateContextAttribs glXCreateContextAttribs);
 
 	void on_window_resized();
 

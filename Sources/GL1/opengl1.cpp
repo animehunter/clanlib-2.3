@@ -43,7 +43,7 @@
 
 #ifdef __APPLE__
 #include <AGL/agl.h>
-#include <OpenGL/gl.h>
+#include <OpenGLES/ES2/gl.h>
 #else
 #include <GL/gl.h>
 #endif

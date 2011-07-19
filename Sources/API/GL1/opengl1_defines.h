@@ -831,11 +831,14 @@ enum CL_DisplayDefines
 	GL_T2F_C4F_N3F_V3F              = 0x2A2C,
 	GL_T4F_C4F_N3F_V4F              = 0x2A2D,
 #endif
+#ifndef GL_BGR
 	// bgra
 
 	GL_BGR                          = 0x80E0,
 	GL_BGRA                         = 0x80E1,
 
+#endif
+#ifndef GL_CONSTANT_COLOR
 	// blend_color
 
 	GL_CONSTANT_COLOR               = 0x8001,
@@ -844,6 +847,8 @@ enum CL_DisplayDefines
 	GL_ONE_MINUS_CONSTANT_ALPHA     = 0x8004,
 	GL_BLEND_COLOR                  = 0x8005,
 
+#endif
+#ifndef GL_FUNC_ADD
 	// blend_minmax
 
 	GL_FUNC_ADD                     = 0x8006,
@@ -851,11 +856,15 @@ enum CL_DisplayDefines
 	GL_MAX                          = 0x8008,
 	GL_BLEND_EQUATION               = 0x8009,
 
+#endif
+#ifndef GL_FUNC_SUBTRACT
 	// blend_subtract
 
 	GL_FUNC_SUBTRACT                = 0x800A,
 	GL_FUNC_REVERSE_SUBTRACT        = 0x800B,
 
+#endif
+#ifndef GL_COLOR_MATRIX
 	// color_matrix
 
 	GL_COLOR_MATRIX                 = 0x80B1,
@@ -870,6 +879,8 @@ enum CL_DisplayDefines
 	GL_POST_COLOR_MATRIX_BLUE_BIAS  = 0x80BA,
 	GL_POST_COLOR_MATRIX_ALPHA_BIAS = 0x80BB,
 
+#endif
+#ifndef GL_COLOR_TABLE
 	// color_table
 
 	GL_COLOR_TABLE                  = 0x80D0,
@@ -889,6 +900,8 @@ enum CL_DisplayDefines
 	GL_COLOR_TABLE_LUMINANCE_SIZE   = 0x80DE,
 	GL_COLOR_TABLE_INTENSITY_SIZE   = 0x80DF,
 
+#endif
+#ifndef GL_CONVOLUTION_1D
 	// convolution
 
 	GL_CONVOLUTION_1D               = 0x8010,
@@ -915,11 +928,15 @@ enum CL_DisplayDefines
 	GL_REPLICATE_BORDER             = 0x8153,
 	GL_CONVOLUTION_BORDER_COLOR     = 0x8154,
 
+#endif
+#ifndef GL_MAX_ELEMENTS_VERTICES
 	// draw_range_elements
 
 	GL_MAX_ELEMENTS_VERTICES        = 0x80E8,
 	GL_MAX_ELEMENTS_INDICES         = 0x80E9,
 
+#endif
+#ifndef GL_HISTOGRAM
 	// histogram
 
 	GL_HISTOGRAM                    = 0x8024,
@@ -937,6 +954,8 @@ enum CL_DisplayDefines
 	GL_MINMAX_SINK                  = 0x8030,
 	GL_TABLE_TOO_LARGE              = 0x8031,
 
+#endif
+#ifndef GL_UNSIGNED_BYTE_3_3_2
 	// packed_pixels
 
 	GL_UNSIGNED_BYTE_3_3_2          = 0x8032,
@@ -954,16 +973,22 @@ enum CL_DisplayDefines
 
 	GL_MIRRORED_REPEAT              = 0x8370,
 
+#endif
+#ifndef GL_RESCALE_NORMAL
 	// rescale_normal
 
 	GL_RESCALE_NORMAL               = 0x803A,
 
+#endif
+#ifndef GL_LIGHT_MODEL_COLOR_CONTROL
 	// separate_specular_color
 
 	GL_LIGHT_MODEL_COLOR_CONTROL    = 0x81F8,
 	GL_SINGLE_COLOR                 = 0x81F9,
 	GL_SEPARATE_SPECULAR_COLOR      = 0x81FA,
 
+#endif
+#ifndef GL_PACK_SKIP_IMAGES
 	// texture3D
 
 	GL_PACK_SKIP_IMAGES             = 0x806B,
@@ -976,11 +1001,15 @@ enum CL_DisplayDefines
 	GL_TEXTURE_WRAP_R               = 0x8072,
 	GL_MAX_3D_TEXTURE_SIZE          = 0x8073,
 
+#endif
+#ifndef GL_CLAMP_TO_BORDER
 	// texture_edge_clamp
 
 	GL_CLAMP_TO_BORDER              = 0x812D,
 	GL_CLAMP_TO_EDGE                = 0x812F,
 
+#endif
+#ifndef GL_TEXTURE_MIN_LOD
 	// texture_lod
 
 	GL_TEXTURE_MIN_LOD              = 0x813A,
@@ -988,6 +1017,8 @@ enum CL_DisplayDefines
 	GL_TEXTURE_BASE_LEVEL           = 0x813C,
 	GL_TEXTURE_MAX_LEVEL            = 0x813D,
 
+#endif
+#ifndef GL_SMOOTH_POINT_SIZE_RANGE
 	// GetTarget1_2:
 
 	GL_SMOOTH_POINT_SIZE_RANGE      = 0x0B12,
@@ -997,6 +1028,8 @@ enum CL_DisplayDefines
 	GL_ALIASED_POINT_SIZE_RANGE     = 0x846D,
 	GL_ALIASED_LINE_WIDTH_RANGE     = 0x846E,
 
+#endif
+#ifndef GL_TEXTURE0
 	// multitexture:
 
 	GL_TEXTURE0                 = 0x84C0,
@@ -1035,10 +1068,14 @@ enum CL_DisplayDefines
 	GL_CLIENT_ACTIVE_TEXTURE    = 0x84E1,
 	GL_MAX_TEXTURE_UNITS        = 0x84E2,
 
+#endif
+#ifndef GL_ABGR
 	// EXT_abgr:
 
 	GL_ABGR                     = 0x8000,
 
+#endif
+#ifndef GL_COMBINE
 	// EXT_texture_env_combine:
 
 	GL_COMBINE                  = 0x8570,
@@ -1063,6 +1100,8 @@ enum CL_DisplayDefines
 	GL_OPERAND1_ALPHA           = 0x8599,
 	GL_OPERAND2_ALPHA           = 0x859A,
 
+#endif
+#ifndef GL_SRC0_RGB
 	// OpenGL 1.5 token renames:
 	GL_SRC0_RGB                 = GL_SOURCE0_RGB,
 	GL_SRC1_RGB                 = GL_SOURCE1_RGB,
@@ -1071,6 +1110,8 @@ enum CL_DisplayDefines
 	GL_SRC1_ALPHA               = GL_SOURCE1_ALPHA,
 	GL_SRC2_ALPHA               = GL_SOURCE2_ALPHA,
 
+#endif
+#ifndef GL_COMPRESSED_ALPHA
 	// ARB_texture_compression:
 
 	GL_COMPRESSED_ALPHA           = 0x84e9,
@@ -1085,6 +1126,8 @@ enum CL_DisplayDefines
 	GL_NUM_COMPRESSED_TEXTURE_FORMATS = 0x86a2,
 	GL_COMPRESSED_TEXTURE_FORMATS = 0x86a3,
 
+#endif
+#ifndef GL_NORMAL_MAP
 	// ARB_texture_cube_map:
 
 	GL_NORMAL_MAP                 = 0x8511,
@@ -1100,6 +1143,8 @@ enum CL_DisplayDefines
 	GL_PROXY_TEXTURE_CUBE_MAP     = 0x851b,
 	GL_MAX_CUBE_MAP_TEXTURE_SIZE  = 0x851c,
 
+#endif
+#ifndef GL_MULTISAMPLE
 	// ARB_multisample:
 
 	GL_MULTISAMPLE                = 0x809d,
@@ -1112,15 +1157,21 @@ enum CL_DisplayDefines
 	GL_SAMPLE_COVERAGE_INVERT     = 0x80ab,
 	GL_MULTISAMPLE_BIT            = 0x20000000,
 
+#endif
+#ifndef GL_SUBTRACT
 	// ARB_texture_env_combine:
 
 	GL_SUBTRACT                   = 0x84e7,
 
+#endif
+#ifndef GL_DOT3_RGB
 	// ARB_texture_env_dot3:
 
 	GL_DOT3_RGB                   = 0x86ae,
 	GL_DOT3_RGBA                  = 0x86af,
 
+#endif
+#ifndef GL_TRANSPOSE_MODELVIEW_MATRIX
 	// ARB_transpose_matrix:
 
 	GL_TRANSPOSE_MODELVIEW_MATRIX  = 0x84e3,
@@ -1128,11 +1179,15 @@ enum CL_DisplayDefines
 	GL_TRANSPOSE_TEXTURE_MATRIX    = 0x84e5,
 	GL_TRANSPOSE_COLOR_MATRIX      = 0x84e6,
 
+#endif
+#ifndef GL_GENERATE_MIPMAP
 	// SGIS_generate_mipmap:
 
 	GL_GENERATE_MIPMAP             = 0x8191,
 	GL_GENERATE_MIPMAP_HINT        = 0x8192,
 
+#endif
+#ifndef GL_DEPTH_COMPONENT16
 	// ARB_depth_texture:
 
 	GL_DEPTH_COMPONENT16           = 0x81a5,
@@ -1141,12 +1196,16 @@ enum CL_DisplayDefines
 	GL_TEXTURE_DEPTH_SIZE          = 0x884a,
 	GL_DEPTH_TEXTURE_MODE          = 0x884b,
 
+#endif
+#ifndef GL_TEXTURE_COMPARE_MODE
 	// ARB_shadow:
 
 	GL_TEXTURE_COMPARE_MODE        = 0x884c,
 	GL_TEXTURE_COMPARE_FUNC        = 0x884d,
 	GL_COMPARE_R_TO_TEXTURE        = 0x884e,
 
+#endif
+#ifndef GL_FOG_COORDINATE_SOURCE
 	// EXT_fog_coord:
 
 	GL_FOG_COORDINATE_SOURCE       = 0x8450,
@@ -1158,6 +1217,8 @@ enum CL_DisplayDefines
 	GL_FOG_COORDINATE_ARRAY_POINTER = 0x8456,
 	GL_FOG_COORDINATE_ARRAY        = 0x8457,
 
+#endif
+#ifndef GL_FOG_COORD_SRC
 	// OpenGL 1.5 token renames:
 	GL_FOG_COORD_SRC               = GL_FOG_COORDINATE_SOURCE,
 	GL_FOG_COORD                   = GL_FOG_COORDINATE,
@@ -1167,6 +1228,8 @@ enum CL_DisplayDefines
 	GL_FOG_COORD_ARRAY_POINTER     = GL_FOG_COORDINATE_ARRAY_POINTER,
 	GL_FOG_COORD_ARRAY             = GL_FOG_COORDINATE_ARRAY,
 
+#endif
+#ifndef GL_POINT_SIZE_MIN
 	// ARB_point_parameters:
 
 	GL_POINT_SIZE_MIN              = 0x8126,
@@ -1174,6 +1237,8 @@ enum CL_DisplayDefines
 	GL_POINT_FADE_THRESHOLD_SIZE   = 0x8128,
 	GL_POINT_DISTANCE_ATTENUATION  = 0x8129,
 
+#endif
+#ifndef GL_COLOR_SUM
 	// EXT_secondary_color:
 
 	GL_COLOR_SUM                   = 0x8458,
@@ -1184,6 +1249,8 @@ enum CL_DisplayDefines
 	GL_SECONDARY_COLOR_ARRAY_POINTER = 0x845d,
 	GL_SECONDARY_COLOR_ARRAY       = 0x845e,
 
+#endif
+#ifndef GL_BLEND_DST_RGB
 	// EXT_blend_func_separate:
 
 	GL_BLEND_DST_RGB               = 0x80c8,
@@ -1191,17 +1258,23 @@ enum CL_DisplayDefines
 	GL_BLEND_DST_ALPHA             = 0x80ca,
 	GL_BLEND_SRC_ALPHA             = 0x80cb,
 
+#endif
+#ifndef GL_INCR_WRAP
 	// EXT_stencil_wrap:
 
 	GL_INCR_WRAP                   = 0x8507,
 	GL_DECR_WRAP                   = 0x8508,
 
+#endif
+#ifndef GL_MAX_TEXTURE_LOD_BIAS
 	// EXT_texture_lod_bias:
 
 	GL_MAX_TEXTURE_LOD_BIAS        = 0x84fd,
 	GL_TEXTURE_FILTER_CONTROL      = 0x8500,
 	GL_TEXTURE_LOD_BIAS            = 0x8501,
 
+#endif
+#ifndef GL_ARRAY_BUFFER
 	// ARB_vertex_buffer_object:
 
 	GL_ARRAY_BUFFER                        = 0x8892,
@@ -1237,6 +1310,8 @@ enum CL_DisplayDefines
 	GL_BUFFER_MAPPED                       = 0x88BC,
 	GL_BUFFER_MAP_POINTER                  = 0x88BD,
 
+#endif
+#ifndef GL_SAMPLES_PASSED
 	// ARB_occlusion_query:
 
 	GL_SAMPLES_PASSED                      = 0x8914,
@@ -1245,12 +1320,18 @@ enum CL_DisplayDefines
 	GL_QUERY_RESULT                        = 0x8866,
 	GL_QUERY_RESULT_AVAILABLE              = 0x8867,
 
+#endif
+#ifndef GL_PROGRAM_OBJECT
 	// ARB_shader_objects:
 
 	GL_PROGRAM_OBJECT                      = 0x8B40,
 	GL_TYPE                                = 0x8B4E,
 	GL_SUBTYPE                             = 0x8B4F,
+#endif
+#ifndef GL_DELETE_STATUS 
 	GL_DELETE_STATUS                       = 0x8B80,
+#endif
+#ifndef GL_COMPILE_STATUS
 	GL_COMPILE_STATUS                      = 0x8B81,
 	GL_LINK_STATUS                         = 0x8B82,
 	GL_VALIDATE_STATUS                     = 0x8B83,
@@ -1291,6 +1372,8 @@ enum CL_DisplayDefines
 	GL_SAMPLER_2D_RECT                     = 0x8B63,
 	GL_SAMPLER_2D_RECT_SHADOW              = 0x8B64,
 
+#endif
+#ifndef GL_VERTEX_SHADER
 	// ARB_vertex_shader:
 
 	GL_VERTEX_SHADER                       = 0x8B31,
@@ -1318,12 +1401,16 @@ enum CL_DisplayDefines
 	GL_FLOAT_VEC3                          = 0x8B51,
 	GL_FLOAT_VEC4                          = 0x8B52,
 
+#endif
+#ifndef GL_FRAGMENT_SHADER
 	// ARB_fragment_shader:
 
 	GL_FRAGMENT_SHADER                     = 0x8B30,
 	GL_MAX_FRAGMENT_UNIFORM_COMPONENTS     = 0x8B49,
 	GL_FRAGMENT_SHADER_DERIVATIVE_HINT     = 0x8B8B,
 
+#endif
+#ifndef GL_MAX_DRAW_BUFFERS
 	// ARB_draw_buffers:
 
 	GL_MAX_DRAW_BUFFERS                    = 0x8824,
@@ -1344,6 +1431,8 @@ enum CL_DisplayDefines
 	GL_DRAW_BUFFER14                       = 0x8833,
 	GL_DRAW_BUFFER15                       = 0x8834,
 
+#endif
+#ifndef GL_POINT_SPRITE
 	// ARB_point_sprite:
 
 	GL_POINT_SPRITE                        = 0x8861,
@@ -1352,6 +1441,8 @@ enum CL_DisplayDefines
 	GL_LOWER_LEFT                          = 0x8CA1,
 	GL_UPPER_LEFT                          = 0x8CA2,
 
+#endif
+#ifndef GL_STENCIL_BACK_FUNC
 	// ATI_separate_stencil:
 
 	GL_STENCIL_BACK_FUNC                   = 0x8800,
@@ -1359,11 +1450,15 @@ enum CL_DisplayDefines
 	GL_STENCIL_BACK_PASS_DEPTH_FAIL        = 0x8802,
 	GL_STENCIL_BACK_PASS_DEPTH_PASS        = 0x8803,
 
+#endif
+#ifndef GL_STENCIL_TEST_TWO_SIDE
 	// EXT_stencil_two_side additional states:
 
 	GL_STENCIL_TEST_TWO_SIDE               = 0x8910,
 	GL_ACTIVE_STENCIL_FACE                 = 0x8911,
 
+#endif
+#ifndef GL_FRAMEBUFFER
 	// EXT_framebuffer_object:
 
 	GL_FRAMEBUFFER                         = 0x8D40,
@@ -1418,6 +1513,8 @@ enum CL_DisplayDefines
 	GL_MAX_RENDERBUFFER_SIZE               = 0x84E8,
 	GL_INVALID_FRAMEBUFFER_OPERATION       = 0x0506,
 
+#endif
+#ifndef GL_COMPRESSED_RGB_S3TC_DXT1_EXT
 	// EXT_texture_compression_s3tc:
 
 	GL_COMPRESSED_RGB_S3TC_DXT1_EXT        = 0x83F0,
@@ -1425,12 +1522,15 @@ enum CL_DisplayDefines
 	GL_COMPRESSED_RGBA_S3TC_DXT3_EXT       = 0x83F2,
 	GL_COMPRESSED_RGBA_S3TC_DXT5_EXT       = 0x83F3,
 
+#endif
+#ifndef GL_READ_FRAMEBUFFER
 	// EXT_framebuffer_blit:
 
 	GL_READ_FRAMEBUFFER                    = 0x8CA8,
 	GL_DRAW_FRAMEBUFFER                    = 0x8CA9,
 	GL_DRAW_FRAMEBUFFER_BINDING            = 0x8CA6, // alias GL_FRAMEBUFFER_BINDING
 	GL_READ_FRAMEBUFFER_BINDING            = 0x8CAA
+#endif
 };
 
 #endif

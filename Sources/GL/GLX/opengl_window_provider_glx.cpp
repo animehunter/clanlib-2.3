@@ -569,7 +569,7 @@ GLXContext CL_OpenGLWindowProvider_GLX::create_context(const CL_OpenGLWindowDesc
 	return context;
 }
 
-GLXContext CL_OpenGLWindowProvider_GLX::create_context_glx_1_3_helper(GLXContext shared_context, int major_version, int minor_version, const CL_OpenGLWindowDescription &gldesc)
+GLXContext CL_OpenGLWindowProvider_GLX::create_context_glx_1_3_helper(GLXContext shared_context, int major_version, int minor_version, const CL_OpenGLWindowDescription &gldesc, ptr_glXCreateContextAttribs glXCreateContextAttribs)
 {
 	std::vector<int> int_attributes;
 
@@ -649,7 +649,7 @@ GLXContext CL_OpenGLWindowProvider_GLX::create_context_glx_1_3(const CL_OpenGLWi
 		int gl_minor = gl_desc.get_version_minor();
 		if (gl_desc.get_allow_lower_versions() == false)
 		{
-			context_gl3 = create_context_glx_1_3_helper(shared_context, gl_major, gl_minor, gl_desc);
+			context_gl3 = create_context_glx_1_3_helper(shared_context, gl_major, gl_minor, gl_desc, glXCreateContextAttribs);
 	
 			if (!context_gl3)
 				throw CL_Exception(cl_format("This application requires OpenGL %1.%2 or above. Try updating your drivers, or upgrade to a newer graphics card.",  gl_major, gl_minor));
@@ -687,7 +687,7 @@ GLXContext CL_OpenGLWindowProvider_GLX::create_context_glx_1_3(const CL_OpenGLWi
 						continue;	
 				}
 
-				context_gl3 = create_context_glx_1_3_helper(shared_context, gl_major, gl_minor, gl_desc);
+				context_gl3 = create_context_glx_1_3_helper(shared_context, gl_major, gl_minor, gl_desc, glXCreateContextAttribs);
 
 			}while(!context_gl3);
 		}
