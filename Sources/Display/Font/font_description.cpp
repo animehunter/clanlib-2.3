@@ -121,6 +121,12 @@ bool CL_FontDescription::get_subpixel() const
 	return impl->subpixel;
 }
 
+CL_FontDescription::Charset CL_FontDescription::get_charset() const
+{
+	return impl->charset;
+}
+
+
 bool CL_FontDescription::operator==(const CL_FontDescription &other) const
 {
 	return impl->typeface_name == other.impl->typeface_name && 
@@ -134,7 +140,8 @@ bool CL_FontDescription::operator==(const CL_FontDescription &other) const
 			impl->italic == other.impl->italic && 
 			impl->underline == other.impl->underline && 
 			impl->strikeout == other.impl->strikeout && 
-			impl->fixed_pitch == other.impl->fixed_pitch;
+			impl->fixed_pitch == other.impl->fixed_pitch && 
+			impl->charset == other.impl->charset;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -162,6 +169,7 @@ void CL_FontDescription::clone(const CL_FontDescription &copy)
 		impl->fixed_pitch = copy.impl->fixed_pitch;
 		impl->anti_alias = copy.impl->anti_alias;
 		impl->subpixel = copy.impl->subpixel;
+		impl->charset = copy.impl->charset;
 	}
 }
 
@@ -223,6 +231,11 @@ void CL_FontDescription::set_anti_alias(bool setting)
 void CL_FontDescription::set_subpixel(bool setting)
 {
 	impl->subpixel = setting;
+}
+
+void CL_FontDescription::set_charset(Charset new_charset)
+{
+	impl->charset = new_charset;
 }
 
 /////////////////////////////////////////////////////////////////////////////

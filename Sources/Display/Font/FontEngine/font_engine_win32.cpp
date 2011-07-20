@@ -45,7 +45,7 @@ CL_FontEngine_Win32::CL_FontEngine_Win32(const CL_FontDescription &desc)
 		desc.get_italic() ? TRUE : FALSE,
 		FALSE,
 		FALSE,
-		DEFAULT_CHARSET,
+		decode_charset(desc.get_charset()),
 		OUT_DEFAULT_PRECIS,
 		CLIP_DEFAULT_PRECIS,
 		DEFAULT_QUALITY,
@@ -333,3 +333,71 @@ CL_FontPixelBuffer CL_FontEngine_Win32::get_empty_font_glyph(int glyph)
 	ReleaseDC(0, dc);
 	return font_buffer;
 }
+
+int CL_FontEngine_Win32::decode_charset(CL_FontDescription::Charset selected_charset)
+{
+	int charset = DEFAULT_CHARSET;
+	switch (selected_charset)
+	{
+		case CL_FontDescription::charset_default:
+			charset = DEFAULT_CHARSET;
+			break;
+		case CL_FontDescription::charset_ansi:
+			charset = ANSI_CHARSET;
+			break;
+		case CL_FontDescription::charset_baltic:
+			charset = BALTIC_CHARSET;
+			break;
+		case CL_FontDescription::charset_chinesebig5:
+			charset = CHINESEBIG5_CHARSET;
+			break;
+		case CL_FontDescription::charset_easteurope:
+			charset = EASTEUROPE_CHARSET;
+			break;
+		case CL_FontDescription::charset_gb2312:
+			charset = GB2312_CHARSET;
+			break;
+		case CL_FontDescription::charset_greek:
+			charset = GREEK_CHARSET;
+			break;
+		case CL_FontDescription::charset_hangul:
+			charset = HANGUL_CHARSET;
+			break;
+		case CL_FontDescription::charset_mac:
+			charset = MAC_CHARSET;
+			break;
+		case CL_FontDescription::charset_oem:
+			charset = OEM_CHARSET;
+			break;
+		case CL_FontDescription::charset_russian:
+			charset = RUSSIAN_CHARSET;
+			break;
+		case CL_FontDescription::charset_shiftjis:
+			charset = SHIFTJIS_CHARSET;
+			break;
+		case CL_FontDescription::charset_symbol:
+			charset = SYMBOL_CHARSET;
+			break;
+		case CL_FontDescription::charset_turkish:
+			charset = TURKISH_CHARSET;
+			break;
+		case CL_FontDescription::charset_vietnamese:
+			charset = VIETNAMESE_CHARSET;
+			break;
+		case CL_FontDescription::charset_johab:
+			charset = JOHAB_CHARSET;
+			break;
+		case CL_FontDescription::charset_arabic:
+			charset = ARABIC_CHARSET;
+			break;
+		case CL_FontDescription::charset_hebrew:
+			charset = HEBREW_CHARSET;
+			break;
+		case CL_FontDescription::charset_thai:
+			charset = THAI_CHARSET;
+			break;
+	};
+	return charset;
+
+}
+

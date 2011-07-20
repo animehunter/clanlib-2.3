@@ -60,7 +60,7 @@ private:
 	CL_FontPixelBuffer get_font_glyph_mono(int glyph);
 	bool try_load_glyph_bitmap(int glyph, UINT format, MAT2 &matrix, CL_DataBuffer &glyph_bitmap, GLYPHMETRICS &glyph_metrics);
 	CL_FontPixelBuffer get_empty_font_glyph(int glyph);
-
+	int decode_charset(CL_FontDescription::Charset selected_charset);
 	HFONT handle;
 	TEXTMETRIC metrics;
 };
