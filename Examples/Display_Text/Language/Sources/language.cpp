@@ -29,16 +29,13 @@
 #include "precomp.h"
 #include "language.h"
 
+//#define ENABLE_THIS_IF_YOU_WANT_TO_USE_FRIBIDI
+// See http://clanlib.org/wiki/ExternalLibraries - For Visual Studio download of fribidi
 
 #ifdef ENABLE_THIS_IF_YOU_WANT_TO_USE_FRIBIDI
 #define DONT_HAVE_FRIBIDI_CONFIG_H 1
 #define FRIBIDI_CHARSETS 0
 #define FRIBIDI_USE_GLIB 0
-#ifdef _M_X64
-#define FRIBIDI_SIZEOF_INT 8
-#else
-#define FRIBIDI_SIZEOF_INT 4
-#endif
 #define FRIBIDI_NO_DEPRECATED 0
 #define FRIBIDI_ENTRY
 
