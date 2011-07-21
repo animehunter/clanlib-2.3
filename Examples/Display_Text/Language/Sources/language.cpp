@@ -29,6 +29,24 @@
 #include "precomp.h"
 #include "language.h"
 
+
+#ifdef ENABLE_THIS_IF_YOU_WANT_TO_USE_FRIBIDI
+#define DONT_HAVE_FRIBIDI_CONFIG_H 1
+#define FRIBIDI_CHARSETS 0
+#define FRIBIDI_USE_GLIB 0
+#ifdef _M_X64
+#define FRIBIDI_SIZEOF_INT 8
+#else
+#define FRIBIDI_SIZEOF_INT 4
+#endif
+#define FRIBIDI_NO_DEPRECATED 0
+#define FRIBIDI_ENTRY
+
+#pragma comment(lib, "fribidi-static-mt-debug.lib")
+
+#include <fribidi/fribidi.h>
+#endif
+
 // The start of the Application
 int Language::start(const std::vector<CL_String> &args)
 {
@@ -85,39 +103,32 @@ int Language::start(const std::vector<CL_String> &args)
 		text = document_element.get_child_string("CHINESE");
 		font_chinese.draw_text(gc, 10, 130, text);
 
+#ifdef ENABLE_THIS_IF_YOU_WANT_TO_USE_FRIBIDI
 		text = document_element.get_child_string("ARABIC");
-		font_arabic.draw_text(gc, 10, 230, text);		// Incorrect, does not use Right to left drawing for complex scripts
 
-		 // This does not work
-		/*
-		// Reverse the arabic glyphs
-		CL_UTF8_Reader reader(text);
-		std::vector<char> buffer;
-		buffer.reserve(text.length() + 1);
-		while(!reader.is_end())	// Go to the end
+		/* input */
+		CL_String16 text_16 = CL_StringHelp::utf8_to_ucs2(text);
+		FriBidiChar *fri_str = (FriBidiChar *) text_16.c_str();
+		FriBidiStrIndex fri_len = text_16.length();
+		FriBidiCharType fri_base_dir = FRIBIDI_TYPE_ON;
+		FriBidiCharType *fri_pbase_dir = &fri_base_dir;
+
+		/* output */
+		std::vector<wchar_t> output_buffer;
+		output_buffer.resize(text_16.length() + 1);
+		FriBidiChar *fri_visual_str = &output_buffer[0];
+		FriBidiStrIndex *fri_position_L_to_V_list = NULL;
+		FriBidiStrIndex *fri_position_V_to_L_list = NULL;
+		FriBidiLevel    *fri_embedding_level_list = NULL;
+		fribidi_boolean fri_result;
+		fri_result = fribidi_log2vis(fri_str,  fri_len, fri_pbase_dir, fri_visual_str, fri_position_L_to_V_list, fri_position_V_to_L_list, fri_embedding_level_list);
+		if (fri_result)
 		{
-			reader.next();
+			output_buffer[text_16.length()] = 0;
+			CL_String new_text = CL_StringHelp::ucs2_to_utf8(&output_buffer[0]);
+			font_arabic.draw_text(gc, 10, 230, new_text);
 		}
-		const char *in_text = text.c_str();
-
-		while(true)		// Work backwards to the start
-		{
-			int glyph_end = reader.get_position();
-			if (glyph_end == 0)
-				break;
-
-			reader.prev();
-			for (int glyph_start = reader.get_position(); glyph_start < glyph_end; glyph_start++)
-			{
-				buffer.push_back(in_text[glyph_start]);
-			}
-		}
-		buffer.push_back(0);
-		CL_String out_text(&buffer[0]);
-
-		font_arabic.draw_text(gc, 10, 330, out_text);
-		*/
-
+#endif
 		window.flip(1);
 
 		CL_KeepAlive::process(0);
