@@ -36,7 +36,6 @@
 #include "../Core/System/cl_platform.h"
 
 #ifdef __APPLE__
-#include "AGL/opengl_window_provider_agl.h"
 #include <OpenGLES/ES2/gl.h>
 #include <OpenGLES/ES2/glext.h>
 #else
