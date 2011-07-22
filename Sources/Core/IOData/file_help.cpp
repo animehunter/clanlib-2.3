@@ -52,10 +52,13 @@ void CL_FileHelp::copy_file(const CL_String &from, const CL_String &to, bool cop
 		try
 		{
 			CL_File input_file(to);
-			throw CL_Exception("Destination file already exists");
 		}
-		catch (const CL_Exception&) {
+		catch (const CL_Exception&)
+		{
+			break;
 		}
+
+		throw CL_Exception("Destination file already exists");
 	}
 
 	CL_File input_file(from);
