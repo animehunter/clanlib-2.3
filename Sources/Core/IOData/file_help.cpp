@@ -47,7 +47,7 @@ void CL_FileHelp::copy_file(const CL_String &from, const CL_String &to, bool cop
 	if (result == FALSE)
 		throw CL_Exception("Unable to copy file");
 #else
-	if (!copy_always)
+	while (!copy_always)
 	{
 		try
 		{
