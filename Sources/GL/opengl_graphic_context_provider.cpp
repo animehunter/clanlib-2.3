@@ -177,15 +177,15 @@ CL_OpenGLGraphicContextProvider::CL_OpenGLGraphicContextProvider(const CL_Render
 {
 	check_opengl_version();
 
-	use_glsl_1_5 = false;
+	use_glsl_1_50 = false;
 	int glsl_version_major;
 	int glsl_version_minor;
 	int glsl_version_release;
 	get_opengl_shading_language_version(glsl_version_major, glsl_version_minor);
 	if ( glsl_version_major >= 1)
 	{
-		if ( glsl_version_minor >= 5)
-			use_glsl_1_5 = true;
+		if ( glsl_version_minor >= 50)
+			use_glsl_1_50 = true;
 	}
 
 	// Must write here, although CL_OpenGL::SetActive() updates it, because the version number is not available on the initial CL_OpenGL::SetActive() call
@@ -196,29 +196,29 @@ CL_OpenGLGraphicContextProvider::CL_OpenGLGraphicContextProvider(const CL_Render
 
 #if defined(__APPLE__)
 	// Force glsl 1_5 for apple
-	use_glsl_1_5 = true;
+	use_glsl_1_50 = true;
 #endif
-	CL_ShaderObject vertex_color_only_shader(this, cl_shadertype_vertex, use_glsl_1_5 ? cl_glsl15_vertex_color_only : cl_glsl_vertex_color_only);
+	CL_ShaderObject vertex_color_only_shader(this, cl_shadertype_vertex, use_glsl_1_50 ? cl_glsl15_vertex_color_only : cl_glsl_vertex_color_only);
 	if(!vertex_color_only_shader.compile())
 		throw CL_Exception("Unable to compile the standard shader program: 'vertex color only' Error:" + vertex_color_only_shader.get_info_log());
 
-	CL_ShaderObject fragment_color_only_shader(this, cl_shadertype_fragment, use_glsl_1_5 ? cl_glsl15_fragment_color_only : cl_glsl_fragment_color_only);
+	CL_ShaderObject fragment_color_only_shader(this, cl_shadertype_fragment, use_glsl_1_50 ? cl_glsl15_fragment_color_only : cl_glsl_fragment_color_only);
 	if(!fragment_color_only_shader.compile())
 		throw CL_Exception("Unable to compile the standard shader program: 'fragment color only' Error:" + fragment_color_only_shader.get_info_log());
 
-	CL_ShaderObject vertex_single_texture_shader(this, cl_shadertype_vertex, use_glsl_1_5 ? cl_glsl15_vertex_single_texture : cl_glsl_vertex_single_texture);
+	CL_ShaderObject vertex_single_texture_shader(this, cl_shadertype_vertex, use_glsl_1_50 ? cl_glsl15_vertex_single_texture : cl_glsl_vertex_single_texture);
 	if(!vertex_single_texture_shader.compile())
 		throw CL_Exception("Unable to compile the standard shader program: 'vertex single texture' Error:" + vertex_single_texture_shader.get_info_log());
 
-	CL_ShaderObject fragment_single_texture_shader(this, cl_shadertype_fragment, use_glsl_1_5 ? cl_glsl15_fragment_single_texture : cl_glsl_fragment_single_texture);
+	CL_ShaderObject fragment_single_texture_shader(this, cl_shadertype_fragment, use_glsl_1_50 ? cl_glsl15_fragment_single_texture : cl_glsl_fragment_single_texture);
 	if(!fragment_single_texture_shader.compile())
 		throw CL_Exception("Unable to compile the standard shader program: 'fragment single texture' Error:" + fragment_single_texture_shader.get_info_log());
 
-	CL_ShaderObject vertex_sprite_shader(this, cl_shadertype_vertex, use_glsl_1_5 ? cl_glsl15_vertex_sprite : cl_glsl_vertex_sprite);
+	CL_ShaderObject vertex_sprite_shader(this, cl_shadertype_vertex, use_glsl_1_50 ? cl_glsl15_vertex_sprite : cl_glsl_vertex_sprite);
 	if(!vertex_sprite_shader.compile())
 		throw CL_Exception("Unable to compile the standard shader program: 'vertex sprite' Error:" + vertex_sprite_shader.get_info_log());
 
-	CL_ShaderObject fragment_sprite_shader(this, cl_shadertype_fragment, use_glsl_1_5 ? cl_glsl15_fragment_sprite : cl_glsl_fragment_sprite);
+	CL_ShaderObject fragment_sprite_shader(this, cl_shadertype_fragment, use_glsl_1_50 ? cl_glsl15_fragment_sprite : cl_glsl_fragment_sprite);
 	if(!fragment_sprite_shader.compile())
 		throw CL_Exception("Unable to compile the standard shader program: 'fragment sprite' Error:" + fragment_sprite_shader.get_info_log());
 
@@ -227,7 +227,7 @@ CL_OpenGLGraphicContextProvider::CL_OpenGLGraphicContextProvider(const CL_Render
 	color_only_program.attach(fragment_color_only_shader);
 	color_only_program.bind_attribute_location(0, "Position");
 	color_only_program.bind_attribute_location(1, "Color0");
-	if (use_glsl_1_5)
+	if (use_glsl_1_50)
 		color_only_program.bind_frag_data_location(0, "cl_FragColor");
 
 	if (!color_only_program.link())
@@ -239,7 +239,7 @@ CL_OpenGLGraphicContextProvider::CL_OpenGLGraphicContextProvider(const CL_Render
 	single_texture_program.bind_attribute_location(0, "Position");
 	single_texture_program.bind_attribute_location(1, "Color0");
 	single_texture_program.bind_attribute_location(2, "TexCoord0");
-	if (use_glsl_1_5)
+	if (use_glsl_1_50)
 		single_texture_program.bind_frag_data_location(0, "cl_FragColor");
 	if (!single_texture_program.link())
 		throw CL_Exception("Unable to link the standard shader program: 'single texture' Error:" + single_texture_program.get_info_log());
@@ -252,7 +252,7 @@ CL_OpenGLGraphicContextProvider::CL_OpenGLGraphicContextProvider(const CL_Render
 	sprite_program.bind_attribute_location(1, "Color0");
 	sprite_program.bind_attribute_location(2, "TexCoord0");
 	sprite_program.bind_attribute_location(3, "TexIndex0");
-	if (use_glsl_1_5)
+	if (use_glsl_1_50)
 		sprite_program.bind_frag_data_location(0, "cl_FragColor");
 	if (!sprite_program.link())
 		throw CL_Exception("Unable to link the standard shader program: 'sprite' Error:" + sprite_program.get_info_log());
