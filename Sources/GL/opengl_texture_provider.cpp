@@ -508,6 +508,13 @@ void CL_OpenGLTextureProvider::set_mag_filter(CL_TextureFilter filter)
 	glTexParameteri(texture_type, GL_TEXTURE_MAG_FILTER, to_enum(filter));
 }
 
+void CL_OpenGLTextureProvider::set_max_anisotropy(float v)
+{
+	throw_if_disposed();
+	CL_TextureStateTracker state_tracker(texture_type, handle);
+	glTexParameterf(texture_type, GL_TEXTURE_MAX_ANISOTROPY_EXT, v);
+}
+
 void CL_OpenGLTextureProvider::set_texture_compare(CL_TextureCompareMode mode, CL_CompareFunction func)
 {
 	throw_if_disposed();

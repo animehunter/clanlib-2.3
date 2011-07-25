@@ -214,6 +214,10 @@ void CL_SWRenderTextureProvider::set_mag_filter(CL_TextureFilter filter)
 	mag_filter = filter;
 }
 
+void CL_SWRenderTextureProvider::set_max_anisotropy(float v)
+{
+}
+
 void CL_SWRenderTextureProvider::set_texture_compare(CL_TextureCompareMode mode, CL_CompareFunction func)
 {
 }

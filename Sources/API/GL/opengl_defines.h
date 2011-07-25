@@ -1343,8 +1343,16 @@ enum CL_DisplayDefines
 	GL_INNOCENT_CONTEXT_RESET_ARB     = 0x8254,
 	GL_UNKNOWN_CONTEXT_RESET_ARB      = 0x8255,
 	GL_RESET_NOTIFICATION_STRATEGY_ARB = 0x8256,
-	GL_NO_RESET_NOTIFICATION_ARB      = 0x8261
+	GL_NO_RESET_NOTIFICATION_ARB      = 0x8261,
 #endif
+
+	// http://www.opengl.org/wiki/Ubiquitous_Extensions
+	// EXT_texture_filter_anisotropic
+#ifndef GL_TEXTURE_MAX_ANISOTROPY_EXT
+	GL_TEXTURE_MAX_ANISOTROPY_EXT	= 0x84FE,
+	GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT = 0x84FF
+#endif
+
 };
 
 #endif

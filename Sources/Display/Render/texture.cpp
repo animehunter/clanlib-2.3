@@ -60,6 +60,7 @@ public:
 	wrap_mode_r(cl_wrap_clamp_to_edge),
 	min_filter(cl_filter_linear),
 	mag_filter(cl_filter_linear),
+	max_anisotropy(1.0f),
 	resident(0),
 	compare_mode(cl_comparemode_none),
 	compare_function(cl_comparefunc_lequal)
@@ -89,6 +90,7 @@ public:
 	CL_TextureWrapMode wrap_mode_r;
 	CL_TextureFilter min_filter;
 	CL_TextureFilter mag_filter;
+	float max_anisotropy;
 	bool resident;
 	CL_TextureCompareMode compare_mode;
 	CL_CompareFunction compare_function;
@@ -580,6 +582,15 @@ void CL_Texture::set_mag_filter(CL_TextureFilter mag_filter)
 	{
 		impl->provider->set_mag_filter(mag_filter);
 		impl->mag_filter = mag_filter;
+	}
+}
+
+void CL_Texture::set_max_anisotropy(float max_anisotropy)
+{
+	if( impl->max_anisotropy != max_anisotropy )
+	{
+		impl->provider->set_max_anisotropy(max_anisotropy);
+		impl->max_anisotropy = max_anisotropy;
 	}
 }
 
