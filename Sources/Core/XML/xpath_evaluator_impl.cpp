@@ -2073,7 +2073,7 @@ CL_XPathObject CL_XPathEvaluator_Impl::function_string_length(const CL_XPathNode
 	else
 		str = string(parameters.front()).get_string();
 
-	return CL_XPathObject(str.length());
+	return CL_XPathObject( (size_t) str.length());
 }
 
 CL_XPathObject CL_XPathEvaluator_Impl::function_normalize_space(const CL_XPathNodeSet& context, CL_XPathNodeSet::size_type context_node_index, const std::vector<CL_XPathObject> &parameters) const
