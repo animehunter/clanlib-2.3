@@ -85,6 +85,7 @@ libclan23Display_la_SOURCES = \
 	Image/pixel_buffer.cpp \
 	Image/pixel_buffer_help.cpp \
 	Image/pixel_format.cpp \
+	Image/perlin_noise.cpp \
 	Window/input_context_impl.cpp \
 	Window/display_window_description.cpp \
 	Window/input_context.cpp \
