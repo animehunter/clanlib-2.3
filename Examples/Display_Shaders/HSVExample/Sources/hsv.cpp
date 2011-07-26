@@ -135,7 +135,9 @@ void HSV::render_texture(CL_GraphicContext &gc, CL_ProgramObject &program, CL_Te
 	primarray.set_attribute(1, CL_Vec1f(hue_offset));
 	primarray.set_attributes(2, tex1_coords);
 
+	gc.set_texture(0, texture);
 	gc.set_program_object(program, cl_program_matrix_modelview_projection);
 	gc.draw_primitives(cl_triangles, 6, primarray);
 	gc.reset_program_object();
+	gc.reset_texture(0);
 }
