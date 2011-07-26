@@ -723,7 +723,7 @@ void CL_OpenGLGraphicContextProvider::draw_primitives_legacy(CL_PrimitivesType t
 
 	CL_PrimitivesArrayData new_prim_array = *prim_array;
 
-	std::vector< CL_UniquePtr<CL_VertexArrayBufferProvider> > vbo_store;
+	std::vector< CL_SharedPtr<CL_VertexArrayBufferProvider> > vbo_store;
 	std::vector< CL_PrimitivesArrayData::VertexData > vertex_data_store;
 	vertex_data_store.resize(prim_array->num_attributes);
 	new_prim_array.attributes = &(vertex_data_store[0]);
@@ -761,7 +761,7 @@ void CL_OpenGLGraphicContextProvider::draw_primitives_legacy(CL_PrimitivesType t
 			}
 
 			CL_VertexArrayBufferProvider *vbo_ptr = alloc_vertex_array_buffer();
-			vbo_store.push_back(CL_UniquePtr<CL_VertexArrayBufferProvider>(vbo_ptr));
+			vbo_store.push_back(CL_SharedPtr<CL_VertexArrayBufferProvider>(vbo_ptr));
 
 			int data_length = 0;
 			switch (prim_array->attributes[i].type)
@@ -817,7 +817,7 @@ void CL_OpenGLGraphicContextProvider::draw_primitives_legacy(CL_PrimitivesType t
 	if (use_stride_vbo && first_array_found)
 	{
 		CL_VertexArrayBufferProvider *vbo_ptr = alloc_vertex_array_buffer();
-		vbo_store.push_back(CL_UniquePtr<CL_VertexArrayBufferProvider>(vbo_ptr));
+		vbo_store.push_back(CL_SharedPtr<CL_VertexArrayBufferProvider>(vbo_ptr));
 		vbo_ptr->create(lowest_array_start_ptr, highest_array_end_ptr - lowest_array_start_ptr, cl_usage_static_draw);
 
 		for (int i = 0; i < prim_array->num_attributes; i++)
