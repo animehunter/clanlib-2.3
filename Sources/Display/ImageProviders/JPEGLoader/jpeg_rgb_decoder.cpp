@@ -30,9 +30,13 @@
 #include "jpeg_rgb_decoder.h"
 #include "jpeg_mcu_decoder.h"
 #include "jpeg_loader.h"
+
+
+#ifndef CL_DISABLE_SSE2
 #ifndef CL_ARM_PLATFORM
 #include <xmmintrin.h>
 #include <emmintrin.h>
+#endif
 #endif
 
 CL_JPEGRGBDecoder::CL_JPEGRGBDecoder(CL_JPEGLoader *loader)
@@ -147,6 +151,9 @@ void CL_JPEGRGBDecoder::convert_monochrome()
  * (These numbers are derived from TIFF 6.0 section 21, dated 3-June-92.)
  *
  */
+
+#ifndef CL_DISABLE_SSE2
+
 #ifndef CL_ARM_PLATFORM
 void CL_JPEGRGBDecoder::convert_ycrcb_sse()
 {
@@ -243,6 +250,7 @@ void CL_JPEGRGBDecoder::convert_ycrcb_sse()
 	}
 }
 #endif
+#endif	//not CL_DISABLE_SSE2
 
 void CL_JPEGRGBDecoder::convert_ycrcb_float()
 {

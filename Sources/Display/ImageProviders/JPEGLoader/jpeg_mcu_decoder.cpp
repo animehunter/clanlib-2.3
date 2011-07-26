@@ -29,10 +29,13 @@
 #include "Display/precomp.h"
 #include "jpeg_mcu_decoder.h"
 #include "jpeg_loader.h"
+
+#ifndef CL_DISABLE_SSE2
 #ifndef CL_ARM_PLATFORM
 #include <xmmintrin.h>
 #include <emmintrin.h>
 #endif
+#endif // not CL_DISABLE_SSE2
 
 CL_JPEGMCUDecoder::CL_JPEGMCUDecoder(CL_JPEGLoader *loader)
 : loader(loader)
@@ -92,11 +95,19 @@ void CL_JPEGMCUDecoder::decode(int block)
 			for (int dct_x = 0; dct_x < scale_x; dct_x++)
 			{
 				short *dct = loader->component_dcts[c].get(block * block_size + dct_x + dct_y * scale_x);
+
+#ifdef CL_DISABLE_SSE2
+				idct(dct, channels[c]+dct_x*8+dct_y*scale_x*64, scale_x*8, quant[c]);
+#else
+
 #ifndef CL_ARM_PLATFORM
 				idct_sse(dct, channels[c]+dct_x*8+dct_y*scale_x*64, scale_x*8, quant[c]);
 #else
 				idct(dct, channels[c]+dct_x*8+dct_y*scale_x*64, scale_x*8, quant[c]);
 #endif
+#endif // not CL_DISABLE_SSE2
+
+
 			}
 		}
 	}
@@ -239,6 +250,8 @@ void CL_JPEGMCUDecoder::idct(short *inptr, unsigned char *outptr, int pitch, flo
 		outptr += pitch;
 	}
 }
+
+#ifndef CL_DISABLE_SSE2
 
 #ifndef CL_ARM_PLATFORM
 void CL_JPEGMCUDecoder::idct_sse(short *inptr, unsigned char *outptr, int pitch, float *quantptr)
@@ -421,6 +434,9 @@ void CL_JPEGMCUDecoder::idct_sse(short *inptr, unsigned char *outptr, int pitch,
 	}
 }
 #endif
+#endif // not CL_DISABLE_SSE2
+
+
 
 unsigned char CL_JPEGMCUDecoder::float_to_int(float f)
 {
