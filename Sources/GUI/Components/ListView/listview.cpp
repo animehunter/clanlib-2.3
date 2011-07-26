@@ -630,7 +630,6 @@ void CL_ListView_Impl::on_mouse_lbutton_down(CL_GUIMessage_Input &input, CL_Inpu
 {
 	listview->set_focus();
 
-	bool update_items = false;
 	CL_Point pos = input_event.mouse_pos;
 	pos_mouse_drag_start = pos;
 
@@ -700,7 +699,6 @@ void CL_ListView_Impl::on_mouse_lbutton_down(CL_GUIMessage_Input &input, CL_Inpu
 
 void CL_ListView_Impl::on_mouse_lbutton_up(CL_GUIMessage_Input &input, CL_InputEvent &input_event)
 {
-	bool update_items = false;
 	CL_Point pos = input_event.mouse_pos;
 
 	listview->capture_mouse(false);

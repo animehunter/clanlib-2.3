@@ -72,7 +72,6 @@ void CL_PixelCommandSprite::render_sprite(CL_PixelThreadContext *context)
 	if (box.left < box.right && box.top < box.bottom)
 	{
 		float dx = (texcoords[1].x-texcoords[0].x)/(points[1].x-points[0].x);
-		float dy = (texcoords[2].y-texcoords[0].y)/(points[2].y-points[0].y);
 		bool scale = (dx < 0.999f || dx > 1.001f);
 		bool white = (primcolor == CL_Vec4f(1.0f, 1.0f, 1.0f, 1.0f));
 		if (context->cur_blend_src == cl_blend_constant_color)
@@ -90,7 +89,7 @@ void CL_PixelCommandSprite::render_sprite(CL_PixelThreadContext *context)
 				render_sprite_noscale_white(context, box);
 			else
 				render_sprite_noscale(context, box);
-			//render_sprite_scale_linear(context, box);
+
 		}
 	}
 }
@@ -137,7 +136,6 @@ void CL_PixelCommandSprite::render_sprite_scale(CL_PixelThreadContext *context, 
 	dty *= context->num_cores;
 
 	int width = box.get_width();
-	int height = box.get_height();
 	int sse_width = width / 2 * 2;
 
 	__m128i one, half, color;
@@ -193,7 +191,6 @@ void CL_PixelCommandSprite::render_sprite_noscale_white(CL_PixelThreadContext *c
 	float dy = (texcoords[2].y-texcoords[0].y)/(points[2].y-points[0].y);
 	float tx_left = texcoords[0].x + dx*(box.left+0.5f-points[0].x);
 	float ty_top = texcoords[0].y + dy*(box.top+0.5f-points[0].y);
-	int dtx = (int)(dx*context->samplers[sampler].size.width * 32768);
 	int dty = (int)(dy*context->samplers[sampler].size.height * 32768);
 
 	int start_tx = (int)(tx_left*context->samplers[sampler].size.width * 32768);
@@ -203,7 +200,6 @@ void CL_PixelCommandSprite::render_sprite_noscale_white(CL_PixelThreadContext *c
 	dty *= context->num_cores;
 
 	int width = box.get_width();
-	int height = box.get_height();
 	int sse_width = width / 2 * 2;
 
 	__m128i one, half;
@@ -245,7 +241,6 @@ void CL_PixelCommandSprite::render_sprite_noscale(CL_PixelThreadContext *context
 	float dy = (texcoords[2].y-texcoords[0].y)/(points[2].y-points[0].y);
 	float tx_left = texcoords[0].x + dx*(box.left+0.5f-points[0].x);
 	float ty_top = texcoords[0].y + dy*(box.top+0.5f-points[0].y);
-	int dtx = (int)(dx*context->samplers[sampler].size.width * 32768);
 	int dty = (int)(dy*context->samplers[sampler].size.height * 32768);
 
 	int start_tx = (int)(tx_left*context->samplers[sampler].size.width * 32768);
@@ -255,7 +250,6 @@ void CL_PixelCommandSprite::render_sprite_noscale(CL_PixelThreadContext *context
 	dty *= context->num_cores;
 
 	int width = box.get_width();
-	int height = box.get_height();
 	int sse_width = width / 2 * 2;
 
 	__m128i one, half, color;
@@ -315,7 +309,6 @@ void CL_PixelCommandSprite::render_glyph_scale(CL_PixelThreadContext *context, c
 	dty *= context->num_cores;
 
 	int width = box.get_width();
-	int height = box.get_height();
 	int sse_width = width / 2 * 2;
 
 	__m128i one, half, color;
@@ -369,7 +362,6 @@ void CL_PixelCommandSprite::render_glyph_noscale(CL_PixelThreadContext *context,
 	float dy = (texcoords[2].y-texcoords[0].y)/(points[2].y-points[0].y);
 	float tx_left = texcoords[0].x + dx*(box.left+0.5f-points[0].x);
 	float ty_top = texcoords[0].y + dy*(box.top+0.5f-points[0].y);
-	int dtx = (int)(dx*context->samplers[sampler].size.width * 32768);
 	int dty = (int)(dy*context->samplers[sampler].size.height * 32768);
 
 	int start_tx = (int)(tx_left*context->samplers[sampler].size.width * 32768);
@@ -379,7 +371,6 @@ void CL_PixelCommandSprite::render_glyph_noscale(CL_PixelThreadContext *context,
 	dty *= context->num_cores;
 
 	int width = box.get_width();
-	int height = box.get_height();
 	int sse_width = width / 2 * 2;
 
 	__m128i one, half, color;

@@ -180,7 +180,6 @@ CL_OpenGLGraphicContextProvider::CL_OpenGLGraphicContextProvider(const CL_Render
 	use_glsl_1_50 = false;
 	int glsl_version_major;
 	int glsl_version_minor;
-	int glsl_version_release;
 	get_opengl_shading_language_version(glsl_version_major, glsl_version_minor);
 	if ( glsl_version_major >= 1)
 	{

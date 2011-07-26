@@ -303,8 +303,6 @@ void CL_GUIWindowManagerProvider_Texture::clear_frame_buffer(CL_GUITopLevelWindo
 
 void CL_GUIWindowManagerProvider_Texture::setup_frame_buffer(CL_GUITopLevelWindowTexture *toplevel_window )
 {
-	CL_GraphicContext &gc = display_window.get_gc();
-
 	CL_Texture texture = toplevel_window->subtexture.get_texture();
 
 	// Only attach the color buffer if it has changed

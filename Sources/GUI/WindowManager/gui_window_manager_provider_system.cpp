@@ -104,7 +104,6 @@ void CL_GUIWindowManagerProvider_System::on_displaywindow_window_destroy(CL_GUIT
 
 void CL_GUIWindowManagerProvider_System::on_input(const CL_InputEvent &incoming_input_event, const CL_InputState &input_state, CL_GUITopLevelWindow *top_level_window)
 {
-	CL_GUITopLevelWindowSystem *top_level_system = window_map[top_level_window];
 	CL_InputEvent input_event = incoming_input_event;
 	CL_GUITopLevelWindow *target = top_level_window;
 

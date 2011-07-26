@@ -205,9 +205,6 @@ void CL_GL1TextureProvider::create(int new_width, int new_height, CL_TextureForm
 			cl1PixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
 			cl1PixelStorei(GL_UNPACK_SKIP_ROWS, 0);
 
-			int image_width = image.get_width();
-			int image_height = image.get_height();
-
 			cl1TexImage2D(
 				GL_TEXTURE_2D,		// target
 				0,					// level

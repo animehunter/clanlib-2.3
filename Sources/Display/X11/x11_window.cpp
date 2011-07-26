@@ -594,8 +594,6 @@ void CL_X11Window::create_new_window(XVisualInfo *visual, const CL_DisplayWindow
 		win_height = 128; 
 	}
 
-	bool client_area = desc.get_position_client_area();
-
 	Window parent = RootWindow(disp, current_screen);
 
 	if (!desc.get_owner().is_null())

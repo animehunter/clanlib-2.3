@@ -443,8 +443,6 @@ void CL_ComboBox_Impl::create_components()
 	lineedit = new CL_LineEdit(component);
 	lineedit->set_focus_policy(CL_GUIComponent::focus_parent);
 	
-	CL_GraphicContext &gc = component->get_gc();
-
 	lineedit->func_after_edit_changed().set(this, &CL_ComboBox_Impl::on_lineedit_text_edited);
 	lineedit->func_enter_pressed().set(this, &CL_ComboBox_Impl::on_lineedit_enter_pressed);
 	lineedit->func_filter_message().set(this, &CL_ComboBox_Impl::on_lineedit_message);
@@ -454,7 +452,6 @@ void CL_ComboBox_Impl::on_btn_arrow_clicked()
 {
 	popup_menu.set_maximum_height(dropdown_height_items*item_height); 
 	CL_Rect g = component->get_geometry().get_size();
-	int old_width = popup_menu.get_minimum_width();
 	if (minimum_width != -1)
 		popup_menu.set_minimum_width(minimum_width);
 	else
@@ -471,23 +468,6 @@ void CL_ComboBox_Impl::on_lineedit_enter_pressed()
 
 void CL_ComboBox_Impl::on_lineedit_text_edited(CL_InputEvent &event)
 {
-/*  What is this supposed to do?? - Harry 2009-07-29
-
-	CL_String text = lineedit->get_text();	
-	int index = popup_menu.find_item(text);
-	selected_item = index;
-	if (selected_item != -1 && event.id != CL_KEY_BACKSPACE && 
-		event.id != CL_KEY_DELETE && 
-		event.id != CL_KEY_LEFT && 
-		event.id != CL_KEY_RIGHT)
-	{
-		CL_StringRef str = popup_menu.get_item_at(index).get_text();
-		CL_String old_lineedit_text = lineedit->get_text();
-		int selection_length = str.length() - old_lineedit_text.length();
-		lineedit->set_text(str);
-		lineedit->set_selection(old_lineedit_text.length(), selection_length);
-	}
-*/
 	if (!func_after_edit_changed.is_null())
 		func_after_edit_changed.invoke();
 }

@@ -346,7 +346,6 @@ void CL_ListViewHeader_Impl::on_render(CL_GraphicContext &gc, const CL_Rect &upd
 	
 	// draw listview column headers and backgrounds
 	text_height = font.get_text_size(gc, "l").height;
-	int xpos = 0;
 	CL_ListViewColumnHeader col = first_column;
 	while (!col.is_null())
 	{

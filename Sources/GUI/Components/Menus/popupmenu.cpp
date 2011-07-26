@@ -182,11 +182,6 @@ int CL_PopupMenu::find_item(const CL_StringRef &text, bool case_sensitive)
 	CL_StringRef::size_type text_len = text.length();
 	CL_String text_upper = CL_StringHelp::text_to_upper(text);
 
-/*
- text[i+1] != 
-
-*/
-
 	while (index < size)
 	{
 		CL_PopupMenuItem item = get_item_at(index);
@@ -194,7 +189,6 @@ int CL_PopupMenu::find_item(const CL_StringRef &text, bool case_sensitive)
 		CL_String::size_type str_len = str.length();
 
 		CL_String::size_type char_index = 0;
-		int match_count = 0;
 		while (char_index < str_len && char_index < text_len && text_len <= str_len)
 		{
 			if (str[char_index] == text_upper[char_index])
