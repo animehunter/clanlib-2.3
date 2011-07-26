@@ -116,32 +116,6 @@ bool CL_Directory::remove(const CL_StringRef &dir_name, bool delete_files, bool 
 
 	CL_String full_path = CL_PathHelp::add_trailing_slash(dir_name);
 
-	/*#ifdef WIN32
-		DWORD buff_len = ::GetFullPathName(CL_StringHelp::utf8_to_ucs2(dir_name).c_str(), 0, 0, 0);
-
-		if (buff_len == 0)
-			// can't calculate, return bad status
-			return false;
-		else
-		{
-			std::vector<TCHAR> buffer_vector;
-			buffer_vector.resize(buff_len + 1);
-			TCHAR *buffer = &(buffer_vector[0]);
-			TCHAR *buffer_ptr_to_filename = 0;
-			// Obtaining full path
-			buff_len = ::GetFullPathName(CL_StringHelp::utf8_to_ucs2(dir_name).c_str(), buff_len, buffer, &buffer_ptr_to_filename);
-			if (buff_len == 0)
-				// can't obtaing full path, return bad status
-				return false;
-			else
-				// ok, save it
-				full_path = buffer;
-		}
-	#else
-		// TODO: add here Linux version of GetFullPathName
-		full_path = dir_name;
-	#endif*/
-
 	if (delete_files || delete_sub_directories)
 	{
 		CL_DirectoryScanner scanner;
