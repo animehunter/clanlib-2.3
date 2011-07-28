@@ -2,7 +2,6 @@ lib_LTLIBRARIES = libclan23Sqlite.la
 
 libclan23Sqlite_la_SOURCES = \
 precomp.cpp \
-sqlite3.c \
 sqlite_command_provider.cpp \
 sqlite_connection.cpp \
 sqlite_connection_provider.cpp \
