@@ -134,6 +134,7 @@ if test "$WIN32" = "yes"; then
 		extra_LIBS_clanGL1="-lopengl32"
 		extra_LIBS_clanSound="-ldsound -ldxguid -lwinmm -lmsvcrt -lmingwex"
 		extra_LIBS_clanMikMod="-lmikmod"
+		extra_LIBS_clanSqlite="-lsqlite3"
 		extra_LIBS_clanVorbis="-lvorbis -logg"
 		extra_LIBS_clanNetwork="-lws2_32"
 		extra_LIBS_clanSWRender="-lmsvcrt"
@@ -148,6 +149,7 @@ if test "$WIN32" = "yes"; then
 	extra_LIBS_clanMikMod="-lmikmod"
 	extra_LIBS_clanVorbis="-lvorbis -logg"
 	extra_LIBS_clanNetwork="-lws2_32"
+	extra_LIBS_clanSqlite="-lsqlite3"
 	;;
 esac
 fi
@@ -540,6 +542,7 @@ fi
 if test "$enable_clanSqlite" != "no"; then
 	echo "Checking for clanSqlite stuff"
 	echo "==============================="
+	CLANLIB_CHECK_LIB(sqlite, [`cat $srcdir/Setup/Tests/sqlite.cpp`], clanSqlite, [ *** Cannot find sqlite (See: http://www.sqlite.org/ ) (Try  libsqlite3-dev or better) ], [-lsqlite3])
 	echo ""
 fi
 
