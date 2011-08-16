@@ -315,7 +315,7 @@ CL_CollisionOutline &CL_CollisionOutline::copy(const CL_CollisionOutline &other)
 	return *this;
 }
 
-CL_CollisionOutline CL_CollisionOutline::clone()
+CL_CollisionOutline CL_CollisionOutline::clone() const
 {
 	CL_CollisionOutline copy;
 	copy.impl->contours.clear();

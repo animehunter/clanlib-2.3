@@ -236,7 +236,7 @@ public:
 	CL_CollisionOutline &copy(const CL_CollisionOutline &other);
 
 	/// \brief Makes a copy of the current collision outline.
-	CL_CollisionOutline clone();
+	CL_CollisionOutline clone() const;
 
 	/// \brief Optimize the outline by removing redundant points.
 	///

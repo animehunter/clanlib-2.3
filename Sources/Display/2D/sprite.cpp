@@ -44,6 +44,7 @@
 #include "API/Display/ImageProviders/provider_factory.h"
 #include "API/Display/ImageProviders/targa_provider.h"
 #include "API/Display/ImageProviders/png_provider.h"
+#include "API/Display/Collision/collision_outline.h"
 #include "sprite_impl.h"
 #include "render_batch2d.h"
 
@@ -103,6 +104,56 @@ CL_Sprite::CL_Sprite(CL_GraphicContext &gc, const CL_SpriteDescription &descript
 
 CL_Sprite::~CL_Sprite()
 {
+}
+
+
+std::vector<CL_CollisionOutline> CL_Sprite::create_collision_outlines(CL_GraphicContext &gc, const CL_StringRef &resource_id, CL_ResourceManager *resources, int alpha_limit, CL_OutlineAccuracy accuracy)
+{
+	std::vector<CL_CollisionOutline> outlines;
+
+	CL_SpriteDescription description(gc, resource_id, resources, CL_ImageImportDescription () );
+
+	// Fetch frames
+	const std::vector<CL_SpriteDescriptionFrame> &description_frames = description.get_frames();
+	std::vector<CL_SpriteDescriptionFrame>::const_iterator it_frames;
+
+	outlines.reserve(description_frames.size());
+
+	for (it_frames = description_frames.begin(); it_frames != description_frames.end(); ++it_frames)
+	{
+		CL_SpriteDescriptionFrame description_frame = (*it_frames);
+
+		CL_PixelBuffer target;
+
+		if(description_frame.type == CL_SpriteDescriptionFrame::type_pixelbuffer)
+		{
+			target = CL_PixelBuffer(description_frame.rect.get_width(), description_frame.rect.get_height(), cl_rgba8);
+			description_frame.pixelbuffer.convert(target, description_frame.rect.get_size(), description_frame.rect);
+		}
+		else
+		{
+			target = CL_PixelBuffer(description_frame.rect.get_width(), description_frame.rect.get_height(), cl_rgba8);
+			CL_PixelBuffer pbuff = description_frame.texture.get_pixeldata(cl_rgba8);
+			if (pbuff.is_null())
+				throw CL_Exception("Display target does not support CL_Texture::get_pixeldata()");
+
+			pbuff.convert(target, description_frame.rect.get_size(), description_frame.rect);
+		}
+
+		CL_CollisionOutline outline(target, alpha_limit, accuracy);
+		outlines.push_back(outline);
+
+	}
+	return outlines;
+
+}
+
+CL_CollisionOutline CL_Sprite::create_collision_outline(CL_GraphicContext &gc, const CL_StringRef &resource_id, CL_ResourceManager *resources, int alpha_limit, CL_OutlineAccuracy accuracy)
+{
+	std::vector<CL_CollisionOutline> outlines = CL_Sprite::create_collision_outlines(gc, resource_id, resources, alpha_limit, accuracy);
+	if (outlines.empty())
+		return CL_CollisionOutline();
+	return outlines[0];
 }
 
 /////////////////////////////////////////////////////////////////////////////
