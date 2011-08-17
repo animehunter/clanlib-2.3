@@ -217,6 +217,10 @@
 			>
 		</File>
 		<File
+			RelativePath=".\Sources\framerate_counter.h"
+			>
+		</File>
+		<File
 			RelativePath=".\Sources\precomp.cpp"
 			>
 			<FileConfiguration

@@ -45,12 +45,14 @@ void Teapot::create(CL_GraphicContext &gc, CL_ResourceManager &resources)
 	teapot_sprites = CL_Sprite(gc, "teapot", &resources);
 	teapot_sprites.set_frame_delay(0, 100);
 
-	teapot_collisions = CL_CollidableSprite::create_collision_outlines(gc, "teapot", &resources);
+	// **** Try using "accuracy_low" or accuracy_medium" ****
+	teapot_collisions = CL_CollidableSprite::create_collision_outlines(gc, "teapot", &resources, 128, accuracy_high);
 }
 
 void Teapot::draw_collision_outline(CL_GraphicContext &gc)
 {
-	teapot_collisions[teapot_sprites.get_current_frame()].draw( dest_xpos, dest_ypos + gc.get_height()/2, CL_Colorf::limegreen, gc);
+	teapot_collisions[teapot_sprites.get_current_frame()].draw( 0, gc.get_height()/2, CL_Colorf::limegreen, gc);
+//	teapot_collisions[teapot_sprites.get_current_frame()].draw( 0, 0, CL_Colorf::limegreen, gc);
 
 }
 
@@ -73,10 +75,174 @@ void Teapot::clone(const Teapot &source)
 }
 
 
-void Teapot::update(CL_GraphicContext &gc, int elapsed_ms)
+void Teapot::update(CL_GraphicContext &gc, int elapsed_ms, std::vector<Teapot> &teapot_list)
 {
+	previous_teapot_animation_frame = teapot_sprites.get_current_frame();
 	teapot_sprites.update(elapsed_ms);
 
+	// If the updated animation now collides with a new object, restore the anim frame
+	int collided_teapot_offset;
+	if (is_collision(dest_xpos, dest_ypos, teapot_list, collided_teapot_offset))
+	{
+		teapot_sprites.set_frame(previous_teapot_animation_frame);	// Restore previous frame
+	}
+
+
+	int last_xpos = dest_xpos;
+	int last_ypos = dest_ypos;
+	move(gc, elapsed_ms);
+
+
+	// If the object is inside another object, ignore collision detection
+	if (is_collision(last_xpos, last_ypos, teapot_list, collided_teapot_offset))
+	{
+		// Inside another object.  Occurs at the start when random placed objects are on top of each other
+	}
+	else
+	{
+
+#ifndef PIXEL_TRANSVERSAL_COLLISION_DETECTION
+
+		// For accurate collision detection we want to check for collision for every pixel that the object transversed
+		int difference_xpos = dest_xpos - last_xpos;
+		int difference_ypos = dest_ypos - last_ypos;
+
+		// Transverse x pixels or ypixels, depending which is the greater
+		int positive_xpos = difference_xpos >= 0 ? difference_xpos : -difference_xpos;
+		int positive_ypos = difference_ypos >= 0 ? difference_ypos : -difference_ypos;
+
+		if (positive_xpos >= positive_ypos)
+		{
+			int check_last_xpos = last_xpos;
+			int check_last_ypos = last_ypos;
+			if (difference_xpos > 0)
+			{
+				for (int cnt = 0; cnt < positive_xpos; cnt++)
+				{
+					int check_new_xpos = last_xpos + (cnt + 1);
+					int check_new_ypos = last_ypos + (difference_ypos * (cnt + 1) / positive_xpos);
+					if (check_hit_other_object(check_last_xpos, check_last_ypos, check_new_xpos, check_new_ypos, teapot_list))
+						break;
+					check_last_xpos = check_new_xpos;
+					check_last_ypos = check_new_ypos;
+				}
+			}
+			else
+			{
+				for (int cnt = 0; cnt < positive_xpos; cnt++)
+				{
+					int check_new_xpos = last_xpos - (cnt + 1);
+					int check_new_ypos = last_ypos + (difference_ypos * (cnt + 1) / positive_xpos);
+					if (check_hit_other_object(check_last_xpos, check_last_ypos, check_new_xpos, check_new_ypos, teapot_list))
+						break;
+					check_last_xpos = check_new_xpos;
+					check_last_ypos = check_new_ypos;
+				}
+			}
+		}
+		else
+		{
+			int check_last_xpos = last_xpos;
+			int check_last_ypos = last_ypos;
+			if (difference_ypos > 0)
+			{
+				for (int cnt = 0; cnt < positive_ypos; cnt++)
+				{
+					int check_new_ypos = last_ypos + (cnt + 1);
+					int check_new_xpos = last_xpos + (difference_xpos * (cnt + 1) / positive_ypos);
+					if (check_hit_other_object(check_last_xpos, check_last_ypos, check_new_xpos, check_new_ypos, teapot_list))
+						break;
+					check_last_xpos = check_new_xpos;
+					check_last_ypos = check_new_ypos;
+				}
+			}
+			else
+			{
+				for (int cnt = 0; cnt < positive_ypos; cnt++)
+				{
+					int check_new_ypos = last_ypos - (cnt + 1);
+					int check_new_xpos = last_xpos + (difference_xpos * (cnt + 1) / positive_ypos);
+					if (check_hit_other_object(check_last_xpos, check_last_ypos, check_new_xpos, check_new_ypos, teapot_list))
+						break;
+					check_last_xpos = check_new_xpos;
+					check_last_ypos = check_new_ypos;
+				}
+			}
+
+		}
+#else
+		check_hit_other_object(last_xpos,last_ypos, dest_xpos, dest_ypos, teapot_list);
+#endif
+	}
+
+	// Set the translation, so other teapots can correctly collide with this one
+	CL_CollisionOutline &this_outline = teapot_collisions[teapot_sprites.get_current_frame()];
+	this_outline.set_translation(dest_xpos, dest_ypos);
+
+
+}
+
+bool Teapot::check_hit_other_object(int previous_xpos, int previous_ypos, int xpos, int ypos, std::vector<Teapot> &teapot_list)
+{
+	int collided_teapot_offset;
+	if (is_collision(xpos, ypos, teapot_list, collided_teapot_offset))
+	{
+		const std::vector<CL_CollidingContours> &colpointinfo = teapot_collisions[teapot_sprites.get_current_frame()].get_collision_info();
+		if (!colpointinfo.empty())
+		{
+			if (!colpointinfo[0].points.empty())
+			{
+				const CL_CollisionPoint &point = colpointinfo[0].points[0];
+
+				CL_Pointf normal = point.normal;
+				x_delta = normal.x * speed;
+				y_delta = normal.y * speed;
+
+				teapot_list[collided_teapot_offset].x_delta = -x_delta;
+				teapot_list[collided_teapot_offset].y_delta = -y_delta;
+			}
+		}
+
+		dest_xpos = previous_xpos;
+		dest_ypos = previous_ypos;
+		float_xpos = (float) previous_xpos;
+		float_ypos = (float) previous_ypos;
+		teapot_sprites.set_frame(previous_teapot_animation_frame);	// Restore previous frame
+		return true;
+	}
+	return false;
+}
+
+bool Teapot::is_collision(int xpos, int ypos, const std::vector<Teapot> &teapot_list, int &collided_teapot_offset)
+{
+	CL_CollisionOutline &this_outline = teapot_collisions[teapot_sprites.get_current_frame()];
+	this_outline.set_translation(xpos, ypos);
+
+	this_outline.enable_collision_info(false,true,false,false);
+
+	std::vector<Teapot>::size_type cnt, max;
+	max = teapot_list.size();
+	for (cnt=0; cnt<max; cnt++)
+	{
+		const Teapot &other_teapot = teapot_list[cnt];
+
+		if (&other_teapot == this)	// Do not collide with self
+		{
+			collided_teapot_offset = cnt;	// To always return a valid number
+			continue;
+		}
+
+		if( this_outline.collide(other_teapot.teapot_collisions[other_teapot.teapot_sprites.get_current_frame()]) )
+		{
+			collided_teapot_offset = cnt;
+			return true;
+		}
+	}
+	return false;
+}
+
+void Teapot::move(CL_GraphicContext &gc, int elapsed_ms)
+{
 	float_xpos += x_delta * (float) elapsed_ms;
 	float_ypos += y_delta * (float) elapsed_ms;
 
@@ -145,11 +311,17 @@ void Teapot::set_scale(float x_scale, float y_scale)
 	{
 		teapot_collisions[cnt].set_scale(x_scale, y_scale);
 	}
-	
 }
 
-void Teapot::set_movement_delta(float new_x_delta, float new_y_delta)
+void Teapot::set_movement_delta(CL_Vec2f &normal, float new_speed)
 {
-	x_delta = new_x_delta;
-	y_delta = new_y_delta;
+	speed = new_speed;
+	x_delta = normal.x * speed;
+	y_delta = normal.y * speed;
 }
+
+void Teapot::set_color(const CL_Colorf &color)
+{
+	teapot_sprites.set_color(color);
+}
+

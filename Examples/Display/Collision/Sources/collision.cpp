@@ -30,6 +30,7 @@
 #include "precomp.h"
 #include "collision.h"
 #include "teapot.h"
+#include "framerate_counter.h"
 
 // The start of the Application
 int Collision::start(const std::vector<CL_String> &args)
@@ -39,7 +40,7 @@ int Collision::start(const std::vector<CL_String> &args)
 	// Set the window
 	CL_DisplayWindowDescription desc;
 	desc.set_title("ClanLib Collision Example");
-	desc.set_size(CL_Size(800, 700), true);
+	desc.set_size(CL_Size(1000, 700), true);
 	desc.set_allow_resize(true);
 
 	CL_DisplayWindow window(desc);
@@ -80,15 +81,25 @@ int Collision::start(const std::vector<CL_String> &args)
 
 		int x_delta = (rand() & 0xffff);
 		int y_delta = (rand() & 0xffff);
-		teapot_list[cnt].set_movement_delta((x_delta - 0x7fff) * 0.00001f, (y_delta - 0x7fff) * 0.000001f);
+		CL_Vec2f normal((x_delta - 0x7fff) * 0.00001f, (y_delta - 0x7fff) * 0.000001f);
+		normal.normalize();
+
+		teapot_list[cnt].set_movement_delta(normal, 0.1f);
 
 		int scale = (rand() & 0xffff);
-		teapot_list[cnt].set_scale(1.0f + scale * 0.00001f, 1.0f + scale * 0.00001f);
+		teapot_list[cnt].set_scale(0.5f + scale * 0.00002f, 0.5f + scale * 0.00002f);
 
 		int frame = (rand() & 0xffff);
 		teapot_list[cnt].set_frame(frame % 60);	// Assuming teapots has 60 frames
 
+		teapot_list[cnt].set_color( CL_Colorf(
+			(rand() & 0xFF) / 256.0f,
+			(rand() & 0xFF) / 256.0f,
+			(rand() & 0xFF) / 256.0f,
+			1.0f));
 	}
+
+	FramerateCounter frameratecounter;
 
 	unsigned int last_time = CL_System::get_time();
 
@@ -104,16 +115,20 @@ int Collision::start(const std::vector<CL_String> &args)
 		font.draw_text(gc, 16, 32, "Sprite Image");
 		font.draw_text(gc, 16, gc.get_height()/2 + 32, "Collision Outline");
 
+		CL_String fps = cl_format("%1 fps", frameratecounter.get_framerate());
+		font.draw_text(gc, gc.get_width() - 100, 32, fps);
+
 		for (int cnt=0; cnt<num_teapots; cnt++)
 		{
-			teapot_list[cnt].update(gc, time_elapsed);
+			teapot_list[cnt].update(gc, time_elapsed, teapot_list);
 			teapot_list[cnt].draw_collision_outline(gc);
 			teapot_list[cnt].draw_teapot(gc);
 		}
 
 		CL_Draw::line(gc, 0, gc.get_height()/2, gc.get_width(), gc.get_height()/2, CL_Colorf::white);
 		
-		window.flip(1);
+		window.flip(0);
+		frameratecounter.frame_shown();
 
 		CL_KeepAlive::process(0);
 	}
