@@ -45,7 +45,7 @@ void Teapot::create(CL_GraphicContext &gc, CL_ResourceManager &resources)
 	teapot_sprites = CL_Sprite(gc, "teapot", &resources);
 	teapot_sprites.set_frame_delay(0, 100);
 
-	teapot_collisions = CL_Sprite::create_collision_outlines(gc, "teapot", &resources);
+	teapot_collisions = CL_CollidableSprite::create_collision_outlines(gc, "teapot", &resources);
 }
 
 void Teapot::draw_collision_outline(CL_GraphicContext &gc)

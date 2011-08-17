@@ -103,24 +103,6 @@ public:
 	/// \param description = Sprite Description
 	CL_Sprite(CL_GraphicContext &gc, const CL_SpriteDescription &description);
 
-	/// \brief Create the collision outlines from the sprites resource
-	///
-	/// \param resource_id = String Ref
-	/// \param resources = Resource Manager
-	/// \param alpha_limit = Alpha limit for pixels considered solid (collidable)
-	/// \param accuracy = Amount of optimization of the outline (default medium)
-	/// \return The collision outlines
-	static std::vector<CL_CollisionOutline> create_collision_outlines(CL_GraphicContext &gc, const CL_StringRef &resource_id, CL_ResourceManager *resources, int alpha_limit=128, CL_OutlineAccuracy accuracy=accuracy_medium);
-
-	/// \brief Create the collision outlines from the sprites resource
-	///
-	/// \param resource_id = String Ref
-	/// \param resources = Resource Manager
-	/// \param alpha_limit = Alpha limit for pixels considered solid (collidable)
-	/// \param accuracy = Amount of optimization of the outline (default medium)
-	/// \return The collision outlines
-	static CL_CollisionOutline create_collision_outline(CL_GraphicContext &gc, const CL_StringRef &resource_id, CL_ResourceManager *resources, int alpha_limit=128, CL_OutlineAccuracy accuracy=accuracy_medium);
-
 	virtual ~CL_Sprite();
 /// \}
 
