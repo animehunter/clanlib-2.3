@@ -28,7 +28,7 @@
 */
 
 #include "precomp.h"
-#include "SineScroll.h"
+#include "sinescroll.h"
 
 // The start of the Application
 int SineScroll::start(const std::vector<CL_String> &args)
