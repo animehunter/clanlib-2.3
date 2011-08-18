@@ -52,6 +52,7 @@
 #define IDC_CHECK_INCLUDE_SSE2        1029
 #define IDC_CHECK_INCLUDE_INTRINSICS        1030
 #define IDC_CHECK_DEBUG_OPTIMIZE				1031
+#define IDC_CHECK_WHOLE_PROGRAM_OPTIMIZE				1032
 
 // Next default values for new objects
 // 

@@ -43,6 +43,7 @@ PageTarget::PageTarget()
 	include_dll = false;
 	include_x64 = false;
 	enable_debug_optimize = false;
+	enable_whole_program_optimize = false;
 
 	HKEY hKey = 0;
 	LONG result = RegOpenKeyEx(
@@ -87,6 +88,13 @@ PageTarget::PageTarget()
 		if (result == ERROR_SUCCESS && type == REG_DWORD)
 		{
 			enable_debug_optimize = (value != 0);
+		}
+
+		size = sizeof(DWORD);
+		result = RegQueryValueEx(hKey, TEXT("WholeProgramOptimize"), 0, &type, (LPBYTE) &value, &size);
+		if (result == ERROR_SUCCESS && type == REG_DWORD)
+		{
+			enable_whole_program_optimize = (value != 0);
 		}
 
 		size = sizeof(DWORD);
@@ -146,6 +154,7 @@ INT_PTR CALLBACK PageTarget::dialog_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 			SendMessage(GetDlgItem(hWnd, IDC_CHECK_INCLUDE_SSE2), BM_SETCHECK, self->include_sse2 ? BST_CHECKED : BST_UNCHECKED, 0);
 			SendMessage(GetDlgItem(hWnd, IDC_CHECK_INCLUDE_INTRINSICS), BM_SETCHECK, self->include_intrinsics ? BST_CHECKED : BST_UNCHECKED, 0);
 			SendMessage(GetDlgItem(hWnd, IDC_CHECK_DEBUG_OPTIMIZE), BM_SETCHECK, self->enable_debug_optimize ? BST_CHECKED : BST_UNCHECKED, 0);
+			SendMessage(GetDlgItem(hWnd, IDC_CHECK_WHOLE_PROGRAM_OPTIMIZE), BM_SETCHECK, self->enable_whole_program_optimize ? BST_CHECKED : BST_UNCHECKED, 0);
 			SendMessage(GetDlgItem(hWnd, IDC_CHECK_INCLUDE_DLL), BM_SETCHECK, self->include_dll ? BST_CHECKED : BST_UNCHECKED, 0);
 			SendMessage(GetDlgItem(hWnd, IDC_CHECK_INCLUDE_X64), BM_SETCHECK, self->include_x64 ? BST_CHECKED : BST_UNCHECKED, 0);
 
@@ -195,6 +204,7 @@ INT_PTR PageTarget::on_notify(HWND hWnd, NMHDR *header)
 		include_sse2 = (SendMessage(GetDlgItem(hWnd, IDC_CHECK_INCLUDE_SSE2), BM_GETCHECK, 0, 0) == BST_CHECKED);
 		include_intrinsics = (SendMessage(GetDlgItem(hWnd, IDC_CHECK_INCLUDE_INTRINSICS), BM_GETCHECK, 0, 0) == BST_CHECKED);
 		enable_debug_optimize = (SendMessage(GetDlgItem(hWnd, IDC_CHECK_DEBUG_OPTIMIZE), BM_GETCHECK, 0, 0) == BST_CHECKED);
+		enable_whole_program_optimize = (SendMessage(GetDlgItem(hWnd, IDC_CHECK_WHOLE_PROGRAM_OPTIMIZE), BM_GETCHECK, 0, 0) == BST_CHECKED);
 		include_dll = (SendMessage(GetDlgItem(hWnd, IDC_CHECK_INCLUDE_DLL), BM_GETCHECK, 0, 0) == BST_CHECKED);
 		return TRUE;
 	case PSN_WIZFINISH:
