@@ -1461,7 +1461,7 @@ void MSVC8_VCResourceCompilerTool::write_settings(OutputWriter &output, int inde
 MSVC8_VCLibrarianTool::MSVC8_VCLibrarianTool()
 {
 	name = "VCLibrarianTool";
-	additional_options.set("LTCG");	// Can the set when the "whole program optimisation" is disabled?
+	additional_options.set("/LTCG");	// Can the set when the "whole program optimisation" is disabled?
 }
 
 void MSVC8_VCLibrarianTool::write_settings(OutputWriter &output, int indent) const
