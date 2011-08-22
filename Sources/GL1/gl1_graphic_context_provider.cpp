@@ -1388,10 +1388,20 @@ void CL_GL1GraphicContextProvider::set_blend_mode(const CL_BlendMode &mode)
 	}
 	else
 	{
-		// TODO: Fixme !
-		//throw CL_Exception("BlendFuncSeparate is not supported for OpenGL 1.3");
-		if (cl1BlendFunc)
-			cl1BlendFunc(to_enum(mode.get_blend_function_src()), to_enum(mode.get_blend_function_dest()));
+		if (cl1BlendFuncSeparate)
+		{
+			cl1BlendFuncSeparate( 
+				to_enum(mode.get_blend_function_src()),
+				to_enum(mode.get_blend_function_dest()),
+				to_enum(mode.get_blend_function_src_alpha()),
+				to_enum(mode.get_blend_function_dest_alpha()) );
+		}
+		else
+		{
+			//throw CL_Exception("BlendFuncSeparate is not supported for OpenGL 1.3");
+			if (cl1BlendFunc)
+				cl1BlendFunc(to_enum(mode.get_blend_function_src()), to_enum(mode.get_blend_function_dest()));
+		}
 	}
 }
 
