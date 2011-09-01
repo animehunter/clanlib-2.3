@@ -179,7 +179,7 @@ void Model_Impl::insert_vbo(int vertex_count, const struct aiScene* sc, const st
 
 		if (use_texcoords)
 		{
-			if (mesh->mTextureCoords[0] == NULL || mesh->mTextureCoords[0][0] == NULL)
+			if (mesh->mTextureCoords == NULL || mesh->mTextureCoords[0] == NULL)
 				throw CL_Exception("This example expects texcoords to be set for this object");
 			tex_coords.reserve(num_vertex);
 		}

@@ -105,7 +105,7 @@ void ModelAssimp::render_vbo(CL_GraphicContext &gc, const struct aiScene* sc, co
 			continue;
 
 		bool use_texcoords = true;
-		if (mesh->mTextureCoords[0] == NULL || mesh->mTextureCoords[0][0] == NULL)
+		if (mesh->mTextureCoords == NULL || mesh->mTextureCoords[0] == NULL)
 			use_texcoords = false;
 
 		CL_PrimitivesArray prim_array(gc);
@@ -238,7 +238,7 @@ void ModelAssimp::count_vertices(const struct aiScene* sc, const struct aiNode* 
 		if (!num_vertex)
 			continue;
 
-		if (! (mesh->mTextureCoords[0] == NULL || mesh->mTextureCoords[0][0] == NULL) )
+		if (! (mesh->mTextureCoords == NULL || mesh->mTextureCoords[0] == NULL) )
 			total_texcoords_size += num_vertex;
 
 		total_positions_size += num_vertex;
@@ -276,7 +276,7 @@ void ModelAssimp::insert_vbo(const struct aiScene* sc, const struct aiNode* nd, 
 		vertices.reserve(num_vertex);
 
 		bool use_texcoords = true;
-		if (mesh->mTextureCoords[0] == NULL || mesh->mTextureCoords[0][0] == NULL)
+		if (mesh->mTextureCoords == NULL || mesh->mTextureCoords[0] == NULL)
 			use_texcoords = false;
 
 		if (use_texcoords)

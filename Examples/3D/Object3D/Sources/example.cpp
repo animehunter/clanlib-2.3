@@ -225,7 +225,7 @@ void App::recursive_render(CL_GraphicContext &gc, const struct aiScene *sc, cons
 	{
 		const struct aiMesh* mesh = sc->mMeshes[nd->mMeshes[n]];
 
-		if (mesh->mNormals[0] == NULL)
+		if (mesh->mNormals == NULL)
 			throw CL_Exception("This example expects normals to be set");
 
 		std::vector<CL_Vec3f> normals;
@@ -237,7 +237,7 @@ void App::recursive_render(CL_GraphicContext &gc, const struct aiScene *sc, cons
 
 		if (use_texture_coords)
 		{
-			if (mesh->mTextureCoords[0] == NULL || mesh->mTextureCoords[0][0] == NULL)
+			if (mesh->mTextureCoords == NULL || mesh->mTextureCoords[0] == NULL)
 				throw CL_Exception("This example expects texcoords to be set for this object");
 			tex_coords.reserve(mesh->mNumFaces * 3);
 		}
