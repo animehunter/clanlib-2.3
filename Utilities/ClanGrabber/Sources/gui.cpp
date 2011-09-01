@@ -81,7 +81,7 @@ int App::start(const std::vector<CL_String> &args)
 	CL_Label *label = new CL_Label(window);
 	CL_Rect combo_geometry = combo->get_geometry();
 	label->set_geometry(CL_Rect(combo_geometry.right + 5, combo_geometry.top, CL_Size(256, 17)));
-	label->set_text("Ouput Size");
+	label->set_text("Output Size");
 
 	CL_PopupMenu combo_menu_compression;
 	combo_menu_compression.insert_item("WMV3");
@@ -104,7 +104,7 @@ int App::start(const std::vector<CL_String> &args)
 
 	CL_CheckBox *checkbox = new CL_CheckBox(window);
 	checkbox->set_geometry(CL_Rect(10, 160 , CL_Size(240, 16)));
-	checkbox->set_text("Resize to fit (whilst mantaining aspect ratio)");
+	checkbox->set_text("Resize to fit (whilst maintaining aspect ratio)");
 	checkbox->set_checked(false);
 	is_resize_to_fit = false;
 	checkbox->func_state_changed().set(this, &App::on_checkbox_changed_stretch, checkbox);
@@ -152,7 +152,7 @@ int App::start(const std::vector<CL_String> &args)
 	label = new CL_Label(window);
 	geometry = lineedit_fps->get_geometry();
 	label->set_geometry(CL_Rect(geometry.right + 5, geometry.top, CL_Size(256, 17)));
-	label->set_text("Maximum number of samples each second");
+	label->set_text("Maximum number of samples per second");
 
 	try
 	{
