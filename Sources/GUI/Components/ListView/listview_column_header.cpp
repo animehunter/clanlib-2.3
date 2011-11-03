@@ -86,6 +86,11 @@ int CL_ListViewColumnHeader::get_width()
 	return impl->width;
 }
 
+int CL_ListViewColumnHeader::get_used_width()
+{
+	return impl->rect.get_width();
+}
+
 CL_ListViewColumnHeader::TextAlignment CL_ListViewColumnHeader::get_alignment()
 {
 	return impl->align;
@@ -129,11 +134,6 @@ void CL_ListViewColumnHeader::set_alignment(CL_ListViewColumnHeader::TextAlignme
 void CL_ListViewColumnHeader::set_rect(const CL_Rect &rect)
 {
 	impl->rect = rect;
-}
-
-void CL_ListViewColumnHeader::set_gui_theme_part(const CL_GUIThemePart &part)
-{
-	impl->part = part;
 }
 
 /////////////////////////////////////////////////////////////////////////////

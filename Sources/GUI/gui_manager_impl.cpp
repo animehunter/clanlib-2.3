@@ -53,7 +53,7 @@
 // CL_GUIManager_Impl Construction:
 
 CL_GUIManager_Impl::CL_GUIManager_Impl()
-: mouse_capture_component(0), mouse_over_component(0), theme(0), exit_flag(false), exit_code(0), destroy_signal_connected(false),window_manager(NULL)
+: mouse_capture_component(0), mouse_over_component(0), theme(0), exit_flag(false), exit_code(0), destroy_signal_connected(false), window_manager(NULL)
 {
 	func_focus_lost.set(this, &CL_GUIManager_Impl::on_focus_lost);
 	func_focus_gained.set(this, &CL_GUIManager_Impl::on_focus_gained);

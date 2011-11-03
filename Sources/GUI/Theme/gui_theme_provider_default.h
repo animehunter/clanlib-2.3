@@ -59,14 +59,15 @@ public:
 		const CL_StringRef &name,
 		const CL_StringRef &css_value);
 
-	CL_ResourceManager get_resources() const {return resources;}
+	CL_ResourceManager get_resources() const { return resources; }
 
 /// \}
 /// \name Operations
 /// \{
 public:
 	void destroy();
-	void set_resources(CL_ResourceManager new_resources) {resources = new_resources;}
+	void add_resources(CL_ResourceManager new_resources);
+	void set_resources(CL_ResourceManager new_resources);
 	void render_box(CL_GraphicContext &gc, CL_GUIThemePart &part, const CL_Rect &rect, const CL_Rect &clip_rect);
 	void component_destroyed(CL_GUIComponent *component);
 	CL_Rect render_text(

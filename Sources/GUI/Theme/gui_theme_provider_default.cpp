@@ -89,6 +89,16 @@ CL_StringRef CL_GUIThemeProvider_Default::get_property(
 /////////////////////////////////////////////////////////////////////////////
 // CL_GUIThemeProvider_Default Operations:
 
+void CL_GUIThemeProvider_Default::add_resources(CL_ResourceManager new_resources)
+{
+	resources.add_resources(new_resources);
+}
+
+void CL_GUIThemeProvider_Default::set_resources(CL_ResourceManager new_resources)
+{
+	resources = new_resources;
+}
+
 void CL_GUIThemeProvider_Default::destroy()
 {
 	delete this;
