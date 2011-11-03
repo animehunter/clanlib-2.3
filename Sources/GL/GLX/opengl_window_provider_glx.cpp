@@ -287,7 +287,8 @@ void CL_OpenGLWindowProvider_GLX::create(CL_DisplayWindowSite *new_site, const C
 
 	if (create_provider_flag)
 	{
-		gc = CL_GraphicContext(new CL_OpenGLGraphicContextProvider(new CL_GL_RenderWindowProvider_GLX(*this, opengl_context, false)));
+		CL_OpenGLWindowDescription gldesc(desc);
+		gc = CL_GraphicContext(new CL_OpenGLGraphicContextProvider(new CL_GL_RenderWindowProvider_GLX(*this, opengl_context, false), gldesc));
 		std::vector<CL_GraphicContextProvider*> &gc_providers = CL_SharedGCData::get_gc_providers();
 		gc_providers.push_back(gc.get_provider());
 	}

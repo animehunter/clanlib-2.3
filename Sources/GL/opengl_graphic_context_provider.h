@@ -49,6 +49,7 @@ class CL_ShaderObjectProvider;
 class CL_FrameBufferProvider;
 class CL_RenderBufferProvider;
 class CL_OpenGLFrameBufferProvider;
+class CL_OpenGLWindowDescription;
 
 class CL_OpenGLGraphicContextProvider : public CL_GraphicContextProvider
 {
@@ -58,7 +59,7 @@ public:
 	/// \brief Creates a new OpenGL graphic context provider for a rendering window.
 	/** <p>The pointer to the rendering window provider will be owned by this graphic
 	    context provider object, and will be deleted upon its destruction.</p>*/
-	CL_OpenGLGraphicContextProvider(const CL_RenderWindowProvider * const render_window);
+	CL_OpenGLGraphicContextProvider(const CL_RenderWindowProvider * const render_window, const CL_OpenGLWindowDescription &gldesc);
 
 	~CL_OpenGLGraphicContextProvider();
 
@@ -213,6 +214,6 @@ private:
 	int shader_version_minor;
 
 	bool use_glsl_1_50;	// Available with OpenGL 3.2 and above
-	bool use_open_3_1;	// Available with OpenGL 3.1 and above
+	bool allow_vertex_array_without_buffer_object;
 /// \}
 };

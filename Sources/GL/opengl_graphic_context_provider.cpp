@@ -59,6 +59,7 @@
 #include "API/GL/opengl_wrap.h"
 #include "API/Display/2D/image.h"
 #include "API/Core/System/uniqueptr.h"
+#include "API/GL/opengl_window_description.h"
 #ifdef __APPLE__
 #include <CoreFoundation/CoreFoundation.h>
 #include "AGL/opengl_window_provider_agl.h"
@@ -169,7 +170,7 @@ const CL_String::char_type *cl_glsl_fragment_sprite =
 /////////////////////////////////////////////////////////////////////////////
 // CL_OpenGLGraphicContextProvider Construction:
 
-CL_OpenGLGraphicContextProvider::CL_OpenGLGraphicContextProvider(const CL_RenderWindowProvider * const render_window)
+CL_OpenGLGraphicContextProvider::CL_OpenGLGraphicContextProvider(const CL_RenderWindowProvider * const render_window, const CL_OpenGLWindowDescription &gldesc)
 : render_window(render_window), map_mode(cl_map_2d_upper_left), projection(CL_Mat4f::identity()), modelview(CL_Mat4f::identity()),
   framebuffer_bound(false), prim_arrays_set(false), num_set_program_attribute_arrays(0), cur_prim_array(0),
   modelview_projection_matrix_valid(false), normal_matrix_valid(false),
@@ -193,19 +194,20 @@ CL_OpenGLGraphicContextProvider::CL_OpenGLGraphicContextProvider(const CL_Render
 	CL_OpenGL::glsl_version_major = shader_version_major;
 	CL_OpenGL::glsl_version_minor = shader_version_minor;
 
-	if (opengl_version_major < 3)
+	// We cannot use opengl_version_major or opengl_version_minor because OpenGL may still create a higher but compatible context
+	if (gldesc.get_version_major() < 3)
 	{
-		use_open_3_1 = false;
+		allow_vertex_array_without_buffer_object = true;
 	}
 	else
 	{
-		if ( (opengl_version_major == 3) && (opengl_version_minor == 0) )
+		if ( (gldesc.get_version_major() == 3) && (gldesc.get_version_minor() == 0) )
 		{
-			use_open_3_1 = false;
+			allow_vertex_array_without_buffer_object = true;
 		}
 		else
 		{
-			use_open_3_1 = true;
+			allow_vertex_array_without_buffer_object = false;
 		}
 	}
 
@@ -711,7 +713,7 @@ void CL_OpenGLGraphicContextProvider::reset_program_object()
 void CL_OpenGLGraphicContextProvider::draw_primitives(CL_PrimitivesType type, int num_vertices, const CL_PrimitivesArrayData * const prim_array)
 {
 	// Client vertex arrays must have a vertex buffer object for opengl 3.1 and above (without compatibility option)
-	if (use_open_3_1)
+	if (!allow_vertex_array_without_buffer_object)
 	{
 		for (int i = 0; i < prim_array->num_attributes; i++)
 		{
@@ -949,7 +951,7 @@ void CL_OpenGLGraphicContextProvider::set_primitives_array(const CL_PrimitivesAr
 			// as will calling any array drawing command when no vertex array object is
 			// bound.
 
-			if (!use_open_3_1)
+			if (allow_vertex_array_without_buffer_object)
 			{
 				glEnableVertexAttribArray(prim_array->attribute_indexes[i]);
 				glVertexAttribPointer(

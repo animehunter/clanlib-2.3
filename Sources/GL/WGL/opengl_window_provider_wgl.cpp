@@ -260,9 +260,10 @@ void CL_OpenGLWindowProvider_WGL::create(CL_DisplayWindowSite *new_site, const C
 
 	win32_window.create(site, desc);
 
+	CL_OpenGLWindowDescription gldesc(desc);
+
 	if (!opengl_context)
 	{
-		CL_OpenGLWindowDescription gldesc(desc);
 		if (desc.is_layered())
 			create_shadow_window(win32_window.get_hwnd());
 		else
@@ -322,7 +323,7 @@ void CL_OpenGLWindowProvider_WGL::create(CL_DisplayWindowSite *new_site, const C
 				opengl_context = helper.create_opengl2_context(share_context);
 		}
 
-		gc = CL_GraphicContext(new CL_OpenGLGraphicContextProvider(new RenderWindowProvider_WGL(*this, opengl_context, false)));
+		gc = CL_GraphicContext(new CL_OpenGLGraphicContextProvider(new RenderWindowProvider_WGL(*this, opengl_context, false), gldesc));
 		CL_SharedGCData::get_gc_providers().push_back(gc.get_provider());
 	}
 
