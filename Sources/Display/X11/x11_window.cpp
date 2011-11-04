@@ -64,7 +64,7 @@ CL_X11Window::CL_X11Window()
   site(0), clipboard(this), dlopen_lib_handle(NULL), size_hints(NULL),
   wm_protocols(None), wm_delete_window(None), wm_state(None), net_wm_state(None),
   net_wm_state_maximized_vert(None), net_wm_state_maximized_horz(None),
-  net_wm_state_hidden(None), net_wm_state_fullscreen(None)
+  net_wm_state_hidden(None), net_wm_state_fullscreen(None), is_window_mapped(false)
 {
 	last_repaint_rect.reserve(32);
 	keyboard = CL_InputDevice(new CL_InputDeviceProvider_X11Keyboard(this));
@@ -319,12 +319,15 @@ void CL_X11Window::set_position(const CL_Rect &pos, bool client_area)
 	
 	if (! ( (result == BadValue) || (result == BadWindow) ) )
 	{
-		XEvent event;
-		// Wait to resize
-		do {
-			XMaskEvent(disp, StructureNotifyMask, &event);
-		}while ( (event.type != ConfigureNotify) || (event.xconfigure.event != window) );
-		XPutBackEvent(disp, &event);
+		if (is_window_mapped)
+		{
+			XEvent event;
+			// Wait to resize
+			do {
+				XMaskEvent(disp, StructureNotifyMask, &event);
+			}while ( (event.type != ConfigureNotify) || (event.xconfigure.event != window) );
+			XPutBackEvent(disp, &event);
+		}
 	}
 
 	if (!resize_enabled)	// resize has been temporary enabled
@@ -351,17 +354,19 @@ void CL_X11Window::set_size(int width, int height, bool client_area)
 		XSetWMNormalHints(disp, window, size_hints);
 	}
 	clear_structurenotify_events();
-
 	result = XResizeWindow(disp, window, width, height);
 	
 	if (! ( (result == BadValue) || (result == BadWindow) ) )
 	{
-		XEvent event;
-		// Wait to resize
-		do {
-			XMaskEvent(disp, StructureNotifyMask, &event);
-		}while ( (event.type != ConfigureNotify) || (event.xconfigure.event != window) );
-		XPutBackEvent(disp, &event);
+		if (is_window_mapped)
+		{
+			XEvent event;
+			// Wait to resize
+			do {
+				XMaskEvent(disp, StructureNotifyMask, &event);
+			}while ( (event.type != ConfigureNotify) || (event.xconfigure.event != window) );
+			XPutBackEvent(disp, &event);
+		}
 	}
 
 	if (!resize_enabled)	// resize has been temporary enabled
@@ -389,19 +394,6 @@ void CL_X11Window::minimize()
 	XIconifyWindow(disp, window, current_screen);
 }
 
-void CL_X11Window::wait_mapped()
-{
-	XWindowAttributes attr;
-	XGetWindowAttributes(disp, window, &attr);
-	if (attr.map_state != IsUnmapped)
-		return;
-
-	XEvent event;
-	do {
-		XMaskEvent(disp, StructureNotifyMask, &event);
-	}while ( (event.type != MapNotify) || (event.xmap.event != window) );
-}
-
 void CL_X11Window::restore()
 {
 	if (is_minimized())
@@ -412,8 +404,7 @@ void CL_X11Window::restore()
 		}
 		else
 		{
-			XMapWindow(disp, window);
-			wait_mapped();
+			map_window();
 		}
 	}
 	else if (is_maximized())
@@ -422,18 +413,69 @@ void CL_X11Window::restore()
 	}
 }
 
+void CL_X11Window::map_window()
+{
+	clear_structurenotify_events();
+
+	if (!is_window_mapped)
+	{
+		int result = XMapWindow(disp, window);
+		if ( (result == BadValue) || (result == BadWindow) )
+		{
+			throw CL_Exception("Failed to map window");		
+		}
+		else
+		{
+			// ** Code Disabled, I know know if this works or not, depends on race-conditions - So we assume it always works
+			//XWindowAttributes attr;
+			//XGetWindowAttributes(disp, window, &attr);
+			//if (attr.map_state != IsUnmapped)	// Failed to map window
+			//{
+			//	is_window_mapped = false;
+			//	return;
+			//}
+
+			XEvent event;
+			do {
+				XMaskEvent(disp, StructureNotifyMask, &event);
+			}while ( (event.type != MapNotify) || (event.xmap.event != window) );
+
+			is_window_mapped = true;
+		}
+	}
+}
+
+void CL_X11Window::unmap_window()
+{
+	clear_structurenotify_events();
+	if (is_window_mapped)
+	{
+		int result = XUnmapWindow(disp, window);
+		if ( (result == BadValue) || (result == BadWindow) )
+		{
+			throw CL_Exception("Failed to unmap window");		
+		}
+		else
+		{
+			XEvent event;
+			do {
+				XMaskEvent(disp, StructureNotifyMask, &event);
+			}while ( (event.type != UnmapNotify) || (event.xmap.event != window) );
+
+			is_window_mapped = false;
+		}
+	}
+}
+
 void CL_X11Window::maximize()
 {
 	modify_net_wm_state(true, net_wm_state_maximized_vert, net_wm_state_maximized_horz);
-	XMapWindow(disp, window);
-	wait_mapped();
+
 }
 
 void CL_X11Window::show(bool activate)
 {
-	XMapWindow(disp, window);
-	wait_mapped();
-	clear_structurenotify_events();
+	map_window();
 	if (activate) set_enabled(true);
 
 	// Force the window is updated
@@ -444,7 +486,7 @@ void CL_X11Window::show(bool activate)
 void CL_X11Window::hide()
 {
 	set_enabled(false);
-	XUnmapWindow(disp, window);
+	unmap_window();
 }
 
 void CL_X11Window::bring_to_front()
@@ -459,7 +501,6 @@ void CL_X11Window::capture_mouse(bool capture)
 
 void CL_X11Window::clear_structurenotify_events()
 {
-	// Ennsure event pool is empty
 	XEvent event;
 	while( XCheckMaskEvent(disp, StructureNotifyMask, &event));
 
@@ -556,6 +597,8 @@ void CL_X11Window::close_window()
 	current_window_events.clear();
 
 	bool focus = false;
+
+	is_window_mapped = false;
 
 	if(window)
 	{

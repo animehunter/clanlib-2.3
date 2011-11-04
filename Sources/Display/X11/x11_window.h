@@ -206,7 +206,9 @@ public:
 /// \{
 
 private:
-	void wait_mapped();
+
+	void map_window();
+	void unmap_window();
 
 	CL_Rect get_screen_position() const;
 
@@ -277,6 +279,8 @@ private:
 	std::vector<CL_SocketMessage_X11> current_window_events;
 
 	std::vector<CL_Rect> last_repaint_rect;
+
+	bool is_window_mapped;
 
 	XSizeHints *size_hints;
 
