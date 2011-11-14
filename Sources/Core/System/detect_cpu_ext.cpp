@@ -148,9 +148,42 @@ bool CL_System::detect_cpu_extension(CL_CPU_ExtensionX86 ext)
 	}
 	else if(ext == sse5)
 	{
-		throw ("Congratulations, you've just been selected to code this feature!");
+		// AMD CPUID Specification Manual: "CPUID Fn8000_0001_ECX[SSE5]: Dropped and replaced by XOP."
+		return detect_cpu_extension(xop);
 	}
+	else if(ext == avx)
+	{
+		__cpuid((int*)cpuinfo, 0x1);
+		return ((cpuinfo[2] & (1 << 28)) != 0);
+	}
+	else if(ext == aes)
+	{
+		__cpuid((int*)cpuinfo, 0x1);
+		return ((cpuinfo[2] & (1 << 25)) != 0);
+	}
+	else if(ext == fma3)
+	{
+		__cpuid((int*)cpuinfo, 0x1);
+		return ((cpuinfo[2] & (1 << 12)) != 0);
+	}
+	else if(ext == fma4)
+	{
+		__cpuid((int*)cpuinfo, 0x80000000);
+		if(cpuinfo[0] < 0x80000001)
+			return false;
 
+		__cpuid((int*)cpuinfo, 0x80000001);
+		return ((cpuinfo[2] & (1 << 16)) != 0);
+	}
+	else if(ext == xop)
+	{
+		__cpuid((int*)cpuinfo, 0x80000000);
+		if(cpuinfo[0] < 0x80000001)
+			return false;
+
+		__cpuid((int*)cpuinfo, 0x80000001);
+		return ((cpuinfo[2] & (1 << 11)) != 0);
+	}
 	return false;
 }
 
