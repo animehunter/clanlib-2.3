@@ -215,6 +215,8 @@ void CL_DisplayMessageQueue_Win32::process_message()
 	CL_SharedPtr<ThreadData> data = get_thread_data();
 	for (std::vector<CL_Win32Window *>::size_type i = 0; i < data->windows.size(); i++)
 	{
-		data->windows[i]->get_ic().process_messages();
+		CL_InputContext context = data->windows[i]->get_ic();
+		context.process_messages();
 	}
 }
+

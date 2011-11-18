@@ -30,6 +30,7 @@
 #include <ClanLib/application.h>
 #include <ClanLib/display.h>
 #include <ClanLib/gl.h>
+//#include <ClanLib/swrender.h>
 
 #include <cmath>
 
@@ -62,6 +63,9 @@ private:
 	CL_DisplayWindow *window_5_ptr;
 	CL_DisplayWindow *window_main_ptr;
 
+	int num_mouse_multiple_move_events;
+	bool mouse_move_event_triggered;
+
 };
 
 // This is the Program class that is called by CL_ClanApplication
@@ -78,6 +82,7 @@ public:
 
 		// Initilize the OpenGL drivers
 		CL_SetupGL setup_gl;
+		//CL_SetupSWRender setup_swrender;
 
 		// Start the Application
 		App app;
@@ -95,13 +100,14 @@ int App::start(const std::vector<CL_String> &args)
 	quit = false;
 	drag_start = false;
 	window_main_ptr = NULL;
+	num_mouse_multiple_move_events = 0;
 
 	try
 	{
 		CL_DisplayWindowDescription desc_window_main;
 		desc_window_main.set_title("Main Window");
 		desc_window_main.set_allow_resize(true);
-		desc_window_main.set_decorations(true);
+		desc_window_main.show_caption(true);
 		desc_window_main.set_position(CL_Rect(256, 128, CL_Size(512, 128)), true);
 
 
@@ -120,7 +126,8 @@ int App::start(const std::vector<CL_String> &args)
 		CL_DisplayWindowDescription desc_window_2;
 		desc_window_2.set_title("Window 2");
 		desc_window_2.set_allow_resize(true);
-		desc_window_2.set_decorations(true);
+		desc_window_2.show_caption(true);
+		desc_window_2.set_owner_window(window_main);
 		CL_Rect rect = window_main.get_geometry();
 		desc_window_2.set_position(rect.translate(0, rect.get_height()), false);
 		CL_DisplayWindow window_2(desc_window_2);
@@ -130,7 +137,8 @@ int App::start(const std::vector<CL_String> &args)
 		CL_DisplayWindowDescription desc_window_3;
 		desc_window_3.set_title("Window 3");
 		desc_window_3.set_allow_resize(true);
-		desc_window_3.set_decorations(false);
+		desc_window_3.show_caption(false);
+		desc_window_3.set_owner_window(window_2);
 		rect = window_2.get_geometry();
 		desc_window_3.set_position(rect.translate(0, rect.get_height()), false);
 		CL_DisplayWindow window_3(desc_window_3);
@@ -140,8 +148,8 @@ int App::start(const std::vector<CL_String> &args)
 		CL_DisplayWindowDescription desc_window_4;
 		desc_window_4.set_title("Window 4");
 		desc_window_4.set_allow_resize(false);
-		desc_window_4.show_border(false);
-		desc_window_4.set_decorations(false);
+		desc_window_4.show_caption(false);
+		desc_window_4.set_owner_window(window_3);
 		rect = window_3.get_geometry();
 		desc_window_4.set_position(rect.translate(0, rect.get_height()), true);
 		CL_DisplayWindow window_4(desc_window_4);
@@ -151,7 +159,7 @@ int App::start(const std::vector<CL_String> &args)
 		CL_DisplayWindowDescription desc_window_5;
 		desc_window_5.set_title("Window 5");
 		desc_window_5.set_allow_resize(true);
-		desc_window_5.set_decorations(true);
+		desc_window_5.show_caption(true);
 		rect = window_4.get_geometry();
 		desc_window_5.set_position(rect.translate(0, rect.get_height()), false);
 		CL_DisplayWindow window_5(desc_window_5);
@@ -170,22 +178,25 @@ int App::start(const std::vector<CL_String> &args)
 		// Run until someone presses escape
 		while (!quit)
 		{
-	
+			mouse_move_event_triggered = false;
 			//
 			CL_GraphicContext gc = window_2.get_gc();
 			gc.clear(CL_Colorf(0.0f,0.0f,0.0f, 0.0f));
+			font.draw_text(gc, 8, 16, "Owned by Main Window");
 			draw_window_info(gc, font, 16, desc_window_2, window_2);
 			window_2.flip(0);
 
 			//
 			gc = window_3.get_gc();
 			gc.clear(CL_Colorf(0.0f,0.0f,0.0f, 0.0f));
+			font.draw_text(gc, 8, 16, "Owned by Window 2");
 			draw_window_info(gc, font, 16, desc_window_3, window_3);
 			window_3.flip(0);
 
 			//
 			gc = window_4.get_gc();
 			gc.clear(CL_Colorf(0.0f,0.0f,0.0f, 0.0f));
+			font.draw_text(gc, 8, 16, "Owned by Window 3");
 			draw_window_info(gc, font, 16, desc_window_4, window_4);
 			window_4.flip(0);
 
@@ -198,7 +209,7 @@ int App::start(const std::vector<CL_String> &args)
 			//
 			gc = window_main.get_gc();
 			gc.clear(CL_Colorf(0.0f,0.0f,0.0f, 0.0f));
-			font.draw_text(gc, 8, 16, "Hold down left mouse button inside this window to drag it.");
+			font.draw_text(gc, 8, 16, cl_format("Hold down left mouse button inside this window to drag it. | MultipleMoveMove#%1", num_mouse_multiple_move_events));
 			draw_window_info(gc, font, 16, desc_window_main, window_main);
 			window_main.flip(1);
 
@@ -274,12 +285,22 @@ void App::on_lost_focus()
 
 void App::on_mouse_move(const CL_InputEvent &key, const CL_InputState &state, CL_DisplayWindow *window)
 {
+	if (mouse_move_event_triggered)
+	{
+		num_mouse_multiple_move_events++;
+	}
+	else
+	{
+		mouse_move_event_triggered = true;
+	}
 	if (drag_start)
 	{
 		CL_Rect geometry = window->get_geometry();
 		geometry.translate(key.mouse_pos.x - last_mouse_pos.x, key.mouse_pos.y - last_mouse_pos.y);
 		window->set_position(geometry.left, geometry.top);
-		update_window_relative_positions();
+
+		// This should update in on_window_moved()
+		//update_window_relative_positions();
 	}
 }
 
