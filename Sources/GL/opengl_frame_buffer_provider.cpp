@@ -47,7 +47,7 @@ CL_OpenGLFrameBufferProvider::CL_OpenGLFrameBufferProvider(CL_OpenGLGraphicConte
 {
 	bind_target = cl_framebuffer_draw;
 	handle = 0; 
-	CL_SharedGCData::add_disposable(this);
+	gc_provider->add_disposable(this);
 
 	CL_OpenGL::set_active(gc_provider);
 
@@ -66,7 +66,6 @@ CL_OpenGLFrameBufferProvider::CL_OpenGLFrameBufferProvider(CL_OpenGLGraphicConte
 CL_OpenGLFrameBufferProvider::~CL_OpenGLFrameBufferProvider()
 {
 	dispose();
-	CL_SharedGCData::remove_disposable(this);
 }
 
 void CL_OpenGLFrameBufferProvider::on_dispose()
@@ -88,6 +87,8 @@ void CL_OpenGLFrameBufferProvider::on_dispose()
 		if (!attached_renderbuffers[cnt].is_null())
 			attached_renderbuffers[cnt] = CL_RenderBuffer();
 	}
+
+	gc_provider->remove_disposable(this);
 }
 
 /////////////////////////////////////////////////////////////////////////////

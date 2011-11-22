@@ -49,6 +49,7 @@ class CL_ShaderObjectProvider;
 class CL_FrameBufferProvider;
 class CL_RenderBufferProvider;
 class CL_OpenGLFrameBufferProvider;
+class CL_DisposableObject;
 class CL_OpenGLWindowDescription;
 
 class CL_OpenGLGraphicContextProvider : public CL_GraphicContextProvider
@@ -147,6 +148,9 @@ public:
 	/// \brief Get OpenGL extension specific function address.
 	CL_ProcAddress *get_proc_address(const CL_String8& function_name) const ;
 
+	void add_disposable(CL_DisposableObject *disposable);
+	void remove_disposable(CL_DisposableObject *disposable);
+
 /// \}
 /// \name Implementation
 /// \{
@@ -215,5 +219,7 @@ private:
 
 	bool use_glsl_1_50;	// Available with OpenGL 3.2 and above
 	bool allow_vertex_array_without_buffer_object;
+
+	std::vector<CL_DisposableObject *> disposable_objects;
 /// \}
 };

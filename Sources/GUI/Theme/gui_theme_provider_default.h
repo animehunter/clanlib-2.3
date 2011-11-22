@@ -117,7 +117,7 @@ public:
 	void render_background(CL_GraphicContext &gc, CL_GUIThemePart &part, const CL_Rect &rect, const CL_Rect &clip_rect);
 	void render_image_background(CL_GraphicContext &gc, CL_GUIThemePart &part, const CL_Rect &rect, const CL_Rect &clip_rect);
 	void render_image_tile_background(CL_GraphicContext &gc, CL_GUIThemePart &part, const CL_Rect &rect, const CL_Rect &clip_rect);
-	void render_image_center_background(CL_GraphicContext &gc, CL_GUIThemePart &part, const CL_Rect &rect, const CL_Rect &clip_rect);
+	void render_image_fixed_background(CL_GraphicContext &gc, CL_GUIThemePart &part, const CL_Rect &rect, const CL_Rect &clip_rect, const CL_String &size_mode);
 	void render_image_repeat_background(CL_GraphicContext &gc, CL_GUIThemePart &part, const CL_Rect &rect, const CL_Rect &clip_rect);
 	void render_image_repeat_horizontally(CL_GraphicContext &gc, ImagePart &ip, CL_Image &image);
 	void render_image_repeat_vertically(CL_GraphicContext &gc, ImagePart &ip, CL_Image &image);
