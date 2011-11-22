@@ -136,6 +136,11 @@ void CL_ListViewColumnHeader::set_rect(const CL_Rect &rect)
 	impl->rect = rect;
 }
 
+void CL_ListViewColumnHeader::set_gui_theme_part(const CL_GUIThemePart &part)
+{
+	impl->part = part;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // CL_ListViewColumnHeader Events:
 

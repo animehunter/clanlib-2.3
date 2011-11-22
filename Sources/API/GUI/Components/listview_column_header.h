@@ -106,6 +106,7 @@ public:
 /// \{
 
 public:
+
 	/// \brief Set alignment
 	///
 	/// \param TextAlignment = List View Column Header
@@ -138,6 +139,7 @@ public:
 /// \{
 
 private:
+
 	/// \brief Constructs a ListViewColumnHeader
 	///
 	/// \param CL_ListViewColumnHeader_Impl = Shared Ptr
@@ -147,6 +149,11 @@ private:
 	///
 	/// \param rect = Rect
 	void set_rect(const CL_Rect &rect);
+
+	/// \brief Set gui theme part
+	///
+	/// \param part = GUITheme Part
+	void set_gui_theme_part(const CL_GUIThemePart &part);
 
 	CL_SharedPtr<CL_ListViewColumnHeader_Impl> impl;
 
