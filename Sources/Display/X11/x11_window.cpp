@@ -1298,6 +1298,13 @@ void CL_X11Window::get_message(CL_X11Window *mouse_capture_window)
 			case ButtonRelease:
 				if (mouse_capture_window->get_mouse() && event.xany.send_event==0)
 				{
+					if (!callback_on_clicked.is_null())
+					{
+						// This callback is required for GL layered windows
+						if (!callback_on_clicked.invoke(event.xbutton))
+							break;
+					}
+
 					// Adjust to what clanlib client expects
 					event.xmotion.x = event.xmotion.x_root - requested_current_window_client_area.left;
 					event.xmotion.y = event.xmotion.y_root - requested_current_window_client_area.top;

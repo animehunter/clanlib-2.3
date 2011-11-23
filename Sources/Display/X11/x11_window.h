@@ -42,7 +42,7 @@
 #include "API/Core/Math/point.h"
 #include "API/Core/Math/rect.h"
 #include "API/Core/Signals/callback_v0.h"
-
+#include "API/Core/Signals/callback_1.h"
 #include "clipboard_x11.h"
 
 #include <X11/Xlib.h>
@@ -92,6 +92,7 @@ public:
 	Window get_window() const { return window; }
 	CL_InputContext &get_ic() { return ic; }		// WARNING: return by reference, so the shared pointer exists if this window is destroyed
 	CL_Callback_v0 &func_on_resized() { return callback_on_resized; }
+	CL_Callback_1<bool, XButtonEvent &> &func_on_clicked() { return callback_on_clicked; }
 	bool is_clipboard_text_available() const;
 	bool is_clipboard_image_available() const;
 	CL_String get_clipboard_text() const;
@@ -183,6 +184,7 @@ private:
 	std::vector<CL_InputDevice> joysticks;
 	CL_DisplayWindowSite *site;
 	CL_Callback_v0 callback_on_resized;
+	CL_Callback_1<bool, XButtonEvent &> callback_on_clicked;
 	CL_Size minimum_size;
 	CL_Size maximum_size;
 	CL_String window_title;

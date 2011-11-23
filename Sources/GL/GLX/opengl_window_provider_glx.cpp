@@ -340,6 +340,11 @@ void CL_OpenGLWindowProvider_GLX::create_glx_1_3(CL_DisplayWindowSite *new_site,
 		{
 			use_layered = false;
 		}
+		if (use_layered)
+		{
+			x11_window.func_on_clicked().set(this, &CL_OpenGLWindowProvider_GLX::on_clicked);
+		}
+
 	}
 #endif
 
@@ -869,5 +874,35 @@ void CL_OpenGLWindowProvider_GLX::set_small_icon(const CL_PixelBuffer &image)
 
 /////////////////////////////////////////////////////////////////////////////
 // CL_OpenGLWindowProvider_GLX Implementation:
+
+bool CL_OpenGLWindowProvider_GLX::on_clicked(XButtonEvent &event)
+{
+	if (event.button != 1)	// Left mouse button
+		return true;
+
+	int height = get_viewport().get_height();
+
+	glDrawBuffer(GL_BACK);
+	glReadBuffer(GL_FRONT);
+
+	CL_Rect rect = CL_Rect(event.x,event.y, CL_Size(1,1));
+
+	CL_PixelBuffer pixelbuffer(rect.get_width(), rect.get_height(), cl_rgba8);
+	glReadPixels(
+		rect.left, height - rect.bottom,
+		rect.right - rect.left, rect.bottom - rect.top,
+		GL_RGBA,
+		GL_UNSIGNED_INT_8_8_8_8,
+		pixelbuffer.get_data());
+
+	const cl_ubyte32 *xptr = (const cl_ubyte32 *) (pixelbuffer.get_data());
+	if (((*xptr) & 0xFF) < 10)
+	{
+		XLowerWindow(x11_window.get_display(), x11_window.get_window());
+		return false;
+	}
+
+	return true;
+}
 
 
