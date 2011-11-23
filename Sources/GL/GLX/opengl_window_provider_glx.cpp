@@ -58,6 +58,11 @@
 #define GL_LOAD_GLFUNC(x) &x
 #endif
 
+#ifdef HAVE_X11_EXTENSIONS_XRENDER_H
+#include <X11/extensions/Xrender.h>
+#endif
+
+
 CL_GL_RenderWindowProvider_GLX::CL_GL_RenderWindowProvider_GLX(CL_OpenGLWindowProvider_GLX & window, GLXContext glx_context, bool own_context)
 	: window(window), glx_context(glx_context), own_context(own_context)
 {
@@ -324,6 +329,20 @@ void CL_OpenGLWindowProvider_GLX::create_glx_1_3(CL_DisplayWindowSite *new_site,
 		None
 	};
 
+#ifdef HAVE_X11_EXTENSIONS_XRENDER_H
+	bool use_layered = desc.is_layered();
+	if (use_layered)
+	{
+		int render_event;
+		int render_error;
+
+		if (!XRenderQueryExtension(disp, &render_event, &render_error))
+		{
+			use_layered = false;
+		}
+	}
+#endif
+
 	CL_OpenGLWindowDescription gl_desc(desc);
 
 	std::vector<int> gl_attribs;
@@ -371,6 +390,7 @@ void CL_OpenGLWindowProvider_GLX::create_glx_1_3(CL_DisplayWindowSite *new_site,
 		if (!glx.glXGetFBConfigAttrib)
 			throw CL_Exception("Cannot find function glXGetFBConfigAttrib");
 
+		bool got_desired_config = false;
 		int desired_config = 0;
 		int max_sample_buffers = 0;
 		int max_samples = 0;
@@ -378,6 +398,32 @@ void CL_OpenGLWindowProvider_GLX::create_glx_1_3(CL_DisplayWindowSite *new_site,
 		// Find the best fitting multisampling option
 		for (int i=0; i<fb_count; i++)
 		{
+#ifdef HAVE_X11_EXTENSIONS_XRENDER_H
+			if (use_layered)
+			{
+				// Only use visuals that contain an alpha mask.
+
+				XVisualInfo* visual_info = glx.glXGetVisualFromFBConfig(disp, fbc[i]);
+				if (!visual_info)
+					continue;
+
+				XRenderPictFormat *format = XRenderFindVisualFormat(disp, visual_info->visual);
+				XFree(visual_info);
+				if (!format)
+					continue;
+				if (format->direct.alphaMask < 255)
+				{
+					continue;
+				}
+				if (!got_desired_config)
+				{
+					desired_config = i;
+					got_desired_config = true;
+				}
+			}
+#endif
+
+
 			int samp_buf, samples;
 			glx.glXGetFBConfigAttrib( disp, fbc[i], GLX_SAMPLE_BUFFERS, &samp_buf );
 			glx.glXGetFBConfigAttrib( disp, fbc[i], GLX_SAMPLES       , &samples  );
@@ -389,6 +435,7 @@ void CL_OpenGLWindowProvider_GLX::create_glx_1_3(CL_DisplayWindowSite *new_site,
 				{
 					max_samples = samples;
 					desired_config = i;
+					got_desired_config = true;
 				}
 			}
 
@@ -399,6 +446,7 @@ void CL_OpenGLWindowProvider_GLX::create_glx_1_3(CL_DisplayWindowSite *new_site,
 				{
 					max_sample_buffers = samp_buf;
 					desired_config = i;
+					got_desired_config = true;
 				}
 			}
 		}
