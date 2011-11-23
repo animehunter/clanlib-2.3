@@ -288,12 +288,32 @@ CL_OpenGLGraphicContextProvider::CL_OpenGLGraphicContextProvider(const CL_Render
 
 CL_OpenGLGraphicContextProvider::~CL_OpenGLGraphicContextProvider()
 {
+	while (!disposable_objects.empty())
+		disposable_objects.front()->dispose();
+
 	current_program_object = CL_ProgramObject();
 	standard_programs.clear();
 
 	CL_OpenGL::remove_active(this);
 	delete render_window;
 
+}
+
+void CL_OpenGLGraphicContextProvider::add_disposable(CL_DisposableObject *disposable)
+{
+	disposable_objects.push_back(disposable);
+}
+
+void CL_OpenGLGraphicContextProvider::remove_disposable(CL_DisposableObject *disposable)
+{
+	for (size_t i = 0; i < disposable_objects.size(); i++)
+	{
+		if (disposable_objects[i] == disposable)
+		{
+			disposable_objects.erase(disposable_objects.begin() + i);
+			return;
+		}
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////
