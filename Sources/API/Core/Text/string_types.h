@@ -32,6 +32,7 @@
 #pragma once
 
 #include <string>
+#include <functional>
 #include "string_ref8.h"
 #include "string_ref16.h"
 #include "string8.h"
