@@ -41,14 +41,35 @@
 typedef CL_StringRef8 CL_StringRef;
 typedef CL_String8 CL_String;
 
-template<>
-class std::hash<CL_String> : std::hash<const CL_String::char_type*>
-{
-public:
-	size_t operator()(const CL_String& keyval) const
-	{   
-		return std::hash<const CL_String::char_type*>::operator()(keyval.c_str());
+#if defined(__APPLE__) || (defined(_MSC_VER) && _MSC_VER < 1600)
+	namespace std
+	{
+		namespace tr1
+		{
+			template<>
+			class hash<CL_String> : hash<const CL_String::char_type*>
+			{
+			public:
+					size_t operator()(const CL_String& keyval) const
+					{
+							return hash<const CL_String::char_type*>::operator()(keyval.c_str());
+					}
+			};
+		}
 	}
-};
+#else
+	namespace std
+	{
+		template<>
+		class hash<CL_String> : hash<const CL_String::char_type*>
+		{
+		public:
+			size_t operator()(const CL_String& keyval) const
+			{
+				return hash<const CL_String::char_type*>::operator()(keyval.c_str());
+			}
+		};
+	}
+#endif
 
 /// \}
