@@ -93,9 +93,7 @@ int App::start(const std::vector<CL_String> &args)
 		CL_DisplayWindowDescription desc_window;
 		desc_window.set_title("Layered Window Example");
 		desc_window.set_allow_resize(false);
-#ifdef WIN32
 		desc_window.set_layered(true);
-#endif
 		desc_window.set_decorations(false);
 		desc_window.set_size(CL_Size(600, 600), false);
 

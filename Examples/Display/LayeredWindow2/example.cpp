@@ -107,7 +107,7 @@ int App::start(const std::vector<CL_String> &args)
 		// Define the whole size
 		CL_Size entire_window_size(650, 650);
 		const int window_inner_offset = 128;
-		CL_Point window_initial_position(10, 10);
+		CL_Point window_initial_position(64, 64);
 
 		// Set the window description
 		CL_DisplayWindowDescription desc_window;
@@ -121,9 +121,7 @@ int App::start(const std::vector<CL_String> &args)
 		CL_DisplayWindow window_center(desc_window);
 
 		// Create the border layered windows
-#ifdef WIN32
 		desc_window.set_layered(true);
-#endif
 		desc_window.set_title("");
 		desc_window.set_owner_window(window_center);
 		desc_window.set_position(CL_Rect(window_initial_position.x, window_initial_position.y, CL_Size(entire_window_size.width, window_inner_offset)), false);
