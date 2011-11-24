@@ -40,4 +40,14 @@
 typedef CL_StringRef8 CL_StringRef;
 typedef CL_String8 CL_String;
 
+template<>
+class std::hash<CL_String> : std::hash<const CL_String::char_type*>
+{
+public:
+	size_t operator()(const CL_String& keyval) const
+	{   
+		return std::hash<const CL_String::char_type*>::operator()(keyval.c_str());
+	}
+};
+
 /// \}
