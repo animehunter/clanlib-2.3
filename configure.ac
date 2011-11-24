@@ -321,6 +321,8 @@ CLANLIB_ARG_ENABLE(clanSWRender,      auto, [Build clanSWRender module],        
 CLANLIB_ARG_ENABLE(clanMikMod,   auto, [Build clanMikMod module],     [whether we should try to build clanMikMod])
 CLANLIB_ARG_ENABLE(clanVorbis,   auto, [Build clanVorbis module],     [whether we should try to build clanVorbis])
 
+linux_joystick=no
+linux_input=no
 echo ""
 if test "$enable_clanDisplay" != "no"; then
 	echo "Checking for clanDisplay stuff"
@@ -328,6 +330,14 @@ if test "$enable_clanDisplay" != "no"; then
 	CLANLIB_CHECK_LIB(png,  [`cat $srcdir/Setup/Tests/png.cpp`],  clanDisplay, [ *** Cannot find png (See http://www.libpng.org ) (Try libpng12-dev or better) ], [-lz -lpng])
 	CLANLIB_CHECK_LIB(jpeg, [`cat $srcdir/Setup/Tests/jpeg.cpp`], clanDisplay, [ *** Cannot find jpeg (See http://www.ijg.org ) (Try libjpeg62-dev or better) ], [ -ljpeg])
 	CLANLIB_CHECK_LIB(ttf, [`cat $srcdir/Setup/Tests/ttf.cpp`], clanDisplay, [ *** Cannot find ttf (freetype) (See http://freetype.sourceforge.net )  (Try libfreetype6-dev or better) ], [`freetype-config --libs` ], [ `freetype-config --cflags`])
+
+	dnl  Optional linux/joystick.h
+	AC_CHECK_HEADERS(linux/joystick.h, linux_joystick=yes)
+	AM_CONDITIONAL(LINUX_JOYSTICK, test x$linux_joystick = xyes)
+
+	dnl Optional linux/input.h
+	AC_CHECK_HEADERS(linux/input.h, linux_input=yes)
+	AM_CONDITIONAL(LINUX_INPUT, test x$linux_input = xyes)
 
 	if test "$WIN32" = "no" && test "$enable_clanDisplay" != "no"; then
 	CLANLIB_CHECK_LIB(fontconfig,  [`cat $srcdir/Setup/Tests/fontconfig.cpp`],  clanDisplay, [ *** Cannot find fontconfig (See http://fontconfig.org/ ) (Try libfontconfig1-dev or better) ], [-lfontconfig])
@@ -344,21 +354,6 @@ if test "$enable_clanDisplay" != "no"; then
 			clanDisplay, [ *** Cannot find version 8 of DirectInput], [-ldxguid -lole32 -ldinput8])
 	fi
 fi
-
-dnl Check for linux/joystick.h
-linux_joystick=no
-AC_CHECK_HEADERS(linux/joystick.h, linux_joystick=yes)
-AM_CONDITIONAL(LINUX_JOYSTICK, test x$linux_joystick = xyes)
-
-dnl Check for linux/input.h
-linux_input=no
-AC_CHECK_HEADERS(linux/input.h, linux_input=yes)
-AM_CONDITIONAL(LINUX_INPUT, test x$linux_input = xyes)
-
-dnl Check for alsa
-have_alsa=no
-AC_CHECK_HEADERS(asoundlib.h alsa/asoundlib.h, have_alsa=yes)
-AM_CONDITIONAL(ALSA, test x$have_alsa = xyes)
 
 have_xrender=no
 
@@ -383,8 +378,9 @@ if test "$enable_clanDisplay" != "no"; then
 
 		LIBS="$OLDLIBS"
 		clanDisplay_CFLAGS="$clanDisplay_CFLAGS $X_CFLAGS"
-		clanDisplay_LIBS="$clanDisplay_LIBS $X_LIBS -lX11 $X_EXTRA_LIBS"
- 
+		extra_LIBS_clanDisplay=" -lX11 $extra_LIBS_clanDisplay "
+
+
 		echo ""
 		fi
 
@@ -394,28 +390,25 @@ if test "$enable_clanDisplay" != "no"; then
 			if test "$WIN32" = "yes"; then
 				CLANLIB_CHECK_LIB(opengl32, [`cat $srcdir/Setup/Tests/opengl.cpp`], clanGL, [ *** Cannot find opengl32], [-lopengl32])
 			else
-				CLANLIB_CHECK_LIB(GL, [`cat $srcdir/Setup/Tests/opengl.cpp`], clanGL, [ *** Cannot find GL], [ $LIBPTHREAD -lGL])
+				CLANLIB_CHECK_LIB(GL, [`cat $srcdir/Setup/Tests/opengl.cpp`], clanGL, [ *** Cannot find GL], [ $LIBPTHREAD -lGL ])
 				if test "$enable_clanGL" != "no" && test "$X11" = "yes"; then
-					if test "$enable_clanGL" != "no"; then
 			
-						dnl Check for optional usage of /X11/extensions/Xrender.h
-						AC_CHECK_HEADERS(X11/extensions/Xrender.h, have_xrender=yes)
+					dnl Check for optional usage of /X11/extensions/Xrender.h
+					AC_CHECK_HEADERS(X11/extensions/Xrender.h, have_xrender=yes)
 
-						if test x"$have_xrender" = "xyes"; then
-							CLANLIB_CHECK_LIB(Xrender, [`cat $srcdir/Setup/Tests/xrender.cpp`], clanGL, [ *** Cannot find Xrender. Try installing libxrender-dev], [ -lXrender])
-						fi
+					if test x"$have_xrender" = "xyes"; then
+						CLANLIB_CHECK_LIB(Xrender, [`cat $srcdir/Setup/Tests/xrender.cpp`], clanGL, [ *** Cannot find Xrender. Try installing libxrender-dev], [ -lXrender])
+					fi
 
-						dnl Check that glXGetProcAddressARB is defined in glx.h
-						AC_MSG_CHECKING([whether glx.h defines glXGetProcAddressARB]);
-						AC_TRY_COMPILE([#define GLX_GLXEXT_PROTOTYPES
-							#include <GL/glx.h>], [ char *foo = (char*) glXGetProcAddressARB; ],
-							glx_has_getprocaddressarb="yes", glx_has_getprocaddressarb="no")
-						AC_MSG_RESULT([$glx_has_getprocaddressarb])
+					dnl Check that glXGetProcAddressARB is defined in glx.h
+					AC_MSG_CHECKING([whether glx.h defines glXGetProcAddressARB]);
+					AC_TRY_COMPILE([#define GLX_GLXEXT_PROTOTYPES
+						#include <GL/glx.h>], [ char *foo = (char*) glXGetProcAddressARB; ],
+						glx_has_getprocaddressarb="yes", glx_has_getprocaddressarb="no")
+					AC_MSG_RESULT([$glx_has_getprocaddressarb])
 
-						if test "x$glx_has_getprocaddressarb" = "xyes"; then
-							AC_DEFINE(HAVE_GLX_GETPROCADDRESSARB, 1,
-								[Define if the OpenGL library supports the glXGetProcAddressARB call])
-						fi
+					if test "x$glx_has_getprocaddressarb" = "xyes"; then
+						AC_DEFINE(HAVE_GLX_GETPROCADDRESSARB, 1, [Define if the OpenGL library supports the glXGetProcAddressARB call])
 					fi
 				fi
 			fi
@@ -429,24 +422,21 @@ if test "$enable_clanDisplay" != "no"; then
 			if test "$WIN32" = "yes"; then
 				CLANLIB_CHECK_LIB(opengl32, [`cat $srcdir/Setup/Tests/opengl.cpp`], clanGL1, [ *** Cannot find opengl32], [-lopengl32])
 			else
-				CLANLIB_CHECK_LIB(GL, [`cat $srcdir/Setup/Tests/opengl.cpp`], clanGL1, [ *** Cannot find GL], [ $LIBPTHREAD -lGL])
+				CLANLIB_CHECK_LIB(GL, [`cat $srcdir/Setup/Tests/opengl.cpp`], clanGL1, [ *** Cannot find GL], [ $LIBPTHREAD -lGL ])
 				if test "$enable_clanGL1" != "no" && test "$X11" = "yes"; then
-					if test "$enable_clanGL1" != "no"; then
 			
-						dnl Check that glXGetProcAddressARB is defined in glx.h
-						AC_MSG_CHECKING([whether glx.h defines glXGetProcAddressARB]);
-						AC_TRY_COMPILE([#define GLX_GLXEXT_PROTOTYPES
-							#include <GL/glx.h>], [ char *foo = (char*) glXGetProcAddressARB; ],
-							glx_has_getprocaddressarb="yes", glx_has_getprocaddressarb="no")
-						AC_MSG_RESULT([$glx_has_getprocaddressarb])
+					dnl Check that glXGetProcAddressARB is defined in glx.h
+					AC_MSG_CHECKING([whether glx.h defines glXGetProcAddressARB]);
+					AC_TRY_COMPILE([#define GLX_GLXEXT_PROTOTYPES
+						#include <GL/glx.h>], [ char *foo = (char*) glXGetProcAddressARB; ],
+						glx_has_getprocaddressarb="yes", glx_has_getprocaddressarb="no")
+					AC_MSG_RESULT([$glx_has_getprocaddressarb])
 
-						if test "x$glx_has_getprocaddressarb" = "xyes"; then
-							AC_DEFINE(HAVE_GLX_GETPROCADDRESSARB, 1,
-								[Define if the OpenGL library supports the glXGetProcAddressARB call])
-							fi
-						fi
+					if test "x$glx_has_getprocaddressarb" = "xyes"; then
+						AC_DEFINE(HAVE_GLX_GETPROCADDRESSARB, 1, [Define if the OpenGL library supports the glXGetProcAddressARB call])
 					fi
 				fi
+			fi
 			if test "$enable_clanGL1" = "auto"; then enable_clanGL1=yes; fi
 			echo ""
 		fi
@@ -492,6 +482,7 @@ if test "$enable_clanDisplay" != "no"; then
 		CLANLIB_DISABLE_MODULE(clanGL1, [ *** clanGL1 depends on clanDisplay])
 	fi
 
+have_alsa=no
 if test "$enable_clanSound" != "no"; then
 	echo "Checking for clanSound stuff"
 	echo "============================"
@@ -514,6 +505,7 @@ if test "$enable_clanSound" != "no"; then
 	if test "$have_alsa" != "no"; then
 		sound_libs="$sound_libs -lasound"
 	fi
+
 	extra_LIBS_clanSound="$extra_LIBS_clanSound $sound_libs"
 	AM_CONDITIONAL(ALSA, test x$have_alsa = xyes)
 	fi
@@ -623,6 +615,7 @@ AC_SUBST(extra_CFLAGS_clanMikMod)
 dnl -----------------------------------------------------------------------
 dnl Store libs for pkg-config Metadata - for files in Setup/pkgconfig/*.in
 dnl -----------------------------------------------------------------------
+
 AC_SUBST(extra_LIBS_clanApp)
 AC_SUBST(extra_LIBS_clanCore)
 AC_SUBST(extra_LIBS_clanDisplay)
@@ -826,13 +819,14 @@ AC_OUTPUT
 echo "------------------------------------------------------------------------------"
 echo "The following options are set: (use ./configure --help for more options)"
 echo ""
-echo "                   --prefix = $prefix"
-echo "              --exec-prefix = $exec_prefix"
-echo "              --datarootdir = $datarootdir"
-echo ""
-echo "   Installation Include Dir = $includedir/ClanLib-${LT_RELEASE}"
-echo "   Installation Library Dir = $libdir"
-echo "      Installation Docs Dir = $datadir/doc/${PACKAGE}-${LT_RELEASE}"
+eval clan_temp="${includedir}"
+echo "   Installation Include Dir = ${clan_temp}/ClanLib-${LT_RELEASE}"
+eval clan_temp="${libdir}"
+eval clan_temp="${clan_temp}"
+echo "   Installation Library Dir = ${clan_temp}"
+eval clan_temp="${datadir}"
+eval clan_temp="${clan_temp}"
+echo "      Installation Docs Dir = ${clan_temp}/doc/${PACKAGE}-${LT_RELEASE}"
 
 dnl Do a check to see if the user has forgotton to set the prefix directory
 if test "$prefix" == "/usr/local"; then

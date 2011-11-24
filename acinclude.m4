@@ -10,8 +10,8 @@ define([CLANLIB_CHECK_LIB],[if test "$enable_$3" != "no"; then
     if test "$CL_RESULT" = "no"; then
         CLANLIB_DISABLE_MODULE([$3],[$4])
     else
-        $3_CXXFLAGS="$$3_CXXFLAGS $CXXFLAGS"
-        extra_LIBS_$3="$extra_LIBS_$3 $LIBS"
+        $3_CXXFLAGS=" $$3_CXXFLAGS $CXXFLAGS "
+        extra_LIBS_$3=" $extra_LIBS_$3 $LIBS "
     fi
     CXXFLAGS="$OLD_CXXFLAGS"
     LIBS="$OLDLIBS"
