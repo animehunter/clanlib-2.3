@@ -29,7 +29,7 @@
 #include <ClanLib/core.h>
 #include <ClanLib/application.h>
 #include <ClanLib/display.h>
-#include <ClanLib/gl1.h>
+#include <ClanLib/gl.h>
 
 #include <cmath>
 
@@ -69,7 +69,7 @@ public:
 		CL_SetupDisplay setup_display;
 
 		// Initilize the OpenGL drivers
-		CL_SetupGL1 setup_gl1;
+		CL_SetupGL setup_gl;
 
 		// Start the Application
 		App app;
