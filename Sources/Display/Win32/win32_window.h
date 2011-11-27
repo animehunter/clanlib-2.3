@@ -145,11 +145,6 @@ private:
 
 	void create_direct_input();
 
-	static LRESULT WINAPI static_window_try_proc(
-		HWND hWnd,
-		UINT uMsg,
-		WPARAM wParam,
-		LPARAM lParam);
 	static LRESULT WINAPI static_window_proc(
 		HWND hWnd,
 		UINT uMsg,

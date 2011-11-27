@@ -356,104 +356,6 @@ void CL_Win32Window::create_direct_input()
 	}
 }
 
-class CL_ExceptionCatcher
-{
-public:
-	CL_ExceptionCatcher()
-	: enabled(true)
-	{
-	}
-
-	~CL_ExceptionCatcher()
-	{
-		if (enabled)
-		{
-			// It is considered an application error if an exception reaches the message handler, since
-			// it will now need to unroll the stack beyond code under C++'s control.  We therefore
-			// force an application crash here.
-			//unexpected();
-			RaiseException(EXCEPTION_NONCONTINUABLE_EXCEPTION, EXCEPTION_NONCONTINUABLE, 0, 0);
-		}
-	}
-	void disable() { enabled = false; }
-
-private:
-	bool enabled;
-};
-#ifdef _MSC_VER
-LONG cl_grr(PEXCEPTION_POINTERS info)
-{
-	// The point of this function is to prevent something within Windows from eating access violations
-	// and other fatal exceptions.
-#ifdef NOT_USED
-	switch (info->ExceptionRecord->ExceptionCode)
-	{
-	case EXCEPTION_ACCESS_VIOLATION:
-	case EXCEPTION_DATATYPE_MISALIGNMENT:
-	case EXCEPTION_ARRAY_BOUNDS_EXCEEDED:
-	/*case EXCEPTION_FLT_DENORMAL_OPERAND:
-	case EXCEPTION_FLT_DIVIDE_BY_ZERO:
-	case EXCEPTION_FLT_INEXACT_RESULT:
-	case EXCEPTION_FLT_INVALID_OPERATION:
-	case EXCEPTION_FLT_OVERFLOW:
-	case EXCEPTION_FLT_STACK_CHECK:
-	case EXCEPTION_FLT_UNDERFLOW:
-	case EXCEPTION_INT_DIVIDE_BY_ZERO:
-	case EXCEPTION_INT_OVERFLOW:*/
-	case EXCEPTION_PRIV_INSTRUCTION:
-	case EXCEPTION_IN_PAGE_ERROR:
-	case EXCEPTION_ILLEGAL_INSTRUCTION:
-	case EXCEPTION_NONCONTINUABLE_EXCEPTION:
-	case EXCEPTION_STACK_OVERFLOW:
-	case EXCEPTION_INVALID_DISPOSITION:
-	/*case EXCEPTION_GUARD_PAGE:
-	case EXCEPTION_INVALID_HANDLE:
-	case EXCEPTION_POSSIBLE_DEADLOCK:*/
-		return UnhandledExceptionFilter(info);
-	default:
-		return EXCEPTION_CONTINUE_SEARCH;
-	}
-#endif
-	DebugBreak();
-	FatalAppExit(0, TEXT("GRR!"));
-	SetUnhandledExceptionFilter(0);
-	UnhandledExceptionFilter(info);
-	return EXCEPTION_CONTINUE_SEARCH;
-}
-#else
-EXCEPTION_DISPOSITION cl_grr;
-#endif
-LRESULT CL_Win32Window::static_window_try_proc(
-	HWND wnd,
-	UINT msg,
-	WPARAM wparam,
-	LPARAM lparam)
-#ifdef _MSC_VER
-{
-	__try
-	{
-		return static_window_proc(wnd, msg, wparam, lparam);
-	}
-	__except(cl_grr(exception_info()))
-	{
-		// A special thanks to whoever at Microsoft chose to eat access violations during WM_PAINT calls.
-		return DefWindowProc(wnd, msg, wparam, lparam);
-	}
-}
-#else
-{
-	__try1(cl_grr)
-	{
-		return static_window_proc(wnd, msg, wparam, lparam);
-	}
-	__except1
-	{
-		// A special thanks to whoever at Microsoft chose to eat access violations during WM_PAINT calls.
-		return DefWindowProc(wnd, msg, wparam, lparam);
-	}
-}
-#endif
-
 LRESULT CL_Win32Window::static_window_proc(
 	HWND wnd,
 	UINT msg,
@@ -1731,7 +1633,7 @@ void CL_Win32Window::register_window_class()
 		WNDCLASS wndclass;
 		memset(&wndclass, 0, sizeof(WNDCLASS));
 		wndclass.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS; // 0; 
-		wndclass.lpfnWndProc = (WNDPROC) CL_Win32Window::static_window_try_proc;
+		wndclass.lpfnWndProc = (WNDPROC) CL_Win32Window::static_window_proc;
 		wndclass.cbClsExtra = 0;
 		wndclass.cbWndExtra = 0;
 		wndclass.hInstance = (HINSTANCE) GetModuleHandle(0);
@@ -1750,7 +1652,7 @@ void CL_Win32Window::register_window_class()
 			wndclass.style |= CS_DROPSHADOW;
 		}
 
-		wndclass.lpfnWndProc = (WNDPROC) CL_Win32Window::static_window_try_proc;
+		wndclass.lpfnWndProc = (WNDPROC) CL_Win32Window::static_window_proc;
 		wndclass.cbClsExtra = 0;
 		wndclass.cbWndExtra = 0;
 		wndclass.hInstance = (HINSTANCE) GetModuleHandle(0);

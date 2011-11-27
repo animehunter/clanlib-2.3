@@ -72,6 +72,13 @@ private:
 	};
 
 	CL_SharedPtr<ThreadData> get_thread_data();
+
+	#define WIN32_PROCESS_CALLBACK_FILTER_ENABLED 0x1
+	typedef BOOL (WINAPI FuncSetProcessUserModeExceptionPolicy)(DWORD dwFlags);
+	typedef BOOL (WINAPI FuncGetProcessUserModeExceptionPolicy)(LPDWORD lpFlags);
+	static HMODULE moduleKernel32;
+	static FuncSetProcessUserModeExceptionPolicy *ptrSetProcessUserModeExceptionPolicy;
+	static FuncGetProcessUserModeExceptionPolicy *ptrGetProcessUserModeExceptionPolicy;
  /// \}
 };
 
