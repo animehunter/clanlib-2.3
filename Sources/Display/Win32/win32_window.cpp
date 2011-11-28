@@ -362,7 +362,6 @@ LRESULT CL_Win32Window::static_window_proc(
 	WPARAM wparam,
 	LPARAM lparam)
 {
-	CL_ExceptionCatcher exception_catcher;
 	CL_Win32Window *self = 0;
 	if (msg == WM_CREATE)
 	{
@@ -483,7 +482,6 @@ LRESULT CL_Win32Window::static_window_proc(
 			lresult = DefWindowProc(wnd, msg, wparam, lparam);
 		}
 	}
-	exception_catcher.disable();
 	return lresult;
 }
 
