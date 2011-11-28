@@ -138,13 +138,6 @@ public:
 
 	void set_allow_drop_shadow(bool value) { allow_dropshadow = value; }
 
-	// For CL_DisplayMessageQueue_Win32::process_message()
-	static bool exception_thrown;
-	static bool exception_type_clanlib;
-	static CL_Exception exception_clanlib;
-	static bool exception_type_std;
-	static std::exception exception_std;
-
 private:
 	void update_layered_worker_thread();
 	void update_layered_worker_thread_process();

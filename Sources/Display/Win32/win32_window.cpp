@@ -69,12 +69,6 @@
 #include <excpt.h>
 #endif
 
-bool CL_Win32Window::exception_thrown = false;
-bool CL_Win32Window::exception_type_clanlib = false;
-CL_Exception CL_Win32Window::exception_clanlib("");
-bool CL_Win32Window::exception_type_std = false;
-std::exception CL_Win32Window::exception_std("");
-
 CL_Win32Window::CL_Win32Window()
 : hwnd(0), destroy_hwnd(true), current_cursor(0), large_icon(0), small_icon(0), cursor_set(false), cursor_hidden(false), site(0),
   directinput(0), direct8_module(0),
@@ -481,30 +475,7 @@ LRESULT CL_Win32Window::static_window_proc(
 	{
 		if (self)
 		{
-			try
-			{
-					lresult = self->window_proc(wnd, msg, wparam, lparam);
-			}
-			catch (const CL_Exception& error)
-			{
-				self->exception_type_clanlib = true;
-				self->exception_clanlib = error;
-				self->exception_thrown = true;
-				//throw <-- do not throw here because ClanLib dies when we obtain the stack trace
-			}
-			catch (const std::exception& error)
-			{
-				self->exception_type_std = true;
-				self->exception_std = error;
-				self->exception_thrown = true;
-				//throw <-- do not throw here because I think it is probably safer
-			}
-			catch (...)
-			{
-				self->exception_type_clanlib = false;
-				self->exception_thrown = true;
-				throw; // <-- all other (unknown) exceptions we throw and let the debugger handle it
-			}
+			lresult = self->window_proc(wnd, msg, wparam, lparam);
 		}
 		else
 		{
@@ -690,7 +661,6 @@ LRESULT CL_Win32Window::window_proc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lp
 
 	case WM_PAINT:
 		{
-throw CL_Exception("Ooops");
 			RECT rect;
 			if (GetUpdateRect(hwnd, &rect, FALSE))
 			{

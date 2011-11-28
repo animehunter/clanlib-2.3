@@ -226,25 +226,7 @@ void CL_DisplayMessageQueue_Win32::process_message()
 	BOOL result = PeekMessage(&msg, 0, 0, 0, PM_REMOVE);
 	if (result)
 		DispatchMessage(&msg);
-
-	// This is called when DispatchMessage() WIN32 has eaten the exception
-	if (CL_Win32Window::exception_thrown)
-	{
-		CL_Win32Window::exception_thrown = false;
-		if (CL_Win32Window::exception_type_clanlib)
-		{
-			throw CL_Win32Window::exception_clanlib;
-		}
-		else if (CL_Win32Window::exception_type_std)
-		{
-			throw CL_Win32Window::exception_std;
-		}
-		else
-		{
-			throw CL_Exception("An unknown exception was thrown in DispatchMessage");
-		}
-	}
-
+	
 	CL_SharedPtr<ThreadData> data = get_thread_data();
 	for (std::vector<CL_Win32Window *>::size_type i = 0; i < data->windows.size(); i++)
 	{
