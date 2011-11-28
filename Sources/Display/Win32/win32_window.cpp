@@ -362,6 +362,8 @@ LRESULT CL_Win32Window::static_window_proc(
 	WPARAM wparam,
 	LPARAM lparam)
 {
+	CL_SEHCatchAllWorkaround vista_x64_workaround;
+
 	CL_Win32Window *self = 0;
 	if (msg == WM_CREATE)
 	{
@@ -465,6 +467,7 @@ LRESULT CL_Win32Window::static_window_proc(
 				calcsize_params->rgrc[0].top += 0;
 				calcsize_params->rgrc[0].right -= 0;
 				calcsize_params->rgrc[0].bottom -= 0;
+				vista_x64_workaround.unpatch();
 				return 0;
 			}
 		}
@@ -482,6 +485,7 @@ LRESULT CL_Win32Window::static_window_proc(
 			lresult = DefWindowProc(wnd, msg, wparam, lparam);
 		}
 	}
+	vista_x64_workaround.unpatch();
 	return lresult;
 }
 

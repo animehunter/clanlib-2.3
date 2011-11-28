@@ -33,6 +33,7 @@
 #include "API/Core/System/event.h"
 #include "API/Core/System/thread_local_storage.h"
 #include <vector>
+#include <WinNT.h>
 
 class CL_Win32Window;
 
@@ -54,6 +55,8 @@ public:
 
 	void add_client(CL_Win32Window *window);
 	void remove_client(CL_Win32Window *window);
+
+	static bool should_apply_vista_x64_workaround() { return ptrSetProcessUserModeExceptionPolicy == 0 || ptrGetProcessUserModeExceptionPolicy == 0; }
 
  /// \}
  /// \name Implementation
@@ -82,4 +85,57 @@ private:
  /// \}
 };
 
+typedef struct _EXCEPTION_REGISTRATION_RECORD
+{
+	struct _EXCEPTION_REGISTRATION_RECORD *Next;
+	PEXCEPTION_ROUTINE Handler;
+} EXCEPTION_REGISTRATION_RECORD, *PEXCEPTION_REGISTRATION_RECORD;
+
+// Workaround for the KB976038 bug on unpatched systems.
+class CL_SEHCatchAllWorkaround
+{
+public:
+	CL_SEHCatchAllWorkaround()
+	: was_patched(CL_DisplayMessageQueue_Win32::should_apply_vista_x64_workaround()), old_exception_handler(0)
+	{
+		if (was_patched)
+		{
+			// remove all exception handler with exception of the default handler
+			NT_TIB *tib = get_tib();
+			old_exception_handler = tib->ExceptionList;
+			while (tib->ExceptionList->Next != (_EXCEPTION_REGISTRATION_RECORD*)-1)
+				tib->ExceptionList = tib->ExceptionList->Next;
+		}
+	}
+
+	void unpatch()
+	{
+		if (was_patched)
+		{
+			// restore old exception handler
+			NT_TIB *tib = get_tib();
+			tib->ExceptionList = old_exception_handler;
+		}
+	}
+
+private:
+	// get thread information block
+	NT_TIB *get_tib()
+	{
+		#ifdef _MSC_VER
+		return (NT_TIB *)__readfsdword(0x18);
+		#else
+		NT_TIB *tib = 0;
+		__asm
+		{
+			mov EAX, FS:[18h]
+			mov [tib], EAX
+		}
+		return tib;
+		#endif
+	}
+
+	bool was_patched;
+	_EXCEPTION_REGISTRATION_RECORD* old_exception_handler;
+};
 
