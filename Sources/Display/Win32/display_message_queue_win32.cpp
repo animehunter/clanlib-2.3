@@ -235,6 +235,10 @@ void CL_DisplayMessageQueue_Win32::process_message()
 		{
 			throw CL_Win32Window::exception_clanlib;
 		}
+		else if (CL_Win32Window::exception_type_std)
+		{
+			throw CL_Win32Window::exception_std;
+		}
 		else
 		{
 			throw CL_Exception("An unknown exception was thrown in DispatchMessage");

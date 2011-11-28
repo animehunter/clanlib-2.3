@@ -72,6 +72,8 @@
 bool CL_Win32Window::exception_thrown = false;
 bool CL_Win32Window::exception_type_clanlib = false;
 CL_Exception CL_Win32Window::exception_clanlib("");
+bool CL_Win32Window::exception_type_std = false;
+std::exception CL_Win32Window::exception_std("");
 
 CL_Win32Window::CL_Win32Window()
 : hwnd(0), destroy_hwnd(true), current_cursor(0), large_icon(0), small_icon(0), cursor_set(false), cursor_hidden(false), site(0),
@@ -489,6 +491,13 @@ LRESULT CL_Win32Window::static_window_proc(
 				self->exception_clanlib = error;
 				self->exception_thrown = true;
 				//throw <-- do not throw here because ClanLib dies when we obtain the stack trace
+			}
+			catch (const std::exception& error)
+			{
+				self->exception_type_std = true;
+				self->exception_std = error;
+				self->exception_thrown = true;
+				//throw <-- do not throw here because I think it is probably safer
 			}
 			catch (...)
 			{
