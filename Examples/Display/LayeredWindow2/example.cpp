@@ -136,6 +136,7 @@ int App::start(const std::vector<CL_String> &args)
 		// Setup the slots
 		CL_Slot slot_quit = window_center.sig_window_close().connect(this, &App::on_window_close, &window_center);
 		CL_Slot slot_mouse_down = (window_center.get_ic().get_mouse()).sig_key_down().connect(this, &App::on_mouse_down);
+		CL_Slot slot_mouse_dblclk = (window_center.get_ic().get_mouse()).sig_key_dblclk().connect(this, &App::on_mouse_down);
 		CL_Slot slot_input_up = (window_center.get_ic().get_keyboard()).sig_key_up().connect(this, &App::on_input_up);
 
 		// Get the graphic context

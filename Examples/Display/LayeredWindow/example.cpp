@@ -101,6 +101,7 @@ int App::start(const std::vector<CL_String> &args)
 		CL_DisplayWindow window(desc_window);
 		CL_Slot slot_quit = window.sig_window_close().connect(this, &App::on_window_close, &window);
 		CL_Slot slot_mouse_down = (window.get_ic().get_mouse()).sig_key_down().connect(this, &App::on_mouse_down);
+		CL_Slot slot_mouse_dblclk = (window.get_ic().get_mouse()).sig_key_dblclk().connect(this, &App::on_mouse_down);
 		CL_Slot slot_mouse_up = (window.get_ic().get_mouse()).sig_key_up().connect(this, &App::on_mouse_up);
 		CL_Slot slot_mouse_move = (window.get_ic().get_mouse()).sig_pointer_move().connect(this, &App::on_mouse_move, &window);
 		CL_Slot slot_lost_focus = window.sig_lost_focus().connect(this, &App::on_lost_focus);
