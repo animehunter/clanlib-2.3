@@ -122,17 +122,19 @@ private:
 	// get thread information block
 	NT_TIB *get_tib()
 	{
-		#ifdef _MSC_VER
-		return (NT_TIB *)__readfsdword(0x18);
-		#else
-		NT_TIB *tib = 0;
-		__asm
-		{
-			mov EAX, FS:[18h]
-			mov [tib], EAX
-		}
-		return tib;
-		#endif
+		NT_TIB * pTib = (NT_TIB *)NtCurrentTeb();
+		return pTib;
+		//#ifdef _MSC_VER
+		//return (NT_TIB *)__readfsdword(0x18);
+		//#else
+		//NT_TIB *tib = 0;
+		//__asm
+		//{
+		//	mov EAX, FS:[18h]
+		//	mov [tib], EAX
+		//}
+		//return tib;
+		//#endif
 	}
 
 	bool was_patched;
