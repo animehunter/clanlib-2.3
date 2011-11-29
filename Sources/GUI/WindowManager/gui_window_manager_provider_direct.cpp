@@ -53,11 +53,11 @@ CL_GUIWindowManagerProvider_Direct::CL_GUIWindowManagerProvider_Direct(CL_Displa
 	CL_InputContext& ic = display_window.get_ic();
 	slots.connect(ic.get_mouse().sig_key_up(), this, &CL_GUIWindowManagerProvider_Direct::on_input_mouse_up);
 	slots.connect(ic.get_mouse().sig_key_down(), this, &CL_GUIWindowManagerProvider_Direct::on_input_mouse_down);
+	slots.connect(ic.get_mouse().sig_key_dblclk(), this, &CL_GUIWindowManagerProvider_Direct::on_input_mouse_down);
 	slots.connect(ic.get_mouse().sig_pointer_move(), this, &CL_GUIWindowManagerProvider_Direct::on_input_mouse_move);
 
 	slots.connect(ic.get_keyboard().sig_key_up(), this, &CL_GUIWindowManagerProvider_Direct::on_input);
 	slots.connect(ic.get_keyboard().sig_key_down(), this, &CL_GUIWindowManagerProvider_Direct::on_input);
-	slots.connect(ic.get_keyboard().sig_key_dblclk(), this, &CL_GUIWindowManagerProvider_Direct::on_input);
 
 	for (int tc = 0; tc < ic.get_tablet_count(); ++tc)
 	{
