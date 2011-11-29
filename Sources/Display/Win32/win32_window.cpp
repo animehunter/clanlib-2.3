@@ -1,4 +1,3 @@
-
 /*
 **  ClanLib SDK
 **  Copyright (c) 1997-2011 The ClanLib Team
@@ -27,6 +26,7 @@
 **    Magnus Norddahl
 **    Harry Storbacka
 **    Kenneth Gangstoe
+**    Mark Page
 */
 
 #include "Display/precomp.h"
@@ -53,6 +53,7 @@
 #include "input_device_provider_directinput.h"
 #include "display_message_queue_win32.h"
 #include "cursor_provider_win32.h"
+#include "dwm_functions.h"
 #include "../Window/input_context_impl.h"
 
 // #define fun_and_games_with_vista
@@ -73,7 +74,7 @@ CL_Win32Window::CL_Win32Window()
 : hwnd(0), destroy_hwnd(true), current_cursor(0), large_icon(0), small_icon(0), cursor_set(false), cursor_hidden(false), site(0),
   directinput(0), direct8_module(0),
   minimum_size(0,0), maximum_size(0xffff, 0xffff), layered(false), allow_dropshadow(false), minimized(false), maximized(false),
-  update_window_worker_thread_started(false)
+  update_window_worker_thread_started(false), update_window_region(0), update_window_max_region_rects(1024)
 {
 	memset(&paintstruct, 0, sizeof(PAINTSTRUCT));
 	keyboard = CL_InputDevice(new CL_InputDeviceProvider_Win32Keyboard(this));
@@ -92,6 +93,8 @@ CL_Win32Window::~CL_Win32Window()
 		update_window_event_stop.set();
 		update_window_worker_thread.join();
 	}
+	if (update_window_region)
+		DeleteObject(update_window_region);
 
 
 	CL_DisplayMessageQueue_Win32::message_queue.remove_client(this);
@@ -670,20 +673,28 @@ LRESULT CL_Win32Window::window_proc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lp
 			{
 				memset(&paintstruct, 0, sizeof(PAINTSTRUCT));
 				BeginPaint(hwnd, &paintstruct);
+				try
+				{
+					CL_Rect cl_rect;
+					cl_rect.left = rect.left;
+					cl_rect.top = rect.top;
+					cl_rect.right = rect.right;
+					cl_rect.bottom = rect.bottom;
 
-				CL_Rect cl_rect;
-				cl_rect.left = rect.left;
-				cl_rect.top = rect.top;
-				cl_rect.right = rect.right;
-				cl_rect.bottom = rect.bottom;
+					// cl_log_event(cl_format("Dirty %1", has_drop_shadow ? " Pop" : ""), cl_format("Rect: l: %1  t: %2  r: %3  b: %4", cl_rect.left, cl_rect.top, cl_rect.right, cl_rect.bottom));
 
-				// cl_log_event(cl_format("Dirty %1", has_drop_shadow ? " Pop" : ""), cl_format("Rect: l: %1  t: %2  r: %3  b: %4", cl_rect.left, cl_rect.top, cl_rect.right, cl_rect.bottom));
+					if (site)
+						site->sig_paint->invoke(cl_rect);
 
-				if (site)
-					site->sig_paint->invoke(cl_rect);
-
-				EndPaint(hwnd, &paintstruct);
-				memset(&paintstruct, 0, sizeof(PAINTSTRUCT));
+					EndPaint(hwnd, &paintstruct);
+					memset(&paintstruct, 0, sizeof(PAINTSTRUCT));
+				}
+				catch (...)
+				{
+					EndPaint(hwnd, &paintstruct);
+					memset(&paintstruct, 0, sizeof(PAINTSTRUCT));
+					throw;
+				}
 			}
 		}
 		return 0;
@@ -709,7 +720,7 @@ LRESULT CL_Win32Window::window_proc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lp
 			}
 			break;
 
-		//case SC_SCREENSAVE: // To do: add CL_DisplayWindow::set_allow_screensaver(bool enable)
+		//case SC_SCREENSAVE: (Implemented in ClanLib 2.4)
 		//	return 0; 
 
 		default:
@@ -779,8 +790,8 @@ void CL_Win32Window::create_new_window(const CL_DisplayWindowDescription &desc)
 		if (desc.is_visible())
 			ShowWindow(hwnd, SW_SHOW);
 
-	//	if (desc.is_layered()) // TODO: Make the RGB value optional
-	//		SetLayeredWindowAttributes(hwnd, RGB(0,0,0), 0, LWA_COLORKEY);
+		if (layered)
+			DwmFunctions::enable_alpha_channel(hwnd);
 
 		minimized = is_minimized();
 		maximized = is_maximized();
@@ -1778,7 +1789,10 @@ void CL_Win32Window::get_styles_from_description(const CL_DisplayWindowDescripti
 	if (desc.is_layered())
 	{
 		layered = true;
-		ex_style |= WS_EX_LAYERED;
+		if (!DwmFunctions::is_composition_enabled())
+		{
+			ex_style |= WS_EX_LAYERED;
+		}
 	}
 	else
 	{
@@ -1848,11 +1862,19 @@ void CL_Win32Window::update_layered(CL_PixelBuffer &image)
 	else
 	{
 		update_window_event_completed.wait();
+
+		// SetWindowRgn can only be called from the main thread, not a worker thread.
+		// The region is one frame behind, but nobody will notice!
+		if (update_window_region)
+			if (SetWindowRgn(hwnd, update_window_region, FALSE) == 0)
+				DeleteObject(update_window_region);
+
+		update_window_region = 0;
+
 		update_window_event_completed.reset();
 	}
 	update_window_image = image;
 	update_window_event_start.set();
-
 }
 
 void CL_Win32Window::update_layered_process_alpha(int y_start, int y_stop)
@@ -1970,9 +1992,113 @@ void CL_Win32Window::update_layered_worker_thread()
 			break;
 
 		update_window_event_start.reset();
-		update_layered_worker_thread_process();
+		if (DwmFunctions::is_composition_enabled())
+		{
+			update_layered_worker_thread_process_dwm();
+		}
+		else
+		{
+			update_layered_worker_thread_process();
+		}
+		update_window_image = CL_PixelBuffer();
 		update_window_event_completed.set();
 	}
+}
+
+void CL_Win32Window::update_layered_worker_thread_process_dwm()
+{
+	int width = update_window_image.get_width();
+	int height = update_window_image.get_height();
+	const unsigned char *pixels = update_window_image.get_data_uint8();
+
+	RECT bbox;
+	bbox.left =   0x7ffffff;
+	bbox.right =  0x8000000;
+	bbox.top =    0x7ffffff;
+	bbox.bottom = 0x8000000;
+
+	std::vector<RECT> rects;
+	rects.reserve(update_window_max_region_rects);
+	for (int y = 0; y < height; y++)
+	{
+		int start = 0;
+		bool transparent = true;
+		for (int x = 0; x < width; x++)
+		{
+			if (transparent)
+			{
+				if (pixels[x + y * width] != 0)
+				{
+					start = x;
+					transparent = false;
+				}
+			}
+			else
+			{
+				if (pixels[x + y * width] == 0)
+				{
+					RECT r;
+					r.left = start;
+					r.right = x;
+					r.bottom = height - y;
+					r.top = r.bottom - 1;
+
+					bbox.left = cl_min(bbox.left, r.left);
+					bbox.top = cl_min(bbox.top, r.top);
+					bbox.right = cl_max(bbox.right, r.right);
+					bbox.bottom = cl_max(bbox.bottom, r.bottom);
+
+					rects.push_back(r);
+					transparent = true;
+				}
+			}
+		}
+		if (!transparent)
+		{
+			RECT r;
+			r.left = start;
+			r.right = width;
+			r.bottom = height - y;
+			r.top = r.bottom - 1;
+
+			bbox.left = cl_min(bbox.left, r.left);
+			bbox.top = cl_min(bbox.top, r.top);
+			bbox.right = cl_max(bbox.right, r.right);
+			bbox.bottom = cl_max(bbox.bottom, r.bottom);
+
+			rects.push_back(r);
+		}
+	}
+
+
+	if (rects.empty())
+	{
+		bbox.left =   0;
+		bbox.right =  0;
+		bbox.top =    0;
+		bbox.bottom = 0;
+		rects.push_back(bbox);
+	}
+
+	// Calculate estimated memory to reserve for next iteration
+	if (update_window_max_region_rects < rects.size())
+		update_window_max_region_rects = rects.size() + 1024;
+
+	int size = sizeof(RGNDATAHEADER) + sizeof(RECT) * rects.size();
+	CL_DataBuffer region_data_buffer(size);
+	RGNDATA *region_data = (RGNDATA*)region_data_buffer.get_data();
+	region_data->rdh.dwSize = sizeof(RGNDATAHEADER);
+	region_data->rdh.iType = RDH_RECTANGLES;
+	region_data->rdh.nCount = rects.size();
+	region_data->rdh.nRgnSize = sizeof(RECT) * rects.size();
+	region_data->rdh.rcBound = bbox;
+	RECT *region_data_rects = (RECT*)region_data->Buffer;
+	for (size_t i = 0; i < rects.size(); i++)
+		region_data_rects[i] = rects[i];
+
+	update_window_region = ExtCreateRegion(0, region_data_buffer.get_size(), region_data);
+	// SetWindowRgn() is called in update_layered()
+
 }
 
 void CL_Win32Window::update_layered_worker_thread_process()
@@ -2014,6 +2140,4 @@ void CL_Win32Window::update_layered_worker_thread_process()
 	DeleteObject(bitmap);
 	DeleteDC(bitmap_dc);
 	ReleaseDC(hwnd, hdc);
-
-	update_window_image = CL_PixelBuffer();
 }
