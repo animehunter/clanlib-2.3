@@ -222,6 +222,9 @@ private:
 
 	const static int max_allowable_expose_events = 8;
 
+	bool always_send_window_position_changed_event;
+	bool always_send_window_size_changed_event;
+
 /// \}
 };
 

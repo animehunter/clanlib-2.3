@@ -113,7 +113,9 @@ CL_X11Window::CL_X11Window()
   net_wm_state_maximized_horz(None), net_wm_state_hidden(None), net_wm_state_fullscreen(None), kwm_win_decoration(None), win_hints(None),
   net_wm_ping(None), net_frame_extents(None),
   is_window_mapped(false),
-  site(0), clipboard(this), dlopen_lib_handle(NULL)
+  site(0), clipboard(this), dlopen_lib_handle(NULL),
+  always_send_window_position_changed_event(false), always_send_window_size_changed_event(false)
+
 {
 	last_repaint_rect.reserve(32);
 	keyboard = CL_InputDevice(new CL_InputDeviceProvider_X11Keyboard(this));
@@ -766,6 +768,9 @@ void CL_X11Window::set_title(const CL_StringRef &new_title)
 
 void CL_X11Window::set_position(const CL_Rect &pos, bool client_area)
 {
+	always_send_window_position_changed_event = true;
+	always_send_window_size_changed_event = true;
+
 	if (!frame_size_calculated)	// If the frame size has not yet been calculated, we delay setting the window position until later (when mapped)
 	{
 		requested_current_window_client_area = pos;
@@ -810,6 +815,8 @@ void CL_X11Window::set_position(const CL_Rect &pos, bool client_area)
 
 void CL_X11Window::set_size(int width, int height, bool client_area)
 {
+	always_send_window_size_changed_event = true;
+
 	if (!frame_size_calculated)	// If the frame size has not yet been calculated, we delay setting the window position until later (when mapped)
 	{
 		requested_current_window_client_area = CL_Rect(requested_current_window_client_area.left, requested_current_window_client_area.top, CL_Size(width, height));
@@ -930,6 +937,9 @@ void CL_X11Window::map_window()
 				current_window_client_area = requested_current_window_client_area;
 			}
 		}
+
+		always_send_window_position_changed_event = true;
+		always_send_window_size_changed_event = true;
 	}
 }
 
@@ -1143,13 +1153,15 @@ void CL_X11Window::get_message(CL_X11Window *mouse_capture_window)
 
 				if (site)
 				{
-					if ( (rect.left != current_window_client_area.left) || (rect.top != current_window_client_area.top) )
+					if ( (rect.left != current_window_client_area.left) || (rect.top != current_window_client_area.top) || always_send_window_position_changed_event )
 					{
+						always_send_window_position_changed_event = false;
 						site->sig_window_moved->invoke();
 					}
 
-					if ( (rect.get_width() != current_window_client_area.get_width()) || (rect.get_height() != current_window_client_area.get_height()) )
+					if ( (rect.get_width() != current_window_client_area.get_width()) || (rect.get_height() != current_window_client_area.get_height()) || always_send_window_size_changed_event )
 					{
+						always_send_window_size_changed_event = false;
 						if (!site->func_window_resize->is_null())
 						{
 							site->func_window_resize->invoke(rect);
