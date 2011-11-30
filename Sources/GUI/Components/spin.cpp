@@ -118,6 +118,7 @@ CL_Spin::CL_Spin(CL_GUIComponent *parent)
 {
 	set_type_name(CssStr::Spin::type_name);
 	impl->component = this;
+	set_double_click_enabled(false);
 	func_process_message().set(impl.get(), &CL_Spin_Impl::on_process_message);
 	func_render().set(impl.get(), &CL_Spin_Impl::on_render);
 	func_resized().set(impl.get(), &CL_Spin_Impl::on_resized);
