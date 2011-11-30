@@ -390,6 +390,19 @@ void CL_GUIManager_Impl::deliver_message(CL_GUIMessage &m)
 		CL_GUIComponent *target = m.get_target();
 		if (target)
 		{
+			bool double_click_changed_to_single_click = false;
+			if (m.get_type() == CL_GUIMessage_Input::get_type_name() && !target->is_double_click_enabled())
+			{
+				CL_GUIMessage_Input m_input(m);
+				CL_InputEvent input_event = m_input.get_event();
+				if (input_event.type == CL_InputEvent::doubleclick)
+				{
+					input_event.type = CL_InputEvent::pressed;
+					double_click_changed_to_single_click = true;
+					m_input.set_event(input_event);
+				}
+			}
+
 			if (!target->func_filter_message().is_null())
 			{
 				target->func_filter_message().invoke(m);
@@ -485,6 +498,14 @@ void CL_GUIManager_Impl::deliver_message(CL_GUIMessage &m)
 					// No need to do anything here. Already handled elsewhere.
 					m.set_consumed();
 				}
+			}
+
+			if (double_click_changed_to_single_click)
+			{
+				CL_GUIMessage_Input m_input(m);
+				CL_InputEvent input_event = m_input.get_event();
+				input_event.type = CL_InputEvent::doubleclick;
+				m_input.set_event(input_event);
 			}
 		}
 	}

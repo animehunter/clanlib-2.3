@@ -715,6 +715,11 @@ bool CL_GUIComponent::is_cancel()
 	return impl->cancel_handler;
 }
 
+bool CL_GUIComponent::is_double_click_enabled() const
+{
+	return impl->double_click_enabled;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // CL_GUIComponent Operations:
 
@@ -1278,6 +1283,11 @@ void CL_GUIComponent::set_default(bool value)
 void CL_GUIComponent::set_cancel(bool value)
 {
 	impl->cancel_handler = value; 
+}
+
+void CL_GUIComponent::set_double_click_enabled(bool enable)
+{
+	impl->double_click_enabled = enable;
 }
 
 void CL_GUIComponent::set_blocks_default_action(bool block)

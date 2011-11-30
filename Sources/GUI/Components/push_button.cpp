@@ -82,6 +82,7 @@ CL_PushButton::CL_PushButton(CL_GUIComponent *parent)
 	set_type_name(CssStr::PushButton::type_name);
 	set_blocks_default_action(true);
 	set_focus_policy(focus_local);
+	set_double_click_enabled(false);
 
 	func_process_message().set(impl.get(), &CL_PushButton_Impl::on_process_message);
 	func_render().set(impl.get(), &CL_PushButton_Impl::on_render);
