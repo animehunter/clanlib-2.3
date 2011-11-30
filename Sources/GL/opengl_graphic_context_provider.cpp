@@ -182,11 +182,14 @@ CL_OpenGLGraphicContextProvider::CL_OpenGLGraphicContextProvider(const CL_Render
 	int glsl_version_major;
 	int glsl_version_minor;
 	get_opengl_shading_language_version(glsl_version_major, glsl_version_minor);
-	if ( glsl_version_major >= 1)
+	if ( glsl_version_major == 1)
 	{
 		if ( glsl_version_minor >= 50)
 			use_glsl_1_50 = true;
 	}
+	if ( glsl_version_major > 1)
+			use_glsl_1_50 = true;
+
 
 	// Must write here, although CL_OpenGL::SetActive() updates it, because the version number is not available on the initial CL_OpenGL::SetActive() call
 	CL_OpenGL::opengl_version_major = opengl_version_major;
