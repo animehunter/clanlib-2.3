@@ -660,15 +660,9 @@ void CL_OpenGLGraphicContextProvider::set_frame_buffer(const CL_FrameBuffer &dra
 	if (draw_buffer_provider != read_buffer_provider)
 		read_buffer_provider->check_framebuffer_complete();
 
-	// Bind the framebuffers
-	GLuint draw_handle = draw_buffer_provider->get_handle();
-	glBindFramebuffer(GL_FRAMEBUFFER, draw_handle);
-
-	if (draw_buffer_provider != read_buffer_provider)
-	{
-		GLuint read_handle = read_buffer_provider->get_handle();
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, read_handle);
-	}
+	draw_buffer_provider->bind_framebuffer(true);
+	if (draw_buffer_provider != read_buffer_provider)		// You cannot read and write to the same framebuffer
+		read_buffer_provider->bind_framebuffer(false);
 
 	// Save the map mode before when the framebuffer was bound
 	if (!framebuffer_bound)	
@@ -692,6 +686,8 @@ void CL_OpenGLGraphicContextProvider::reset_frame_buffer()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 #endif
+	glDrawBuffer(GL_BACK);	// OpenGL default
+	glReadBuffer(GL_BACK);	// OpenGL default
 
 	if (framebuffer_bound)
 	{
@@ -1187,7 +1183,6 @@ void CL_OpenGLGraphicContextProvider::on_window_resized()
 		set_viewport(CL_Rectf(0.0f, 0.0f, width, height));
 		set_projection(CL_Mat4f::ortho_2d(0.0f, (float)width, 0.0f, (float)height));
 		set_modelview(CL_Mat4f::identity());
-
 		if (glIsEnabled(GL_SCISSOR_TEST))
 			glScissor(
 				last_clip_rect.left,
