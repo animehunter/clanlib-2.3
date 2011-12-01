@@ -68,9 +68,26 @@ void CL_OpenGLFrameBufferProvider::on_dispose()
 	if (handle)
 	{
 		// Note: set_active must be called with gc_provider here since it belongs to the OpenGL context and not the shared list
-		// To do: Improve infrastructure in clanGL so we will know if gc_provider has already been destroyed and in that case do nothing.
-		CL_OpenGL::set_active(gc_provider);
-		glDeleteFramebuffers(1, &handle);
+		// DONE - To do: Improve infrastructure in clanGL so we will know if gc_provider has already been destroyed and in that case do nothing.
+		bool provider_valid = false;
+		if (CL_SharedGCData::get_instance()) // Check that the cache hasn't been destroyed yet
+		{
+			std::vector<CL_GraphicContextProvider*> &gc_providers = CL_SharedGCData::get_gc_providers();
+			for (std::vector<CL_GraphicContextProvider*>::iterator it=gc_providers.begin(); it != gc_providers.end(); ++it)
+			{
+				if (gc_provider == (*it))
+				{
+					provider_valid = true;
+					break;
+				}
+			}
+		}
+
+		if (provider_valid)
+		{
+			CL_OpenGL::set_active(gc_provider);
+			glDeleteFramebuffers(1, &handle);
+		}
 		handle = 0;
 	}
 
