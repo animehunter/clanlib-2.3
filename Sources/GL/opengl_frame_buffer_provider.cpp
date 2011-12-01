@@ -71,6 +71,7 @@ void CL_OpenGLFrameBufferProvider::on_dispose()
 		// To do: Improve infrastructure in clanGL so we will know if gc_provider has already been destroyed and in that case do nothing.
 		CL_OpenGL::set_active(gc_provider);
 		glDeleteFramebuffers(1, &handle);
+		handle = 0;
 	}
 
 	// Detach all textures and renderbuffers
