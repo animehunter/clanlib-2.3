@@ -923,19 +923,14 @@ void CL_X11Window::map_window()
 			frame_size_calculated = true;
 			calculate_window_frame_size();
 
-			if (fullscreen)
-			{
-				// Just store the window position if fullscreen
-				current_window_client_area = get_screen_position();
-				requested_current_window_client_area = current_window_client_area;
-			}
-			else
+			if (!fullscreen)
 			{
 				// Now we know the frame size, nudge the window into the exact position
 				CL_Rect frame_size = requested_current_window_client_area;	// Must copy as set_position() changes this variable, causing all sorts of problems
 				set_position(frame_size, !requested_size_contains_frame);
-				current_window_client_area = requested_current_window_client_area;
 			}
+			current_window_client_area = get_screen_position();
+			requested_current_window_client_area = current_window_client_area;
 		}
 
 		always_send_window_position_changed_event = true;
