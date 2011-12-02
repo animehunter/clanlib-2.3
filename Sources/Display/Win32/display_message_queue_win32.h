@@ -85,11 +85,11 @@ private:
  /// \}
 };
 
-typedef struct _EXCEPTION_REGISTRATION_RECORD
+struct WIN32_EXCEPTION_REGISTRATION_RECORD
 {
-	struct _EXCEPTION_REGISTRATION_RECORD *Next;
-	PEXCEPTION_ROUTINE Handler;
-} EXCEPTION_REGISTRATION_RECORD, *PEXCEPTION_REGISTRATION_RECORD;
+	WIN32_EXCEPTION_REGISTRATION_RECORD *Next;
+	void *Handler;
+};
 
 // Workaround for the KB976038 bug on unpatched systems.
 class CL_SEHCatchAllWorkaround
@@ -102,9 +102,9 @@ public:
 		{
 			// remove all exception handler with exception of the default handler
 			NT_TIB *tib = get_tib();
-			old_exception_handler = tib->ExceptionList;
-			while (tib->ExceptionList->Next != (_EXCEPTION_REGISTRATION_RECORD*)-1)
-				tib->ExceptionList = tib->ExceptionList->Next;
+			old_exception_handler = (WIN32_EXCEPTION_REGISTRATION_RECORD*)tib->ExceptionList;
+			while (((WIN32_EXCEPTION_REGISTRATION_RECORD*)tib->ExceptionList)->Next != (WIN32_EXCEPTION_REGISTRATION_RECORD*)-1)
+				tib->ExceptionList = (_EXCEPTION_REGISTRATION_RECORD*)((WIN32_EXCEPTION_REGISTRATION_RECORD*)tib->ExceptionList)->Next;
 		}
 	}
 
@@ -114,7 +114,7 @@ public:
 		{
 			// restore old exception handler
 			NT_TIB *tib = get_tib();
-			tib->ExceptionList = old_exception_handler;
+			tib->ExceptionList = (_EXCEPTION_REGISTRATION_RECORD*)old_exception_handler;
 		}
 	}
 
@@ -138,6 +138,6 @@ private:
 	}
 
 	bool was_patched;
-	_EXCEPTION_REGISTRATION_RECORD* old_exception_handler;
+	WIN32_EXCEPTION_REGISTRATION_RECORD* old_exception_handler;
 };
 
