@@ -167,7 +167,7 @@ void CL_StringFormat::set_arg(int index, unsigned long long value, int min_lengt
 	set_arg(index, t);
 }
 
-void CL_StringFormat::set_arg(int index, size_t value, int min_length)
+void CL_StringFormat::set_arg(int index, long unsigned int value, int min_length)
 {
 	CL_String t = CL_StringHelp::ull_to_text(value);
 	if ((int) t.length() < min_length)

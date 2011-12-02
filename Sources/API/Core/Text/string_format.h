@@ -90,7 +90,7 @@ public:
 	/// \param index = value
 	/// \param value = value
 	/// \param min_length = value
-	void set_arg(int index, size_t value, int min_length = 0);
+	void set_arg(int index, long unsigned int value, int min_length = 0);
 
 	/// \brief Set arg
 	///
