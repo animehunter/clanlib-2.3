@@ -267,6 +267,7 @@ void CL_Sprite::set_image_data(const CL_Sprite &image_source)
 	impl->play_backward = image_source.is_play_backward();
 	impl->play_pingpong = image_source.is_play_pingpong();
 	impl->base_angle = image_source.get_base_angle();
+	impl->show_on_finish = image_source.get_show_on_finish();
 
 	restart();
 }
